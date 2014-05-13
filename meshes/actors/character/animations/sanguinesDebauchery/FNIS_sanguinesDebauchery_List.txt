@@ -1,0 +1,116 @@
+' Format:	<type> -<option,option,...> <AnimEvent> <Animation File> [<AnimObject CK>]
+'		type: 	b (basic)
+'				o (animated objects) 	
+'		option: a (acyclic) 				default: cyclic
+'				h (headtracking remains) 	default: headtracking off
+'               Tn (clip transition "00Next Clip": used if another idle will follow immediately)
+'               Ts (clip transition "IdleStop": (should be "regular idle end", but in FNIS similar to Next Clip)
+'          					default "IdleForceDefaultState": everything set to default)
+'				B<n.m>						Blend time into Animation
+'
+'		<Animation File> without path (files expected in Animations\<mod name>)
+'
+' Example:
+' b -a,h,Tn,B1.2 MyAnimEvent1 MyAnimFile1.hkx
+'	
+' Comment:	' in column 1 / empty lines possible
+'
+' AnimEvents and Animation File names have to be unique through all mods (even for files in different folders)
+' so it's a good idea use mod specific abbrevioations for all our names
+'
+
+' 1 phase animations
+b SDFNISc000 SDFNISc000.hkx
+b SDFNISc001 SDFNISc001.hkx
+b SDFNISc002 SDFNISc002.hkx
+b SDFNISc003 SDFNISc003.hkx
+b SDFNISc004 SDFNISc004.hkx
+b SDFNISc005 SDFNISc005.hkx
+
+' 4 phase animations
+b SDFNISc072 SDFNISc072.hkx
+b SDFNISc073 SDFNISc073.hkx
+b SDFNISc074 SDFNISc074.hkx
+b SDFNISc075 SDFNISc075.hkx
+b SDFNISc076 SDFNISc076.hkx
+b SDFNISc077 SDFNISc077.hkx
+b SDFNISc078 SDFNISc078.hkx
+b SDFNISc079 SDFNISc079.hkx
+b SDFNISc080 SDFNISc080.hkx
+b SDFNISc081 SDFNISc081.hkx
+b SDFNISc082 SDFNISc082.hkx
+b SDFNISc083 SDFNISc083.hkx
+b SDFNISc084 SDFNISc084.hkx
+b SDFNISc085 SDFNISc085.hkx
+b SDFNISc086 SDFNISc086.hkx
+b SDFNISc087 SDFNISc087.hkx
+b SDFNISc088 SDFNISc088.hkx
+b SDFNISc089 SDFNISc089.hkx
+b SDFNISc090 SDFNISc090.hkx
+b SDFNISc091 SDFNISc091.hkx
+b SDFNISc092 SDFNISc092.hkx
+b SDFNISc093 SDFNISc093.hkx
+b SDFNISc094 SDFNISc094.hkx
+b SDFNISc095 SDFNISc095.hkx
+b SDFNISc096 SDFNISc096.hkx
+b SDFNISc097 SDFNISc097.hkx
+b SDFNISc098 SDFNISc098.hkx
+b SDFNISc099 SDFNISc099.hkx
+b SDFNISc100 SDFNISc100.hkx
+b SDFNISc101 SDFNISc101.hkx
+b SDFNISc102 SDFNISc102.hkx
+b SDFNISc103 SDFNISc103.hkx
+b SDFNISc104 SDFNISc104.hkx
+b SDFNISc105 SDFNISc105.hkx
+b SDFNISc106 SDFNISc106.hkx
+b SDFNISc107 SDFNISc107.hkx
+b SDFNISc108 SDFNISc108.hkx
+b SDFNISc109 SDFNISc109.hkx
+b SDFNISc110 SDFNISc110.hkx
+b SDFNISc111 SDFNISc111.hkx
+b SDFNISc112 SDFNISc112.hkx
+b SDFNISc113 SDFNISc113.hkx
+b SDFNISc114 SDFNISc114.hkx
+b SDFNISc115 SDFNISc115.hkx
+b SDFNISc116 SDFNISc116.hkx
+b SDFNISc117 SDFNISc117.hkx
+b SDFNISc118 SDFNISc118.hkx
+b SDFNISc119 SDFNISc119.hkx
+b SDFNISc120 SDFNISc120.hkx
+b SDFNISc121 SDFNISc121.hkx
+b SDFNISc122 SDFNISc122.hkx
+b SDFNISc123 SDFNISc123.hkx
+b SDFNISc124 SDFNISc124.hkx
+b SDFNISc125 SDFNISc125.hkx
+b SDFNISc126 SDFNISc126.hkx
+b SDFNISc127 SDFNISc127.hkx
+b SDFNISc128 SDFNISc128.hkx
+b SDFNISc129 SDFNISc129.hkx
+b SDFNISc130 SDFNISc130.hkx
+b SDFNISc131 SDFNISc131.hkx
+b SDFNISc132 SDFNISc132.hkx
+b SDFNISc133 SDFNISc133.hkx
+b SDFNISc134 SDFNISc134.hkx
+b SDFNISc135 SDFNISc135.hkx
+
+' dance
+' 500 = belly
+' 501 = model
+' 502 = sexyAJ
+' 503 = shake ass
+' 504 = snake
+b SDFNISc500 SDFNISc500.hkx
+b SDFNISc501 SDFNISc501.hkx
+b SDFNISc502 SDFNISc502.hkx
+b SDFNISc503 SDFNISc503.hkx
+b SDFNISc504 SDFNISc504.hkx
+s -a SD_DanceAnim1Begin SDSnakeDance.hkx
++ -a SD_DanceAnim1Loop1 SDBelly.hkx
++ -a SD_DanceAnim1Loop2 SDSexyJA.hkx
++ -a SD_DanceAnim1Loop3 SDSexyJA.hkx
++ -a SD_DanceAnim1Loop4 SDShakeAss.hkx
++ -a SD_DanceAnim1Loop5 SDShakeAss.hkx
++ -a SD_DanceAnim1Loop6 SDSexyJA.hkx
++ -a SD_DanceAnim1Loop7 SDSnakeDance.hkx
++ -a SD_DanceAnim1End SDBelly.hkx
+b -a SD_SweetDevil SDSweetDevil.hkx
