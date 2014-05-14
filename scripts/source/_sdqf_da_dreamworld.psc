@@ -67,7 +67,7 @@ Function Stage_10()
 	; Alias_thePriest.GetActorRef().AddSpell(HealingHand)
 	; PriestScene.Start()
 	; Alias_thePriest.GetActorRef().EvaluatePackage()
-	_SD_dreamQuest.SetStage(100)
+
 	SetStage(20)
 	RegisterForUpdate(10.0)	
 endFunction
@@ -81,5 +81,6 @@ endFunction
 
 
 Function Stage_100()
+	_SD_dreamQuest.SetStage(100)
 	UnRegisterForUpdate()
 endFunction

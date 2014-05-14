@@ -24,7 +24,9 @@ Function checkWatchers()
 		Int idx = _SDRAP_protecters.Length
 		While ( idx > 0 && !bProtectorsLOS )
 			idx -= 1
-			bProtectorsLOS = ( _SDRAP_protecters[idx].GetReference() as Actor ).HasLOS( kSlave )
+			if ( _SDRAP_protecters[idx].GetReference() as Actor )
+				bProtectorsLOS = ( _SDRAP_protecters[idx].GetReference() as Actor ).HasLOS( kSlave )
+			EndIf
 		EndWhile
 
 		If ( bProtectorsLOS && !kSlave.HasLOS( kMaster ) )
@@ -51,7 +53,9 @@ Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile,
 		Int idx = _SDRAP_protecters.Length
 		While ( idx > 0 )
 			idx -= 1
-			( _SDRAP_protecters[idx].GetReference() as Actor ).StartCombat( akAggressor as Actor )
+			if ( _SDRAP_protecters[idx].GetReference() as Actor )
+				( _SDRAP_protecters[idx].GetReference() as Actor ).StartCombat( akAggressor as Actor )
+			EndIf
 		EndWhile
 	EndIf
 EndEvent

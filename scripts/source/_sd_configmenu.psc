@@ -248,7 +248,7 @@ EndFunction
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;                 2147483647
-Int _SD_mcm_ver = 2014042401
+Int _SD_mcm_ver = 2014051301
 
 int function GetVersion()
 	; patch to fix a screw up

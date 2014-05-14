@@ -267,9 +267,9 @@ State monitor
 				uiSlotDevice[iFormIndex] = False ; False if slot is available
 			EndIf
 
-			Debug.Trace("[housekeeping] iFormIndex: " + iFormIndex )
-			Debug.Trace("[housekeeping] uiSlotDevice[iFormIndex]: "  + uiSlotDevice[iFormIndex] )
-			Debug.Trace("[housekeeping] kForm: "  + kForm )
+			; Debug.Trace("[housekeeping] iFormIndex: " + iFormIndex )
+			; Debug.Trace("[housekeeping] uiSlotDevice[iFormIndex]: "  + uiSlotDevice[iFormIndex] )
+			; Debug.Trace("[housekeeping] kForm: "  + kForm )
 		EndWhile
 
 		If (!bDeviousArmbinderEquipped)

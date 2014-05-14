@@ -596,15 +596,17 @@ Function removeItemsInList( Actor akActor, FormList akItemList )
 	Armor nthArmor = None
 	Form kForm
 
-	While idx < akItemList.GetSize()
-		kForm = akItemList.GetAt(idx) 
-		; nthArmor = kForm as Armor
-		iCount = akActor.GetItemCount( kForm as Armor )
-		If ( iCount ) && (kForm as Armor)
-			akActor.RemoveItem( kForm as Armor, iCount, True )
-		EndIf
-		idx += 1
-	EndWhile
+	if (akActor)
+		While idx < akItemList.GetSize()
+			kForm = akItemList.GetAt(idx) 
+			; nthArmor = kForm as Armor
+			iCount = akActor.GetItemCount( kForm as Armor )
+			If ( iCount ) && (kForm as Armor)
+				akActor.RemoveItem( kForm as Armor, iCount, True )
+			EndIf
+			idx += 1
+		EndWhile
+	EndIf
 EndFunction
 
 
@@ -1018,16 +1020,19 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		; Gender restrictions - 2 actors
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
 
-			Int[] uiSlotMask = New Int[9]
-			uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders
-			uiSlotMask[1]  = 0x00008000 ;45  Collar / DD collar
-			uiSlotMask[2] = 0x00040000 ;48  Ankles / DD plugs
-			uiSlotMask[3] = 0x02000000 ;55  Gag
-			uiSlotMask[4] = 0x00004000 ;44  DD Gags
+			Int[] uiSlotMask = New Int[12]
+			uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
+			uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
+			uiSlotMask[2] = 0x00040000 ;48  Ankles / DD plugs (Anal)
+			uiSlotMask[3] = 0x02000000 ;55  Gag / DD Blindfold
+			uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
 			uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
-			uiSlotMask[6] = 0x00800000  ;53  DD Cuffs (Legs)
+			uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
 			uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
-			uiSlotMask[8] = 0x20000000  ;59  DD Cuffs (Arms)
+			uiSlotMask[8] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+			uiSlotMask[9] = 0x00000004 ;32  Spriggan host
+			uiSlotMask[10]= 0x00100000 ;50  DD Gag Straps
+			uiSlotMask[11]= 0x01000000 ;54  DD Plugs (Vaginal)
 
 			Int iFormIndex = uiSlotMask.Length
 			Form kForm
@@ -1036,8 +1041,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			kForm = akTarget.GetWornForm( uiSlotMask[0] ) 
 			if (kForm)
 				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("_SD_nounequip")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
-					SexLabInTags = SexLabInTags + ",Anal"
-					SexLabOutTags = SexLabOutTags + ",Blowjob"
+			;		SexLabInTags = SexLabInTags + ",Anal"
+			;		SexLabOutTags = SexLabOutTags + ",Blowjob"
 				EndIf
 			EndIf
 
@@ -1045,8 +1050,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			kForm = akTarget.GetWornForm( uiSlotMask[2] ) 
 			if (kForm)
 				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousPlug") ) )
-					SexLabInTags = SexLabInTags + ",Oral"
-					SexLabOutTags = SexLabOutTags + ",Anal,Vaginal"
+			;		SexLabInTags = SexLabInTags + ",Oral"
+			;		SexLabOutTags = SexLabOutTags + ",Anal,Vaginal"
 				EndIf
 			EndIf
 
@@ -1055,15 +1060,15 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			kForm = akTarget.GetWornForm( uiSlotMask[3] ) 
 			if (kForm)
 				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("_SD_nounequip")) )
-					SexLabInTags = "Cuddling"
-					SexLabOutTags = SexLabOutTags + ",Oral"
+			;		SexLabInTags = "Cuddling"
+			;		SexLabOutTags = SexLabOutTags + ",Oral"
 				EndIf		
 			EndIf
 			if (kForm)
 				kForm = akTarget.GetWornForm( uiSlotMask[4] ) 
 				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousGag") ) )
-					SexLabInTags = "Cuddling"
-					SexLabOutTags = SexLabOutTags + ",Oral"
+			;		SexLabInTags = "Cuddling"
+			;		SexLabOutTags = SexLabOutTags + ",Oral"
 				EndIf
 			EndIf
 
@@ -1071,8 +1076,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			kForm = akTarget.GetWornForm( uiSlotMask[5] ) 
 			if (kForm)
 				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousBelt") ) )
-					SexLabInTags = SexLabInTags + ",Kissing,Cuddling"
-					SexLabOutTags = SexLabOutTags + ",Anal,Vaginal"
+			;		SexLabInTags = SexLabInTags + ",Kissing,Cuddling"
+			;		SexLabOutTags = SexLabOutTags + ",Anal,Vaginal"
 				EndIf
 			EndIf
 		
@@ -1087,7 +1092,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 					If (speakerGender == 1) ; Mistress and Male slave
 						SexLabInTags = SexLabInTags + ",Cowgirl"
 					ElseIf  (speakerGender == 0) ; Master and Female slave
-						SexLabInTags = SexLabInTags + ",Doggystyle"
+					;	SexLabInTags = SexLabInTags + ",Doggystyle"
 					EndIf
 			EndIf
 
