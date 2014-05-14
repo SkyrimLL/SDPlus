@@ -431,9 +431,11 @@ Function questShutdown()
 	_SDKP_trust_hands.SetValue(1)
 	_SDKP_trust_feet.SetValue(1)
 	; item cleanup
-	funct.removeItemsInList( master, _SDFLP_master_items )
-	funct.removeItemsInList( master, _SDFLP_punish_items )
-	funct.removeItemsInList( master, _SDFLP_sex_items )
+	if (master)
+		funct.removeItemsInList( master, _SDFLP_master_items )
+		funct.removeItemsInList( master, _SDFLP_punish_items )
+		funct.removeItemsInList( master, _SDFLP_sex_items )
+	endif
 	
 	; kill sub quests
 	idx = 0
@@ -468,9 +470,12 @@ Function removeSlaveItems()
 	_SDKP_trust_hands.SetValue(1)
 	_SDKP_trust_feet.SetValue(1)
 
-	funct.removeItemsInList( slave, _SDFLP_sex_items )
-	funct.removeItemsInList( slave, _SDFLP_punish_items )
-	funct.removeItemsInList( slave, _SDFLP_master_items )
+	if (slave)
+		funct.removeItemsInList( slave, _SDFLP_sex_items )
+		funct.removeItemsInList( slave, _SDFLP_punish_items )
+		funct.removeItemsInList( slave, _SDFLP_master_items )
+	endif
+
 	idx = 0
 	While idx < _SDRAP_companions.Length
 		nthActor = _SDRAP_companions[idx].GetReference() as Actor

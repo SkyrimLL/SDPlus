@@ -177,6 +177,7 @@ Event OnInit()
 		kMaster = _SDRAP_master.GetReference() as Actor
 		kSlave = _SDRAP_slave.GetReference() as Actor
 
+		Utility.Wait(5)
 		; Welcome scene to replace rape after defeat
 		Int iRandomNum = Utility.RandomInt(0,100)
 
@@ -199,7 +200,6 @@ EndEvent
 
 State waiting
 	Event OnUpdate()
-		Debug.Trace("XXX-SD-Waiting-OnUpdate()")
 		If ( Self.GetOwningQuest().IsRunning() )
 			distanceAverage = 0
 			GoToState("monitor")
@@ -232,7 +232,6 @@ State monitor
 	EndEvent
 
 	Event OnUpdate()
-		Debug.Trace("XXX-SD-Debug-OnUpdate()-Monitor")
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
 
@@ -243,6 +242,7 @@ State monitor
 		Else
 			distanceAverage = ( distance + distanceAverage ) / 2
 		EndIf
+
 		kCombatTarget = kSlave.GetCombatTarget()
 		bSlaveDetectedByMaster = kSlave.IsDetectedBy(kMaster)
 		bSlaveDetectedByTarget = ( kCombatTarget && kSlave.IsDetectedBy(kCombatTarget) )
@@ -251,7 +251,6 @@ State monitor
 		iCheckdemerits = _SDGVP_demerits.GetValueInt()
 		
 		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead())
-			Debug.Trace("XXX-SD-Debug1")
 			Self.GetOwningQuest().Stop()
 		ElseIf ( _SDGV_leash_length.GetValue() == -10) ; escape trigger in some situations
 		;	If (RandomInt( 0, 100 ) > 80 )
@@ -262,7 +261,6 @@ State monitor
 		;	Self.GetOwningQuest().Stop()
 			_SDGV_leash_length.SetValue(400)
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
-			Debug.Trace("XXX-SD-Debug2")
 			GoToState("waiting")
 		ElseIf ((kSlave.GetParentCell() == kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior()))
 			If (RandomInt( 0, 100 ) > 95 )
@@ -361,8 +359,8 @@ State monitor
 		EndIf
 			
 		If ( Self.GetOwningQuest() && !(Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped()))
-			RegisterForSingleUpdate( fRFSU )
-		EndIf
+            RegisterForSingleUpdate( fRFSU )
+        EndIf
 	EndEvent
 
 	Event OnUpdateGameTime()
