@@ -823,6 +823,15 @@ Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionLis
 
 EndFunction
 
+Function sendCaptiveFollowerAway( Actor akFollower)
+
+	Int iFormIndex = _SD_CaptiveFollowersLocations.length
+
+	(akFollower as ObjectReference).MoveTo(_SD_CaptiveFollowersLocations[Utility.RandomInt(0,iFormIndex)] as ObjectReference)
+
+EndFunction
+
+
 Function stashStolenGoods( Actor akThief, ObjectReference akContainer )
 	ActorBase kThiefBase = akThief.GetActorBase()
 	Int iFormIndex = ( akThief as ObjectReference ).GetNumItems()
@@ -1136,3 +1145,4 @@ Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
 
+ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  

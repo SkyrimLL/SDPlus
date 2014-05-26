@@ -11,9 +11,19 @@ Int gold = slave.GetItemCount( _SDMOP_gold )
 
 slave.RemoveItem(_SDMOP_gold, gold, False, akSpeaker)
 
-Self.GetOwningQuest().ModObjectiveGlobal( -15.0 - 2.0 * (gold as Float) / 100.0 , _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )	
+Int newBuyout =  (_SDGVP_buyout.GetValue() as Int) - gold
 
-If ( Self.GetOwningQuest().ModObjectiveGlobal( gold as Float, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.value ) )
+if (newBuyout <= 0) 
+	newBuyout = 0
+EndIf
+
+_SDGVP_buyout.SetValue(newBuyout )
+
+Self.GetOwningQuest().ModObjectiveGlobal( gold as Float , _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )	
+
+Self.GetOwningQuest().ModObjectiveGlobal( gold as Float, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.value ) 
+
+If (newBuyout == 0 )
 	Self.GetOwningQuest().SetObjectiveDisplayed( 90 )
 EndIf
 

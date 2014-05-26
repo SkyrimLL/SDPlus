@@ -82,7 +82,8 @@ Bool keyPress2
 
 Int iAnimObjTest = 0
 
-
+Int raped = 0
+Int rapeAttempts = 0
 
 ; GetSex()
 ; -1: None
@@ -125,15 +126,33 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 
 	; add option for simple stagger + chance of action
 
-	; Debug.Notification( "You are pinned to the ground...")
+	; Debug.Notification( "You are pinned to the ground... " + raped + " / " + rapeAttempts)
 	; _SDGVP_enslaved.SetValue(1)
 
+	If (StorageUtil.GetIntValue(none, "_SD_iForcedSurrender") ==1) && ( (akAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (akAggressor.GetRace() == falmerRace)) && funct.checkGenderRestriction( akAggressor, akPlayer ) ) && !funct.actorFactionInList( akAggressor, _SDFLP_banned_factions )
 
-	If ( !checkIfSpriggan ( akAggressor ) && funct.actorFactionInList( akAggressor, _SDFL_allowed_creature_sex )  && ( funct.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akAggressor.IsInFaction( _SDFP_humanoidCreatures ) )  && !funct.actorFactionInList( akAggressor, _SDFL_banned_sex ) 
+		StorageUtil.SetIntValue(none, "_SD_iForcedSurrender", 0) 
+		Utility.Wait(4.0) ; if we could know for sure that the player is ragdolling, we could wait for the event sent at the end of ragdoll. --BM
+
+		Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
+		_SDKP_enslave.SendStoryEvent( akLoc = akAggressor.GetCurrentLocation(), akRef1 = akAggressor as Actor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+	
+	ElseIf (Utility.RandomInt(0,100) > 70) && (_SD_dreamQuest.GetStage() != 0) && (raped>=2)
+		; Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
+		; SendModEvent("da_StartRecoverSequence")
+		; Debug.SetGodMode( False )
+		raped = 0
+		_SD_dreamQuest.SetStage(100)
+
+	ElseIf ( !checkIfSpriggan ( akAggressor ) && funct.actorFactionInList( akAggressor, _SDFL_allowed_creature_sex )  && ( funct.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akAggressor.IsInFaction( _SDFP_humanoidCreatures ) )  && !funct.actorFactionInList( akAggressor, _SDFL_banned_sex )   && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
 			; Debug.Notification( "(Rape attempt)")
 
 
 		If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akAggressor) > 0) && (Utility.RandomInt(0,100)>80)
+			_SDSP_spent.Cast(akPlayer, akPlayer)
+			raped = raped + 1
+			rapeAttempts = 0
+
 			Debug.Notification( "You aggressors are blinded by lust...")
 			funct.actorCombatShutdown( akAggressor as Actor )
 			funct.actorCombatShutdown( akPlayer as Actor )
@@ -141,13 +160,35 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 
 			SexLab.QuickStart(SexLab.PlayerRef, akAggressor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 
-			_SDSP_spent.Cast(akPlayer, akPlayer)
 
-			Utility.Wait(10)
 		Else
 			; Debug.Notification( "(Rape attempt failed)")
+			rapeAttempts = rapeAttempts + 1
+		EndIf
+	ElseIf ( !checkIfSpriggan ( akAggressor ) && ( akAggressor.HasKeyword( _SDKP_actorTypeNPC )) )  && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
+			; Debug.Notification( "(Rape attempt)")
+
+
+		If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akAggressor) > 0) && (Utility.RandomInt(0,100)>80)
+			_SDSP_spent.Cast(akPlayer, akPlayer)
+			raped = raped + 1
+			rapeAttempts = 0
+
+			Debug.Notification( "You aggressors are blinded by lust...")
+			funct.actorCombatShutdown( akAggressor as Actor )
+			funct.actorCombatShutdown( akPlayer as Actor )
+			Utility.Wait(2.0)
+
+			SexLab.QuickStart(SexLab.PlayerRef, akAggressor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+
+
+		Else
+			; Debug.Notification( "(Rape attempt failed)")
+			rapeAttempts = rapeAttempts + 1
 
 		EndIf
+	Else
+		rapeAttempts = rapeAttempts + 1
 	EndIf
 
 	Return False
@@ -252,10 +293,10 @@ State monitor
 		Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 15/100 )  
 		Bool isInKillState = funct.actorInKillState( kPlayer, 0.5 )    
 
-		if (isInKillState)  
+		; if (isInKillState)  
 		;	Debug.Notification("You should be dead")
 
-			If (0==1) && (_SD_dreamQuest.GetStage() != 0) && (_SDGVP_config[4].GetValue() == 1) 
+			If (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1) && (_SD_dreamQuest.GetStage() != 0) && (_SDGVP_config[4].GetValue() == 1) 
 				Debug.MessageBox("The Daedric piercing brings you back to your true master...")
 
 				Monitor.SetBlackScreenEffect(false)
@@ -275,13 +316,21 @@ State monitor
 				Game.EnablePlayerControls( abMovement = True )
 				; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
 
+				StorageUtil.SetIntValue(none, "_SD_iForcedDreamworld", 0) 
+
 				Utility.Wait(1.0)
 
 				_SD_dreamQuest.SetStage(100)
+			ElseIf (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1)
+				; StorageUtil.SetIntValue(none, "_SD_iForcedDreamworld", 0) 
+				; Debug.SetGodMode(false) 
+				; kPlayer.EndDeferredKill()
+				; kPlayer.KillEssential(kPlayer)
+
 			EndIf
-		 Else
+		; Else
 		;	Debug.Notification("Not dead yet (Kill state failed)")
-		 EndIf
+		; EndIf
 
 		If ( kPlayer && Self.GetOwningQuest() )
 			RegisterForSingleUpdate( 0.1 )
@@ -353,85 +402,76 @@ State monitor
 
 				Int IButton = _SD_safetyMenu.Show()
 
+				Debug.Notification("You cling to your last breath...")
+				Monitor.SetBlackScreenEffect(false)
+				Monitor.SetPlayerControl(true)
+
+
+				Game.SetPlayerAIDriven(false)
+				Game.SetInCharGen(false, false, false)
+				; Game.EnablePlayerControls() ; just in case	
+				Game.EnablePlayerControls( abMovement = True )
+
+				; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
+
+				; SendModEvent("da_UpdateBleedingDebuff")
+				; SendModEvent("da_EndNearDeathDebuff")	
+
+				Debug.SetGodMode( False )
+
 				If (isInKWeakenedState)
-					Debug.Notification("You cling to your last breath...")
-					Monitor.SetBlackScreenEffect(false)
-					Monitor.SetPlayerControl(true)
+
+					If IButton == 0  
+						; Surrender to aggressor	
+						StorageUtil.SetIntValue(none, "_SD_iForcedSurrender", 1)	
 
 
-					Game.SetPlayerAIDriven(false)
-					Game.SetInCharGen(false, false, false)
-					; Game.EnablePlayerControls() ; just in case	
-					Game.EnablePlayerControls( abMovement = True )
-
-					; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
-
-					; SendModEvent("da_UpdateBleedingDebuff")
-					; SendModEvent("da_EndNearDeathDebuff")	
-
-					If IButton == 0  ; Show the thing.		
-						if (Game.GetPlayer()).IsInCombat()		
-							; Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
-							Monitor.BufferDamageReceived(1.0)  ; restore all hp		
-							Utility.Wait(1.0)
-							; kPlayer.EndDeferredKill()
-						EndIf
-						
-						; Monitor.GoToState("")
-						; Debug.SetGodMode( True )
-						; kPlayer.EndDeferredKill()
-						; Debug.SetGodMode( False )
-
-						;if (Utility.RandomInt(0,100) > 60)	
-						;	SendModEvent("da_StartSecondaryQuest", "Both")
-						;	SendModEvent("da_StartRecoverSequence")
-						;EndIf
 					ElseIf IButton == 1
+						; Pray to Sanguine
 
 						; Monitor.GoToState("")
 						; Debug.SetGodMode( True )
 						; kPlayer.EndDeferredKill()
 						
 						If (Utility.RandomInt(0,100) > 80) && (_SD_dreamQuest.GetStage() != 0) 
-							; Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
-							; SendModEvent("da_StartRecoverSequence")
-							; Debug.SetGodMode( False )
+							; Send PC to Dreamworld
 
 							_SD_dreamQuest.SetStage(100)
 
 						ElseIf (Utility.RandomInt(0,100) > 40)	
+							; Send PC some help
+
 							SendModEvent("da_StartSecondaryQuest", "Both")
 							SendModEvent("da_StartRecoverSequence")
-						ElseIf (Utility.RandomInt(0,100) > 30)	
-							Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
-							; Debug.SetGodMode( False )
 
-							; SendModEvent("da_StartSecondaryQuest", "Both")
-							; SendModEvent("da_StartRecoverSequence")
+						ElseIf (Utility.RandomInt(0,100) > 30)	
+							; restore all hp	
+							Monitor.BufferDamageReceived(9999.0)  	
+
 						Else
 							Debug.Notification("Your prayer goes unanswered...")
 						EndIf
+					ElseIf IButton == 2
+						; Resist
+
 					EndIf
 				Else
 					Debug.Notification("You still have life in you...")
 
-					Monitor.SetBlackScreenEffect(false)
-					Monitor.SetPlayerControl(true)
-					Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
-					Monitor.GoToState("")
-					Debug.SetGodMode(false)
-
-					Game.SetPlayerAIDriven(false)
-					Game.SetInCharGen(false, false, false)
-					; Game.EnablePlayerControls() ; just in case	
-					Game.EnablePlayerControls( abMovement = True )
-					; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
 				EndIf
 			EndIf
  
 		EndIf
 
 	EndEvent
+
+	Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
+	  if (akTarget != Game.GetPlayer())
+
+	    rapeAttempts = 0
+
+	  endIf
+	endEvent
 
 	Event OnMagicEffectApply(ObjectReference akCaster, MagicEffect akEffect)
 		; Old trigger - disabled for compatibility with Death Alternative
@@ -443,10 +483,10 @@ State monitor
 		; Debug.Notification("[_sdras_player] OnHit - Aggressor:" + akAggressor)
 
 		; Cap on kill state for better integration with DA (avoid immortal / frozen state)
-		Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 15/100 )  ; funct.actorInWeakenedState( kPlayer, _SDGVP_config[2].GetValue()/100 )
+		Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 5/100 )  ; funct.actorInWeakenedState( kPlayer, _SDGVP_config[2].GetValue()/100 )
 		Bool isInKillState = funct.actorInKillState( kPlayer, 0.5 )   ; funct.actorInKillState( 
 
-		if (isInKillState) && checkForEnslavement( akAggressor as Actor, kPlayer as Actor, False )
+		if (isInKWeakenedState) && checkForEnslavement( akAggressor as Actor, kPlayer as Actor, False )
 			; Chance of rape on kill state
 		Else
 			; Debug.Notification("Not dead yet (Kill state failed)")
@@ -489,3 +529,5 @@ FormList Property _SDFL_allowed_creature_sex  Auto
 SPELL Property Calm  Auto  
 daymoyl_MonitorScript 		Property Monitor 		Auto
 Message Property _SD_safetyMenu  Auto  
+
+
