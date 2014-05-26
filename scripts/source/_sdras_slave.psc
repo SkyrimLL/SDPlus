@@ -123,10 +123,13 @@ EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	If ( _SDFLP_banned_locations.HasForm( akNewLoc ) )
+		Debug.Trace("[_sdras_slave] Banned location - Stop enslavement")
 		Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
 	If ( _SDFLP_banned_worldspaces.HasForm( kSlave.GetWorldSpace() ) )
+
+		Debug.Trace("[_sdras_slave] Banned worldspace - Stop enslavement")
 		Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
@@ -134,6 +137,7 @@ EndEvent
 
 Event OnAnimationEvent(ObjectReference akSource, string asEventName)
 	If ( akSource == Self.GetReference() && asEventName == "weaponDraw" && Self.GetOwningQuest().GetStage() >= 90 )
+		Debug.Trace("[_sdras_slave] Weapon draw - Stop enslavement")
 		Self.GetOwningQuest().Stop()			
 	EndIf
 EndEvent
@@ -158,6 +162,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	
 	If ( akItemReference == _SDRAP_masters_key.GetReference() )
 		; escape
+		Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
 		kSlave.RemoveItem(akItemReference, aiItemCount)
 		Self.GetOwningQuest().Stop()
 		Utility.Wait(2.0)
@@ -177,6 +182,8 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				_SDFP_bindings_health -= fDamage
 				enslavement.ufBindingsHealth = _SDFP_bindings_health
 				If ( _SDFP_bindings_health < 0.0 && !_SDGVP_state_caged.GetValueInt() )
+					Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
+
 					Self.GetOwningQuest().Stop()
 					Return
 				Else
@@ -185,6 +192,8 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 			EndIf
 			fLastEscape = GetCurrentRealTime()
 		Else
+			Debug.Trace("[_sdras_slave] Bounds removed - Stop enslavement")
+
 			Self.GetOwningQuest().Stop()
 		EndIf
 	EndIf
@@ -520,6 +529,8 @@ State monitor
 
 		If ( akItemReference == _SDRAP_masters_key.GetReference() )
 			; escape
+			Debug.Trace("[_sdras_slave] Master key stolen - Stop enslavement")
+
 			Self.GetOwningQuest().Stop()
 			kSlave.RemoveItem(akItemReference, aiItemCount)
 			_SDKP_trust_hands.SetValue(1) 
@@ -566,6 +577,8 @@ State monitor
 
 					_SDFP_bindings_health -= fDamage
 					If ( _SDFP_bindings_health < 0.0 )
+						Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
+
 						Self.GetOwningQuest().Stop()
 						Return
 					Else
@@ -703,6 +716,8 @@ State escape
 
 				Self.GetOwningQuest().ModObjectiveGlobal( 3.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 			ElseIf ( GetCurrentRealTime() >= fEscapeTime )
+				Debug.Trace("[_sdras_slave] Escaped - Stop enslavement")
+
 				Self.GetOwningQuest().Stop()
 				Return
 				EndIf

@@ -5,7 +5,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 
 	Debug.Trace("[SD DA integration] QuestCondition - Dreamworld")
 	
-	if ( Utility.RandomInt(0,100)>50 ) && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (_SDGVP_enslaved.GetValue() == 0)
+	if (_SDGVP_sanguine_blessing.GetValue() > 0)  && (_SDGVP_enslaved.GetValue() == 0)
 
 		return IsStopped()
 	else

@@ -111,11 +111,10 @@ Function Stage_100()
 	Actor akMaster = alias_theBandit.GetRef() as Actor
 	
 	Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
-	_SDGV_leash_length.SetValue(400)
 	_SDKP_enslave.SendStoryEvent( akLoc = akMaster.GetCurrentLocation(), akRef1 = akMaster as Actor, akRef2 = akPlayer, aiValue1 = 0, aiValue2 = 0)
 endFunction
 
 
 Keyword Property _SDKP_enslave  Auto
-GlobalVariable Property _SDGV_leash_length  Auto
+
 

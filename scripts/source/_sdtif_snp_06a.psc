@@ -11,6 +11,14 @@ Int gold = slave.GetItemCount( _SDMOP_gold )
  
 Debug.Notification("You have no use for gold, slave..")
 slave.RemoveItem(_SDMOP_gold, gold, False, akSpeaker)
+
+Int newBuyout =  (_SDGVP_buyout.GetValue() as Int) - gold
+
+if (newBuyout <= 0) 
+	newBuyout = 0
+EndIf
+
+_SDGVP_buyout.SetValue(newBuyout )
  
 akSpeaker.ShowGiftMenu( True )
 ;END CODE

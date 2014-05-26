@@ -1,4 +1,5 @@
 Scriptname _SDRAS_companion extends ReferenceAlias Conditional
+_SDQS_functions Property funct  Auto
 
 ReferenceAlias Property _SDRAP_master  Auto
 
@@ -92,7 +93,7 @@ State monitor
 EndState
 
 Function enslaveCompanion( Actor kActor)
-	Debug.Notification("[_sdras_companion] Your follower has been ensvlaved.")
+	Debug.Notification("[_sdras_companion] Your follower has been enslaved.")
 		bEnslaved = True
 
 		kActor.RemoveFromFaction( _SDFP_slaverResistance )
@@ -114,6 +115,13 @@ Function enslaveCompanion( Actor kActor)
 
 		DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
 		;kActor.playIdle(OffsetBoundStandingStart)
+
+		If (Utility.RandomInt(0,100)>80)
+			funct.sendCaptiveFollowerAway(kActor)
+
+			Debug.MessageBox("Your follower is dragged away in bondage...")
+		EndIf
+
 		kActor.EvaluatePackage()
 EndFunction
 

@@ -17,6 +17,7 @@ GlobalVariable Property _SDGVP_stats_enslaved  Auto
 GlobalVariable Property _SDGVP_state_joined  Auto  
 GlobalVariable Property _SDKP_trust_hands Auto
 GlobalVariable Property _SDKP_trust_feet Auto
+GlobalVariable Property _SDGV_leash_length Auto
 
 SexLabFramework Property SexLab  Auto  
 
@@ -110,6 +111,12 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			kSlave.UnequipItem( klHand )
 		EndIf
 
+		Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
+
+		If ( kSlave.IsSneaking() )
+			kSlave.StartSneaking()
+		EndIf
+	
 		kSlave.StopCombatAlarm()
 		kSlave.StopCombat()
 		Game.ForceThirdPerson()
@@ -137,6 +144,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		funct.removeItemsInList( kSlave, _SDFLP_sex_items )
 		funct.removeItemsInList( kSlave, _SDFLP_punish_items )
 		; funct.removeItemsInList( akPlayer, _SDFLP_master_items )
+		_SDGV_leash_length.SetValue(400)
 
 		; Transfer of inventory
 		If ( aiValue2 == 0 )
@@ -199,7 +207,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		Utility.Wait(2.0)
 
 
-		Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )
+		; Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )
 
 		;Debug.Trace("_SDQS_enslavement:: start sex 0 == " + aiValue1)
 		If ( aiValue1 == 0 && !kMaster.GetCurrentScene() && !kSlave.GetCurrentScene() )

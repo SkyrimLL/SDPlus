@@ -81,6 +81,8 @@ Float fRFSUGT = 1.0
 
 Event OnDeath(Actor akKiller)
 	; escape
+	Debug.Trace("[_sdras_master] Master dead - Stop enslavement")
+
 	Self.GetOwningQuest().Stop()
 	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && player.checkGenderRestrictions( akKiller, kSlave ) ) && !funct.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && funct.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
 		; new master
@@ -163,6 +165,8 @@ Event OnGainLOS(Actor akViewer, ObjectReference akTarget)
 			If ( _SDGVP_demerits.GetValue() > -5.0 )
 				GoToState("combat")
 				kMaster.SetAlert()
+				Debug.Trace("[_sdras_master] Armed slave - Stop enslavement")
+
 				Self.GetOwningQuest().Stop()
 			Else
 			
@@ -251,6 +255,8 @@ State monitor
 		iCheckdemerits = _SDGVP_demerits.GetValueInt()
 		
 		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead())
+			Debug.Trace("[_sdras_master] Master dead or disabled - Stop enslavement")
+
 			Self.GetOwningQuest().Stop()
 		ElseIf ( _SDGV_leash_length.GetValue() == -10) ; escape trigger in some situations
 		;	If (RandomInt( 0, 100 ) > 80 )
@@ -292,6 +298,8 @@ State monitor
 				If ( bSlaveDetectedByTarget )
 					kCombatTarget.StartCombat( kSlave )
 				EndIf
+				Debug.Trace("[_sdras_master] Slave attacking - Stop enslavement")
+
 				Self.GetOwningQuest().Stop()
 			Else
 				funct.actorCombatShutdown( kSlave )
@@ -397,10 +405,15 @@ State monitor
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 		If ( akAggressor == kSlave )
-			bAttackedBySlave = True
-			kMaster.SetLookAt( kSlave )
-			kMaster.StartCombat( kSlave )
-			Self.GetOwningQuest().Stop()
+			; Disabled for now - seems to conflict with other mods 
+			; Handle attacks by slave differently
+
+			; bAttackedBySlave = True
+			; kMaster.SetLookAt( kSlave )
+			; kMaster.StartCombat( kSlave )
+			; Debug.Trace("[_sdras_master] Master hit by slave - Stop enslavement")
+
+			; Self.GetOwningQuest().Stop()
 		EndIf
 	EndEvent
 EndState
@@ -422,6 +435,8 @@ State search
 	EndEvent
 
 	Event OnDeath(Actor akKiller)
+		Debug.Trace("[_sdras_master] Master death event - Stop enslavement")
+
 		Self.GetOwningQuest().Stop()
 	EndEvent
 
@@ -430,6 +445,8 @@ State search
 		EndWhile
 		
 		If ( !kMaster || kMaster.IsDisabled() )
+			Debug.Trace("[_sdras_master] Master dead in search - Stop enslavement")
+
 			Self.GetOwningQuest().Stop()
 		ElseIf (( kMaster.GetDistance( kSlave ) <= _SDGV_leash_length.GetValue() )  && ( _SDGV_leash_length.GetValue() > 0))
 			GoToState("monitor")
@@ -459,6 +476,8 @@ State combat
 		EndWhile
 
 		If ( !kMaster || kMaster.IsDisabled() )
+			Debug.Trace("[_sdras_master] Master dead in combat- Stop enslavement")
+
 			Self.GetOwningQuest().Stop()
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			GoToState("waiting")
@@ -487,6 +506,8 @@ State caged
 		EndWhile
 		
 		If ( !kMaster || kMaster.IsDisabled() )
+			Debug.Trace("[_sdras_master] Master dead in caged - Stop enslavement")
+
 			Self.GetOwningQuest().Stop()
 		ElseIf ( !_SDGVP_state_caged.GetValueInt() )
 			GoToState("monitor")

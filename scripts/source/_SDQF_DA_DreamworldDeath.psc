@@ -1,30 +1,10 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 6
-Scriptname _sdqf_da_dreamworldblackout Extends Quest Hidden
-
-;BEGIN ALIAS PROPERTY theLocEdge
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_theLocEdge Auto
-;END ALIAS PROPERTY
+Scriptname _SDQF_DA_DreamworldDeath Extends Quest Hidden
 
 ;BEGIN ALIAS PROPERTY theLocMapMarker
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias_theLocMapMarker Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY theBandit
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_theBandit Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY theLocation
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias_theLocation Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY theLocOutside
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_theLocOutside Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY thePlayer
@@ -32,15 +12,35 @@ ReferenceAlias Property Alias_theLocOutside Auto
 ReferenceAlias Property Alias_thePlayer Auto
 ;END ALIAS PROPERTY
 
+;BEGIN ALIAS PROPERTY theBandit
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias_theBandit Auto
+;END ALIAS PROPERTY
+
 ;BEGIN ALIAS PROPERTY theMarker
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias_theMarker Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
+;BEGIN ALIAS PROPERTY theLocOutside
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias_theLocOutside Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY theLocEdge
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias_theLocEdge Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY theLocation
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias_theLocation Auto
+;END ALIAS PROPERTY
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
 ;BEGIN CODE
-Stage_0()
+Stage_10()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -53,10 +53,10 @@ Stage_100()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-Stage_10()
+Stage_0()
 ;END CODE
 EndFunction
 ;END FRAGMENT
