@@ -3,7 +3,7 @@ Scriptname _SDRAS_master extends ReferenceAlias Conditional
 Import Utility
 
 SexLabFramework Property SexLab  Auto  
-
+daymoyl_MonitorVariables 	Property Variables Auto
 _SDQS_functions Property funct  Auto
 _SDQS_snp Property snp Auto
 _SDQS_enslavement Property enslavement  Auto
@@ -92,6 +92,12 @@ Event OnDeath(Actor akKiller)
 		; New enslavement - changing ownership
 		_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
 
+	EndIf
+EndEvent
+
+Event OnEnterBleedout()
+	if (kMaster.IsEssential()) && (Variables.FollowerSetting==0)
+		Self.GetOwningQuest().Stop()
 	EndIf
 EndEvent
 
@@ -254,7 +260,7 @@ State monitor
 		bTargetAllied = ( kCombatTarget && kCombatTarget != kMaster && funct.actorFactionInList(kCombatTarget, _SDFLP_forced_allied) )
 		iCheckdemerits = _SDGVP_demerits.GetValueInt()
 		
-		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead())
+		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			Debug.Trace("[_sdras_master] Master dead or disabled - Stop enslavement")
 
 			Self.GetOwningQuest().Stop()
