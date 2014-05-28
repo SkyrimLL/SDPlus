@@ -600,9 +600,11 @@ Function removeItemsInList( Actor akActor, FormList akItemList )
 		While idx < akItemList.GetSize()
 			kForm = akItemList.GetAt(idx) 
 			; nthArmor = kForm as Armor
-			iCount = akActor.GetItemCount( kForm as Armor )
-			If ( iCount ) && (kForm as Armor)
-				akActor.RemoveItem( kForm as Armor, iCount, True )
+			if (kForm)
+				iCount = akActor.GetItemCount( kForm as Armor )
+				If ( iCount ) && (kForm as Armor)
+					akActor.RemoveItem( kForm as Armor, iCount, True )
+				EndIf
 			EndIf
 			idx += 1
 		EndWhile

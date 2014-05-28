@@ -110,12 +110,16 @@ EndFunction
 
 Bool Function checkIfSpriggan ( Actor akActor )
 	Bool bIsSpriggan = False
-	Int index = 0
-	Int size = _SDFLP_spriggan_factions.GetSize()
-	While ( !bIsSpriggan && index < size )
-		bIsSpriggan = akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")
-		index += 1
-	EndWhile
+
+	if (akActor)
+		Int index = 0
+		Int size = _SDFLP_spriggan_factions.GetSize()
+		While ( !bIsSpriggan && index < size )
+			bIsSpriggan = akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")
+			index += 1
+		EndWhile
+	EndIf
+	
 	Return bIsSpriggan
 EndFunction
 
