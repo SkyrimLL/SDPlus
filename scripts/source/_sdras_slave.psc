@@ -99,9 +99,9 @@ Form kAtIdx
 Float fTime
 
 Bool[] uiSlotDevice
-Int iWristsDevice = 0 ;33  Bindings
+Int iWristsDevice = 0 ;59  Bindings
 Int iCollarDevice = 1 ;45  Collar
-Int iAnklesDevice = 2 ;48  Ankles
+Int iAnklesDevice = 2 ;53  Ankles
 Int iGagDevice = 4 ;44  DD Gag
 Form fGagDevice = None
 
@@ -223,8 +223,8 @@ State monitor
 		Int[] uiSlotMask = New Int[12]
 		uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
 		uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-		uiSlotMask[2] = 0x00040000 ;48  Ankles / DD plugs (Anal)
-		uiSlotMask[3] = 0x02000000 ;55  Gag / DD Blindfold
+		uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
+		uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
 		uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
 		uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
 		uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
