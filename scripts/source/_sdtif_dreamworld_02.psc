@@ -6,8 +6,6 @@ Scriptname _sdtif_dreamworld_02 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Debug.Notification( "You want to leave so soon?" )
-
 Game.ForceThirdPerson()
 Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
 

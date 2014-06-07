@@ -619,18 +619,19 @@ Bool Function isPunishmentEquiped (  Actor akActor )
 	Else
 
 		Int[] uiSlotMask = New Int[12]
-		uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders
-		uiSlotMask[1]  = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-		uiSlotMask[2] = 0x00040000 ;48  Ankles / DD plugs (Anal)
-		uiSlotMask[3] = 0x02000000 ;55  Gag / DD Blindfold
+		uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
+		uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
+		uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
+		uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
 		uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
 		uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
-		uiSlotMask[6] = 0x00800000  ;53  DD Cuffs (Legs)
+		uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
 		uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
-		uiSlotMask[8] = 0x20000000  ;59  DD Armbinder / DD Cuffs (Arms)
-		uiSlotMask[9]  = 0x00000004 ;32  Spriggan host
-		uiSlotMask[10]  = 0x00100000 ;50  DD Gag Straps
-		uiSlotMask[11]  = 0x01000000 ;54  DD Plugs (Vaginal)
+		uiSlotMask[8] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+		uiSlotMask[9] = 0x00000004 ;32  Spriggan host
+		uiSlotMask[10]= 0x00100000 ;50  DD Gag Straps
+		uiSlotMask[11]= 0x01000000 ;54  DD Plugs (Vaginal)
+
 
 		Int iFormIndex = uiSlotMask.Length
 		Bool bDeviousDeviceEquipped = False
@@ -1034,8 +1035,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			Int[] uiSlotMask = New Int[12]
 			uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
 			uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-			uiSlotMask[2] = 0x00040000 ;48  Ankles / DD plugs (Anal)
-			uiSlotMask[3] = 0x02000000 ;55  Gag / DD Blindfold
+			uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
+			uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
 			uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
 			uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
 			uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
@@ -1044,6 +1045,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			uiSlotMask[9] = 0x00000004 ;32  Spriggan host
 			uiSlotMask[10]= 0x00100000 ;50  DD Gag Straps
 			uiSlotMask[11]= 0x01000000 ;54  DD Plugs (Vaginal)
+
 
 			Int iFormIndex = uiSlotMask.Length
 			Form kForm
@@ -1124,8 +1126,11 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				sslThreadModel Thread = SexLab.NewThread()
 				Thread.AddActor(akTarget, true) ; // IsVictim = true
 				Thread.AddActor(akSpeaker)
-				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
-				Thread.StartThread()
+				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags);
+				If (animations != None)
+					Thread.SetAnimations(animations)
+					Thread.StartThread()
+				EndIf
 
 			EndIf
 		Else

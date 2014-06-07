@@ -10,7 +10,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 
 	Debug.Trace("[SD DA integration] QuestCondition - Spriggan")
 	
-	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) &&  ( ((akAggressor.GetRace() == sprigganRace) || (akAggressor.IsInFaction(SprigganFaction  )) )&& !(akPlayer as Form).HasKeywordString("_SD_infected") ) 
+	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) &&  ( ((akAggressor.GetRace() == sprigganRace) || (akAggressor.IsInFaction(SprigganFaction  )) )&& !(akPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(Game.GetPlayer(), "SacrSpriggans_iSprigganInfected") != 1) ) 
 		Debug.Trace("[SD DA integration] QuestCondition - Spriggan - Passed")
 		return IsStopped()
 	else

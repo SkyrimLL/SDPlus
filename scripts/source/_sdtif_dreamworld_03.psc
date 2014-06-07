@@ -6,8 +6,6 @@ Scriptname _sdtif_dreamworld_03 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Debug.Notification( "We are just getting started!" )
-
 Game.ForceThirdPerson()
 Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
 
