@@ -60,7 +60,7 @@ EndFunction
 ; position update
 Function updatePos( Actor akActorM, Actor akActorF, Bool abFlip = False )
 ;HACK: position handled by sexlab	
-;_SDFP_distance = funct.syncActorPosition ( akActorM, akActorF, config._SDFP_offset_x[ _SDUIP_position  ], config._SDFP_offset_y[ _SDUIP_position  ], config._SDFP_offset_z[ _SDUIP_position ], config._SDBP_flip[ _SDUIP_position ], abFlip )
+
 EndFunction
 
 ; aiValue1 = scene

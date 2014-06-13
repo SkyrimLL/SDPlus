@@ -1,6 +1,7 @@
 Scriptname _SDMES_bound extends activemagiceffect  
 { USED }
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_constraints Property fctConstraints  Auto
 
 ReferenceAlias Property _SDRAP_master  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto  
@@ -20,6 +21,10 @@ ObjectReference kMaster
 Float fRFSU = 0.1
 
 Event OnUpdate()
+	If (!kMaster) || (!kTarget)
+		Return
+	EndIf
+
 	If ( kTarget.GetEquippedWeapon() )
 		kTarget.UnequipItem( kTarget.GetEquippedWeapon(), false, True )
 		kTarget.RemoveItem( kTarget.GetEquippedWeapon(), 1, True )
@@ -41,10 +46,10 @@ Event OnUpdate()
 
 	If ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction))
 		If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer )
-			funct.togglePlayerControlsOff()
+			fctConstraints.togglePlayerControlsOff()
 		EndIf
 
-		If ( kMaster && kTarget.GetDistance( kMaster ) < 512 && kTarget.GetAnimationVariableFloat("Speed") == 0 )
+		If (1 == 0) && ( kMaster && kTarget.GetDistance( kMaster ) < 512 && kTarget.GetAnimationVariableFloat("Speed") == 0 )  ; Automatic kneeling disabled for now
 			If ( _SDGVP_demerits.GetValue() <= _SDGVP_demerits_join.GetValueInt() )
 				kTarget.PlayIdle( _SDIAP_bound[0] )
 			ElseIf ( _SDGVP_demerits.GetValue() < -10 )
@@ -70,7 +75,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	kMaster = _SDRAP_master.GetReference() as ObjectReference
 
 	If ( kTarget == kPlayer )
-		funct.togglePlayerControlsOff()
+		fctConstraints.togglePlayerControlsOff()
 	EndIf
 	akTarget.PlayIdle( _SDIAP_bound[0] )
 
@@ -83,7 +88,7 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		Debug.SendAnimationEvent(kTarget, "IdleForceDefaultState")
 	endIf
 	If ( kTarget == kPlayer )
-		funct.togglePlayerControlsOff( False )
+		fctConstraints.togglePlayerControlsOff( False )
 	EndIf
 	kTarget.PlayIdle( _SDIAP_reset )	
 EndEvent

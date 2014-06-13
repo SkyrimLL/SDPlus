@@ -1,6 +1,8 @@
 Scriptname _SDQS_whore extends Quest  
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+
 SexLabFramework property SexLab auto
 
 FormList Property _SDFLP_forced_allied  Auto  
@@ -49,7 +51,7 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 			bRemoved = True
 			If ( !_SDORP_queue[iIdx].GetCurrentScene() && _SDORP_queue[iIdx].GetParentCell() == akWhore.GetParentCell() )
-				If ( _SDQP_enslavement.IsRunning() && funct.actorFactionInList( _SDORP_queue[iIdx] as Actor, _SDFLP_forced_allied ) )
+				If ( _SDQP_enslavement.IsRunning() && fctFactions.actorFactionInList( _SDORP_queue[iIdx] as Actor, _SDFLP_forced_allied ) )
 					_SDQP_enslavement.ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 				EndIf
 			

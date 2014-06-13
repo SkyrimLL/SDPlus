@@ -123,6 +123,8 @@ Function positionVictims( Int aiStage )
 	kImperialMan = _SDRAP_imperial_man.GetReference() as Actor
 	kEisheth = _SDRAP_eisheth.GetReference() as Actor
 
+	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
+
 
 	kDreamer.StopCombatAlarm()
 	kDreamer.StopCombat()
@@ -203,6 +205,19 @@ Function positionVictims( Int aiStage )
 	kNordGirl.MoveToMyEditorLocation()
 	kImperialMan.MoveToMyEditorLocation()
 	kSanguine.MoveToMyEditorLocation()
+
+	if (Utility.RandomInt(0,100) > 80)
+
+		kDremoraChallenger.MoveToMyEditorLocation()
+		kDremoraChallenger.enable()
+
+		if (kDremoraChallenger.IsDead() )
+			kDremoraChallenger.Resurrect()
+		EndIf
+	Else
+		kDremoraChallenger.disable()
+
+	EndIf
 
 	slaUtil.SetActorExhibitionist(kSanguine, True)
       slaUtil.UpdateActorExposureRate(kSanguine, 10.0)
@@ -292,3 +307,5 @@ Faction Property _SDP_BunkhouseFaction  Auto
 
 GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_enslavedSpriggan Auto
+
+ObjectReference Property _SD_DremoraChallenger  Auto  

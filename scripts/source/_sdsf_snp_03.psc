@@ -2,11 +2,30 @@
 ;NEXT FRAGMENT INDEX 86
 Scriptname _sdsf_snp_03 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_68
-Function Fragment_68()
+;BEGIN FRAGMENT Fragment_32
+Function Fragment_32()
 ;BEGIN CODE
-snp._SDUIP_phase = 1
+snp._SDUIP_phase = -1
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+
+Debug.Notification("Now get out of my sight slave. [punishment end]")
+Actor female = _SDRAP_female.GetReference() as Actor
+
+_SDGVP_trust_hands.SetValue(0)
+_SDGVP_trust_feet.SetValue(0)
+
+;funct.toggleActorClothing ( male, False )
+; funct.toggleActorClothing ( female, False )
+
+Game.EnablePlayerControls( abMovement = True )
+Game.SetPlayerAIDriven( False )
+
+Game.FadeOutGame(True, True, 3.0, 2.0)
+Utility.Wait(2)
+Game.FadeOutGame(False, True, 15.0, 5.0)
+
+_SDGVP_snp_busy.SetValue(-1)
+; Self.GetowningQuest().Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -24,32 +43,10 @@ Game.FadeOutGame(False, True, 15.0, 5.0)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
+;BEGIN FRAGMENT Fragment_79
+Function Fragment_79()
 ;BEGIN CODE
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(3)
-
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-Debug.Notification("This is going to hurt! [punishment start]")
-
-Actor female = _SDRAP_female.GetReference() as Actor
-Actor male = _SDRAP_male.GetReference() as Actor
-ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
-
-marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
-
-; _SDGVP_trust_hands.SetValue(1)
-; _SDGVP_trust_feet.SetValue(1)
-
-;funct.toggleActorClothing ( male, False )
-funct.toggleActorClothing ( female, True )
-
-; female.UnequipAll()
-
-Game.FadeOutGame(True, True, 3.0, 2.0)
-Utility.Wait(2)
-Game.FadeOutGame(False, True, 15.0, 5.0)
+Game.SetPlayerAIDriven()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -108,38 +105,41 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_32
-Function Fragment_32()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-snp._SDUIP_phase = -1
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(3)
+
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+Debug.Notification("This is going to hurt! [punishment start]")
 
-Debug.Notification("Now get out of my sight slave. [punishment end]")
 Actor female = _SDRAP_female.GetReference() as Actor
+Actor male = _SDRAP_male.GetReference() as Actor
+ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 
-_SDGVP_trust_hands.SetValue(0)
-_SDGVP_trust_feet.SetValue(0)
+marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
+
+; _SDGVP_trust_hands.SetValue(1)
+; _SDGVP_trust_feet.SetValue(1)
 
 ;funct.toggleActorClothing ( male, False )
-; funct.toggleActorClothing ( female, False )
+; funct.toggleActorClothing ( female, True )
 
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
+; female.UnequipAll()
 
 Game.FadeOutGame(True, True, 3.0, 2.0)
 Utility.Wait(2)
 Game.FadeOutGame(False, True, 15.0, 5.0)
-
-_SDGVP_snp_busy.SetValue(-1)
-; Self.GetowningQuest().Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_79
-Function Fragment_79()
+;BEGIN FRAGMENT Fragment_68
+Function Fragment_68()
 ;BEGIN CODE
-Game.SetPlayerAIDriven()
+snp._SDUIP_phase = 1
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -2,6 +2,7 @@ Scriptname _SDQS_crime extends Quest
 
 Import Utility
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_constraints Property fctConstraints  Auto
 
 GlobalVariable Property _SDGVP_punishments  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto  
@@ -41,8 +42,8 @@ Event OnStoryCrimeGold(ObjectReference akVictim, ObjectReference akCriminal, For
 	kSlave = _SDRAP_slave.GetReference() as Actor
 
 	If ( akFaction && akCriminal as Actor == kSlave )
-		funct.actorCombatShutdown( akVictim as Actor )
-		funct.actorCombatShutdown( kSlave )
+		fctConstraints.actorCombatShutdown( akVictim as Actor )
+		fctConstraints.actorCombatShutdown( kSlave )
 		
 		storyStartTime = GetCurrentRealTime()
 
