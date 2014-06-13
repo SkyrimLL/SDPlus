@@ -3,6 +3,11 @@ Scriptname _SDRAS_player extends ReferenceAlias
 Import Utility
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_constraints Property fctConstraints  Auto
+_SDQS_fcts_inventory Property fctInventory  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
+
 _SDQS_config Property config Auto
 _SDQS_snp Property snp Auto
 
@@ -84,29 +89,7 @@ Int iAnimObjTest = 0
 
 Int raped = 0
 Int rapeAttempts = 0
-
-; GetSex()
-; -1: None
-; 0: Male
-; 1: Female
-; _SDGVP_config[3] - _SD_config_genderRestrictions
-; 0: None
-; 1: Same
-; 2: Opposite
-Bool Function checkGenderRestrictions( Actor akAggressor, Actor akPlayer )
-	Bool bSameSex           = ( akPlayer.GetLeveledActorBase().GetSex() == akAggressor.GetLeveledActorBase().GetSex() )
-	Int iConfigSex          = _SDGVP_config[3].GetValueInt()
-	Bool bCheckOk           = ( ( iConfigSex == 0 ) || ( iConfigSex == 1 && bSameSex ) || ( iConfigSex == 2 && !bSameSex ) )
-	Bool bNoGenderPlayer    = ( akPlayer.GetLeveledActorBase().GetSex() == -1 )
-	Bool bNoGenderAggressor = ( akAggressor.GetLeveledActorBase().GetSex() == -1 )
-	Bool bNoGender          = ( bNoGenderPlayer || bNoGenderAggressor )
-	; Debug.Trace("_SD::checkGenderRestrictions bSameSex:" + bSameSex + " iConfigSex: 0=N, 1=S, 2=O: " + iConfigSex + " bCheckOk:" + bCheckOk + " bNoGender:" + bNoGender)
-	If ( bNoGender )
-		Debug.Trace("	_SD::bNoGender akPlayer:" + bNoGenderPlayer)
-		Debug.Trace("	_SD::bNoGender akAggressor:" + bNoGenderAggressor)
-	EndIf
-	Return bCheckOk
-EndFunction
+ 
 
 Bool Function checkIfSpriggan ( Actor akActor )
 	Bool bIsSpriggan = False
@@ -133,7 +116,7 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 	; Debug.Notification( "You are pinned to the ground... " + raped + " / " + rapeAttempts)
 	; _SDGVP_enslaved.SetValue(1)
 
-	If (StorageUtil.GetIntValue(none, "_SD_iForcedSurrender") ==1) && ( (akAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (akAggressor.GetRace() == falmerRace)) && funct.checkGenderRestriction( akAggressor, akPlayer ) ) && !funct.actorFactionInList( akAggressor, _SDFLP_banned_factions )
+	If (StorageUtil.GetIntValue(none, "_SD_iForcedSurrender") ==1) && ( (akAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (akAggressor.GetRace() == falmerRace)) && funct.checkGenderRestriction( akAggressor, akPlayer ) ) && !fctFactions.actorFactionInList( akAggressor, _SDFLP_banned_factions )
 
 		StorageUtil.SetIntValue(none, "_SD_iForcedSurrender", 0) 
 		Utility.Wait(4.0) ; if we could know for sure that the player is ragdolling, we could wait for the event sent at the end of ragdoll. --BM
@@ -148,7 +131,7 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 		raped = 0
 		_SD_dreamQuest.SetStage(100)
 
-	ElseIf ( !checkIfSpriggan ( akAggressor ) && funct.actorFactionInList( akAggressor, _SDFL_allowed_creature_sex )  && ( funct.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akAggressor.IsInFaction( _SDFP_humanoidCreatures ) )  && !funct.actorFactionInList( akAggressor, _SDFL_banned_sex )   && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
+	ElseIf ( !checkIfSpriggan ( akAggressor ) && fctFactions.actorFactionInList( akAggressor, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akAggressor.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akAggressor, _SDFL_banned_sex )   && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
 			; Debug.Notification( "(Rape attempt)")
 
 
@@ -158,8 +141,8 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 			rapeAttempts = 0
 
 			Debug.Notification( "You aggressors are blinded by lust...")
-			funct.actorCombatShutdown( akAggressor as Actor )
-			funct.actorCombatShutdown( akPlayer as Actor )
+			fctConstraints.actorCombatShutdown( akAggressor as Actor )
+			fctConstraints.actorCombatShutdown( akPlayer as Actor )
 			Utility.Wait(2.0)
 
 			SexLab.QuickStart(SexLab.PlayerRef, akAggressor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
@@ -179,8 +162,8 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 			rapeAttempts = 0
 
 			Debug.Notification( "You aggressors are blinded by lust...")
-			funct.actorCombatShutdown( akAggressor as Actor )
-			funct.actorCombatShutdown( akPlayer as Actor )
+			fctConstraints.actorCombatShutdown( akAggressor as Actor )
+			fctConstraints.actorCombatShutdown( akPlayer as Actor )
 			Utility.Wait(2.0)
 
 			SexLab.QuickStart(SexLab.PlayerRef, akAggressor, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
@@ -300,7 +283,8 @@ State monitor
 		; if (isInKillState)  
 		;	Debug.Notification("You should be dead")
 
-			If (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1) && (_SD_dreamQuest.GetStage() != 0) && (_SDGVP_config[4].GetValue() == 1) 
+		; Disabled for now - handled by DA events
+			If (0==1) && (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1) && (_SD_dreamQuest.GetStage() != 0) && (_SDGVP_config[4].GetValue() == 1) 
 				Debug.MessageBox("The Daedric piercing brings you back to your true master...")
 
 				Monitor.SetBlackScreenEffect(false)
@@ -325,7 +309,7 @@ State monitor
 				Utility.Wait(1.0)
 
 				_SD_dreamQuest.SetStage(100)
-			ElseIf (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1)
+			; ElseIf (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1)
 				; StorageUtil.SetIntValue(none, "_SD_iForcedDreamworld", 0) 
 				; Debug.SetGodMode(false) 
 				; kPlayer.EndDeferredKill()
@@ -423,46 +407,45 @@ State monitor
 
 				Debug.SetGodMode( False )
 
-				If (isInKWeakenedState)
 
-					If IButton == 0  
-						; Surrender to aggressor	
-						StorageUtil.SetIntValue(none, "_SD_iForcedSurrender", 1)	
+				If (IButton == 0 ) && (isInKWeakenedState)
+					; Surrender to aggressor	
+					StorageUtil.SetIntValue(none, "_SD_iForcedSurrender", 1)	
 
 
-					ElseIf IButton == 1
-						; Pray to Sanguine
+				ElseIf (IButton == 1)
+					; Pray to Sanguine
 
-						; Monitor.GoToState("")
-						; Debug.SetGodMode( True )
-						; kPlayer.EndDeferredKill()
-						
-						If (Utility.RandomInt(0,100) > 80) && (_SD_dreamQuest.GetStage() != 0) 
-							; Send PC to Dreamworld
+					; Monitor.GoToState("")
+					; Debug.SetGodMode( True )
+					; kPlayer.EndDeferredKill()
+					
+					If (Utility.RandomInt(0,100) > 40) && (_SD_dreamQuest.GetStage() != 0) 
+						; Send PC to Dreamworld
 
-							_SD_dreamQuest.SetStage(100)
+						_SD_dreamQuest.SetStage(100)
 
-						ElseIf (Utility.RandomInt(0,100) > 40)	
-							; Send PC some help
+					ElseIf (Utility.RandomInt(0,100) > 40) && (isInKWeakenedState)	
+						; Send PC some help
 
-							SendModEvent("da_StartSecondaryQuest", "Both")
-							SendModEvent("da_StartRecoverSequence")
+						SendModEvent("da_StartSecondaryQuest", "Both")
+						SendModEvent("da_StartRecoverSequence")
 
-						ElseIf (Utility.RandomInt(0,100) > 30)	
-							; restore all hp	
-							Monitor.BufferDamageReceived(9999.0)  	
+					ElseIf (Utility.RandomInt(0,100) > 30)	&& (isInKWeakenedState)
+						; restore all hp	
+						Monitor.BufferDamageReceived(9999.0)  	
 
-						Else
-							Debug.Notification("Your prayer goes unanswered...")
-						EndIf
-					ElseIf IButton == 2
-						; Resist
-
+					Else
+						Debug.Notification("Your prayer goes unanswered...")
 					EndIf
+				ElseIf IButton == 2
+					; Resist
+
 				Else
 					Debug.Notification("You still have life in you...")
-
 				EndIf
+
+
 			EndIf
  
 		EndIf

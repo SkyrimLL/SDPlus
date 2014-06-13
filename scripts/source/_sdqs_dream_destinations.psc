@@ -22,6 +22,8 @@ Function getDestination ( )
 		_SDRA_dream_destination.ForceRefTo( _SDRA_dest_cemetary.GetReference() as ObjectReference )
 	ElseIf (RandomNum > 30)
 		_SDRA_dream_destination.ForceRefTo( _SDRA_dest_ship.GetReference() as ObjectReference )
+	ElseIf (RandomNum > 20)
+		_SDRA_dream_destination.ForceRefTo( _SDRA_dest_dungeon.GetReference() as ObjectReference )
 	Else
 		_SDRA_dream_destination.ForceRefTo( _SDRA_dest_falmer.GetReference() as ObjectReference )
 	EndIf
@@ -46,3 +48,5 @@ ReferenceAlias Property _SDRA_dest_location  Auto
 ReferenceAlias Property _SDRA_destination  Auto  
 
 ReferenceAlias Property _SDRA_dream_destination  Auto  
+
+ReferenceAlias Property _SDRA_dest_dungeon  Auto  

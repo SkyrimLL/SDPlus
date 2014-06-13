@@ -5,6 +5,10 @@ Import Utility
 SexLabFramework Property SexLab  Auto  
 daymoyl_MonitorVariables 	Property Variables Auto
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_constraints Property fctConstraints  Auto
+_SDQS_fcts_inventory Property fctInventory  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+
 _SDQS_snp Property snp Auto
 _SDQS_enslavement Property enslavement  Auto
 _SDQS_ennslavement_tasks Property tasks  Auto
@@ -84,7 +88,7 @@ Event OnDeath(Actor akKiller)
 	Debug.Trace("[_sdras_master] Master dead - Stop enslavement")
 
 	Self.GetOwningQuest().Stop()
-	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && player.checkGenderRestrictions( akKiller, kSlave ) ) && !funct.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && funct.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
+	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && player.checkGenderRestrictions( akKiller, kSlave ) ) && !fctFactions.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && fctFactions.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
 		; new master
 		While ( Self.GetOwningQuest().IsStopping() )
 		EndWhile
@@ -119,8 +123,8 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 		Int iGold = 100
 		Float iDemerits = 10.0
 
-		funct.actorCombatShutdown( kMaster )
-		funct.actorCombatShutdown( kSlave )
+		fctConstraints.actorCombatShutdown( kMaster )
+		fctConstraints.actorCombatShutdown( kSlave )
 		
 		If ( kMaster.GetCrimeFaction() )
 			iGold = kMaster.GetCrimeFaction().GetCrimeGold()
@@ -257,7 +261,7 @@ State monitor
 		bSlaveDetectedByMaster = kSlave.IsDetectedBy(kMaster)
 		bSlaveDetectedByTarget = ( kCombatTarget && kSlave.IsDetectedBy(kCombatTarget) )
 		bTargetMaster = ( kCombatTarget && kCombatTarget == kMaster )
-		bTargetAllied = ( kCombatTarget && kCombatTarget != kMaster && funct.actorFactionInList(kCombatTarget, _SDFLP_forced_allied) )
+		bTargetAllied = ( kCombatTarget && kCombatTarget != kMaster && fctFactions.actorFactionInList(kCombatTarget, _SDFLP_forced_allied) )
 		iCheckdemerits = _SDGVP_demerits.GetValueInt()
 		
 		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
@@ -308,8 +312,8 @@ State monitor
 
 				Self.GetOwningQuest().Stop()
 			Else
-				funct.actorCombatShutdown( kSlave )
-				funct.actorCombatShutdown( kCombatTarget )
+				fctConstraints.actorCombatShutdown( kSlave )
+				fctConstraints.actorCombatShutdown( kCombatTarget )
 				If ( bSlaveDetectedByMaster )
 					; Self.GetOwningQuest().ModObjectiveGlobal( 10.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 

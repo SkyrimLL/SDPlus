@@ -3,6 +3,11 @@ Scriptname _SDQS_enslavement extends Quest Conditional
 Import Utility
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_constraints Property fctConstraints  Auto
+_SDQS_fcts_inventory Property fctInventory  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+
 DialogueFollowerScript Property companionDialogue  Auto
  
 GlobalVariable Property _SDGVP_enslaved  Auto  
@@ -98,6 +103,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		fEnslavementStart = GetCurrentGameTime()
 
+		; Debug.SendAnimationEvent(kSlave, "Unequip")
+		; Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
+
+
 		; Drop current weapon 
 
 		Weapon krHand = kSlave.GetEquippedWeapon()
@@ -111,11 +120,16 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			kSlave.UnequipItem( klHand )
 		EndIf
 
-		Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
 
 		If ( kSlave.IsSneaking() )
 			kSlave.StartSneaking()
 		EndIf
+
+		Utility.Wait(1.0)
+
+		Debug.Trace("[SD] enslavement Zaz animation goes here.")
+		; Debug.SendAnimationEvent(Game.GetPlayer(), "Unequip")
+		; Debug.SendAnimationEvent(Game.GetPlayer(), "ZazAPC057")
 	
 		kSlave.StopCombatAlarm()
 		kSlave.StopCombat()
@@ -128,34 +142,34 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; a new slave into a slaver faction
 		If ( aiValue2 == 0 )
-			bOriginallyEnemies = funct.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )
+			bOriginallyEnemies = fctFactions.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )
 		; transfer of ownership
 		ElseIf ( aiValue2 == 1 )
-			funct.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
+			fctFactions.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
 		EndIf
 
 		kMaster.AllowPCDialogue( True )
 		; funct.actorCombatShutdown( kMaster )
 		; funct.actorCombatShutdown( kSlave )
-		funct.togglePlayerControlsOff( )
+		fctConstraints.togglePlayerControlsOff( )
 
 		; item cleanup
 		_SDGVP_state_housekeeping.SetValue(0)
 		funct.removeItemsInList( kSlave, _SDFLP_sex_items )
 		funct.removeItemsInList( kSlave, _SDFLP_punish_items )
-		; funct.removeItemsInList( akPlayer, _SDFLP_master_items )
+		; fctInventory.removeItemsInList( akPlayer, _SDFLP_master_items )
 		_SDGV_leash_length.SetValue(400)
 
 		; Transfer of inventory
 		If ( aiValue2 == 0 )
 			If ( _SDGVP_config[3].GetValue() as Bool )
-				funct.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
+				fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
 			Else
 				; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 				kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
 				; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
-				; funct.limitedRemoveAllItems ( kSlave, kMaster, True )
+				; fctInventory.limitedRemoveAllItems ( kSlave, kMaster, True )
 
 			EndIf
 		EndIf		
@@ -194,10 +208,14 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		Self.ModObjectiveGlobal( iDemerits, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, True )
 		Utility.Wait(2.0)
 		
+		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 
-		; kSlave.AddItem( shackles.GetBaseObject(), 1, true )
-		; kSlave.AddItem( bindings.GetBaseObject(), 1, true )
-		; kSlave.AddItem( collar.GetBaseObject(), 1, true )
+		; Default outfit - commoners masters
+
+		fctOutfit.setDeviousOutfit ( iOutfit = 0, iOutfitPart = -1, bEquip = True, sMessage = "Your new owner quickly locks you into slavery.")
+
+		; Devious outfit - wealthy masters
+		; fctOutfit.setDeviousOutfit ( iOutfit = 1, iOutfitPart = -1, bEquip = True, sMessage = "Your new owner quickly locks you into slavery.")
 		
 
 		SetObjectiveDisplayed( 0 )

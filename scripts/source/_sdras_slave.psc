@@ -5,6 +5,7 @@ Import Utility
 _SDQS_snp Property snp Auto
 _SDQS_enslavement Property enslavement  Auto
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 MiscObject Property _SDMOP_lockpick  Auto  
 
@@ -215,79 +216,9 @@ State monitor
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 		kSlave = _SDRAP_slave.GetReference() as Actor
-		kBindings = _SDRAP_bindings.GetReference() as ObjectReference
-		kShackles = _SDRAP_shackles.GetReference() as ObjectReference
-		kCollar = _SDRAP_collar.GetReference() as ObjectReference
-
-		uiSlotDevice = new Bool[12]
-		Int[] uiSlotMask = New Int[12]
-		uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
-		uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-		uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
-		uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
-		uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
-		uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
-		uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
-		uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
-		uiSlotMask[8] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
-		uiSlotMask[9] = 0x00000004 ;32  Spriggan host
-		uiSlotMask[10]= 0x00100000 ;50  DD Gag Straps
-		uiSlotMask[11]= 0x01000000 ;54  DD Plugs (Vaginal)
-
-		Int iFormIndex = uiSlotMask.Length
-		Bool bDeviousDeviceEquipped = False
-		Bool bDeviousArmbinderEquipped = False
-		Bool bDeviousCollarEquipped = False
-		Bool bSprigganHostEquipped = False
-
-		Utility.Wait(5.0) ; loop to wait for DD's own housekeeping after enslavement (all items need to return to inventory before scanning for equipped devices)		
-
-		While ( iFormIndex > 0 )
-			iFormIndex -= 1
-			Form kForm = kSlave.GetWornForm( uiSlotMask[iFormIndex] ) 
-			If (kForm != None)
-				Armor kArmor = kForm  as Armor
-				bDeviousDeviceEquipped = (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_Spriggan")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousPlugAnal")  || kForm.hasKeywordString("zad_DeviousPlugVaginal") || kForm.hasKeywordString("zad_DeviousCollar")|| kForm.hasKeywordString("zad_DeviousArmbinder")) 
-
-				If kForm.hasKeywordString("zad_DeviousGag") 
-					fGagDevice = kForm
-					kSlave.UnequipItem(fGagDevice)
-					bDeviousDeviceEquipped = True
-				EndIf
-				If kForm.hasKeywordString("zad_DeviousArmbinder") 
-					bDeviousArmbinderEquipped = True
-					bDeviousDeviceEquipped = True
-				EndIf
-				If kForm.hasKeywordString("zad_DeviousCollar") 
-					bDeviousCollarEquipped = True
-					bDeviousDeviceEquipped = True
-				EndIf
-				If kForm.hasKeywordString("_SD_Spriggan") 
-					bSprigganHostEquipped = True
-					bDeviousDeviceEquipped = True
-				EndIf
-			Else
-				bDeviousDeviceEquipped = False
-			EndIf
-
-			If bDeviousDeviceEquipped
-				uiSlotDevice[iFormIndex] = True  ; True if slot is used by locked item
-			Else
-				uiSlotDevice[iFormIndex] = False ; False if slot is available
-			EndIf
-
-			; Debug.Trace("[housekeeping] iFormIndex: " + iFormIndex )
-			; Debug.Trace("[housekeeping] uiSlotDevice[iFormIndex]: "  + uiSlotDevice[iFormIndex] )
-			; Debug.Trace("[housekeeping] kForm: "  + kForm )
-		EndWhile
-
-		If (!bDeviousArmbinderEquipped)
-			uiSlotDevice[iWristsDevice] = False
-		EndIf
-		If (bSprigganHostEquipped)
-			uiSlotDevice[iWristsDevice] = True
-			uiSlotDevice[iAnklesDevice] = True
-		EndIf
+;		kBindings = _SDRAP_bindings.GetReference() as ObjectReference
+;		kShackles = _SDRAP_shackles.GetReference() as ObjectReference
+;		kCollar = _SDRAP_collar.GetReference() as ObjectReference
 
 		fOutOfCellTime = GetCurrentRealTime()
 		fLastEscape = GetCurrentRealTime() - 5.0
@@ -305,78 +236,6 @@ State monitor
 	Event OnUpdate()
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
-
-		; Housekeeping rules
-
-		; Add rules for Sanguine artifact - in _sd_player
-		; Add rules for Devious Devices keywords
-
-		; Enable housekeeping only when not in scene
-
-		; If (_SDKP_snp_busy.GetValue() == -1)
-		If (_SDGVP_state_housekeeping.GetValue() == 1)
-			If (!Game.IsMovementControlsEnabled())
-				Game.EnablePlayerControls( abMovement = True )
-				Game.SetPlayerAIDriven( False )
-			EndIf
-
-			If (_SDGVP_demerits.GetValue() > -20)
-				_SDKP_trust_hands.SetValue(0) 
-				_SDKP_trust_feet.SetValue(0) 
-			EndIf
-
-			If uiSlotDevice[iGagDevice] && kSlave.isEquipped(fGagDevice)
-			;    Debug.Notification("[housekeeping] Adding missing gag: " )
-
-			;	kSlave.EquipItem(  _SDA_gag , True, True )
-			;	kSlave.UnEquipItem(  _SDA_gag , True, True )
-					Game.GetPlayer().UnequipItem(fGagDevice)
-			EndIf
-
-			If !kSlave.WornHasKeyword( _SDKP_collar ) && !uiSlotDevice[iCollarDevice]
-			    Debug.Notification("[housekeeping] Adding missing collar: " )
-			    ; Debug.Notification("[housekeeping] iCollarDevice: " + iCollarDevice )
-			    ; Debug.Notification("[housekeeping] uiSlotDevice[iCollarDevice]: "  + uiSlotDevice[iCollarDevice] )
-
-				kSlave.EquipItem(  _SDA_collar , True, True )
-			EndIf
-
-
-			If !kSlave.WornHasKeyword( _SDKP_wrists )  && !uiSlotDevice[iWristsDevice]
-			    ; Debug.Notification("[housekeeping] Adding missing cuffs: " )
-
-				; kSlave.EquipItem(  _SDA_bindings , True, True )
-			EndIf
-
-			If !kSlave.WornHasKeyword( _SDKP_ankles )  && !uiSlotDevice[iAnklesDevice]
-			    ; Debug.Notification("[housekeeping] Adding missing shackles: " )
-
-				; kSlave.EquipItem(  _SDA_shackles  , True, True )
-			EndIf
-
-			If !uiSlotDevice[iWristsDevice]
-				If !kSlave.WornHasKeyword( _SDKP_wrists ) && ( _SDKP_trust_hands.GetValue() == 0)
-				    Debug.Notification("[housekeeping] Adding missing chains to slave without privileges")
-
-					kSlave.EquipItem(  _SDA_bindings , True, True )
-
-				ElseIf kSlave.WornHasKeyword( _SDKP_wrists ) && ( _SDKP_trust_hands.GetValue() == 1)
-				      ;Debug.Notification("[housekeeping] Removing chains from slave with  privileges")
-
-					kSlave.RemoveItem( _SDA_bindings, kSlave.GetItemCount( _SDA_bindings as Form ), False  )
-
-				EndIf
-			EndIf
-
-
-			If !uiSlotDevice[iAnklesDevice]
-				If !kSlave.WornHasKeyword( _SDKP_ankles ) && ( _SDKP_trust_feet.GetValue() == 0)
-					kSlave.EquipItem(  _SDA_shackles  , True, True )
-				ElseIf kSlave.WornHasKeyword( _SDKP_ankles ) && ( _SDKP_trust_feet.GetValue() == 1)
-					kSlave.RemoveItem( _SDA_shackles, kSlave.GetItemCount( _SDA_shackles as Form ), False  )
-				EndIf
-			EndIf
-		EndIf
 
 		enslavement.UpdateSlaveFollowerState(kSlave)
 		
@@ -541,7 +400,7 @@ State monitor
 			
 			; kPotion = 46
 			If ( iuType == 46 || akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || akBaseItem.HasKeyword( _SDKP_food_vendor ) )
-				If ( GetCurrentRealTime() - fLastIngest > 5.0 && !funct.isGagEquiped(kSlave) )
+				If ( GetCurrentRealTime() - fLastIngest > 5.0 && !fctOutfit.isGagEquiped(kSlave) )
 					If ( aiItemCount - 1 > 0 )
 						kSlave.DropObject(akBaseItem, aiItemCount - 1)
 					EndIf

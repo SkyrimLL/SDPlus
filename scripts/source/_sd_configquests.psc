@@ -1,6 +1,7 @@
 Scriptname _SD_ConfigQuests extends Quest
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
 
 FormList Property _SDFLP_uninstall_dispel  Auto
 FormList Property _SDFLP_uninstall_items  Auto
@@ -242,7 +243,7 @@ State stopping
 		removeSDSpells()
 		removeSDItems()
 		
-		funct.resetAllyToActor(player, _SDFLP_forced_joined )
+		fctFactions.resetAllyToActor(player, _SDFLP_forced_joined )
 
 		Debug.Notification("$SD_STATUS_UNINSTALL_3")
 		Utility.WaitGameTime( 2.0 )

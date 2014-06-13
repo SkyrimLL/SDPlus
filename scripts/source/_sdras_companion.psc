@@ -1,5 +1,6 @@
 Scriptname _SDRAS_companion extends ReferenceAlias Conditional
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_followers Property fctFollowers  Auto
 
 ReferenceAlias Property _SDRAP_master  Auto
 
@@ -102,8 +103,11 @@ Function enslaveCompanion( Actor kActor)
 
 		kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 
-		kActor.SetOutfit( _SDOP_naked )
-		kActor.SetOutfit( _SDOP_naked, True )
+		If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") != 0 )
+
+			kActor.SetOutfit( _SDOP_naked )
+			kActor.SetOutfit( _SDOP_naked, True )
+		EndIf
 		
 		idx = 0
 		While idx < _SDFLP_companion_items.GetSize()
@@ -117,7 +121,7 @@ Function enslaveCompanion( Actor kActor)
 		;kActor.playIdle(OffsetBoundStandingStart)
 
 		If (Utility.RandomInt(0,100)>80)
-			funct.sendCaptiveFollowerAway(kActor)
+			fctFollowers.sendCaptiveFollowerAway(kActor)
 
 			Debug.MessageBox("Your follower is dragged away in bondage...")
 		EndIf
