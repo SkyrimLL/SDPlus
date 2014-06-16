@@ -377,7 +377,6 @@ Function toggleActorClothing_old ( Actor akActor, Bool strip = True )
 	EndIf
 EndFunction
 
-
 Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "")
 	; iOutfitPart = -1 means 'equip all items in outfit'
 	; bEquip = True means 'equip item' (False means remove item)
@@ -385,6 +384,9 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 	Armor ddArmorRendered
 	Keyword ddArmorKeyword
 
+	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit", iOutfit)
+
+	; --------------------------------------------------------------------------------------------
 	If (iOutfit == 0) ; Default outfit - Zaz slave items
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
@@ -411,6 +413,9 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
+
+
+	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 1) ; Wealthy outfit - Devious slave items
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
@@ -437,6 +442,52 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 2) ; Very Wealthy outfit - 'Princess Leia' type of slave
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 3) ; Primitive outfit - Ropes only (Forsworn, Giants, Hagravens)
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 4) ; Spider outfit - Zaz spider web
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 5) ; Falmer outfit - Chaurus textured Zaz spider web
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 6) ; Animal outfit - Dirt and scratches textures Zaz spider web
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 7) ; Spriggan Host outfit - Vegetal armor
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 8) ; Tentacle outfit -  Biological armor
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 9) ; Queen of Chaurus outfit - Based on Brood Mother
+
+
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfit == 10) ; Sanguine Artefacts - Spectral bondage devices
+
 	EndIf
 
 	If (sMessage != "")
@@ -457,6 +508,17 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 
 EndFunction
 
+Function equipDeviousOutfitPart ( Int iDevOutfitPart = -1, String sDevMessage = "")
+	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+
+	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = True, sMessage = sDevMessage )
+EndFunction
+
+Function removeDeviousOutfitPart ( Int iDevOutfitPart = -1, String sDevMessage = "")
+	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+
+	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = False, sMessage = sDevMessage)
+EndFunction
 
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto

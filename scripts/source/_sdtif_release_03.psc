@@ -9,9 +9,11 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
  
 
-		funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
-		funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
+;		funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
+;		funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+
+fctOutfit.removeDeviousOutfitPart ( iDevOutfitPart = 2, sDevMessage = "You have been released from your chains")
 
 		funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE
@@ -21,6 +23,7 @@ EndFunction
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 FormList Property _SDFLP_sex_items  Auto
 FormList Property _SDFLP_punish_items  Auto
