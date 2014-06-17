@@ -13,6 +13,10 @@ mark.MoveTo(cage, 32.0 * Math.Sin(cage.GetAngleZ()), 32.0 * Math.Cos(cage.GetAng
 If ( cage.IsLocked() )
 	cage.Lock( False )
 EndIf
+
+If (cage.GetOpenState() == 1)
+	cage.SetOpen(0)
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -20,8 +24,8 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(Actor akActor)
 ;BEGIN CODE
-; Cage scene - disabled for now
-; _SDSP_caged.ForceStart()
+; Cage scene - Play Testing Required
+_SDSP_caged.ForceStart()
 ;END CODE
 EndFunction
 ;END FRAGMENT
