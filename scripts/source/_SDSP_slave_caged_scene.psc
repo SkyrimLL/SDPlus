@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 5
-Scriptname PF__SDSP_slave_caged_080D1E78 Extends Package Hidden
+Scriptname _SDSP_slave_caged_scene Extends Package Hidden
 
 ;BEGIN FRAGMENT Fragment_4
 Function Fragment_4(Actor akActor)
