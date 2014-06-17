@@ -13,12 +13,18 @@ EndEvent
 Event OnActivate(ObjectReference akActionRef)
 	Debug.Trace( "_SD:cage activate attempt " + akActionRef )
 	ObjectReference cage = Self.GetReference() as ObjectReference
+	Int kOpen = cage.GetOpenState()
 	If ( akActionRef.GetItemCount( _SDRAP_masters_key.GetReference() ) )
 		If ( cage.IsLocked() )
 			cage.Lock( False )
 		EndIf
-		cage.SetOpen()
-		Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+		;cage.SetOpen(!(kOpen < 3))
+		If(kOpen < 3)
+			Debug.Notification("pong " + kOpen);
+		EndIf
+		If(akActionRef == Game.GetPlayer()) ;This should really be changed to !Master in order to prevent player from ordering a follower to open the cage, will revisit after playtesting.
+			Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+		EndIf
 	EndIf
 EndEvent
 
