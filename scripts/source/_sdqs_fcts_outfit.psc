@@ -414,6 +414,10 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 
+		; Gag
+		; Plug Anal
+		; Plug Vaginal
+		; Blindfold
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 1) ; Wealthy outfit - Devious slave items
@@ -443,13 +447,22 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 
-
+		; Gag
+		; Plug Anal
+		; Plug Vaginal
+		; Blindfold
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 2) ; Very Wealthy outfit - 'Princess Leia' type of slave
 
-
-
+		; Collar
+		; Arms
+		; Legs
+		; Gag
+		; Plug Anal
+		; Plug Vaginal
+		; Blindfold
+		
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 3) ; Primitive outfit - Ropes only (Forsworn, Giants, Hagravens)
 
