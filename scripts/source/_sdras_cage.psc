@@ -14,7 +14,7 @@ Event OnActivate(ObjectReference akActionRef)
 	Debug.Trace( "_SD:cage activate attempt " + akActionRef )
 	ObjectReference cage = Self.GetReference() as ObjectReference
 	Int kOpen = cage.GetOpenState()
-	If ( akActionRef.GetItemCount( _SDRAP_masters_key.GetReference() ) && kOpen > 2 ) ;Added check to make sure the door is closed before unlocking.
+	If ( akActionRef.GetItemCount( _SDRAP_masters_key.GetReference() ) )
 		If ( cage.IsLocked() )
 			cage.Lock( False )
 		EndIf

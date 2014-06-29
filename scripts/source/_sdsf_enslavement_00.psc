@@ -10,10 +10,18 @@ Debug.Notification("[cage] phase = 5" )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_6
-Function Fragment_6()
+;BEGIN FRAGMENT Fragment_4
+Function Fragment_4()
 ;BEGIN CODE
-Debug.Notification("[cage] phase = 4" )
+Debug.Notification("[cage] phase = 2" )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_8
+Function Fragment_8()
+;BEGIN CODE
+Debug.Notification("[cage] phase = 6" )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -30,27 +38,12 @@ ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
 Actor slave = _SDRAP_slave.GetReference() as Actor
 
 cage.SetOpen( False )
-cage.SetLockLevel( slave.GetBaseAV("Lockpicking") as Int )
 
 If ( !cage.IsLocked() )
 	cage.Lock( True )
 EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_8
-Function Fragment_8()
-;BEGIN CODE
-Debug.Notification("[cage] phase = 6" )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_4
-Function Fragment_4()
-;BEGIN CODE
-Debug.Notification("[cage] phase = 2" )
+cage.SetLockLevel( slave.GetBaseAV("Lockpicking") as Int )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -59,6 +52,22 @@ EndFunction
 Function Fragment_5()
 ;BEGIN CODE
 Debug.Notification("[cage] phase =3" )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_3
+Function Fragment_3()
+;BEGIN CODE
+Debug.Notification("[cage] phase =1" )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_6
+Function Fragment_6()
+;BEGIN CODE
+Debug.Notification("[cage] phase = 4" )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -82,14 +91,6 @@ If ( cage.IsLocked() )
 EndIf
 
 cage.SetOpen()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_3
-Function Fragment_3()
-;BEGIN CODE
-Debug.Notification("[cage] phase =1" )
 ;END CODE
 EndFunction
 ;END FRAGMENT
