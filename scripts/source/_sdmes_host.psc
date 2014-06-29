@@ -4,16 +4,23 @@ VisualEffect Property SprigganFX  Auto
 Spell Property _SDSP_call  Auto  
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
+
 	if ( _SDGVP_sprigganEnslaved.GetValue() == 0 ) && (_SD_spriggan.GetStage()>0)
 	    _SDGVP_sprigganEnslaved.SetValue(1)
 	    akCaster.AddSpell( _SDSP_call )
-	    SprigganFX.Play( akCaster, -1 )
+	    If ( akCaster.Is3DLoaded()  )
+	    	SprigganFX.Play( akCaster, -1 )
+	    EndIf
       EndIf
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
+
 	akCaster.RemoveSpell( _SDSP_call )
-	SprigganFX.Stop( akCaster )
+	
+	 If ( akCaster.Is3DLoaded()  )
+	 	SprigganFX.Stop( akCaster )
+	 EndIf
 EndEvent
 
 Event OnUpdate()

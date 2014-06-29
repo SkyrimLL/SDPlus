@@ -111,6 +111,9 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 	ObjectReference bindings = _SDRAP_bindings.GetReference() as ObjectReference
 	ObjectReference collar = _SDRAP_collar.GetReference() as ObjectReference
 
+	; Disabled because of DA options
+	Return False
+
 	; add option for simple stagger + chance of action
 
 	; Debug.Notification( "You are pinned to the ground... " + raped + " / " + rapeAttempts)
