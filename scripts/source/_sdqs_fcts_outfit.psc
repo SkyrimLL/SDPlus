@@ -509,10 +509,21 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 EndFunction
 
+Function removeBlockingDevice (Armor ddArmorRendered, Keyword ddArmorKeyword)
+	if(libs.IsWearingDevice(libs.PlayerRef, ddArmorRendered, ddArmorKeyword) == 2)			;Remove the device only if it isn't already the one we are trying to equip
+		if(!libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, false))	;Check if generic remove will work for us: if not, continue onto a more aggressive approach. May want to allow toggling this.
+			Armor invddArmor = libs.GetWornDevice(libs.PlayerRef, ddArmorKeyword)
+			Armor renddArmor = libs.GetRenderedDevice(invddArmor)
+			libs.RemoveDevice(libs.PlayerRef, invddArmor, renddArmor, ddArmorKeyword)
+		endif
+	endif
+EndFunction
+
 Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword)
 
 	if (bEquip)
 		libs.Log("SD outfit equip - " + iOutfit + " [ " + iOutfitPart + "] " )
+		removeBlockingDevice(ddArmorRendered, ddArmorKeyword)
 		libs.EquipDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
 	Else
 		libs.Log("SD outfit remove - " + iOutfit + " [ " + iOutfitPart + "] " )
