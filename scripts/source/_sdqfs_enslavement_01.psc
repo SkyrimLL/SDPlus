@@ -478,9 +478,9 @@ Function removeSlaveItems()
 	_SDKP_trust_feet.SetValue(1)
 
 	if (slave)
-		funct.removeItemsInList( slave, _SDFLP_sex_items )
-		funct.removeItemsInList( slave, _SDFLP_punish_items )
-		funct.removeItemsInList( slave, _SDFLP_master_items )
+;		funct.removeItemsInList( slave, _SDFLP_sex_items )
+;		funct.removeItemsInList( slave, _SDFLP_punish_items )
+;		funct.removeItemsInList( slave, _SDFLP_master_items )
 	endif
 
 	idx = 0
@@ -495,6 +495,7 @@ EndFunction
 
 _SDQS_fcts_factions Property fctFactions  Auto
 _SDQS_fcts_inventory Property fctInventory  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 ReferenceAlias Property _SDRAP_bindings Auto
 ReferenceAlias Property _SDRAP_collar Auto

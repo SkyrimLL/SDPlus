@@ -5,6 +5,7 @@ Import Utility
 _SDQS_snp Property snp Auto
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_inventory Property fctInventory  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 _SDQS_fcts_factions Property fctFactions  Auto
 
 GlobalVariable Property _SDGVP_positions  Auto  
@@ -132,10 +133,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetFloatValue(none, "_SLH_fWeight", 20.0 ) 
 		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 			
-		Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
+		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 
-		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 2, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
-		;_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 2, aiValue2 = 6 )
+		; _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 2, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 2, aiValue2 = 0 )
 
 		If ( Self )
 			RegisterForSingleUpdateGameTime( 0.125 )

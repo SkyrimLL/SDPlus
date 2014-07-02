@@ -1,6 +1,7 @@
 Scriptname _SDQS_dream extends Quest  Conditional
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 ReferenceAlias Property _SDRAP_dreamer  Auto  
 ReferenceAlias Property _SDRAP_enter  Auto  
@@ -42,21 +43,29 @@ Function sendDreamerBack( Int aiStage )
 	;
 	EndWhile
 
-	if (Utility.RandomInt(0, 100) > 40)
-		kDreamer.RemoveItem( _SDA_collar_blood, 1, False  )
+
+	if (Utility.RandomInt(0, 100) < 40)
+		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
 	EndIf
 
-	if (Utility.RandomInt(0, 100) > 10)
-		kDreamer.RemoveItem( _SDA_bindings, 1, False  )
+	if (Utility.RandomInt(0, 100) < 10)
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
 	EndIf
 
-	if (Utility.RandomInt(0, 100) > 40)
+	if (Utility.RandomInt(0, 100) < 10)
+		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+	EndIf
+
+	if (Utility.RandomInt(0, 100) < 40)
 		kDreamer.RemoveItem( _SDA_gag, 1, False  )
 	EndIf
 
-	kDreamer.RemoveItem( _SDA_sanguine_chosen, 1, False  )
+	if (Utility.RandomInt(0, 100) < 40)
+	;	fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+	;	fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+	EndIf
 
-     Game.FadeOutGame(true, true, 5.0, 10.0)
+    Game.FadeOutGame(true, true, 5.0, 10.0)
 	StorageUtil.SetIntValue(none, "DN_ONOFF", 0)
 
 	If ((aiStage == 10) || (aiStage == 15)) && (kEnter.GetDistance(kLeave)>200)  ; sent back to where player started
@@ -146,40 +155,21 @@ Function positionVictims( Int aiStage )
     ; Game.ShowFirstPersonGeometry(true)
 
 	Game.DisablePlayerControls( abMenu = True )
-	Utility.Wait(0.1)
-
-	if (_SDGVP_enslaved.GetValue()==0) && (_SDGVP_enslavedSpriggan.GetValue()==1)
-		Int[] uiSlotMask = New Int[4]
-		uiSlotMask[0]  = 0x00000001 ;30
-		uiSlotMask[1]  = 0x00000004 ;32
-		uiSlotMask[2]  = 0x00010000 ;46
-		uiSlotMask[3] = 0x00004000 ;44  DD Gags
-
-		Int iFormIndex = uiSlotMask.Length
-		While ( iFormIndex > 0 )
-			iFormIndex -= 1
-			Form kForm = kDreamer.GetWornForm( uiSlotMask[iFormIndex] ) 
-			If (kForm)
-				Armor kArmor = kForm  as Armor
-				bDeviousDeviceEquipped = ( Game.GetPlayer().isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_spriggan") || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
-
-				If ( kArmor && !kArmor.HasKeywordString("_SD_nounequip") )  && !(bDeviousDeviceEquipped)
-					kDreamer.UnequipItem(kArmor as Armor, False, True )
-				EndIf
-				If (Game.GetPlayer().isEquipped(kForm) && kForm.hasKeywordString("zad_DeviousGag") )
-					fGagDevice = kForm
-					Game.GetPlayer().UnequipItem(fGagDevice)
-				EndIf
-			EndIf
-		EndWhile
-	EndIf
+	SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
 
 	Utility.Wait(0.1)
 
-	kDreamer.EquipItem(  _SDA_collar_blood , False, True )
-	kDreamer.EquipItem(  _SDA_bindings , True, True )
+	; Test - Remove current collar first
+	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+
+	fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+
+	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+
 	kDreamer.EquipItem(  _SDA_gag , False, True )
-	kDreamer.EquipItem(  _SDA_sanguine_chosen , True, True )
 
 	kDreamer.resethealthandlimbs()
 
