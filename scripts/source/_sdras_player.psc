@@ -239,9 +239,9 @@ State monitor
 		RegisterForKey( keys[0] )
 		RegisterForKey( keys[1] )
 
-		RegisterForMenu( "Crafting Menu" )
-		RegisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
-		RegisterForAnimationEvent(kPlayer, "GetUpEnd")
+		; RegisterForMenu( "Crafting Menu" )
+		; RegisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
+		; RegisterForAnimationEvent(kPlayer, "GetUpEnd")
 	EndEvent
 
 	Event OnPlayerLoadGame()
@@ -252,12 +252,12 @@ State monitor
 	EndEvent
 
 	Event OnEndState()
-		UnregisterForMenu( "Crafting Menu" )
+		; UnregisterForMenu( "Crafting Menu" )
 		UnregisterForKey( keys[0] )
 		UnregisterForKey( keys[1] )
 
-		UnregisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
-		UnregisterForAnimationEvent(kPlayer, "GetUpEnd")
+		; UnregisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
+		; UnregisterForAnimationEvent(kPlayer, "GetUpEnd")
 	EndEvent
 
 	Event OnUpdate()
@@ -443,7 +443,9 @@ State monitor
 					EndIf
 				ElseIf IButton == 2
 					; Resist
-
+					UnregisterForMenu( "Crafting Menu" )
+					UnregisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
+					UnregisterForAnimationEvent(kPlayer, "GetUpEnd")
 				Else
 					Debug.Notification("You still have life in you...")
 				EndIf

@@ -4,6 +4,8 @@ Import Utility
 
 _SDQS_snp Property snp Auto
 _SDQS_functions Property funct Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
+
 _SDQS_config Property config Auto
 SexLabFramework property SexLab auto
 
@@ -79,12 +81,21 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; uiPosition = Math.Floor( snp._SDUIP_position * 4 )
 
 
-	Debug.MessageBox("Roots swarm arount you...")
+	; Debug.MessageBox("Roots swarm arount you...")
 
 	; kTarget.RemoveAllItems(akTransferTo = _SD_sprigganHusk)
 	; Utility.Wait(1.0)
 
-	kCaster.RemoveAllItems(akTransferTo = kTarget)
+	; kCaster.RemoveAllItems(akTransferTo = kTarget)
+	; fctOutfit.clearDeviousOutfit ( )
+	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
+	Utility.Wait(1.0)
+	fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
+		
+	fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
+	fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")	
+	fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
+	fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
 	Utility.Wait(1.0)
 
 	_SDSP_cum.RemoteCast(kTarget, kTarget, kTarget)
@@ -96,7 +107,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 
 	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
-		Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
+		; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
 		; HACK: select rough sexlab animations 
 		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1, "Masturbation,Female")
 

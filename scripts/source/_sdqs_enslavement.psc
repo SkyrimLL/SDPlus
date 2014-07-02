@@ -155,8 +155,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; item cleanup
 		_SDGVP_state_housekeeping.SetValue(0)
-		funct.removeItemsInList( kSlave, _SDFLP_sex_items )
-		funct.removeItemsInList( kSlave, _SDFLP_punish_items )
+		; funct.removeItemsInList( kSlave, _SDFLP_sex_items )
+		; funct.removeItemsInList( kSlave, _SDFLP_punish_items )
 		; fctInventory.removeItemsInList( akPlayer, _SDFLP_master_items )
 		_SDGV_leash_length.SetValue(400)
 
@@ -206,16 +206,54 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		Self.ModObjectiveGlobal( iGold, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.GetValue() as Float, False, True, True )
 		Self.ModObjectiveGlobal( iDemerits, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, True )
-		Utility.Wait(2.0)
+		Utility.Wait(1.0)
 		
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 
-		; Default outfit - commoners masters
+		; Outfit selection - Commoner by default
 
-		fctOutfit.setDeviousOutfit ( iOutfit = 0, iOutfitPart = -1, bEquip = True, sMessage = "Your new owner quickly locks you into slavery.")
+		int outfitID = 0
+
+		if (kMaster.HasKeyword( ActorTypeNPC ))
+			if ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
+				; Greater magicka - use magicka outfit
+				outfitID = 2
+			Elseif ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Magicka") as Int) ) && ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Stamina") as Int) )
+				; Greater health - use wealthy outfit
+				outfitID = 1
+			EndIf
+		Else
+			outfitID = 3
+		EndIf
+
+		Utility.Wait(1.0)
+
+		fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "Your new owner quickly locks you into slavery.")
+
+		if (1==0) && (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
+
+			; Replace by function with detection of currently worn collar / outfit
+			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+			Utility.Wait(1.0)
+			fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")
+		Else
+			fctOutfit.setDeviousOutfitCollar ( bDevEquip = True, sDevMessage = "")
+		EndIf
+
+		fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")
+		fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+
+		if (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
+			fctOutfit.setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		EndIf
+
+		if (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
+			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+		EndIf
 
 		; Devious outfit - wealthy masters
 		; fctOutfit.setDeviousOutfit ( iOutfit = 1, iOutfitPart = -1, bEquip = True, sMessage = "Your new owner quickly locks you into slavery.")
+
 		
 
 		SetObjectiveDisplayed( 0 )
@@ -301,77 +339,38 @@ Function UpdateSlaveState(Actor akSlave)
 
 		; Anal plug
 		If (uiPunishmentsEarned - 6 >= 0)
-			item = _SDFLP_punish_items.GetAt(0) as Armor
-			If !akSlave.IsEquipped( item )
-				Debug.Notification("[_sdqs_enslavement] Adding punishment item: Anal plug" )
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Anal plug" )
 				
-				akSlave.AddItem( item, 1 )
-			EndIf
+			fctOutfit.setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
 		Else
-			item = _SDFLP_punish_items.GetAt(0) as Armor
-			If akSlave.IsEquipped( item )
-				Debug.Notification("[_sdqs_enslavement] Removing punishment item: Anal plug" )
+			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Anal plug" )
 				
-				akSlave.RemoveItem( item, 1 )
-			EndIf
+			fctOutfit.setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		; Blinds
 		If (uiPunishmentsEarned - 6 >= _SDFLP_punish_items.GetSize() - 1 )
-			item = _SDFLP_punish_items.GetAt(_SDFLP_punish_items.GetSize() - 1) as Armor
-			If !akSlave.IsEquipped( item )
-				Debug.Notification("[_sdqs_enslavement] Adding punishment item: Blinds" )
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Blinds" )
 				
-				akSlave.AddItem( item, 1 )
-			EndIf
+			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
 		Else
-			item = _SDFLP_punish_items.GetAt(_SDFLP_punish_items.GetSize() - 1) as Armor
-			If akSlave.IsEquipped( item )
-				Debug.Notification("[_sdqs_enslavement] Removing punishment item: Blinds" )
+			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Blinds" )
 				
-				akSlave.RemoveItem( item, 1 )
-			EndIf
+			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		; Gag
-		Int[] uiSlotMask = New Int[2]
-		uiSlotMask[0] = 0x00004000 ;44  DD Gags
-		uiSlotMask[1] = 0x02000000 ;55  Gag
-		; Abort adding gag if wearing Devious Gag
-		kForm = akSlave.GetWornForm( uiSlotMask[0] ) 
-
-		if (kForm)
-			If kForm.hasKeywordString("zad_DeviousGag")
-				Return
-			EndIf
-		EndIf
 
 		If (uiPunishmentsEarned - 6 >= 1)
-			idx = funct.intMin( funct.intMax( uiPunishmentsEarned - 6, 0 ), _SDFLP_punish_items.GetSize() - 2 )
-			item = _SDFLP_punish_items.GetAt(idx) as Armor
-			kForm = akSlave.GetWornForm( uiSlotMask[1] ) 
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Gag: " + idx )
 
-			If !akSlave.IsEquipped( item )
-				Debug.Notification("[_sdqs_enslavement] Adding punishment item: Gag: " + idx )
+			fctOutfit.setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
 
-				if (kForm) ; if there is already a gag, remove it
-					Debug.Notification("[_sdqs_enslavement] Cleanup punishment item: " + idx )
-					; Removing current gag - waiting for next level of gag
-					Armor kGag = kForm as Armor
-					akSlave.RemoveItem( kGag, 1 )
-				EndIf
-
-				akSlave.AddItem( item, 1 )
-			EndIf
 		ElseIf (uiPunishmentsEarned - 6 < 1)
-			kForm = akSlave.GetWornForm( uiSlotMask[1] ) 
+			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Gag "  )
 
-			if (kForm) ; if there is already a gag, remove it
-				Debug.Notification("[_sdqs_enslavement] Removing punishment item: Gag "  )
-				; Removing current gag - waiting for next level of gag
-				Armor kGag = kForm as Armor
-				akSlave.RemoveItem( kGag, 1 )
-			EndIf
+			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+
 		
 		EndIf
 

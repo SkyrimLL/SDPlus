@@ -165,38 +165,46 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 		; escape
 		Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
 		kSlave.RemoveItem(akItemReference, aiItemCount)
+
+		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+	
+		if (Utility.RandomInt(0,100) < 90)
+			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+		Else
+			Debug.MessageBox("The key snapped as you tried to force the lock.")
+		EndIf
+
 		Self.GetOwningQuest().Stop()
 		Utility.Wait(2.0)
 		Return
 	ElseIf ( iuType == 41 || iuType == 42 )
-		If ( kSlave.WornHasKeyword( _SDKP_bound ) )
-			If ( GetCurrentRealTime() - fLastEscape < 5.0 )
-				Debug.Notification( "$SD_MESSAGE_WAIT_5_SEC" )
-				kSlave.DropObject(akBaseItem, aiItemCount)
-			Else
-				fDamage = ( akBaseItem as Weapon ).GetBaseDamage() as Float
 
-				If ( fDamage <= 0.0 )
-					fDamage = Utility.RandomFloat( 1.0, 4.0 )
-				EndIf
-
-				_SDFP_bindings_health -= fDamage
-				enslavement.ufBindingsHealth = _SDFP_bindings_health
-				If ( _SDFP_bindings_health < 0.0 && !_SDGVP_state_caged.GetValueInt() )
-					Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
-
-					Self.GetOwningQuest().Stop()
-					Return
-				Else
-					kSlave.DropObject(akBaseItem, aiItemCount)
-				EndIf
-			EndIf
-			fLastEscape = GetCurrentRealTime()
+		If ( GetCurrentRealTime() - fLastEscape < 5.0 )
+			Debug.Notification( "$SD_MESSAGE_WAIT_5_SEC" )
+			kSlave.DropObject(akBaseItem, aiItemCount)
 		Else
-			Debug.Trace("[_sdras_slave] Bounds removed - Stop enslavement")
+			fDamage = ( akBaseItem as Weapon ).GetBaseDamage() as Float
 
-			Self.GetOwningQuest().Stop()
+			If ( fDamage <= 0.0 )
+				fDamage = Utility.RandomFloat( 1.0, 4.0 )
+			EndIf
+
+			_SDFP_bindings_health -= fDamage
+			enslavement.ufBindingsHealth = _SDFP_bindings_health
+			If ( _SDFP_bindings_health < 0.0 && !_SDGVP_state_caged.GetValueInt() )
+				Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
+				fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+
+				Self.GetOwningQuest().Stop()
+				Return
+			Else
+				kSlave.DropObject(akBaseItem, aiItemCount)
+			EndIf
 		EndIf
+		fLastEscape = GetCurrentRealTime()
+
 	EndIf
 EndEvent
 
