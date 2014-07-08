@@ -428,6 +428,8 @@ _SDQS_snp Property snp Auto
 Function questShutdown()
 	Actor master = Alias__SDRA_master.GetReference() as Actor
 	Actor slave = Alias__SDRA_slave.GetReference() as Actor
+
+	StorageUtil.StringListRemove(master, "_DDR_DialogExclude", "SD+:Master")
 	
 	If _SDGVP_state_fasttravel.GetValueInt() == 1
 		Game.EnableFastTravel()

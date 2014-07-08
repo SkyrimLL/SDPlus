@@ -20,7 +20,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	UnregisterForModEvent("da_PlayerRecovered")
 
 	
-	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) &&  ( ((akAggressor.GetRace() == sprigganRace) || (akAggressor.IsInFaction(SprigganFaction  )) )&& !(thisPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(Game.GetPlayer(), "SacrSpriggans_iSprigganInfected") != 1) ) 
+	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) &&  ( ( fctFactions.checkIfSpriggan ( akAggressor) ) && !(thisPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(Game.GetPlayer(), "SacrSpriggans_iSprigganInfected") != 1) ) 
 		Debug.Trace("[SD DA integration] QuestCondition - Spriggan - Passed")
 		return true
 	else
@@ -74,6 +74,8 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 endEvent 
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+
 Race Property SprigganRace  Auto  
 Faction  Property SprigganFaction  Auto  
 

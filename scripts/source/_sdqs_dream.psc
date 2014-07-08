@@ -26,6 +26,7 @@ Actor kNaamah
 Actor kSanguine
 Actor kMeridiana
 Actor kNordGirl
+Actor kRedguardGirl
 Actor kImperialMan
 Actor kEisheth
 Actor kSvana
@@ -57,7 +58,8 @@ Function sendDreamerBack( Int aiStage )
 	EndIf
 
 	if (Utility.RandomInt(0, 100) < 40)
-		kDreamer.RemoveItem( _SDA_gag, 1, False  )
+		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		; kDreamer.RemoveItem( _SDA_gag, 1, False  )
 	EndIf
 
 	if (Utility.RandomInt(0, 100) < 40)
@@ -129,6 +131,7 @@ Function positionVictims( Int aiStage )
 	kNaamah = _SDRAP_naamah.GetReference() as Actor
 	kMeridiana = _SDRAP_meridiana.GetReference() as Actor
 	kNordGirl = _SDRAP_nord_girl.GetReference() as Actor
+	kRedguardGirl = _SDRAP_redguard_girl.GetReference() as Actor
 	kImperialMan = _SDRAP_imperial_man.GetReference() as Actor
 	kEisheth = _SDRAP_eisheth.GetReference() as Actor
 
@@ -169,13 +172,18 @@ Function positionVictims( Int aiStage )
 	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 
-	kDreamer.EquipItem(  _SDA_gag , False, True )
+	fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	; kDreamer.EquipItem(  _SDA_gag , False, True )
 
 	kDreamer.resethealthandlimbs()
 
 	; _SDSP_spent.Cast( kDreamer, kDreamer)
 
 	kSanguine.Enable()
+	StorageUtil.StringListAdd(kSanguine, "_DDR_DialogExclude", "SD+:Sanguine")
+	StorageUtil.StringListAdd(kNordGirl, "_DDR_DialogExclude", "SD+:Sanguine")
+	StorageUtil.StringListAdd(kRedguardGirl, "_DDR_DialogExclude", "SD+:Sanguine")
 
 	Utility.Wait(1.0)
 
@@ -299,3 +307,5 @@ GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_enslavedSpriggan Auto
 
 ObjectReference Property _SD_DremoraChallenger  Auto  
+
+ReferenceAlias Property _SDRAP_redguard_girl  Auto  

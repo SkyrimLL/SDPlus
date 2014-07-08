@@ -590,7 +590,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			; 1 - Arms - Zaz Iron Cuffs
 			ddArmorRendered = Game.GetFormFromFile(0x00141541, "sanguinesDebauchery.esp") as Armor
 			ddArmorInventory = Game.GetFormFromFile(0x00141543, "sanguinesDebauchery.esp") as Armor
-			ddArmorKeyword = Game.GetFormFromFile(0x00CA3A, "Devious Devices - Assets.esm") as Keyword
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -653,7 +653,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 1) ; Wealthy outfit - Devious slave items
+	ElseIf (iOutfit == 1) ; Wealthy outfit - Devious slave items - Leather + Iron cuffs
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - DD Posture Leather Collar
@@ -664,10 +664,10 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
-			; 1 - Arms - DD Armbinders
-			ddArmorRendered = Game.GetFormFromFile(0x0000BA11, "Devious Devices - Assets.esm") as Armor
-			ddArmorInventory = Game.GetFormFromFile(0x00028A5A, "Devious Devices - Integration.esm") as Armor
-			ddArmorKeyword = Game.GetFormFromFile(0x00CA3A, "Devious Devices - Assets.esm") as Keyword
+			; 1 - Arms - Zaz Iron Cuffs
+			ddArmorRendered = Game.GetFormFromFile(0x00141541, "sanguinesDebauchery.esp") as Armor
+			ddArmorInventory = Game.GetFormFromFile(0x00141543, "sanguinesDebauchery.esp") as Armor
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -729,7 +729,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 		EndIf
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 2) ; Very Wealthy outfit - 'Princess Leia' type of slave
+	ElseIf (iOutfit == 2) ; Very Wealthy outfit  - Devious slave items - Steel + Armbinders
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - DD Posture Steel Collar
@@ -743,7 +743,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			; 1 - Arms - DD Armbinders
 			ddArmorRendered = Game.GetFormFromFile(0x0000BA11, "Devious Devices - Assets.esm") as Armor
 			ddArmorInventory = Game.GetFormFromFile(0x00028A5A, "Devious Devices - Integration.esm") as Armor
-			ddArmorKeyword = Game.GetFormFromFile(0x00CA3A, "Devious Devices - Assets.esm") as Keyword
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -818,7 +818,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			; 1 - Arms - Zaz Iron Cuffs
 			ddArmorRendered = Game.GetFormFromFile(0x00141541, "sanguinesDebauchery.esp") as Armor
 			ddArmorInventory = Game.GetFormFromFile(0x00141543, "sanguinesDebauchery.esp") as Armor
-			ddArmorKeyword = Game.GetFormFromFile(0x00CA3A, "Devious Devices - Assets.esm") as Keyword
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -831,7 +831,22 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 5) ; Falmer outfit - Chaurus textured Zaz spider web
+		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
+			; 0 - Collar - Zaz Iron Collar
+			ddArmorRendered = Game.GetFormFromFile(0x00141547, "sanguinesDebauchery.esp") as Armor
+			ddArmorInventory = Game.GetFormFromFile(0x00141549, "sanguinesDebauchery.esp") as Armor
+			ddArmorKeyword = Game.GetFormFromFile(0x00003DF7, "Devious Devices - Assets.esm") as Keyword
 
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+		EndIf
+		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
+			; 1 - Arms - Zaz Iron Cuffs
+			ddArmorRendered = Game.GetFormFromFile(0x00141541, "sanguinesDebauchery.esp") as Armor
+			ddArmorInventory = Game.GetFormFromFile(0x00141543, "sanguinesDebauchery.esp") as Armor
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+		EndIf
 
 
 	; --------------------------------------------------------------------------------------------
@@ -846,7 +861,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			; 1 - Arms - Spriggan host hands
 			ddArmorRendered = Game.GetFormFromFile(0x00148BF4, "sanguinesDebauchery.esp") as Armor
 			ddArmorInventory = Game.GetFormFromFile(0x00148BF5, "sanguinesDebauchery.esp") as Armor
-			ddArmorKeyword = Game.GetFormFromFile(0x00CA3A, "Devious Devices - Assets.esm") as Keyword
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -902,7 +917,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			; 1 - Arms - Sanguine Bound FX 
 			ddArmorRendered = Game.GetFormFromFile(0x0014867A, "sanguinesDebauchery.esp") as Armor
 			ddArmorInventory = Game.GetFormFromFile(0x0014867C, "sanguinesDebauchery.esp") as Armor
-			ddArmorKeyword = Game.GetFormFromFile(0x00CA3A, "Devious Devices - Assets.esm") as Keyword
+			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -931,9 +946,9 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
-			; 5 - Plug Vaginal - DD Soul Gem  Plug Vaginal
-			ddArmorRendered = Game.GetFormFromFile(0x00018715, "Devious Devices - Assets.esm") as Armor
-			ddArmorInventory = Game.GetFormFromFile(0x00031C6C, "Devious Devices - Integration.esm") as Armor
+			; 5 - Plug Vaginal - Sanguine's Artifact
+			ddArmorRendered = Game.GetFormFromFile(0x0014A718, "sanguinesDebauchery.esp") as Armor
+			ddArmorInventory = Game.GetFormFromFile(0x0014A71A, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x0001DD7C, "Devious Devices - Assets.esm") as Keyword
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
