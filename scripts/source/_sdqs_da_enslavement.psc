@@ -24,7 +24,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	Debug.Trace("SD Blackout start master:" + thisAggressor)
 	; Debug.Notification("SD Blackout start master:" + thisAggressor)
 	
-	if (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && ( (thisAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (thisAggressor.GetRace() == falmerRace)) && funct.checkGenderRestriction( thisAggressor, thisPlayer ) ) && !fctFactions.actorFactionInList( thisAggressor, _SDFLP_banned_factions )
+	if (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && ( (thisAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (  fctFactions.checkIfFalmer ( akAggressor) )) && funct.checkGenderRestriction( thisAggressor, thisPlayer ) ) && !fctFactions.actorFactionInList( thisAggressor, _SDFLP_banned_factions )
 		return true
 	else
 		return false
@@ -79,7 +79,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	if (thisAggressor)
 		_SDKP_enslave.SendStoryEvent( akLoc = thisLocation, akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
 	else
-		Debug.MessageBox("[SD] Problem - Aggressor was reset before enslavement.")
+		Debug.MessageBox("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")
 	EndIf
 
 endEvent

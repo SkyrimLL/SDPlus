@@ -70,48 +70,42 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	Actor akPlayer = thisPlayer
 	Actor akMaster = thisAggressor
 
-	If ( !checkIfSpriggan ( akMaster) && fctFactions.actorFactionInList( akMaster, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akMaster.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akMaster, _SDFL_banned_sex )  
-			; Debug.Notification( "(Rape attempt)")
+	If (akMaster) && (akPlayer)
+		If ( !fctFactions.checkIfSpriggan ( akMaster) && fctFactions.actorFactionInList( akMaster, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akMaster.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akMaster, _SDFL_banned_sex )  
+				; Debug.Notification( "(Rape attempt)")
 
 
-		If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) && (Utility.RandomInt(0,100)>80)
-			_SDSP_spent.Cast(akPlayer, akPlayer)
+			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) && (Utility.RandomInt(0,100)>80)
+				_SDSP_spent.Cast(akPlayer, akPlayer)
 
-			SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+				SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 
+			EndIf
+		ElseIf ( !fctFactions.checkIfSpriggan ( akMaster) && ( akMaster.HasKeyword( _SDKP_actorTypeNPC )) )  
+				; Debug.Notification( "(Rape attempt)")
+
+			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) && (Utility.RandomInt(0,100)>80)
+				_SDSP_spent.Cast(akPlayer, akPlayer)
+
+				SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+
+			EndIf
+		; ElseIf (Utility.RandomInt(0,100)<= ((_SDGVP_health_threshold.GetValue() as Int) / 10) ) && ( (akMaster.HasKeyword( _SDKP_actorTypeNPC ) || (akMaster.GetRace() == falmerRace)) && funct.checkGenderRestriction( akMaster, akPlayer ) ) && !fctFactions.actorFactionInList( akMaster, _SDFLP_banned_factions ) 
+			; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
+			; _SDGV_leash_length.SetValue(400)
+			; _SDKP_enslave.SendStoryEvent( akLoc = akMaster.GetCurrentLocation(), akRef1 = akMaster as Actor, akRef2 = akPlayer, aiValue1 = 0, aiValue2 = 0)
 		EndIf
-	ElseIf ( !checkIfSpriggan ( akMaster) && ( akMaster.HasKeyword( _SDKP_actorTypeNPC )) )  
-			; Debug.Notification( "(Rape attempt)")
-
-		If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) && (Utility.RandomInt(0,100)>80)
-			_SDSP_spent.Cast(akPlayer, akPlayer)
-
-			SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
-
-		EndIf
-	ElseIf (Utility.RandomInt(0,100)<= ((_SDGVP_health_threshold.GetValue() as Int) / 10) ) && ( (akMaster.HasKeyword( _SDKP_actorTypeNPC ) || (akMaster.GetRace() == falmerRace)) && funct.checkGenderRestriction( akMaster, akPlayer ) ) && !fctFactions.actorFactionInList( akMaster, _SDFLP_banned_factions ) 
-		; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
-		; _SDGV_leash_length.SetValue(400)
-		; _SDKP_enslave.SendStoryEvent( akLoc = akMaster.GetCurrentLocation(), akRef1 = akMaster as Actor, akRef2 = akPlayer, aiValue1 = 0, aiValue2 = 0)
+	else
+		Debug.MessageBox("[SD] Problem - Aggressor was reset before enslavement in _SD_DA_EnslavementBleedout.")
 	EndIf
 endEvent
-
-
-
-Bool Function checkIfSpriggan ( Actor akActor )
-	Bool bIsSpriggan = False
-	Int index = 0
-	Int size = _SDFLP_spriggan_factions.GetSize()
-	While ( !bIsSpriggan && index < size )
-		bIsSpriggan = akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")
-		index += 1
-	EndWhile
-	Return bIsSpriggan
-EndFunction
+ 
 
 GlobalVariable Property _SDGVP_gender_config  Auto
 
 _SDQS_functions 	Property funct  		Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+
 Race 				Property FalmerRace  	Auto  
 Keyword 			Property _SDKP_actorTypeNPC  Auto
 Keyword 			Property _SDKP_enslave  Auto
@@ -133,6 +127,5 @@ Keyword Property _SDKP_DDi  Auto
 FormList Property _SDFL_banned_sex  Auto  
 SexLabFramework property SexLab auto
 
-_SDQS_fcts_factions Property fctFactions  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 ReferenceAlias Property Alias_theBandit  Auto  

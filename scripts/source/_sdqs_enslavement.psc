@@ -251,6 +251,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
 		EndIf
 
+		StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
+
 		; Devious outfit - wealthy masters
 		; fctOutfit.setDeviousOutfit ( iOutfit = 1, iOutfitPart = -1, bEquip = True, sMessage = "Your new owner quickly locks you into slavery.")
 
@@ -320,7 +322,7 @@ Function UpdateSlaveState(Actor akSlave)
 	; Devious devices and punishment items restrictions
 
 	If (akSlave == Game.GetPlayer())
-		uiPunishmentsEarned += 1
+		uiPunishmentsEarned = Utility.RandomInt(0,2)
 		Debug.Notification("[_sdqs_enslavement] Updating slave state: " + uiPunishmentsEarned )
 
 		Self.ModObjectiveGlobal( _SDFP_slaverCrimeFaction.GetCrimeGold() / 100.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
@@ -338,7 +340,8 @@ Function UpdateSlaveState(Actor akSlave)
 		Form kForm = None
 
 		; Anal plug
-		If (uiPunishmentsEarned - 6 >= 0)
+		; If (uiPunishmentsEarned == 0)
+		If (Utility.RandomInt(0,100) >= 60)
 			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Anal plug" )
 				
 			fctOutfit.setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
@@ -349,7 +352,7 @@ Function UpdateSlaveState(Actor akSlave)
 		EndIf
 
 		; Blinds
-		If (uiPunishmentsEarned - 6 >= _SDFLP_punish_items.GetSize() - 1 )
+		If (Utility.RandomInt(0,100) >= 60)
 			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Blinds" )
 				
 			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
@@ -361,7 +364,7 @@ Function UpdateSlaveState(Actor akSlave)
 
 		; Gag
 
-		If (uiPunishmentsEarned - 6 >= 1)
+		If (Utility.RandomInt(0,100) >= 60)
 			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Gag: " + idx )
 
 			fctOutfit.setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
