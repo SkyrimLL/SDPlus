@@ -16,7 +16,7 @@ int Function OnEquippedFilter(actor akActor, bool silent=false)
 		; EndIf
 		; return 2
 	Endif
-	return 0
+	return 2
 EndFunction
 
 Function OnEquippedPre(actor akActor, bool silent=false)
@@ -67,7 +67,7 @@ int Function OnUnequippedFilter(actor akActor)
 	if akActor.WornHasKeyword(zad_DeviousBelt)
 	;	return 1
 	EndIf
-	return 0
+	return 1
 EndFunction
 
 
