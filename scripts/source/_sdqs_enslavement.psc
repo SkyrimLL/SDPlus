@@ -210,8 +210,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 
-		; Outfit selection - Commoner by default
+		; Sanguine outfit cleanup
+		fctOutfit.clearDeviousOutfit ( iDevOutfit = 10, sDevMessage = "")
+		Utility.Wait(1.0)
 
+		; Outfit selection - Commoner by default
 		int outfitID = 0
 
 		if (kMaster.HasKeyword( ActorTypeNPC ))

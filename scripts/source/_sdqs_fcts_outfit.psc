@@ -531,8 +531,18 @@ Function setDeviousOutfitHarness ( Int iDevOutfit =-1, Bool bDevEquip = True, St
 	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 8, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
-Function clearDeviousOutfit ( String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+Function clearDeviousOutfit ( Int iDevOutfit =-1, String sDevMessage = "")
+	int iOutfitID 
+
+	if (iDevOutfit== -1)
+		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8)
+
+		if (iOutfitID == -1)
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+		endif
+	Else
+		iOutfitID =  iDevOutfit
+	EndIf
 
 	If (sDevMessage != "")
 		Debug.MessageBox(sDevMessage)
