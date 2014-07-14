@@ -283,9 +283,15 @@ Function initMod( Bool bResetGlobals = False )
 		kQuests.resetGlobals()
 	EndIf
 
-	pThug1.GetActorReference().Delete()
-	pThug2.GetActorReference().Delete()
-	pThug3.GetActorReference().Delete()
+	if (pThug1)
+		pThug1.GetActorReference().Delete()
+	EndIf
+	if (pThug2)
+		pThug2.GetActorReference().Delete()
+	EndIf
+	if (pThug3)
+		pThug3.GetActorReference().Delete()
+	EndIf
 	WIAddItem03.Stop()
 
 	Pages = New String[5]

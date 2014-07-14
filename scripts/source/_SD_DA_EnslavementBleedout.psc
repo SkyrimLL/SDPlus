@@ -71,7 +71,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	Actor akMaster = thisAggressor
 
 	If (akMaster) && (akPlayer)
-		If ( !fctFactions.checkIfSpriggan ( akMaster) && fctFactions.actorFactionInList( akMaster, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquiped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akMaster.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akMaster, _SDFL_banned_sex )  
+		If ( !fctFactions.checkIfSpriggan ( akMaster) && fctFactions.actorFactionInList( akMaster, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquipped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akMaster.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akMaster, _SDFL_banned_sex )  
 				; Debug.Notification( "(Rape attempt)")
 
 

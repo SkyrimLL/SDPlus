@@ -7,6 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor slave = _SDRAP_slave.GetReference() as Actor
+Actor master = _SDRAP_master.GetReference() as Actor
 Int count = slave.GetItemCount( _SDAP_gag )
 Int demerits = _SDGVP_demerits.GetValue() as Int
 ObjectReference kMaster=_SDRAP_master.GetReference() as ObjectReference
@@ -14,7 +15,7 @@ ObjectReference kSlave=_SDRAP_slave.GetReference() as ObjectReference
 Int randomVar = Utility.RandomInt( 0, 100 ) 
 
 Self.GetOwningQuest().ModObjectiveGlobal( Utility.RandomInt( 1, 10 ), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-enslave.UpdateSlaveState( slave )
+enslave.UpdateSlaveState( master, slave )
 
 
 If (randomVar >= 90  ) ; Change appearance

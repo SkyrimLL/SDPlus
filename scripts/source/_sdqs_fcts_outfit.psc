@@ -125,7 +125,7 @@ Bool Function isShoutRemovable ( Shout kShout )
 EndFunction
 
 
-Bool Function isPunishmentEquiped (  Actor akActor )
+Bool Function isPunishmentEquipped (  Actor akActor )
 
 	If ( akActor.WornHasKeyword( _SDKP_punish ) )
 		Return True
@@ -170,7 +170,7 @@ Bool Function isPunishmentEquiped (  Actor akActor )
 EndFunction
 
 
-Bool Function isBindingEquiped (  Actor akActor )
+Bool Function isBindingEquipped (  Actor akActor )
 
 	If ( akActor.WornHasKeyword( _SDKP_bound ) )
 		Return True
@@ -202,15 +202,14 @@ Bool Function isBindingEquiped (  Actor akActor )
 	Return False
 EndFunction
 
-Bool Function isGagEquiped (  Actor akActor )
+Bool Function isGagEquipped (  Actor akActor )
 
 	If ( akActor.WornHasKeyword( _SDKP_gagged ) )
 		Return True
 	Else
 
-		Int[] uiSlotMask = New Int[2]
-		uiSlotMask[0] = 0x02000000 ;55  Gag
-		uiSlotMask[1] = 0x00004000 ;44  DD Gags
+		Int[] uiSlotMask = New Int[1]
+		uiSlotMask[0] = 0x00004000 ;44  DD Gags
 
 		Int iFormIndex = uiSlotMask.Length
 		Bool bDeviousDeviceEquipped = False
@@ -234,6 +233,73 @@ Bool Function isGagEquiped (  Actor akActor )
 
 	Return False
 EndFunction
+
+Bool Function isBlindfoldEquipped (  Actor akActor )
+
+	If ( akActor.WornHasKeyword( _SDKP_gagged ) )
+		Return True
+	Else
+
+		Int[] uiSlotMask = New Int[1]
+		uiSlotMask[0] = 0x02000000 ;55  DD Blindfold
+
+		Int iFormIndex = uiSlotMask.Length
+		Bool bDeviousDeviceEquipped = False
+
+		While ( iFormIndex > 0 )
+			iFormIndex -= 1
+			Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+			If (kForm != None)
+				Armor kArmor = kForm  as Armor
+				bDeviousDeviceEquipped = ( akActor.isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.hasKeywordString("zad_Lockable")  ) )
+			Else
+				bDeviousDeviceEquipped = False
+			EndIf
+
+			If bDeviousDeviceEquipped
+				return True 
+			EndIf
+
+		EndWhile
+	EndIf
+
+	Return False
+EndFunction
+
+Bool Function isPlugEquipped (  Actor akActor )
+
+	If ( akActor.WornHasKeyword( _SDKP_punish ) )
+		Return True
+	Else
+
+		Int[] uiSlotMask = New Int[2]
+		uiSlotMask[0] = 0x00040000 ;48  DD plugs (Anal)
+		uiSlotMask[1]= 0x01000000 ;54  DD Plugs (Vaginal)
+
+
+		Int iFormIndex = uiSlotMask.Length
+		Bool bDeviousDeviceEquipped = False
+
+		While ( iFormIndex > 0 )
+			iFormIndex -= 1
+			Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+			If (kForm != None)
+				Armor kArmor = kForm  as Armor
+				bDeviousDeviceEquipped = (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_Spriggan")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_DeviousArmbinder")) 
+			Else
+				bDeviousDeviceEquipped = False
+			EndIf
+
+			If bDeviousDeviceEquipped
+				return True 
+			EndIf
+
+		EndWhile
+	EndIf
+
+	Return False
+EndFunction
+
 
 Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = False )
 	If ( !akActor || akActor.IsDead() )
