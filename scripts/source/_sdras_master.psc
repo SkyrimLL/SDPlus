@@ -88,7 +88,7 @@ Event OnDeath(Actor akKiller)
 	Debug.Trace("[_sdras_master] Master dead - Stop enslavement")
 
 	Self.GetOwningQuest().Stop()
-	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && player.checkGenderRestrictions( akKiller, kSlave ) ) && !fctFactions.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && fctFactions.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
+	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && funct.checkGenderRestriction( akKiller, kSlave ) ) && !fctFactions.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && fctFactions.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
 		; new master
 		While ( Self.GetOwningQuest().IsStopping() )
 		EndWhile
@@ -139,10 +139,11 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 		Debug.Notification( "[_sdras_master] You will regret attacking me!" )
 		; Punishment
-		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		enslavement.PunishSlave(kMaster,kSlave)
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 
 		; Whipping
-		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
@@ -197,6 +198,7 @@ Event OnInit()
 
 		if (iRandomNum>80)
 			; Punishment
+			enslavement.PunishSlave(kMaster,kSlave)
 			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 		ElseIf (iRandomNum>50)
 			; Whipping

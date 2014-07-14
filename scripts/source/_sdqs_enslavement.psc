@@ -211,8 +211,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 
 		; Sanguine outfit cleanup
-		fctOutfit.clearDeviousOutfit ( iDevOutfit = 10, sDevMessage = "")
-		Utility.Wait(1.0)
+		; fctOutfit.clearDeviousOutfit ( iDevOutfit = 10, sDevMessage = "")
+		; Utility.Wait(1.0)
 
 		; Outfit selection - Commoner by default
 		int outfitID = 0
@@ -233,10 +233,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "Your new owner quickly locks you into slavery.")
 
-		if (1==0) && (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
+		if (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
 
 			; Replace by function with detection of currently worn collar / outfit
-			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+			; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
 			Utility.Wait(1.0)
 			fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")
 		Else
@@ -247,14 +247,15 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
 
 		if (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
-			fctOutfit.setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+			AddSlavePunishment( kActor = kSlave, bGag = True)
+
 		EndIf
 
 		if (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
-			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+			AddSlavePunishment( kActor = kSlave, bBlindfold = True)
+
 		EndIf
 
-		StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
 
 		; Devious outfit - wealthy masters
 		; fctOutfit.setDeviousOutfit ( iOutfit = 1, iOutfitPart = -1, bEquip = True, sMessage = "Your new owner quickly locks you into slavery.")
@@ -319,47 +320,86 @@ Auto State enslaved
 	EndEvent
 EndState
 
+Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False)
 
-Function UpdateSlaveState(Actor akSlave)
+	If (kActor == Game.GetPlayer())
 
-	; Devious devices and punishment items restrictions
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.015 * Utility.RandomInt( 1,5))
 
-	If (akSlave == Game.GetPlayer())
-		uiPunishmentsEarned = Utility.RandomInt(0,2)
-		Debug.Notification("[_sdqs_enslavement] Updating slave state: " + uiPunishmentsEarned )
+		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBlindfold as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int)
+		Debug.Notification("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
 
 		Self.ModObjectiveGlobal( _SDFP_slaverCrimeFaction.GetCrimeGold() / 100.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 		_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
 		uiLastDemerits = _SDGVP_demerits.GetValueInt()
 
-		Int idx = 0
-		ObjectReference bindings = _SDRAP_bindings.GetReference() as ObjectReference
-
-		; If ( !akSlave.IsEquipped( bindings ) )
-		;	akSlave.AddItem( bindings )
-		; EndIf
-
-		Armor item = None
-		Form kForm = None
-
-		; Anal plug
-		; If (uiPunishmentsEarned == 0)
-		If (Utility.RandomInt(0,100) >= 60)
+		If (bPlugAnal)
 			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Anal plug" )
 				
 			fctOutfit.setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
-		Else
+		EndIf
+
+		If (bPlugVaginal)
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Vaginal plug" )
+				
+			fctOutfit.setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
+		EndIf
+
+		; Belt
+		If (bBelt)
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Belt" )
+				
+			fctOutfit.setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		EndIf
+
+		; Blinds
+		If (bBlindfold)
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Blinds" )
+				
+			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+		EndIf
+
+		; Gag
+
+		If (bGag)
+			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Gag" )
+
+			fctOutfit.setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+
+		EndIf
+
+	Else
+		Debug.Notification("[_sdqs_enslavement] Target is not the player")
+	EndIf
+
+EndFunction
+
+Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False)
+
+	If (kActor == Game.GetPlayer())
+
+		If (bPlugAnal)
 			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Anal plug" )
 				
 			fctOutfit.setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		; Blinds
-		If (Utility.RandomInt(0,100) >= 60)
-			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Blinds" )
+		If (bPlugVaginal)
+			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Vaginal plug" )
 				
-			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
-		Else
+			fctOutfit.setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
+		EndIf
+
+		; Belt
+		If (bBelt)
+			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Belt" )
+				
+			fctOutfit.setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		EndIf
+
+		; Blinds
+		If (bBlindfold)
 			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Blinds" )
 				
 			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
@@ -367,24 +407,103 @@ Function UpdateSlaveState(Actor akSlave)
 
 		; Gag
 
-		If (Utility.RandomInt(0,100) >= 60)
-			Debug.Notification("[_sdqs_enslavement] Adding punishment item: Gag: " + idx )
-
-			fctOutfit.setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-
-		ElseIf (uiPunishmentsEarned - 6 < 1)
+		If (bGag)
 			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Gag "  )
 
 			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 
-		
+		EndIf
+
+		If (!fctOutfit.IsPunishmentEquipped(kActor))
+			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.0)
 		EndIf
 
 	Else
 		Debug.Notification("[_sdqs_enslavement] Target is not the player")
 	EndIf
+
 EndFunction
 
+
+Function UpdateSlaveState(Actor akMaster, Actor akSlave)
+
+	If (akSlave == Game.GetPlayer())
+
+		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
+		Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
+		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
+
+		If (fPunishmentDuration > 0)
+			; if (Utility.RandomInt(0,100) > 90)
+			;	Debug.Notification("[SD]   Punishment time:" + fPunishmentRemainingtime  )
+			; EndIf
+
+			; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
+			; Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
+			; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
+			; Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance)
+
+			If ( (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime) >= fPunishmentDuration) && (fMasterDistance <= 300)
+
+
+				if (fctOutfit.IsGagEquipped(akSlave)) && ( _SDGVP_demerits.GetValueInt() < 80 )
+					Debug.MessageBox("Your owner releases you from your gag.")
+					RemoveSlavePunishment( kActor = akSlave, bGag = True)
+
+				Elseif (fctOutfit.IsBlindfoldEquipped(kSlave)) && ( _SDGVP_demerits.GetValueInt() < 100 )
+					Debug.MessageBox("Your owner releases you from your blindfold.")
+					RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
+
+				ElseIf  (fctOutfit.IsPlugEquipped(kSlave)) &&  ( _SDGVP_demerits.GetValueInt() < 120 )
+					Debug.MessageBox("Your owner releases you from your belt.")
+					RemoveSlavePunishment( kActor = akSlave, bPlugAnal = True,  bPlugVaginal = True)
+
+					If (Utility.RandomInt(0,100)>80)
+						RemoveSlavePunishment( kActor = akSlave, bBelt = True)
+					EndIf
+				EndIf
+
+			ElseIf ( (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime) >= fPunishmentDuration) && (fMasterDistance > 300)
+				Debug.Trace("Your owner is too far to remove your punishment.")
+			Else
+				Debug.Trace("Your punishment is not over yet.")
+			EndIf
+		EndIf
+	Else
+		Debug.Notification("[_sdqs_enslavement] Target is not the player")
+	EndIf
+
+
+EndFunction
+
+Function PunishSlave(Actor akMaster, Actor akSlave)
+
+	If (akSlave == Game.GetPlayer())
+		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+
+		If (fMasterDistance <= 300)
+			Debug.MessageBox("Your owner is forcing a punishment on you.")
+
+			if (!fctOutfit.IsGagEquipped(akSlave))
+				AddSlavePunishment( kActor = akSlave, bGag = True)
+
+			Elseif (!fctOutfit.IsBlindfoldEquipped(kSlave))
+				AddSlavePunishment( kActor = akSlave, bBlindfold = True)
+
+			Else 
+				AddSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
+			EndIf
+
+		ElseIf (fMasterDistance > 300)
+			Debug.Notification("Your owner is too far to punish you.")
+		EndIf
+	Else
+		Debug.Notification("[_sdqs_enslavement] Target is not the player")
+	EndIf
+
+
+EndFunction
 
 
 Function UpdateSlaveFollowerState(Actor akSlave)

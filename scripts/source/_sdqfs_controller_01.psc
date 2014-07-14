@@ -2,9 +2,19 @@
 ;NEXT FRAGMENT INDEX 11
 Scriptname _sdqfs_controller_01 Extends Quest Hidden
 
+;BEGIN ALIAS PROPERTY _SDRA_player_safe
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_player_safe Auto
+;END ALIAS PROPERTY
+
 ;BEGIN ALIAS PROPERTY _SDRA_lust_m
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_lust_m Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_lust_f
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_lust_f Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_player
@@ -15,16 +25,6 @@ ReferenceAlias Property Alias__SDRA_player Auto
 ;BEGIN ALIAS PROPERTY _SDRA_lust
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_lust Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_lust_f
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_lust_f Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_player_safe
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_player_safe Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_9
@@ -55,7 +55,8 @@ Function Fragment_5()
 ;BEGIN CODE
 SetObjectiveDisplayed(0)
 ; ( Alias__SDRA_player.GetReference() as Actor ).StartDeferredKill()
-_SDGVP_enslaved.SetValue( 0 )
+
+fctSlavery.InitSlaveryState( Alias__SDRA_player.GetReference() as Actor )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -63,5 +64,5 @@ EndFunction
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 ;; USED
-
+_SDQS_fcts_slavery Property fctSlavery  Auto
 GlobalVariable Property _SDGVP_enslaved  Auto  

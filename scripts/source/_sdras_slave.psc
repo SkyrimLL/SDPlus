@@ -168,6 +168,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 
 		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 	
 		if (Utility.RandomInt(0,100) < 90)
 			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
@@ -196,6 +197,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
 				fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 				fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 
 				Self.GetOwningQuest().Stop()
 				Return
@@ -245,6 +247,7 @@ State monitor
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
 
+		enslavement.UpdateSlaveState(kMaster ,kSlave)
 		enslavement.UpdateSlaveFollowerState(kSlave)
 		
 		fDistance = kSlave.GetDistance( kMaster )
@@ -379,10 +382,7 @@ State monitor
 	EndEvent
 	
 	Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
-		If ( Self.GetOwningQuest().GetStage() >= 90 || _SDFLP_sex_items.Find( akBaseItem ) >= 0 || _SDFLP_punish_items.Find( akBaseItem ) >= 0 ) ; || _SDFLP_slave_clothing.Find( akBaseItem ) >= 0 )
-			Return
-		EndIf
-		If ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) )
+		If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) )
 			Return
 		EndIf
 
@@ -408,7 +408,7 @@ State monitor
 			
 			; kPotion = 46
 			If ( iuType == 46 || akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || akBaseItem.HasKeyword( _SDKP_food_vendor ) )
-				If ( GetCurrentRealTime() - fLastIngest > 5.0 && !fctOutfit.isGagEquiped(kSlave) )
+				If ( GetCurrentRealTime() - fLastIngest > 5.0 && !fctOutfit.isGagEquipped(kSlave) )
 					If ( aiItemCount - 1 > 0 )
 						kSlave.DropObject(akBaseItem, aiItemCount - 1)
 					EndIf
@@ -463,16 +463,16 @@ State monitor
 				fLastEscape = GetCurrentRealTime()
 
 			ElseIf ( iuType == 26 )  ; Armor
-				If ( !akBaseItem.HasKeywordString("zad_Lockable") &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
+				If ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
 					; kSlave.DropObject(akBaseItem, aiItemCount)
-					kSlave.EquipItem(akBaseItem, True, True)
+					; kSlave.EquipItem(akBaseItem, True, True)
 				Else
-					Debug.Notification( "[_sdras_slave] Could not equip clothing." )
+					Debug.Trace( "[_sdras_slave] Could not equip clothing." )
 				EndIf
 
 			ElseIf ( kMaster.GetSleepState() != 0 && kMaster.HasLOS( kSlave ) )
-				If ( !akBaseItem.HasKeywordString("zad_Lockable") &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
-					kSlave.RemoveItem( akBaseItem, aiItemCount, False, kMaster )
+				If ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
+					; kSlave.RemoveItem( akBaseItem, aiItemCount, False, kMaster )
 				EndIf
 			EndIf
 		EndIf
@@ -521,6 +521,7 @@ State escape
 
 			if (Utility.RandomInt(0,100)>70)
 				; Punishment
+				enslavement.PunishSlave(kMaster,kSlave)
 				_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 			Else
 				; Whipping

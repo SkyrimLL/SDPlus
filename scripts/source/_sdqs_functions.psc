@@ -329,6 +329,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 		; Gender restrictions - 2 actors
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
+
+			SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
 		
 			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) )
 				If (speakerGender  == 0)
@@ -339,7 +341,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			ElseIf ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
 					
 					If (speakerGender == 1) ; Mistress and Male slave
-						SexLabInTags = SexLabInTags + ",Cowgirl"
+					;	SexLabInTags = SexLabInTags + ",Cowgirl"
 					ElseIf  (speakerGender == 0) ; Master and Female slave
 					;	SexLabInTags = SexLabInTags + ",Doggystyle"
 					EndIf
