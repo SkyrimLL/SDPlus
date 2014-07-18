@@ -45,18 +45,28 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	ObjectReference lust_m = Alias__SDRA_lust_m.GetReference() as ObjectReference
 	Actor kPlayer = Game.GetPlayer() as Actor
 
-	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)>90))) && dbe.pSleepyTime != 1 
+	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)>90)) ) && dbe.pSleepyTime != 1 
 
 			; Debug.Notification("Reality slips away...")
 			; Debug.Notification("[dream] Sanguine finds you in your dream")
  	;		Game.FadeOutGame(true, true, 5.0, 10.0)
 
 			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
-			_SD_dreamQuest.SetStage(10)
+			If (_SDGVP_sanguine_blessing.GetValue() == 0) 
+				_SD_dreamQuest.SetStage(10)
+			Else
+				_SD_dreamQuest.SetStage(15)
+			EndIf
 
 	;		Utility.Wait(1.0)
 
 	EndIf
+
+	if Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
+	  	_SD_dreamQuest.SetStage(15)
+	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_SanguineShrine) && (_SDGVP_sanguine_blessing.GetValue() > 0)
+	  	_SD_dreamQuest.SetStage(15)
+	endif
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)
@@ -76,3 +86,7 @@ EndEvent
 
 
 Quest Property _SD_dreamQuest  Auto  
+
+Location Property _SDLOC_HaelgaBasement  Auto  
+
+Location Property _SDLOC_SanguineShrine  Auto  

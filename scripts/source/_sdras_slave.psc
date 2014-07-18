@@ -172,8 +172,9 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	
 		if (Utility.RandomInt(0,100) < 90)
 			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+			Debug.Messagebox("Your Master's Key helps you break free of your chains.")
 		Else
-			Debug.MessageBox("The key snapped as you tried to force the lock.")
+			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 		EndIf
 
 		Self.GetOwningQuest().Stop()
@@ -195,6 +196,8 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 			enslavement.ufBindingsHealth = _SDFP_bindings_health
 			If ( _SDFP_bindings_health < 0.0 && !_SDGVP_state_caged.GetValueInt() )
 				Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
+				Debug.Messagebox("You manage to break your chains with a weapon.")
+
 				fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 				fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
 				fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
@@ -398,6 +401,17 @@ State monitor
 			; escape
 			Debug.Trace("[_sdras_slave] Master key stolen - Stop enslavement")
 
+			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		
+			if (Utility.RandomInt(0,100) < 90)
+				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+				Debug.Messagebox("Your Master's Key helps you break free of your chains.")
+			Else
+				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
+			EndIf
+			
 			Self.GetOwningQuest().Stop()
 			kSlave.RemoveItem(akItemReference, aiItemCount)
 			_SDKP_trust_hands.SetValue(1) 
@@ -445,6 +459,11 @@ State monitor
 					_SDFP_bindings_health -= fDamage
 					If ( _SDFP_bindings_health < 0.0 )
 						Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
+						Debug.Messagebox("You manage to break your chains with a weapon.")
+
+						fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+						fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+						fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 
 						Self.GetOwningQuest().Stop()
 						Return

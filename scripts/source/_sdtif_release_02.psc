@@ -13,7 +13,8 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 If   (Utility.RandomInt(0,100)>60)
 	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
-	fctOutfit.removeDeviousOutfitPart ( iDevOutfitPart = 2, sDevMessage = "You have been released from your chains.")
+	fctOutfit.setDeviousOutfitArms (  iDevOutfit =-1, bDevEquip = False, sDevMessage = "You have been released from your chains")
+	fctOutfit.setDeviousOutfitLegs (  iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
 
 
 	funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")

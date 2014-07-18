@@ -149,8 +149,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		EndIf
 
 		kMaster.AllowPCDialogue( True )
-		; funct.actorCombatShutdown( kMaster )
-		; funct.actorCombatShutdown( kSlave )
+		; fctConstraints.actorCombatShutdown( kMaster )
+		fctConstraints.actorCombatShutdown( kSlave )
 		fctConstraints.togglePlayerControlsOff( )
 
 		; item cleanup
@@ -212,7 +212,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Sanguine outfit cleanup
 		; fctOutfit.clearDeviousOutfit ( iDevOutfit = 10, sDevMessage = "")
-		; Utility.Wait(1.0)
+		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10,  bDevEquip = False)
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10,  bDevEquip = False)
+		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10,  bDevEquip = False)
+		Utility.Wait(1.0)
 
 		; Outfit selection - Commoner by default
 		int outfitID = 0
@@ -225,6 +228,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 				; Greater health - use wealthy outfit
 				outfitID = 1
 			EndIf
+		ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
+			outfitID = 5
 		Else
 			outfitID = 3
 		EndIf
@@ -322,7 +327,7 @@ EndState
 
 Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False)
 
-	If (kActor == Game.GetPlayer())
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.015 * Utility.RandomInt( 1,5))
@@ -377,7 +382,10 @@ EndFunction
 
 Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False)
 
-	If (kActor == Game.GetPlayer())
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
+		; Additional time added to remove next punishment item
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.015 * Utility.RandomInt( 1,2))
 
 		If (bPlugAnal)
 			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Anal plug" )
