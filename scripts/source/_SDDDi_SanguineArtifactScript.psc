@@ -70,6 +70,10 @@ int Function OnUnequippedFilter(actor akActor)
 	return 1
 EndFunction
 
+Function OnUnEquippedPost(actor akActor)
+	Utility.Wait(5)
+	akActor.RemoveItem(deviceInventory, 1, true)
+EndFunction
 
 Function DeviceMenu(Int msgChoice = 0)
         msgChoice = zad_DeviceMsg.Show() ; display menu

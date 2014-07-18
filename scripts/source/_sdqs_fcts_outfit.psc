@@ -637,6 +637,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 	Armor ddArmorInventory
 	Armor ddArmorRendered
 	Keyword ddArmorKeyword
+	Bool bDestroy = False
 
 	Debug.Trace("[SD] Slave set - Outfit: " + iOutfit + " - Part: " + iOutfitPart + " - Equip: " + bEquip )
 
@@ -932,6 +933,9 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 7) ; Spriggan Host outfit - Vegetal armor
+		if (!bEquip)
+			bDestroy = True
+		EndIf
 
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
 			; 1 - Arms - Spriggan host hands
@@ -939,7 +943,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00148BF5, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
 			; 2 - Legs - Spriggan host feet
@@ -947,7 +951,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00148BF9, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00003DF8, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 
 		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
@@ -956,7 +960,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00148BFC, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00011B1A, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==8) || (iOutfitPart==-1) )
 			; 8 - Harness - Spriggan host body
@@ -964,7 +968,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00148BFF, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00017C43, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 
 
@@ -981,13 +985,17 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 10) ; Sanguine Artefacts - Spectral bondage devices
+		if (!bEquip)
+			bDestroy = True
+		EndIf
+
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - Sanguine Bound FX 
 			ddArmorRendered = Game.GetFormFromFile(0x00148109, "sanguinesDebauchery.esp") as Armor
 			ddArmorInventory = Game.GetFormFromFile(0x0014810B, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00003DF7, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
 			; 1 - Arms - Sanguine Bound FX 
@@ -995,7 +1003,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x0014867C, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x0000CA3A, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
 			; 2 - Legs - Sanguine Bound FX 
@@ -1003,7 +1011,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x0014867E, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00003DF8, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==3) || (iOutfitPart==-1) )
 			; 3 - Gag - Sanguine Bound FX 
@@ -1011,7 +1019,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00148679, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00007EB8, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
 			; 4 - Plug Anal - DD Soul Gem Plug Anal
@@ -1019,7 +1027,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00031C6B, "Devious Devices - Integration.esm") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x0001DD7D, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
 			; 5 - Plug Vaginal - Sanguine's Artifact
@@ -1027,7 +1035,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x0014A71A, "sanguinesDebauchery.esp") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x0001DD7C, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
 			; 6 - Blindfold
@@ -1035,7 +1043,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00031C6F, "Devious Devices - Integration.esm") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00011B1A, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
 			; 7 - Belt - DDBelt Padded
@@ -1043,7 +1051,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00009A7B, "Devious Devices - Integration.esm") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00003330, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==8) || (iOutfitPart==-1) )
 			; 8 - Harness
@@ -1051,7 +1059,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = Game.GetFormFromFile(0x00031C74, "Devious Devices - Integration.esm") as Armor
 			ddArmorKeyword = Game.GetFormFromFile(0x00017C43, "Devious Devices - Assets.esm") as Keyword
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 	EndIf
 
@@ -1063,7 +1071,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 EndFunction
 
-Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword)
+Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
 
 	if (bEquip) && (iOutfitPart!=-1)
 		libs.Log("SD outfit equip - " + iOutfit + " [ " + iOutfitPart + "] " )
@@ -1073,6 +1081,10 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 		libs.Log("SD outfit remove - " + iOutfit + " [ " + iOutfitPart + "] " )
 		StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
 		libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
+
+		If (bDestroy)
+			Game.GetPlayer().RemoveItem(ddArmorInventory, 1, true)
+		EndIf
 	EndIf
 
 EndFunction
