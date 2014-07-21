@@ -44,29 +44,6 @@ Function sendDreamerBack( Int aiStage )
 	;
 	EndWhile
 
-
-	if (Utility.RandomInt(0, 100) < 40)
-		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
-	EndIf
-
-	if (Utility.RandomInt(0, 100) < 10)
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
-	EndIf
-
-	if (Utility.RandomInt(0, 100) < 10)
-		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
-	EndIf
-
-	if (Utility.RandomInt(0, 100) < 40)
-		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
-		; kDreamer.RemoveItem( _SDA_gag, 1, False  )
-	EndIf
-
-	if (Utility.RandomInt(0, 100) < 40)
-	;	fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
-	;	fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
-	EndIf
-
     Game.FadeOutGame(true, true, 5.0, 10.0)
 	StorageUtil.SetIntValue(none, "DN_ONOFF", 0)
 
@@ -158,23 +135,9 @@ Function positionVictims( Int aiStage )
     ; Game.ShowFirstPersonGeometry(true)
 
 	Game.DisablePlayerControls( abMenu = True )
-	SexLab.ActorLib.StripActor(Game.GetPlayer(), DoAnimate= false)
+	SexLab.ActorLib.StripActor(kDreamer, DoAnimate= false)
 
 	Utility.Wait(0.1)
-
-	; Test - Remove current collar first
-	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-
-	fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-
-	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-
-	fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	; kDreamer.EquipItem(  _SDA_gag , False, True )
 
 	kDreamer.resethealthandlimbs()
 
@@ -277,6 +240,7 @@ Function positionVictims( Int aiStage )
 	kSanguine.QueueNiNodeUpdate()
 	Utility.Wait(2.0)	
 
+	_SDSP_SanguineBound.RemoteCast(kDreamer, kDreamer, kDreamer)
 
 
 EndFunction
@@ -309,3 +273,5 @@ GlobalVariable Property _SDGVP_enslavedSpriggan Auto
 ObjectReference Property _SD_DremoraChallenger  Auto  
 
 ReferenceAlias Property _SDRAP_redguard_girl  Auto  
+
+SPELL Property _SDSP_SanguineBound  Auto  

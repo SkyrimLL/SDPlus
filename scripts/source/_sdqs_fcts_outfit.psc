@@ -169,6 +169,37 @@ Bool Function isPunishmentEquipped (  Actor akActor )
 	Return False
 EndFunction
 
+Bool Function isCollarEquipped (  Actor akActor )
+
+	If ( akActor.WornHasKeyword( _SDKP_gagged ) )
+		Return True
+	Else
+
+		Int[] uiSlotMask = New Int[1]
+		uiSlotMask[0] =  0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
+
+		Int iFormIndex = uiSlotMask.Length
+		Bool bDeviousDeviceEquipped = False
+
+		While ( iFormIndex > 0 )
+			iFormIndex -= 1
+			Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+			If (kForm != None)
+				Armor kArmor = kForm  as Armor
+				bDeviousDeviceEquipped = ( akActor.isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.hasKeywordString("zad_Lockable")  ) )
+			Else
+				bDeviousDeviceEquipped = False
+			EndIf
+
+			If bDeviousDeviceEquipped
+				return True 
+			EndIf
+
+		EndWhile
+	EndIf
+
+	Return False
+EndFunction
 
 Bool Function isBindingEquipped (  Actor akActor )
 
@@ -176,8 +207,9 @@ Bool Function isBindingEquipped (  Actor akActor )
 		Return True
 	Else
 
-		Int[] uiSlotMask = New Int[1]
+		Int[] uiSlotMask = New Int[2]
 		uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders
+		uiSlotMask[1] = 0x00800000 ;53  DD Cuffs (Legs)
 
 		Int iFormIndex = uiSlotMask.Length
 		Bool bDeviousDeviceEquipped = False
