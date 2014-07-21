@@ -11,8 +11,8 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 ; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.setDeviousOutfitArms (  iDevOutfit =-1, bDevEquip = False, sDevMessage = "You have been released from your chains")
-fctOutfit.setDeviousOutfitLegs (  iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
+fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
 ;END CODE
 EndFunction
 ;END FRAGMENT

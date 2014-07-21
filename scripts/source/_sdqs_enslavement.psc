@@ -212,10 +212,14 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Sanguine outfit cleanup
 		; fctOutfit.clearDeviousOutfit ( iDevOutfit = 10, sDevMessage = "")
-		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10,  bDevEquip = False)
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10,  bDevEquip = False)
-		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10,  bDevEquip = False)
-		Utility.Wait(1.0)
+		; If (Utility.RandomInt(0,100)>50)
+		; 	fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10,  bDevEquip = False)
+		; EndIf
+		; If (Utility.RandomInt(0,100)>50)
+		; 	fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10,  bDevEquip = False)
+		; 	fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10,  bDevEquip = False)
+		; EndIf
+		; Utility.Wait(1.0)
 
 		; Outfit selection - Commoner by default
 		int outfitID = 0
@@ -234,29 +238,31 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			outfitID = 3
 		EndIf
 
-		Utility.Wait(1.0)
-
 		fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "Your new owner quickly locks you into slavery.")
 
-		if (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
+		if (!fctOutfit.isCollarEquipped(kSlave))
+			if (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
 
-			; Replace by function with detection of currently worn collar / outfit
-			; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-			Utility.Wait(1.0)
-			fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")
-		Else
-			fctOutfit.setDeviousOutfitCollar ( bDevEquip = True, sDevMessage = "")
+				; Replace by function with detection of currently worn collar / outfit
+				; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+				Utility.Wait(1.0)
+				fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")
+			Else
+				fctOutfit.setDeviousOutfitCollar ( bDevEquip = True, sDevMessage = "")
+			EndIf
 		EndIf
 
-		fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")
-		fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+		if (!fctOutfit.isBindingEquipped(kSlave))
+			fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")
+			fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+		EndIf
 
-		if (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
+		if (!fctOutfit.isGagEquipped(kSlave)) && (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
 			AddSlavePunishment( kActor = kSlave, bGag = True)
 
 		EndIf
 
-		if (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
+		if (!fctOutfit.isBlindfoldEquipped(kSlave)) && (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
 			AddSlavePunishment( kActor = kSlave, bBlindfold = True)
 
 		EndIf

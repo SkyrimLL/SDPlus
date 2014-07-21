@@ -215,7 +215,42 @@ Event OnUpdateGameTime()
 	; random punishment events
 	If( RandomFloat(0.0, 100.0) < fSprigganPunish && GetStage() < 70 && !( kSlave as Actor ).GetCurrentScene() && !( kSlave as Actor ).IsInCombat() && !( kSlave as Actor ).GetDialogueTarget() )
 		; _SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
+		Game.ForceThirdPerson()
+		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
 		Debug.Notification( "The roots throb deeply in and out of you..." )
+
+		_SD_spriggan_punishment.Mod(1)
+
+		If (_SD_spriggan_punishment.GetValue() == 2 )
+			if (fctOutfit.isBindingEquipped(kSlave as Actor))
+				fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "")	
+				fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")	
+				Utility.Wait(1.0)
+			EndIf
+
+			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+
+		ElseIf (_SD_spriggan_punishment.GetValue() == 3 )
+			; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			if (fctOutfit.isCollarEquipped(kSlave as Actor))
+				fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")	
+				Utility.Wait(1.0)
+			EndIf
+			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+
+		ElseIf (_SD_spriggan_punishment.GetValue() == 4 )
+			; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			; fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			if (fctOutfit.isCollarEquipped(kSlave as Actor))
+				fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")	
+				Utility.Wait(1.0)
+			EndIf
+			fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+
+		EndIf
 
 		Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(133, 16) + Math.LeftShift(184, 8) + 160
 		StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
@@ -276,7 +311,7 @@ Event OnUpdate()
 EndEvent
 
 GlobalVariable Property _SDGVP_sprigganEnslaved  Auto  
-
+GlobalVariable Property _SD_spriggan_punishment  Auto  
 ObjectReference Property _SD_sprigganHusk  Auto  
 FormList Property _SDFLP_ignore_items  Auto
 

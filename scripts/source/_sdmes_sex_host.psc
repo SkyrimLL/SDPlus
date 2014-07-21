@@ -94,8 +94,8 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		
 	fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
 	fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")	
-	fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
-	fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
+	; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
+	; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
 	Utility.Wait(1.0)
 
 	_SDSP_cum.RemoteCast(kTarget, kTarget, kTarget)
