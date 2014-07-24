@@ -53,6 +53,13 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 			If (_SDGVP_sanguine_blessing.GetValue() == 0) 
+				If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
+					kConfig._SDBP_quests_primary_running[1] = True
+					kConfig._SDQP_quests_primary[1].Start()
+					kConfig._SDBP_quests_primary_running[2] = True
+					kConfig._SDQP_quests_primary[2].Start()
+				EndIf
+
 				_SD_dreamQuest.SetStage(10)
 			Else
 				_SD_dreamQuest.SetStage(15)
@@ -63,9 +70,22 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	EndIf
 
 	if Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
+			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 	  	_SD_dreamQuest.SetStage(15)
-	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_SanguineShrine) && (_SDGVP_sanguine_blessing.GetValue() > 0)
-	  	_SD_dreamQuest.SetStage(15)
+	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_SanguineShrine) 
+			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
+			If (_SDGVP_sanguine_blessing.GetValue() == 0) 
+				If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
+					kConfig._SDBP_quests_primary_running[1] = True
+					kConfig._SDQP_quests_primary[1].Start()
+					kConfig._SDBP_quests_primary_running[2] = True
+					kConfig._SDQP_quests_primary[2].Start()
+				EndIf
+
+				_SD_dreamQuest.SetStage(10)
+			Else
+				_SD_dreamQuest.SetStage(15)
+			EndIf
 	endif
 EndEvent
 
@@ -90,3 +110,5 @@ Quest Property _SD_dreamQuest  Auto
 Location Property _SDLOC_HaelgaBasement  Auto  
 
 Location Property _SDLOC_SanguineShrine  Auto  
+_SD_ConfigMenu Property kConfig  Auto  
+

@@ -79,7 +79,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	if (thisAggressor)
 		_SDKP_enslave.SendStoryEvent( akLoc = thisLocation, akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
 	else
-		Debug.MessageBox("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")
+		; Debug.MessageBox("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")
 	EndIf
 
 endEvent

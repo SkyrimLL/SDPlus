@@ -26,14 +26,14 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 		ElseIf  (randomVar > 6)
 			Debug.Notification( "The roots force your legs open ..." )
 			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(akRef2 , true) ; // IsVictim = true
+			Thread.AddActor(akRef2 ) ; // IsVictim = true
 			Thread.AddActor(akRef1 )
 			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Sex"))
 			Thread.StartThread()
 		Else 
 			Debug.Notification( "The sweet scent is overwhelming..." )
 			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(akRef1, true) ; // IsVictim = true
+			Thread.AddActor(akRef1) ; // IsVictim = true
 
 			If (akRef1.GetActorBase().getSex() == 1)
 				Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F","Estrus,Dwemer"))

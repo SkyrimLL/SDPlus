@@ -9,17 +9,21 @@ Actor kPlayer
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; Test - Remove current collar first
+	; if (fctOutfit.isCollarEquipped(akTarget))
+	;	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+	; EndIf
+	; if (fctOutfit.isBlindfoldEquipped(akTarget))
+	; 	fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+	; EndIf
+
 	if (!fctOutfit.isCollarEquipped(akTarget))
-		fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	EndIf
-	if (!fctOutfit.isBlindfoldEquipped(akTarget))
-		fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+	if (!fctOutfit.isBindingEquipped(akTarget))
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	EndIf
-
-	fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-
+	
 	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 
