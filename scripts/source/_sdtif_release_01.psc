@@ -13,6 +13,8 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
 fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
 ;END CODE
 EndFunction
 ;END FRAGMENT

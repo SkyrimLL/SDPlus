@@ -20,7 +20,7 @@ If   (Utility.RandomInt(0,100)>50)
 
 	If IButton == 0 ; Show the thing.
 
-		funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")
+		funct.SanguineRape( akSpeaker, SexLab.PlayerRef, "Aggressive")
 	EndIf
 EndIf
 ;END CODE

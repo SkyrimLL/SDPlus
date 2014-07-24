@@ -88,8 +88,8 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 	; kCaster.RemoveAllItems(akTransferTo = kTarget)
 	; fctOutfit.clearDeviousOutfit ( )
-	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
-	Utility.Wait(1.0)
+	; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
+	; Utility.Wait(1.0)
 	fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
 		
 	fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
