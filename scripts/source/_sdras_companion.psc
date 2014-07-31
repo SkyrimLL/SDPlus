@@ -101,31 +101,47 @@ Function enslaveCompanion( Actor kActor)
 		kActor.StopCombat()
 		kActor.StopCombatAlarm()
 
-		kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
+		if (kActor.HasKeyword( _SDKP_actorTypeNPC ))
+			; Humanoid followers
+			kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 
-		If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") != 0 )
+			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") != 0 )
 
-			kActor.SetOutfit( _SDOP_naked )
-			kActor.SetOutfit( _SDOP_naked, True )
+				kActor.SetOutfit( _SDOP_naked )
+				kActor.SetOutfit( _SDOP_naked, True )
+			EndIf
+			
+			idx = 0
+			While idx < _SDFLP_companion_items.GetSize()
+				nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
+				kActor.AddItem( nthArmor, 1 )
+				kActor.EquipItem( nthArmor, True, True )
+				idx += 1
+			EndWhile
+
+			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
+			;kActor.playIdle(OffsetBoundStandingStart)
+
+			If (Utility.RandomInt(0,100)>80)
+				fctFollowers.sendCaptiveFollowerAway(kActor)
+
+				Debug.MessageBox("Your follower is dragged away in bondage...")
+			EndIf
+
+			kActor.EvaluatePackage()
+		Else
+			; Animal / Creature followers
+			If (Utility.RandomInt(0,100)>20)
+				fctFollowers.sendCaptiveFollowerAway(kActor)
+
+				Debug.MessageBox("Your follower is dragged away in bondage...")
+			EndIf
+
+			kActor.EvaluatePackage()
+
 		EndIf
-		
-		idx = 0
-		While idx < _SDFLP_companion_items.GetSize()
-			nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
-			kActor.AddItem( nthArmor, 1 )
-			kActor.EquipItem( nthArmor, True, True )
-			idx += 1
-		EndWhile
 
-		DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
-		;kActor.playIdle(OffsetBoundStandingStart)
-
-		If (Utility.RandomInt(0,100)>80)
-			fctFollowers.sendCaptiveFollowerAway(kActor)
-
-			Debug.MessageBox("Your follower is dragged away in bondage...")
-		EndIf
-
-		kActor.EvaluatePackage()
 EndFunction
 
+
+Keyword 			Property _SDKP_actorTypeNPC  Auto

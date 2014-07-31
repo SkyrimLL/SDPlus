@@ -20,6 +20,8 @@ If   (Utility.RandomInt(0,100)>60)
 
 	If IButton == 0 ; Show the thing.
 		funct.SanguineRape( akSpeaker, SexLab.PlayerRef, "Aggressive")
+	Else
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 	EndIf
 EndIf
 ;END CODE

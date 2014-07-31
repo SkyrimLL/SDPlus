@@ -19,7 +19,7 @@ EndIf
 
 _SDGVP_buyout.SetValue(newBuyout )
 
-Self.GetOwningQuest().ModObjectiveGlobal( gold as Float , _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+Self.GetOwningQuest().ModObjectiveGlobal( -5.0 , _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 Self.GetOwningQuest().ModObjectiveGlobal( gold as Float / 2.0, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.value )
 
 If ( newBuyout   )

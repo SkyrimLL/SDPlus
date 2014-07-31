@@ -92,8 +92,12 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; Utility.Wait(1.0)
 	fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
 		
-	fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
-	fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")	
+	if (!fctOutfit.isCuffsEquipped(kTarget))
+		fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
+	EndIf
+	if (!fctOutfit.isShacklesEquipped(kTarget))
+		fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+	EndIf	
 	; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
 	; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
 	Utility.Wait(1.0)

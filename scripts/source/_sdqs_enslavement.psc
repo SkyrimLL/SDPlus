@@ -223,14 +223,21 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Outfit selection - Commoner by default
 		int outfitID = 0
+		ActorBase PlayerBase = Game.GetPlayer().GetActorBase()
 
 		if (kMaster.HasKeyword( ActorTypeNPC ))
-			if ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
+			if (PlayerBase.GetSex() == 0)
+  				; Player is male - force outfit 1 for model compatibility
+  				outfitID = 1
+
+			Elseif ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
 				; Greater magicka - use magicka outfit
 				outfitID = 2
+
 			Elseif ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Magicka") as Int) ) && ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Stamina") as Int) )
 				; Greater health - use wealthy outfit
 				outfitID = 1
+
 			EndIf
 		ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
 			outfitID = 5
@@ -252,8 +259,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			EndIf
 		EndIf
 
-		if (!fctOutfit.isBindingEquipped(kSlave))
+		if (!fctOutfit.isCuffsEquipped(kSlave))
 			fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")
+		EndIf
+		if (!fctOutfit.isShacklesEquipped(kSlave))
 			fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
 		EndIf
 
@@ -336,7 +345,7 @@ Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = 
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.015 * Utility.RandomInt( 1,5))
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,5))
 
 		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBlindfold as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int)
 		Debug.Notification("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
@@ -391,7 +400,7 @@ Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
 		; Additional time added to remove next punishment item
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.015 * Utility.RandomInt( 1,2))
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,2))
 
 		If (bPlugAnal)
 			Debug.Notification("[_sdqs_enslavement] Removing punishment item: Anal plug" )
