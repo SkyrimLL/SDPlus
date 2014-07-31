@@ -114,6 +114,33 @@ Function positionVictims( Int aiStage )
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
+	kSanguine.Disable()
+
+	kNaamah.EvaluatePackage()
+	kMeridiana.EvaluatePackage()
+	kEisheth.EvaluatePackage()
+	kSanguine.EvaluatePackage()
+
+	Utility.Wait(1.0)
+
+	kMeridiana.MoveToMyEditorLocation()
+	kEisheth.MoveToMyEditorLocation()
+	kNordGirl.MoveToMyEditorLocation()
+	kImperialMan.MoveToMyEditorLocation()
+	kSanguine.MoveToMyEditorLocation()
+
+	if (Utility.RandomInt(0,100) > 80)
+
+		kDremoraChallenger.MoveToMyEditorLocation()
+		kDremoraChallenger.enable()
+
+		if (kDremoraChallenger.IsDead() )
+			kDremoraChallenger.Resurrect()
+		EndIf
+	Else
+		kDremoraChallenger.disable()
+
+	EndIf
 
 	kDreamer.StopCombatAlarm()
 	kDreamer.StopCombat()
@@ -140,6 +167,7 @@ Function positionVictims( Int aiStage )
 	Utility.Wait(0.1)
 
 	kDreamer.resethealthandlimbs()
+	_SDSP_SanguineBound.RemoteCast(kDreamer, kDreamer, kDreamer)
 
 	; _SDSP_spent.Cast( kDreamer, kDreamer)
 
@@ -153,32 +181,6 @@ Function positionVictims( Int aiStage )
 	kSanguine.StopCombatAlarm()
 	kSanguine.StopCombat()
 	Utility.Wait(0.1)
-	
-	kNaamah.EvaluatePackage()
-	kMeridiana.EvaluatePackage()
-	kEisheth.EvaluatePackage()
-	kSanguine.EvaluatePackage()
-
-	Utility.Wait(1.0)
-
-	kMeridiana.MoveToMyEditorLocation()
-	kEisheth.MoveToMyEditorLocation()
-	kNordGirl.MoveToMyEditorLocation()
-	kImperialMan.MoveToMyEditorLocation()
-	kSanguine.MoveToMyEditorLocation()
-
-	if (Utility.RandomInt(0,100) > 80)
-
-		kDremoraChallenger.MoveToMyEditorLocation()
-		kDremoraChallenger.enable()
-
-		if (kDremoraChallenger.IsDead() )
-			kDremoraChallenger.Resurrect()
-		EndIf
-	Else
-		kDremoraChallenger.disable()
-
-	EndIf
 
 	slaUtil.SetActorExhibitionist(kSanguine, True)
       slaUtil.UpdateActorExposureRate(kSanguine, 10.0)
@@ -240,7 +242,6 @@ Function positionVictims( Int aiStage )
 	kSanguine.QueueNiNodeUpdate()
 	Utility.Wait(2.0)	
 
-	_SDSP_SanguineBound.RemoteCast(kDreamer, kDreamer, kDreamer)
 
 
 EndFunction

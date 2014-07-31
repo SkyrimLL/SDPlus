@@ -267,7 +267,7 @@ Bool Function checkGenderRestriction(Actor akSpeaker, Actor akTarget)
 
 EndFunction
 
-Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
+Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo", String displayText = "")
 
 
 	If (!akSpeaker)
@@ -281,6 +281,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	Int    speakerGender = akSpeaker.GetLeveledActorBase().GetSex() as Int
 	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
 	Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+	Int 	IButton = 0
 
 	; Devious devices and punishment items restrictions
 	; Debug.Notification("[SD sex] Speaker gender: " + speakerGender + " [ " + akSpeaker + " ] ")

@@ -34,9 +34,13 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		; Debug.Messagebox("An overwhelming craving stops you in your tracks and feeds the lust of your aggressor.")
 		; Utility.Wait(2)
 		funct.SanguineRape(akSpeaker, akTarget,SexLabInTags,SexLabOutTags )
+	Else
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 	EndIf
 	
 EndFunction
 
 _SDQS_functions Property funct  Auto
 Message Property _SD_rapeMenu Auto
+
+SexLabFramework Property SexLab  Auto  

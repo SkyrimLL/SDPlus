@@ -221,35 +221,23 @@ Event OnUpdateGameTime()
 
 		_SD_spriggan_punishment.Mod(1)
 
-		If (_SD_spriggan_punishment.GetValue() == 2 )
-			if (fctOutfit.isBindingEquipped(kSlave as Actor))
-				fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "")	
-				fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")	
-				Utility.Wait(1.0)
+		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped(kSlave as Actor))
+			if (!fctOutfit.isDeviousOutfitPartEquipped ( kSlave as Actor, iOutfitPart = 1 ) )
+				fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
+			EndIf	
+		EndIf
+		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isShacklesEquipped(kSlave as Actor))
+			if (!fctOutfit.isDeviousOutfitPartEquipped ( kSlave as Actor, iOutfitPart = 2 ) )
+				fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
 			EndIf
+		EndIf
 
-			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-
-		ElseIf (_SD_spriggan_punishment.GetValue() == 3 )
-			; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			if (fctOutfit.isCollarEquipped(kSlave as Actor))
-				fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")	
-				Utility.Wait(1.0)
-			EndIf
-			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-
-		ElseIf (_SD_spriggan_punishment.GetValue() == 4 )
-			; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			; fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			if (fctOutfit.isCollarEquipped(kSlave as Actor))
-				fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")	
-				Utility.Wait(1.0)
-			EndIf
-			fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-
+		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isCollarEquipped(kSlave as Actor))
+			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your boby, leaving you gasping for air.")	
+		EndIf
+		
+		If (_SD_spriggan_punishment.GetValue() >= 4 ) && (!fctOutfit.isBlindfoldEquipped(kSlave as Actor))
+			fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
 		EndIf
 
 		Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(133, 16) + Math.LeftShift(184, 8) + 160
