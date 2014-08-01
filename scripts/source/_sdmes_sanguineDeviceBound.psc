@@ -3,7 +3,7 @@ Scriptname _sdmes_sanguineDeviceBound extends activemagiceffect
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 
-Float fRFSU = 60.0 ; 0.0
+Float fRFSU = 600.0
 
 Actor kPlayer 
 

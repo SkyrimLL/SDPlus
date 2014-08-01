@@ -1241,13 +1241,15 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 				StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
 
 				If (bDestroy)
-		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, True)
-		 			; libs.AcquireAndSpinlock();
-					; libs.DeviceMutex = false ; Free the mutex we just acquired.
+					Utility.Wait(1.0)
+		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False)
+		 			libs.AcquireAndSpinlock();
+					libs.DeviceMutex = false ; Free the mutex we just acquired.
 					Utility.Wait(2.0)
 					Game.GetPlayer().RemoveItem(ddArmorInventory, 1, true)
 				Else
-		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, True)
+					Utility.Wait(1.0)
+		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False)
 					Utility.Wait(2.0)
 				EndIf
 			Else
