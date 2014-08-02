@@ -164,7 +164,6 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	If ( akItemReference == _SDRAP_masters_key.GetReference() )
 		; escape
 		Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
-		kSlave.RemoveItem(akItemReference, aiItemCount)
 
 		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
@@ -177,6 +176,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 		EndIf
 
+		kSlave.RemoveItem(akItemReference, aiItemCount)
 		Self.GetOwningQuest().Stop()
 		Utility.Wait(2.0)
 		Return

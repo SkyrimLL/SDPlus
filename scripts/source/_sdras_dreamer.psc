@@ -45,7 +45,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	ObjectReference lust_m = Alias__SDRA_lust_m.GetReference() as ObjectReference
 	Actor kPlayer = Game.GetPlayer() as Actor
 
-	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)>90)) ) && dbe.pSleepyTime != 1 
+	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)>95)) ) && dbe.pSleepyTime != 1 
 
 			; Debug.Notification("Reality slips away...")
 			; Debug.Notification("[dream] Sanguine finds you in your dream")
@@ -86,6 +86,9 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			Else
 				_SD_dreamQuest.SetStage(15)
 			EndIf
+	elseif (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
+			_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+
 	endif
 EndEvent
 
@@ -112,3 +115,5 @@ Location Property _SDLOC_HaelgaBasement  Auto
 Location Property _SDLOC_SanguineShrine  Auto  
 _SD_ConfigMenu Property kConfig  Auto  
 
+ 
+Spell Property _SDSP_freedom  Auto  

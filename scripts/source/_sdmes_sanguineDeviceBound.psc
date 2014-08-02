@@ -3,7 +3,8 @@ Scriptname _sdmes_sanguineDeviceBound extends activemagiceffect
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 
-Float fRFSU = 600.0
+Float fRFSU = 60.0
+Float fTimer = 60.0
 
 Actor kPlayer 
 
@@ -18,41 +19,70 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 	kPlayer = akTarget
 
-	if (!fctOutfit.isCollarEquipped(akTarget))
+	; 0 - Collar
+	; 1 - Arms
+	; 2 - Legs
+	; 3 - Gag
+	; 4 - Plug Anal
+	; 5 - Plug Vaginal
+	; 6 - Blindfold
+	; 7 - Belt
+	; 8 - Harness
+	
+	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 0 ))
 		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
-		Debug.Trace("[SD] Skipping collar - slot in use")
+		Debug.Trace("[SD] Skipping sanguine collar - slot in use")
 	EndIf
 
-	if (!fctOutfit.isCuffsEquipped(akTarget))
+	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 1 ))
 		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
-		Debug.Trace("[SD] Skipping cuffs - slot in use")
+		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
 	EndIf
 
-	if (!fctOutfit.isShacklesEquipped(akTarget))
+	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 2 ))
 		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
-		Debug.Trace("[SD] Skipping shackles - slot in use")
+		Debug.Trace("[SD] Skipping sanguine shackles - slot in use")
 	EndIf
 	
 	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 
-	fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 3 ))
+		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	Else
+		Debug.Trace("[SD] Skipping sanguine gag - slot in use")
+	EndIf
+	
+	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 5 ))
+		fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	Else
+		Debug.Trace("[SD] Skipping sanguine artefact - slot in use")
+	EndIf
 	; kDreamer.EquipItem(  _SDA_gag , False, True )
 
-	RegisterForSingleUpdate( fRFSU ); * Utility.RandomInt(1,5) )
+	fTimer = fRFSU * Utility.RandomInt(5,10)
+	Debug.Trace("[SD] Sanguine items timer: " + fTimer)
+	RegisterForSingleUpdate( fTimer )
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-;
+	If (fctOutfit.countDeviousSlotsByKeyword (  akTarget, "_SD_DeviousSanguine" )>0)
+		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+	EndIf
 
 EndEvent
 
 Event OnUpdate()
-	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+	If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0)
+		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+	EndIf
+
+	fTimer = fRFSU * Utility.RandomInt(2,5)
+	Debug.Trace("[SD] Sanguine items timer: " + fTimer)
+	RegisterForSingleUpdate( fTimer )
 EndEvent
 
 Spell Property _SDSP_freedom  Auto  

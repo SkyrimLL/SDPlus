@@ -267,7 +267,7 @@ Bool Function checkGenderRestriction(Actor akSpeaker, Actor akTarget)
 
 EndFunction
 
-Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo", String displayText = "")
+Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
 
 
 	If (!akSpeaker)
@@ -365,11 +365,11 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				sslThreadModel Thread = SexLab.NewThread()
 				Thread.AddActor(akTarget, true) ; // IsVictim = true
 				Thread.AddActor(akSpeaker)
-				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags);
-				If (animations != None)
-					Thread.SetAnimations(animations)
+				; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags);
+				; If (animations != None)
+					Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
 					Thread.StartThread()
-				EndIf
+				; EndIf
 
 			EndIf
 		Else
