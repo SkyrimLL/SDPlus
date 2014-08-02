@@ -544,9 +544,9 @@ EndFunction
 
 Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1 )
 	Form kForm
-	Int[] uiSlotMask = New Int[13]
+	Int[] uiSlotMask = New Int[9]
 	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-	uiSlotMask[1] = 0x00000008 ;33  Bindings / DD Armbinders
+	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms) 
 	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
 	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
 	uiSlotMask[4] = 0x00040000 ;48  DD plugs (Anal)
@@ -555,7 +555,7 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 	uiSlotMask[7] = 0x00080000 ;49  DD Chastity Belts
 	uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
 	; uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
-	; uiSlotMask[10] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+	; uiSlotMask[10] = 0x00000008 ;33  Bindings / DD Armbinders
 	; uiSlotMask[11]= 0x00000004 ;32  Spriggan host
 	; uiSlotMask[12]= 0x00100000 ;50  DD Gag Straps
 
@@ -575,6 +575,80 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 	EndIf
 
 	Return False
+EndFunction
+
+Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -1, String deviousKeyword = "zad_Lockable"  )
+	Form kForm
+	Int[] uiSlotMask = New Int[9]
+	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
+	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
+	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
+	uiSlotMask[4] = 0x00040000 ;48  DD plugs (Anal)
+	uiSlotMask[5]=  0x01000000 ;54  DD Plugs (Vaginal)
+	uiSlotMask[6] = 0x02000000 ;55  DD Blindfold
+	uiSlotMask[7] = 0x00080000 ;49  DD Chastity Belts
+	uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
+	; uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
+	; uiSlotMask[10] = 0x00000008 ;33  Bindings / DD Armbinders
+	; uiSlotMask[11]= 0x00000004 ;32  Spriggan host
+	; uiSlotMask[12]= 0x00100000 ;50  DD Gag Straps
+
+	Int iFormIndex = uiSlotMask.Length 
+
+	If (iOutfitPart>=0)
+		kForm = akActor.GetWornForm( uiSlotMask[iOutfitPart] ) 
+		If (kForm != None)
+			Armor kArmor = kForm  as Armor
+			Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword   )
+			return (kForm.HasKeywordString(deviousKeyword) ) 
+		Else
+			Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword + " - nothing equipped "  )
+			Return False
+		EndIf
+
+	EndIf
+
+	Return False
+EndFunction
+
+
+Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword = "zad_Lockable" )
+	Form kForm
+	Int[] uiSlotMask = New Int[13]
+	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
+	uiSlotMask[1] = 0x00000008 ;33  Bindings / DD Armbinders
+	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
+	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
+	uiSlotMask[4] = 0x00040000 ;48  DD plugs (Anal)
+	uiSlotMask[5]=  0x01000000 ;54  DD Plugs (Vaginal)
+	uiSlotMask[6] = 0x02000000 ;55  DD Blindfold
+	uiSlotMask[7] = 0x00080000 ;49  DD Chastity Belts
+	uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
+	uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
+	uiSlotMask[10]= 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+	uiSlotMask[11]= 0x00000004 ;32  Spriggan host
+	uiSlotMask[12]= 0x00100000 ;50  DD Gag Straps
+
+	Int iFormIndex = uiSlotMask.Length 
+	Int devicesCount = 0
+
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+ 
+		If (kForm != None)
+			Armor kArmor = kForm  as Armor
+			If (kForm.HasKeywordString(deviousKeyword) ) 
+				devicesCount = devicesCount + 1
+			EndIf
+		EndIf
+
+	EndWhile
+			
+	Debug.Trace("[SD] Count devices slots by keyword " +  deviousKeyword  + " : " + devicesCount )
+
+	Return devicesCount
 EndFunction
 
 Function setDeviousOutfitCollar ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
