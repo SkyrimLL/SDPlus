@@ -67,9 +67,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	;		Utility.Wait(1.0)
 
-	EndIf
-
-	if Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
+	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
 			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 	  	_SD_dreamQuest.SetStage(15)
 	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_SanguineShrine) 
@@ -87,6 +85,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				_SD_dreamQuest.SetStage(15)
 			EndIf
 	elseif (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
+			Debug.Trace("[SD] Sanguine items timer: OnSleep " )
 			_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 	endif

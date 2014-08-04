@@ -86,22 +86,6 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; kTarget.RemoveAllItems(akTransferTo = _SD_sprigganHusk)
 	; Utility.Wait(1.0)
 
-	; kCaster.RemoveAllItems(akTransferTo = kTarget)
-	; fctOutfit.clearDeviousOutfit ( )
-	; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
-	; Utility.Wait(1.0)
-	fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
-		
-	if (!fctOutfit.isCuffsEquipped(kTarget))
-		fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
-	EndIf
-	if (!fctOutfit.isShacklesEquipped(kTarget))
-		fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
-	EndIf	
-	; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
-	; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
-	Utility.Wait(1.0)
-
 	_SDSP_cum.RemoteCast(kTarget, kTarget, kTarget)
 	kCaster.GetActorBase().SetProtected()
 	kCaster.SetAlpha(0.0)
@@ -138,8 +122,6 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		kCaster.DeleteWhenAble()
 	Else
 
-	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
-	     ; _SD_sprigganHusk.Disable()
 
 	     kCaster.MoveTo( _SDRAP_grovemarker.GetReference() )
 	     kCaster.SetAlpha(1.0)

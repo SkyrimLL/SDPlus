@@ -189,17 +189,17 @@ Bool Function qualifiedAggressor( Actor akAggressor, Actor akPlayer )
 EndFunction
 
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
-	If ( _SDFLP_sex_items.HasForm( akBaseItem ) || _SDFLP_punish_items.HasForm( akBaseItem ) || _SDFL_daedric_items.HasForm( akBaseItem ) )
-		kPlayer.EquipItem(akBaseItem, True, True)
-	EndIf
+	; If ( _SDFLP_sex_items.HasForm( akBaseItem ) || _SDFLP_punish_items.HasForm( akBaseItem ) || _SDFL_daedric_items.HasForm( akBaseItem ) )
+	; 	kPlayer.EquipItem(akBaseItem, True, True)
+	; EndIf
 
-	iuType = akBaseItem.GetType()
-	If ( !_SDGVP_enslaved.GetValueInt() && kPlayer.WornHasKeyword( _SDKP_bound ) && ( iuType == 41 || iuType == 42 ) )
-		funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
-		funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
-		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
-		Utility.Wait(0.5)
-	EndIf
+	; iuType = akBaseItem.GetType()
+	; If ( !_SDGVP_enslaved.GetValueInt() && kPlayer.WornHasKeyword( _SDKP_bound ) && ( iuType == 41 || iuType == 42 ) )
+	; 	funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
+	; 	funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
+	; 	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+	;	Utility.Wait(0.5)
+	; EndIf
 EndEvent
 
 Event OnInit()
