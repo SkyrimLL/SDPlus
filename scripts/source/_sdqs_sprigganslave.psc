@@ -126,6 +126,22 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		( kMaster as Actor ).RestoreAV("health", ( kMaster as Actor ).GetBaseAV("health") )
 		( kSlave as Actor ).RestoreAV("health", ( kSlave as Actor ).GetBaseAV("health") )
 
+		; kCaster.RemoveAllItems(akTransferTo = kSlave)
+		; fctOutfit.clearDeviousOutfit ( )
+		; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
+		; Utility.Wait(1.0)
+		fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
+			
+		if (!fctOutfit.isCuffsEquipped(kSlave as Actor))
+			fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
+		EndIf
+		if (!fctOutfit.isShacklesEquipped(kSlave as Actor))
+			fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+		EndIf	
+		; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
+		; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
+		Utility.Wait(1.0)
+
 		; For SexLab Hormones compatibiltiy... should not have any effect if it isn't installed
 		Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
 		StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
@@ -134,6 +150,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 			
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
+	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
+	     ; _SD_sprigganHusk.Disable()
 
 		; _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 2, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 2, aiValue2 = 0 )
@@ -160,7 +178,7 @@ Event OnUpdateGameTime()
 	; Debug.Notification( "[Spriggan slave loop] kSlave = Loaded " )
 
 	fTimeElapsed = GetCurrentGameTime() - fDaysEnslaved
-	fSprigganPunish = funct.floatWithinRange( fTimeElapsed, 2.5, 80.0 )
+	fSprigganPunish = funct.floatWithinRange( fTimeElapsed * 5.0, 2.5, 80.0 )
 	
 	If ( fTimeElapsed < 120.0 )
 		fSprigganPower = funct.floatLinearInterpolation( 0.0625, 1.0, 0.0, fTimeElapsed, 120.0 )
@@ -212,32 +230,40 @@ Event OnUpdateGameTime()
 		; Debug.Notification( "[Spriggan slave loop] Player is busy: " + SexLab.ValidateActor(kSlave as Actor) )       
 	EndIf
 
+	; Add housekeeping for parts of the armor
+
 	; random punishment events
 	If( RandomFloat(0.0, 100.0) < fSprigganPunish && GetStage() < 70 && !( kSlave as Actor ).GetCurrentScene() && !( kSlave as Actor ).IsInCombat() && !( kSlave as Actor ).GetDialogueTarget() )
 		; _SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
 		Game.ForceThirdPerson()
 		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
+		Debug.Trace( "[SD] Spriggan roots growing" )
 		Debug.Notification( "The roots throb deeply in and out of you..." )
 
 		_SD_spriggan_punishment.Mod(1)
+		Debug.Trace( "[SD] Spriggan punishment: " + _SD_spriggan_punishment.GetValue() )
 
-		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped(kSlave as Actor))
-			if (!fctOutfit.isDeviousOutfitPartEquipped ( kSlave as Actor, iOutfitPart = 1 ) )
-				fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
-			EndIf	
+		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 1 ))
+			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
+		ElseIf (_SD_spriggan_punishment.GetValue() >= 1 )
+			Debug.Trace("[SD] Skipping spriggan hands - slot in use")
 		EndIf
-		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isShacklesEquipped(kSlave as Actor))
-			if (!fctOutfit.isDeviousOutfitPartEquipped ( kSlave as Actor, iOutfitPart = 2 ) )
-				fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
-			EndIf
+		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 2 ))
+			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+		ElseIf (_SD_spriggan_punishment.GetValue() >= 1)
+			Debug.Trace("[SD] Skipping spriggan feet - slot in use")
 		EndIf
 
-		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isCollarEquipped(kSlave as Actor))
+		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 8 ))
 			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your boby, leaving you gasping for air.")	
+		ElseIf (_SD_spriggan_punishment.GetValue() >= 2 )
+			Debug.Trace("[SD] Skipping spriggan body - slot in use")
 		EndIf
 		
-		If (_SD_spriggan_punishment.GetValue() >= 4 ) && (!fctOutfit.isBlindfoldEquipped(kSlave as Actor))
+		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 6 ))
 			fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
+		ElseIf (_SD_spriggan_punishment.GetValue() >= 4 )
+			Debug.Trace("[SD] Skipping spriggan mask - slot in use")
 		EndIf
 
 		Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(133, 16) + Math.LeftShift(184, 8) + 160
@@ -294,7 +320,7 @@ Event OnUpdate()
 	EndIf
 
 	If ( Self )
-		RegisterForSingleUpdate( 0.1 )
+		RegisterForSingleUpdate( 1.0 )
 	EndIf
 EndEvent
 
@@ -303,3 +329,4 @@ GlobalVariable Property _SD_spriggan_punishment  Auto
 ObjectReference Property _SD_sprigganHusk  Auto  
 FormList Property _SDFLP_ignore_items  Auto
 
+ReferenceAlias Property _SDRAP_grovemarker  Auto

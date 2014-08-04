@@ -70,6 +70,7 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	If (fctOutfit.countDeviousSlotsByKeyword (  akTarget, "_SD_DeviousSanguine" )>0)
+		Debug.Trace("[SD] Sanguine items cleanup: OnEffectFinish" )
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 	EndIf
 
@@ -77,6 +78,7 @@ EndEvent
 
 Event OnUpdate()
 	If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0)
+		Debug.Trace("[SD] Sanguine items timer: OnUpdate " )
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 	EndIf
 

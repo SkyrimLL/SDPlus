@@ -1316,14 +1316,14 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 
 				If (bDestroy)
 					Utility.Wait(1.0)
-		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False)
-		 			libs.AcquireAndSpinlock();
-					libs.DeviceMutex = false ; Free the mutex we just acquired.
-					Utility.Wait(2.0)
-					Game.GetPlayer().RemoveItem(ddArmorInventory, 1, true)
+		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, False)
+		 			; libs.AcquireAndSpinlock();
+					; libs.DeviceMutex = false ; Free the mutex we just acquired.
+					; Utility.Wait(2.0)
+					; Game.GetPlayer().RemoveItem(ddArmorInventory, 1, true)
 				Else
 					Utility.Wait(1.0)
-		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False)
+		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
 					Utility.Wait(2.0)
 				EndIf
 			Else
