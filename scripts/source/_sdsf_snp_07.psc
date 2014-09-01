@@ -2,38 +2,15 @@
 ;NEXT FRAGMENT INDEX 147
 Scriptname _sdsf_snp_07 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_95
-Function Fragment_95()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-snp._SDUIP_phase = 4
+snp._SDUIP_phase = 5
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+Debug.Notification("Wait while they take their turns on you.")
 
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
-Utility.Wait(0.5)
-; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_69
-Function Fragment_69()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-snp._SDUIP_phase = -1
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("The dance leaves you breathless. [dance end]")
-
-_SDGVP_snp_busy.SetValue(-1)
-; Self.GetowningQuest().Stop()
+Game.EnablePlayerControls( abMovement = True )
+Game.SetPlayerAIDriven( False )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -72,19 +49,6 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
-;BEGIN CODE
-snp._SDUIP_phase = 5
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("Wait while they take their turns on you.")
-
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
@@ -95,6 +59,54 @@ _SDGVP_snp_busy.SetValue(7)
 Debug.Notification("You start dancing under the cheers of your owners. [dance start]")
 
 Game.ForceThirdPerson()
+libs.SetAnimating(Game.GetPlayer(), true)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_69
+Function Fragment_69()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_95
+Function Fragment_95()
+;BEGIN CODE
+snp._SDUIP_phase = 4
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
+Utility.Wait(0.5)
+; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+snp._SDUIP_phase = -1
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+Debug.Notification("The dance leaves you breathless. [dance end]")
+
+_SDGVP_snp_busy.SetValue(-1)
+; Self.GetowningQuest().Stop()
+libs.SetAnimating(Game.GetPlayer(), false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_71
+Function Fragment_71()
+;BEGIN CODE
+snp._SDUIP_phase = 3
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+Debug.Notification("The urge is irresistible [dance sex]")
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -128,16 +140,6 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_71
-Function Fragment_71()
-;BEGIN CODE
-snp._SDUIP_phase = 3
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("The urge is irresistible [dance sex]")
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 Import Utility
 
@@ -161,3 +163,4 @@ ReferenceAlias Property _SDRAP_marker  Auto
 SexLabFramework Property SexLab  Auto  
 
 GlobalVariable Property _SDGVP_snp_busy  Auto  
+zadLibs Property libs Auto

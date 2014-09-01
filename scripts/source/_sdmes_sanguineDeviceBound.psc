@@ -50,7 +50,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 
-	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 3 ))
+	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 3 )) && (Utility.RandomInt(0,100) > 40)
 		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine gag - slot in use")
