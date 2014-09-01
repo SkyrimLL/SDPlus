@@ -124,6 +124,21 @@ Bool Function isShoutRemovable ( Shout kShout )
 
 EndFunction
 
+; Devious Devices 2.8.2
+; Armbinder: 33, 59
+; Blindfold: 55
+; Body Harness: 45, 49
+; Chastity Belts: 49
+; Chastity Bra: 56
+; Collars: 45
+; Cuffs (Arms): 59
+; Cuffs (Legs): 53
+; Cuffs (Neck): 45
+; Gags: 44
+; Nipple Piercings: 56
+; Plugs (Anal): 48
+; Plugs (Vaginal): 54
+; Vaginal Piercings: 48
 
 Bool Function isPunishmentEquipped (  Actor akActor )
 
@@ -133,11 +148,11 @@ Bool Function isPunishmentEquipped (  Actor akActor )
 
 		Int[] uiSlotMask = New Int[12]
 		uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
-		uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
+		uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) / Harness
 		uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
 		uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
 		uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
-		uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
+		uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts / Harness
 		uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
 		uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
 		uiSlotMask[8] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
@@ -948,8 +963,8 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 		EndIf
 		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
 			; 2- Legs - DD Cuffs Leather Legs
-			ddArmorRendered = libs.cuffsLeatherLegsRendered
-			ddArmorInventory = libs.cuffsLeatherLegs
+			ddArmorRendered = zazIronShacklesRendered  ; libs.cuffsLeatherLegsRendered
+			ddArmorInventory = zazIronShackles ; libs.cuffsLeatherLegs
 			ddArmorKeyword = libs.zad_DeviousLegCuffs 
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
@@ -1024,8 +1039,8 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 		EndIf
 		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
 			; 2- Legs - DD Cuffs Padded Legs
-			ddArmorRendered = libs.cuffsPaddedLegsRendered
-			ddArmorInventory = libs.cuffsPaddedLegs
+			ddArmorRendered = zazIronShacklesRendered ; libs.cuffsPaddedLegsRendered
+			ddArmorInventory = zazIronShackles ; libs.cuffsPaddedLegs
 			ddArmorKeyword = libs.zad_DeviousLegCuffs 
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
@@ -1310,11 +1325,11 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 			; If outfitid is set, remove part if outfitid matches current value equiped for that part
 			; If outfitid == -1, force remove part anyway
 
-			If ( (iOutfit != -1) && ( StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) == iOutfit) ) || (iOutfit == -1)
-				libs.Log("[SD] SetOutfit: remove - " + iOutfit + " [ " + iOutfitPart + "] " )
-				StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
+			; If ( (iOutfit != -1) && ( StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) == iOutfit) ) || (iOutfit == -1)
 
 				If (bDestroy)
+					libs.Log("[SD] SetOutfit: destroy - " + iOutfit + " [ " + iOutfitPart + "] " )
+					StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
 					Utility.Wait(1.0)
 		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, False)
 		 			; libs.AcquireAndSpinlock();
@@ -1322,13 +1337,15 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 					; Utility.Wait(2.0)
 					; Game.GetPlayer().RemoveItem(ddArmorInventory, 1, true)
 				Else
+					libs.Log("[SD] SetOutfit: remove - " + iOutfit + " [ " + iOutfitPart + "] " )
+					StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
 					Utility.Wait(1.0)
 		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
 					Utility.Wait(2.0)
 				EndIf
-			Else
-				libs.Log("[SD] SetOutfit: conflict detected - not removed - " + iOutfit + " [ " + iOutfitPart + "] - " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) )		
-			EndIf
+			; Else
+			; 	libs.Log("[SD] SetOutfit: conflict detected - not removed - " + iOutfit + " [ " + iOutfitPart + "] - " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) )		
+			; EndIf
 		EndIf
 	EndIf
 
