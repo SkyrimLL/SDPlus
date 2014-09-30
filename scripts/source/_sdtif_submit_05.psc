@@ -9,18 +9,19 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor akPlayer = SexLab.PlayerRef 
 
 If funct.checkGenderRestriction( akSpeaker,  akPlayer )
-			_SDGVP_enslaved.SetValue(1)
-			_SDGV_leash_length.SetValue(400)
-		
-			If akPlayer.WornHasKeyword( _SDKP_bound )
-					; item cleanup
-				funct.removeItemsInList( akPlayer, _SDFLP_sex_items )
-				funct.removeItemsInList( akPlayer, _SDFLP_punish_items )
-				funct.removeItemsInList( akPlayer, _SDFLP_master_items )
-			EndIf
-			Utility.Wait(2.0)
+;			_SDGVP_enslaved.SetValue(1)
+;			_SDGV_leash_length.SetValue(400)
+;		
+;			If akPlayer.WornHasKeyword( _SDKP_bound )
+;					; item cleanup
+;				funct.removeItemsInList( akPlayer, _SDFLP_sex_items )
+;				funct.removeItemsInList( akPlayer, _SDFLP_punish_items )
+;				funct.removeItemsInList( akPlayer, _SDFLP_master_items )
+;			EndIf
+;			Utility.Wait(2.0)
+;
+;			; Debug.Trace("_SDKP_enslave akAggressor:" + akAggressor + " akPlayer:" + akPlayer )
 
-			; Debug.Trace("_SDKP_enslave akAggressor:" + akAggressor + " akPlayer:" + akPlayer )
 			_SDKP_enslave.SendStoryEvent( akLoc = akSpeaker.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = akPlayer, aiValue1 = 0, aiValue2 = 0)
 
 Else
