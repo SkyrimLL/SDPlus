@@ -7,14 +7,16 @@ Function Fragment_4(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
-; funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
-; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
+ 
 
 
 If   (Utility.RandomInt(0,100)>60)
 	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
-	fctOutfit.setDeviousOutfitArms (  iDevOutfit =-1, bDevEquip = False, sDevMessage = "You have been released from your chains")
-	fctOutfit.setDeviousOutfitLegs (  iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+
+	fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
+	fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
+	fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
+	fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
 
 
 	funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")

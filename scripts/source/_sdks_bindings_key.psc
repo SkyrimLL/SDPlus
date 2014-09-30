@@ -21,7 +21,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.removePunishment( bDevGag = True,  bDevBlindfold = True,  bDevBelt = True,  bDevPlugAnal = True,  bDevPlugVaginal = True)
 	
 		if (Utility.RandomInt(0,100) < 90)
 			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")

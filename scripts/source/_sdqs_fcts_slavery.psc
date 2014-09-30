@@ -11,6 +11,10 @@ function InitSlaveryState( Actor kSlave )
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentGameTime", 0.0)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
 
+	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryLevel"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 0)
+	EndIf
+
 EndFunction
 
 
@@ -42,8 +46,17 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; -6: Master (neutral)
 	; -7: Master (submissive)
 
-	StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -5) 
+	If (!StorageUtil.HasIntValue(kMaster, "_SD_iRelationshipType"))
+		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -5) 
+	EndIf
+	If (!StorageUtil.HasIntValue(kMaster, "_SD_iForcedSlavery"))
+		StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 1) 
+	EndIf
 
+	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryLevel"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 0)
+	EndIf
+	
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
 EndFunction
@@ -64,9 +77,11 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
 EndFunction
 
+; function RefreshGlobalValues()
+; function UpdateStatusHourly()
+; function UpdateStatusDaily()
 
-
-
+SexLabFrameWork Property SexLab Auto
 
 GlobalVariable Property _SDGVP_gametime  Auto  
 GlobalVariable Property _SDGVP_enslaved  Auto  

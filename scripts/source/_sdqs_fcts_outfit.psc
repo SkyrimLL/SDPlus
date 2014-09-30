@@ -1377,6 +1377,87 @@ EndFunction
 ; Set up Spriggan Host as Devious Device
 ; Test Spriggan Host quest and Falmer enslavement
 
+
+Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False)
+
+	If (bDevPlugAnal)
+		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
+			
+		setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
+	EndIf
+
+	If (bDevPlugVaginal)
+		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
+			
+		setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
+	EndIf
+
+	; Belt
+	If (bDevBelt)
+		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
+			
+		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+	EndIf
+
+	; Blinds
+	If (bDevBlindfold)
+		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
+			
+		setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+	EndIf
+
+	; Gag
+
+	If (bDevGag)
+		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
+
+		setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+
+	EndIf
+
+EndFunction
+
+Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False)
+
+	If (bDevPlugAnal)
+		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
+			
+		setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
+	EndIf
+
+	If (bDevPlugVaginal)
+		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
+			
+		setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
+	EndIf
+
+	; Belt
+	If (bDevBelt)
+		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
+			
+		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+	EndIf
+
+	; Blinds
+	If (bDevBlindfold)
+		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
+			
+		setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+	EndIf
+
+	; Gag
+
+	If (bDevGag)
+		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
+
+		setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+
+	EndIf
+
+EndFunction
+
+
+
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
