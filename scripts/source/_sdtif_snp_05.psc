@@ -11,7 +11,7 @@ _SDKP_task.SendStoryEvent(akRef1 = akSpeakerRef, akRef2 = _SDRAP_slave.GetRefere
 _SDKP_trust_hands.SetValue(1)
 
 Self.GetOwningQuest().SetStage(20)
-Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 Game.EnablePlayerControls( abMovement = True )
 Game.SetPlayerAIDriven( False )

@@ -6,6 +6,7 @@ Scriptname _sdtif_snp_15 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+;Are you looking for a fight?
 Actor slave = _SDRAP_slave.GetReference() as Actor
 Actor master = _SDRAP_master.GetReference() as Actor
 Int count = slave.GetItemCount( _SDAP_gag )
@@ -14,13 +15,12 @@ ObjectReference kMaster=_SDRAP_master.GetReference() as ObjectReference
 ObjectReference kSlave=_SDRAP_slave.GetReference() as ObjectReference
 Int randomVar = Utility.RandomInt( 0, 100 ) 
 
-Self.GetOwningQuest().ModObjectiveGlobal( Utility.RandomInt( 1, 10 ), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+; Self.GetOwningQuest().ModObjectiveGlobal( Utility.RandomInt( 5, 10 ), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 enslave.UpdateSlaveState( master, slave )
-
 
 If (randomVar >= 90  ) ; Change appearance
 	Debug.Notification( "I don't like the way you look..." )
-	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 	Utility.Wait(0.5)
 
 	Int IButton = _SD_racemenu.Show()
@@ -31,43 +31,46 @@ If (randomVar >= 90  ) ; Change appearance
 
 	Utility.Wait(1.0)
 
-ElseIf (randomVar >= (50 - demerits)  ) ; Straining positions
-	Debug.Notification( "You will pay for that!" )
+ElseIf (randomVar >= 60 ) ; Straining positions
+	Debug.Notification( "Here it comes, Slave!" )
 
-	; Punishment
-	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-	
+	If ( Utility.RandomInt( 0, 10) >= 5 )
+		; Punishment
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+	Else
 	; Whipping
-	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-
-ElseIf ((randomVar >=  (45 - demerits))) ; Dance
-	Debug.Notification( "Your captor force you to dance" )
-
-	; Start unresistible dance
-
-	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
-
-ElseIf ((randomVar >  (20 - demerits))) ; Force feed skooma
-	Debug.Notification( "Your mouth is held open as you are forced to swallow" )
-	randomVar = Utility.RandomInt( 0, 10 ) 
-
-	If (randomVar >= 5  )
-		slave.AddItem( Skooma, 1, True )
-	ElseIf (randomVar < 3  )
-		slave.AddItem( FoodSolitudeSpicedWine, 2, True )
-	ElseIf (randomVar == 4 )
-		slave.AddItem( Ale, 5, True )
+	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 	EndIf
 
+ElseIf ( randomVar >=  40 ) ; Dance
+	Debug.Notification( "You will dance for me, Slave!" )
+
+	; Start unresistible dance
+	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt(1, _SDGVP_dances.GetValueInt()) )
+	
+ElseIf ( randomVar >=  20 ) ; Force feed skooma
+	Debug.Notification( "Let's get some of this inside you..." )
+	randomVar = Utility.RandomInt( 0, 10 ) 
+	
+	If (randomVar >= 5  )
+		Debug.Notification( "Umph... Skooma!" )
+		slave.AddItem( Skooma, 1, True )
+	ElseIf (randomVar <= 3  )
+		Debug.Notification( "Uhg... Wine!" )
+		slave.AddItem( FoodSolitudeSpicedWine, 1, True )
+	ElseIf (randomVar == 4 )
+		Debug.Notification( "Ale?" )
+		slave.AddItem( Ale, 1, True )
+	EndIf 
+	 	SkoomaEffect.Cast(slave, slave)
+	Utility.Wait(2.0)
 	While ( Utility.IsInMenuMode() )
 	EndWhile
+	
+	Debug.Notification( "You start dancing for some reason..." )
+	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt(1, _SDGVP_dances.GetValueInt()))	
 Else
-	 _SDKP_sex.SendStoryEvent( \
-		akRef1 = _SDRAP_master.GetReference() as ObjectReference, \
-		akRef2 = _SDRAP_slave.GetReference() as ObjectReference, \
-		aiValue1 = 0, \
-		aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() )  )
-
+	 _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt()))
 EndIf
 ;END CODE
 EndFunction
@@ -89,7 +92,7 @@ GlobalVariable Property _SDGVP_punishments  Auto
 Potion Property Skooma  Auto  
 Potion Property FoodSolitudeSpicedWine  Auto  
 Potion Property Ale  Auto  
-
+SPELL Property SkoomaEffect  Auto 
 Armor Property _SDAP_gag  Auto  
 SexLabFramework property SexLab auto
 

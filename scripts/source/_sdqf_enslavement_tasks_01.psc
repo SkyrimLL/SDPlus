@@ -12,37 +12,6 @@ ReferenceAlias Property Alias__SDRA_slave Auto
 ReferenceAlias Property Alias__SDRA_master Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_24
-Function Fragment_24()
-;BEGIN CODE
-Actor slave = Alias__SDRA_slave.GetReference() as Actor
-Actor master = Alias__SDRA_master.GetReference() as Actor
-ObjectReference bindings =_SDRAP_bindings.GetReference() as ObjectReference
-ObjectReference shackles = _SDRAP_shackles.GetReference() as ObjectReference
-
-_SDKP_trust_hands.SetValue(1)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_10
-Function Fragment_10()
-;BEGIN CODE
-Actor kMaster = Alias__SDRA_master.GetReference() as Actor
-Actor kSlave = Alias__SDRA_slave.GetReference() as Actor
-
-;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValue() as Int ) )
-;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
-_SDQP_enslavement.ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-
-_SDKP_trust_hands.SetValue(0)
-
-Self.FailAllObjectives()
-Self.SetObjectiveDisplayed(20, False)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_20
 Function Fragment_20()
 ;BEGIN CODE
@@ -62,6 +31,22 @@ Else
 EndIf
 
 Reset()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_6
+Function Fragment_6()
+;BEGIN CODE
+Actor kMaster = Alias__SDRA_master.GetReference() as Actor
+Actor kSlave = Alias__SDRA_slave.GetReference() as Actor
+
+; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValue() as Int ) )
+; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
+;_SDQP_enslavement.ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+
+Self.CompleteAllObjectives()
+Self.SetObjectiveDisplayed(10, False)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -86,37 +71,20 @@ Reset()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_3
-Function Fragment_3()
+;BEGIN FRAGMENT Fragment_10
+Function Fragment_10()
 ;BEGIN CODE
 Actor kMaster = Alias__SDRA_master.GetReference() as Actor
 Actor kSlave = Alias__SDRA_slave.GetReference() as Actor
 
 ;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValue() as Int ) )
-; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
-_SDQP_enslavement.ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
+; _SDQP_enslavement.ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-_SDKP_trust_hands.SetValue(1)
+_SDKP_trust_hands.SetValue(0)
 
-Self.CompleteAllObjectives()
+Self.FailAllObjectives()
 Self.SetObjectiveDisplayed(20, False)
-Self.SetStage( 22 )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_6
-Function Fragment_6()
-;BEGIN CODE
-Actor kMaster = Alias__SDRA_master.GetReference() as Actor
-Actor kSlave = Alias__SDRA_slave.GetReference() as Actor
-
-; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValue() as Int ) )
-; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
-_SDQP_enslavement.ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-
-Self.CompleteAllObjectives()
-Self.SetObjectiveDisplayed(10, False)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -130,12 +98,44 @@ Actor kSlave = Alias__SDRA_slave.GetReference() as Actor
 
 ;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValue() as Int ) )
 ;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
-_SDQP_enslavement.ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+; _SDQP_enslavement.ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 
 Self.FailAllObjectives()
 Self.SetObjectiveDisplayed(10, False)
 Self.SetStage( 12 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_3
+Function Fragment_3()
+;BEGIN CODE
+Actor kMaster = Alias__SDRA_master.GetReference() as Actor
+Actor kSlave = Alias__SDRA_slave.GetReference() as Actor
+
+;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValue() as Int ) )
+; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 1 )
+; _SDQP_enslavement.ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+
+_SDKP_trust_hands.SetValue(1)
+
+Self.CompleteAllObjectives()
+Self.SetObjectiveDisplayed(20, False)
+Self.SetStage( 22 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_24
+Function Fragment_24()
+;BEGIN CODE
+Actor slave = Alias__SDRA_slave.GetReference() as Actor
+Actor master = Alias__SDRA_master.GetReference() as Actor
+ObjectReference bindings =_SDRAP_bindings.GetReference() as ObjectReference
+ObjectReference shackles = _SDRAP_shackles.GetReference() as ObjectReference
+
+_SDKP_trust_hands.SetValue(1)
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -8,6 +8,7 @@ _SDQS_functions Property funct  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_inventory Property fctInventory  Auto
 _SDQS_fcts_factions Property fctFactions  Auto
+_SDQS_fcts_slavery Property fctSlavery  Auto
 
 _SDQS_snp Property snp Auto
 _SDQS_enslavement Property enslavement  Auto
@@ -28,6 +29,7 @@ GlobalVariable Property _SDGVP_escape_radius  Auto
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
 GlobalVariable Property _SDDVP_buyoutEarned  Auto
 GlobalVariable Property _SDGVP_state_caged  Auto  
+GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto  
 
 LocationAlias Property _SDLAP_masters_location  Auto  
 
@@ -35,6 +37,7 @@ ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_master  Auto
 ReferenceAlias Property _SDRAP_bindings  Auto
 ReferenceAlias Property _SDRAP_crop  Auto  
+ReferenceAlias Property _SDRAP_playerStorage  Auto  
 
 FormList Property _SDFLP_slavers  Auto  
 FormList Property _SDFLP_trade_items  Auto
@@ -71,6 +74,7 @@ Int iuType
 Actor kMaster
 Actor kSlave
 Actor kCombatTarget
+Actor kLeashCenter
 Actor kNPC
 ObjectReference kBindings
 Weapon kCrop
@@ -87,7 +91,17 @@ Event OnDeath(Actor akKiller)
 	; escape
 	Debug.Trace("[_sdras_master] Master dead - Stop enslavement")
 
+	ObjectReference  kPlayerStorage = _SDRAP_playerStorage.GetReference()
+
+	; Move all items back from Sanguine Storage into Master
+	kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
+	Wait(2.0)
+	
+	; SendModEvent("SDFree")
+	; It may be better to directly stop the quest here instead of relying on Mod Events
+
 	Self.GetOwningQuest().Stop()
+
 	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && funct.checkGenderRestriction( akKiller, kSlave ) ) && !fctFactions.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && fctFactions.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
 		; new master
 		While ( Self.GetOwningQuest().IsStopping() )
@@ -95,13 +109,35 @@ Event OnDeath(Actor akKiller)
 
 		; New enslavement - changing ownership
 		_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
+		
+			;kMaster = _SDRAP_master.GetReference() as Actor
+			;kSlave = _SDRAP_slave.GetReference() as Actor
+		Wait(7.0)
 
+		; Welcome scene after changing ownership 
+		Int iRandomNum = RandomInt(0,100)
+		Debug.Notification( "You are mine!" )
+		Wait(3.0) 
+		If (iRandomNum > 75)
+			; Punishment
+			_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		ElseIf (iRandomNum > 50)
+			; Whipping
+			_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 5 )
+		ElseIf (iRandomNum > 25)
+			enslavement.PunishSlave(akKiller,kSlave)
+		Else
+			; Sex
+			_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+		EndIf
+		
 	EndIf
 EndEvent
 
 Event OnEnterBleedout()
 	if (kMaster.IsEssential()) && (Variables.FollowerSetting==0)
-		Self.GetOwningQuest().Stop()
+		SendModEvent("SDFree")
+		; Self.GetOwningQuest().Stop()
 	EndIf
 EndEvent
 
@@ -131,19 +167,22 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 			iDemerits = Math.Ceiling( iGold / 100 ) as Float
 		EndIf
 
-		Self.GetOwningQuest().ModObjectiveGlobal( iDemerits, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;		Self.GetOwningQuest().ModObjectiveGlobal( iDemerits, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 		
 		_SDDVP_buyoutEarned.Mod( 0 - iGold )
 		Debug.Notification( iGold + " deducted from the gold earned for your freedom." )
 		kMaster.GetCrimeFaction().PlayerPayCrimeGold( True, False )
 
-		Debug.Notification( "[_sdras_master] You will regret attacking me!" )
+		Debug.Notification( "You will regret attacking me!" )
 		; Punishment
+		If (RandomInt(0,10)> 5)
+			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		Else
+			; Whipping
+			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+		EndIf
+		Wait(1.0)
 		enslavement.PunishSlave(kMaster,kSlave)
-		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-
-		; Whipping
-		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
@@ -173,15 +212,15 @@ Event OnGainLOS(Actor akViewer, ObjectReference akTarget)
 		fLibido += 2.5
 
 		If ( kSlave.GetEquippedWeapon() || kSlave.GetEquippedWeapon( True ) )
-			If ( _SDGVP_demerits.GetValue() > -5.0 )
-				GoToState("combat")
-				kMaster.SetAlert()
-				Debug.Trace("[_sdras_master] Armed slave - Stop enslavement")
-
-				Self.GetOwningQuest().Stop()
-			Else
-			
-			EndIf
+			; If ( _SDGVP_demerits.GetValue() > -5.0 )
+			; 	GoToState("combat")
+			; 	kMaster.SetAlert()
+			; 	Debug.Trace("[_sdras_master] Armed slave - Stop enslavement")
+			; 
+			; 	Self.GetOwningQuest().Stop()
+			; Else
+			; 
+			; EndIf
 		EndIf
 	EndIf
 EndEvent
@@ -189,24 +228,24 @@ EndEvent
 	
 Event OnInit()
 
-		kMaster = _SDRAP_master.GetReference() as Actor
-		kSlave = _SDRAP_slave.GetReference() as Actor
+	kMaster = _SDRAP_master.GetReference() as Actor
+	kSlave = _SDRAP_slave.GetReference() as Actor
 
-		Utility.Wait(5)
-		; Welcome scene to replace rape after defeat
-		Int iRandomNum = Utility.RandomInt(0,100)
+	Utility.Wait(5.0)
+	; Welcome scene to replace rape after defeat
+	Int iRandomNum = Utility.RandomInt(0,100)
 
-		if (iRandomNum>80)
-			; Punishment
-			enslavement.PunishSlave(kMaster,kSlave)
-			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-		ElseIf (iRandomNum>50)
-			; Whipping
-			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-		Else
-			; Sex
-			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
-		EndIf
+	if (iRandomNum > 75)
+		; Punishment
+		enslavement.PunishSlave(kMaster,kSlave)
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+	ElseIf (iRandomNum > 50)
+		; Whipping
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+	Else
+		; Sex
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+	EndIf
 		
 	If ( Self.GetOwningQuest() )
 		RegisterForSingleUpdate( fRFSU )
@@ -251,8 +290,16 @@ State monitor
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
 
-		distance = kMaster.GetDistance( kSlave )
-		
+		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iMasterFollowSlave") )
+		kLeashCenter =  StorageUtil.GetFormValue(kSlave, "_SD_LeashCenter") as Actor
+
+		if (kLeashCenter == None)
+			fctConstraints.setLeashCenterRef(kMaster as ObjectReference)
+			kLeashCenter = kMaster
+		EndIf
+
+		distance = kSlave.GetDistance( kLeashCenter )
+
 		If ( distanceAverage == 0 )
 			distanceAverage = distance
 		Else
@@ -269,7 +316,9 @@ State monitor
 		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			Debug.Trace("[_sdras_master] Master dead or disabled - Stop enslavement")
 
-			Self.GetOwningQuest().Stop()
+			; Self.GetOwningQuest().Stop()
+			SendModEvent("SDFree")
+
 		ElseIf ( _SDGV_leash_length.GetValue() == -10) ; escape trigger in some situations
 		;	If (RandomInt( 0, 100 ) > 80 )
 		;		Debug.Notification( "Get out of here!...")
@@ -278,100 +327,140 @@ State monitor
 		;	enslavement.bSearchForSlave = False
 		;	Self.GetOwningQuest().Stop()
 			_SDGV_leash_length.SetValue(400)
+
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			GoToState("waiting")
+
 		ElseIf ((kSlave.GetParentCell() == kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior()))
 			If (RandomInt( 0, 100 ) > 95 )
 				Debug.Notification( "Your captors are watching...")
 			EndIf
 			GoToState("waiting")
+
 		ElseIf ( !Game.IsMovementControlsEnabled() || kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 			fSlaveLastSeen = GetCurrentRealTime()
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
-		ElseIf ( Self.GetOwningQuest().GetStage() >= 90 || _SDCP_sanguines_realms.Find( kSlave.GetParentCell() ) > -1 )
+
+		ElseIf ( Self.GetOwningQuest().GetStage() >= 90 ) ; || _SDCP_sanguines_realms.Find( kSlave.GetParentCell() ) > -1 )
 			fSlaveLastSeen = GetCurrentRealTime()
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
+
 		ElseIf ( _SDGVP_state_caged.GetValueInt() )
 			GoToState("caged")
+
 		ElseIf ( kMaster.IsInCombat() || kSlave.IsInCombat() )
 			GoToState("combat")
+
 		ElseIf ( enslavement.bSearchForSlave || GetCurrentRealTime() - fSlaveLastSeen > fSlaveFreeTime )
 			GoToState("search")
-		ElseIf ( false && kSlave.IsWeaponDrawn() && ( bSlaveDetectedByMaster || bSlaveDetectedByTarget ))
+
+		;ElseIf ( false && kSlave.IsWeaponDrawn() && ( bSlaveDetectedByMaster || bSlaveDetectedByTarget ))
+
+		ElseIf (((kSlave.GetEquippedItemType(0) != 0)||(kSlave.GetEquippedItemType(1) != 0)) && ( bSlaveDetectedByMaster || bSlaveDetectedByTarget ))
+			Wait(1.0)
+
 			; Skipped - Not working as intended - especially under magic attack
 			; Should be detection of an attack by slave against master
+			If ((kSlave.GetEquippedItemType(0) == 9)||(kSlave.GetEquippedItemType(1) == 9 ))  && ( (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableSpellEquip")) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableShoutEquip")) )
+				Debug.Notification( "You better unequip that spell before I make you swallow it, Slave!")
+
+			;ElseIf ((kSlave.GetEquippedItemType(0) == 11)||(kSlave.GetEquippedItemType(1) == 11))
+			;	Debug.Notification( "Hold that torch higher, Slave!" )
+
+			Else
+				Debug.Notification( "Better unequip that before I shove it up your ass, Slave!" )
+
+			EndIf
+			Wait(5.0)
 
 			If ( bTargetMaster || bTargetAllied )
 				If ( bSlaveDetectedByMaster )
-					kMaster.StartCombat( kSlave )
+				;	kMaster.StartCombat( kSlave )
 				EndIf
 				If ( bSlaveDetectedByTarget )
-					kCombatTarget.StartCombat( kSlave )
+				;	kCombatTarget.StartCombat( kSlave )
 				EndIf
-				Debug.Trace("[_sdras_master] Slave attacking - Stop enslavement")
+				; Debug.Trace("[_sdras_master] Slave attacking - Stop enslavement")
 
-				Self.GetOwningQuest().Stop()
-			Else
+				; Self.GetOwningQuest().Stop()
+				; SendModEvent("SDFree")
+
+				Wait(0.5)
+				; kSlave.PlayAnimation("ZazAPC055");Inte
+				; Wait(1.0)
+				Debug.Notification( "You will regret this!" )
+				; Whipping
+					_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
+
+			ElseIf (Utility.RandomInt(0,100)>90) ; chance of attack failing and slave punished
 				fctConstraints.actorCombatShutdown( kSlave )
 				fctConstraints.actorCombatShutdown( kCombatTarget )
+
 				If ( bSlaveDetectedByMaster )
 					; Self.GetOwningQuest().ModObjectiveGlobal( 10.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-
-
-					Debug.Notification( "Your owner pushes you down on your knees." )
+					Wait(0.5)
+					kSlave.PlayAnimation("ZazAPC055");Inte
+					Wait(1.0)
+					Debug.Notification( "Your owner pushes you down to your knees!" )
 					; Whipping
 						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 				EndIf
+
 				If ( bSlaveDetectedByTarget )
-					; Debug.Notification( "Your owner is getting angry" )
+					Debug.Notification( "Your owner wouldn't like that!" )
 					; Whipping
-					;	_SDKP_sex.SendStoryEvent(akRef1 = kCombatTarget, akRef2 = kSlave, aiValue1 = 5 )
+					kSlave.PlayAnimation("ZazAPC055");Inte
+					Wait(0.5)
+					_SDKP_sex.SendStoryEvent(akRef1 = kCombatTarget, akRef2 = kSlave, aiValue1 = 5 )
 				EndIf
 			EndIf
-		ElseIf ( (enslavement.uiLastDemerits < iCheckdemerits)  && ((kSlave.GetParentCell() != kMaster.GetParentCell()) || (!kMaster.GetParentCell().IsInterior()))  )
-			Debug.Notification( "Your owner is losing patience" )
-				
-			Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+		ElseIf ((kSlave.GetParentCell() != kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior()) && (!_SDGVP_state_caged.GetValueInt()));(kSlave.GetParentCell() != kMaster.GetParentCell()) || (!kMaster.GetParentCell().IsInterior()) && (enslavement.uiLastDemerits < iCheckdemerits)
 
-			; add punishment
-			If ( _SDGVP_demerits.GetValueInt() < 10 )
-				; Whipping
-				; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			Debug.Notification( "Your owner is looking for you!" )
+			Wait(5.0)	
+			; Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-			Else
-				; Punishment
-				; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-				
+			If (bSlaveDetectedByMaster)
+				Debug.Notification( "There you are Slave... get your punishment, over here!" )
+				; add punishment
+				If ( _SDGVP_demerits.GetValueInt() > 20 )
+					; Whipping
+				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+				Else
+					; Punishment
+				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+				EndIf
 			EndIf
-			enslavement.uiLastDemerits = iCheckdemerits
-		ElseIf ( enslavement.uiLastDemerits > iCheckdemerits && (kSlave.GetParentCell() == kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior())  )
+		;enslavement.uiLastDemerits = iCheckdemerits
+		;ElseIf ( enslavement.uiLastDemerits > iCheckdemerits && (kSlave.GetParentCell() == kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior())  )
 			; Remove punishment
 			; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 6 )
-			enslavement.uiLastDemerits = iCheckdemerits
+			;;enslavement.uiLastDemerits = iCheckdemerits
 		Else
 			fSlaveLastSeen = GetCurrentRealTime()
 
-			If ( _SDQP_enslavement_tasks.IsRunning() )
-				kNPC = funct.findClosestHostileActorToActor( kMaster, 1000.0 )
-				If ( kNPC != kSlave && kNPC != None )
-					Debug.MessageBox( "$SD_MESSAGE_MASTER_SUSPICIOUS" )
-					Debug.Trace( "_SD:: ending tasks due to near hostile" )
-					_SDQP_enslavement_tasks.FailAllObjectives()
-					_SDQP_enslavement_tasks.Stop()
-				EndIf
-				
-				If ( distance > fLeashLength )
-					kMaster.EvaluatePackage()
-				EndIf
-			ElseIf ( distance <= fLeashLength )
+			; If ( _SDQP_enslavement_tasks.IsRunning() )
+			;	kNPC = funct.findClosestHostileActorToActor( kMaster, 1000.0 )
+			;	If ( kNPC != kSlave && kNPC != None )
+			;		Debug.MessageBox( "$SD_MESSAGE_MASTER_SUSPICIOUS" )
+			;		Debug.Trace( "_SD:: ending tasks due to near hostile" )
+			;		_SDQP_enslavement_tasks.FailAllObjectives()
+			;		_SDQP_enslavement_tasks.Stop()
+			;	EndIf
+			;	
+			;	If ( distance > fLeashLength )
+			;		kMaster.EvaluatePackage()
+			;	EndIf
+			; Else
+			If ( distance <= fLeashLength )
 				fSlaveFreeTime += 0.05
 				enslavement.bSearchForSlave = False
 
 			ElseIf ( RandomFloat( 0.0, 100.0 ) < fLibido )
 				fLibido = 0.0
-				Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;				Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 				_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
@@ -387,7 +476,7 @@ State monitor
 		kMaster.EvaluatePackage()
 		
 		If ( distanceAverage < 256 )
-			Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;			Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, -1, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 		EndIf
 		
 		If ( Self.GetOwningQuest() )
@@ -402,16 +491,21 @@ State monitor
 
 		ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
 		
-		ElseIf ( _SDQP_enslavement_tasks.IsRunning() && _SDFLP_trade_items.HasForm( akBaseItem ) && akSourceContainer == kSlave as ObjectReference )
-			If ( tasks._SDBP_task_complete )
-				fGoldEarned = akBaseItem.GetGoldValue()
-			Else
-				fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
-			EndIf
+		Else 
+			; Add code to match received items against Master's needs
+			; Update Master's mood and trust
 
-			If ( Self.GetOwningQuest().ModObjectiveGlobal( fGoldEarned, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.value ) )
-				Self.GetOwningQuest().SetObjectiveDisplayed( 90 )
-			EndIf
+
+		; ElseIf false && ( _SDQP_enslavement_tasks.IsRunning() && _SDFLP_trade_items.HasForm( akBaseItem ) && akSourceContainer == kSlave as ObjectReference )
+		; 	If ( tasks._SDBP_task_complete )
+		; 		fGoldEarned = akBaseItem.GetGoldValue()
+		;	Else
+		;		fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
+		;	EndIf
+		;
+		;	If ( Self.GetOwningQuest().ModObjectiveGlobal( fGoldEarned, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.value ) )
+		;		Self.GetOwningQuest().SetObjectiveDisplayed( 90 )
+		;	EndIf
 		EndIf
 	EndEvent
 
@@ -449,7 +543,8 @@ State search
 	Event OnDeath(Actor akKiller)
 		Debug.Trace("[_sdras_master] Master death event - Stop enslavement")
 
-		Self.GetOwningQuest().Stop()
+		SendModEvent("SDFree")
+		; Self.GetOwningQuest().Stop()
 	EndEvent
 
 	Event OnUpdate()
@@ -459,12 +554,16 @@ State search
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in search - Stop enslavement")
 
-			Self.GetOwningQuest().Stop()
+			SendModEvent("SDFree")
+			; Self.GetOwningQuest().Stop()
+
 		ElseIf (( kMaster.GetDistance( kSlave ) <= _SDGV_leash_length.GetValue() )  && ( _SDGV_leash_length.GetValue() > 0))
-			GoToState("monitor")
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
 			kMaster.EvaluatePackage()
+
+			GoToState("monitor")
+
 		EndIf
 		
 		If ( Self.GetOwningQuest() )
@@ -490,12 +589,14 @@ State combat
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in combat- Stop enslavement")
 
-			Self.GetOwningQuest().Stop()
+			SendModEvent("SDFree")
+			; Self.GetOwningQuest().Stop()
+
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			GoToState("waiting")
+
 		ElseIf ( !kMaster.IsInCombat() && !kSlave.IsInCombat() )
 			GoToState("monitor")
-		ElseIf ( !enslavement.bSearchForSlave && kMaster.GetDistance( kSlave ) > _SDGVP_escape_radius.GetValue() / 2.0 )
 			enslavement.bSearchForSlave = True
 			GoToState("search")
 		EndIf
@@ -520,7 +621,8 @@ State caged
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in caged - Stop enslavement")
 
-			Self.GetOwningQuest().Stop()
+			SendModEvent("SDFree")
+			; Self.GetOwningQuest().Stop()
 		ElseIf ( !_SDGVP_state_caged.GetValueInt() )
 			GoToState("monitor")
 		EndIf

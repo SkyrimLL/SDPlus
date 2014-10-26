@@ -61,6 +61,8 @@ Function sendDreamerBack( Int aiStage )
 		Utility.Wait( 1.0 )
 	      _SD_dream_destinations.Stop()
 
+		SendModEvent("SDDreamworldStop") 
+
 		kSafeHarbor = _SDLA_safeHarbor.GetReference() as ObjectReference 
 
 		Debug.Trace("[_sdqs_dream] Moving to safe harbor : " + kSafeHarbor)
@@ -114,6 +116,8 @@ Function positionVictims( Int aiStage )
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
+	SendModEvent("SDDreamworldStart") 
+
 	kSanguine.Disable()
 
 	kNaamah.EvaluatePackage()
@@ -166,7 +170,7 @@ Function positionVictims( Int aiStage )
 
 	Utility.Wait(0.1)
 
-	kDreamer.resethealthandlimbs()
+	; kDreamer.resethealthandlimbs()
 	_SDSP_SanguineBound.RemoteCast(kDreamer, kDreamer, kDreamer)
 
 	; _SDSP_spent.Cast( kDreamer, kDreamer)

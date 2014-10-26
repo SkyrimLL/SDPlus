@@ -11,7 +11,7 @@ Int payment = Utility.RandomInt(50, 100) + Math.Floor( whore.GetAV("Speechcraft"
 
 whore.AddItem(_SDMOP_gold, payment, false)
 
-_SDKP_sex.SendStoryEvent(akLoc = whore.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = whore, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
+_SDKP_sex.SendStoryEvent(akLoc = whore.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = whore, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 
 _SDSP_desired.Cast( whore )
 ;END CODE

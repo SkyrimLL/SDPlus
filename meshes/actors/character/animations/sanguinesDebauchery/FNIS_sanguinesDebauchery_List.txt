@@ -104,13 +104,35 @@ b SDFNISc501 SDFNISc501.hkx
 b SDFNISc502 SDFNISc502.hkx
 b SDFNISc503 SDFNISc503.hkx
 b SDFNISc504 SDFNISc504.hkx
-s -a SD_DanceAnim1Begin SDSnakeDance.hkx
-+ -a SD_DanceAnim1Loop1 SDBelly.hkx
-+ -a SD_DanceAnim1Loop2 SDSexyJA.hkx
-+ -a SD_DanceAnim1Loop3 SDSexyJA.hkx
-+ -a SD_DanceAnim1Loop4 SDShakeAss.hkx
-+ -a SD_DanceAnim1Loop5 SDShakeAss.hkx
-+ -a SD_DanceAnim1Loop6 SDSexyJA.hkx
-+ -a SD_DanceAnim1Loop7 SDSnakeDance.hkx
-+ -a SD_DanceAnim1End SDBelly.hkx
-b -a SD_SweetDevil SDSweetDevil.hkx
+b -a SD_SweetDevil SweetDevil.hkx
+b -a SD_Crawl crawl_sneakmtidle.hkx
+
+s -a SD_DanceAnim1Begin SnakeDance.hkx
++ -a SD_DanceAnim1Loop1 Belly.hkx
++ -a SD_DanceAnim1Loop2 SexyJA.hkx
++ -a SD_DanceAnim1Loop3 SexyJA.hkx
++ -a SD_DanceAnim1Loop4 ShakeAss.hkx
++ -a SD_DanceAnim1Loop5 ShakeAss.hkx
++ -a SD_DanceAnim1Loop6 SexyJA.hkx
++ -a SD_DanceAnim1Loop7 SnakeDance.hkx
++ -a SD_DanceAnim1End Belly.hkx
+
+
+' b crawl_sneakmtidle.hkx
+' b crawl_sneakrun_backward.hkx
+' b crawl_sneakrun_bckwrdleft.hkx
+' b crawl_sneakrun_bckwrdright.hkx
+' b crawl_sneakrun_forward.hkx
+' b crawl_sneakrun_frwrdleft.hkx
+' b crawl_sneakrun_frwrdright.hkx
+' b crawl_sneakrun_left.hkx
+' b crawl_sneakrun_right.hkx
+
+b crawlMoveBackward crawl_sneakwalk_bckward.hkx
+b crawlStrafeBackLeft crawl_sneakwalk_bckwrdleft.hkx
+b crawlStrafeBackRight crawl_sneakwalk_bckwrdright.hkx
+b crawlMoveForward crawl_sneakwalk_forward.hkx
+b crawlStrafeStartRight crawl_sneakwalk_frwrdright.hkx
+b crawlStrafeStartLeft crawl_sneakwalk_fwrwrdleft.hkx
+b crawlTurnLeft crawl_sneakwalk_left.hkx
+b crawlTurnRight crawl_sneakwalk_right.hkx

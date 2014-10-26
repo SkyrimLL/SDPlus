@@ -27,7 +27,7 @@ EndWhile
 
 If (Utility.RandomInt( 0, 100 ) > 80 )
 	; _SDKP_sex.SendStoryEvent( akRef1 = _SDRAP_master.GetReference() as ObjectReference, akRef2 =  slave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGV_positions.GetValueInt() )  )
-	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 EndIf
 ;END CODE
 EndFunction

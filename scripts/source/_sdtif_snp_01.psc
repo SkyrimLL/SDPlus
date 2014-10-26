@@ -18,55 +18,43 @@ Int randomVar = Utility.RandomInt( 0, 10 )
  
 _SDGVP_sorry.SetValue(0)
 
+
 If (randomVar >= 9  ) ; Change appearance
+;	Self.GetOwningQuest().ModObjectiveGlobal( (1 - Utility.RandomInt(2, 6)), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 	Debug.Notification( "I don't like the way you look..." )
-	Self.GetOwningQuest().ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+	
 	Utility.Wait(0.5)
-
 	Int IButton = _SD_racemenu.Show()
-
 	If IButton == 0  ; Show the thing.
 		Game.ShowLimitedRaceMenu()
 	EndIf
-
 	Utility.Wait(1.0)
 
-ElseIf (randomVar == 8  ) ; Surprise punishment
+ElseIf (randomVar >= 7  ) ; Surprise punishment
 	Debug.Notification( "Did you think I would fall for that?!" )
-	Self.GetOwningQuest().ModObjectiveGlobal( 2.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( 2.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-	If ( demerits <= 0 )
-		slave.UnequipItem( _SDAP_gag, False, True )
-		slave.RemoveItem( _SDAP_gag, count, True )
+	If ( Utility.RandomInt( 0, 10) >= 5 )
+		; Punishment
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt()) )
+	Else
+		; Whipping
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 	EndIf
-
-	; Punishment
-	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 	
-	; Whipping
-	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 
-ElseIf ((randomVar == 7 ) || (randomVar == 6)) ; Dance
-	Debug.Notification( "Your captor starts singing and cheering you on" )
-	Self.GetOwningQuest().ModObjectiveGlobal( -10.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+ElseIf (randomVar >= 5) ; Dance
+	Debug.Notification( "I want you to dance for me, Slave!" )
+	
+;	Self.GetOwningQuest().ModObjectiveGlobal( -7.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-	; Start unresistible dance
-
+	;; Start unresistible dance
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 Else ; Just sex
 	Debug.Notification( "Your captor's smile sends shivers down your spine" )
-	Self.GetOwningQuest().ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( (1 - Utility.RandomInt(2, 6)), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-	If ( demerits <= 0 )
-		slave.UnequipItem( _SDAP_gag, False, True )
-		slave.RemoveItem( _SDAP_gag, count, True )
-	EndIf
-
-    _SDKP_sex.SendStoryEvent( \
- 	akRef1 = _SDRAP_master.GetReference() as ObjectReference, \
- 	akRef2 = _SDRAP_slave.GetReference() as ObjectReference, \
- 	aiValue1 = 0, \
- 	aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() )  )
+    _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt())  )
 
  
 

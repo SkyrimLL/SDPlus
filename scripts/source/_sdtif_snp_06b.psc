@@ -20,7 +20,7 @@ EndIf
 
 _SDGVP_buyout.SetValue(newBuyout )
 
-Self.GetOwningQuest().ModObjectiveGlobal( -2.0 , _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+; Self.GetOwningQuest().ModObjectiveGlobal( -2.0 , _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 ; akSpeaker.ShowGiftMenu( True )
 ;END CODE

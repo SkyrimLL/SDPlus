@@ -17,7 +17,7 @@ Int randomVar = Utility.RandomInt( 0, 10 )
  
 If (randomVar >= 9  ) ; Change appearance
 	Debug.Notification( "ilok bak." )
-	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 	Utility.Wait(0.5)
 
 	Int IButton = _SD_racemenu.Show()
@@ -29,20 +29,17 @@ If (randomVar >= 9  ) ; Change appearance
 	Utility.Wait(1.0)
 
 ElseIf (randomVar > 6  ) ; Surprise punishment
-	Debug.Notification( "na buroi nok" )
-	Self.GetOwningQuest().ModObjectiveGlobal( 5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+	Debug.Notification( "na buroi nok!" )
+;	Self.GetOwningQuest().ModObjectiveGlobal( 5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-	If ( demerits <= 0 )
-		slave.UnequipItem( _SDAP_gag, False, True )
-		slave.RemoveItem( _SDAP_gag, count, True )
+	If ( Utility.RandomInt( 0, 10) >= 5 )
+		; Furniture Punishment
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt()))		
+	Else
+		; Whipping
+		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5)
 	EndIf
-
-	; Punishment
-	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 	
-	; Whipping
-	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-
 Else ; Just sex
 	Debug.Notification( "(lustful groan)" )
 
@@ -51,31 +48,22 @@ Else ; Just sex
              Game.EnablePlayerControls( abMovement = True )
              Game.SetPlayerAIDriven( False )
 
-	Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-
+;	Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 	If ( demerits <= 0 )
-		slave.UnequipItem( _SDAP_gag, False, True )
-		slave.RemoveItem( _SDAP_gag, count, True )
-	EndIf
-
-  _SDKP_sex.SendStoryEvent( \
-	akRef1 = _SDRAP_master.GetReference() as ObjectReference, \
-	akRef2 = _SDRAP_slave.GetReference() as ObjectReference, \
- 	aiValue1 = 0, \
- 	aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() )  )
-
-	; Aggressive sex
-	If  (SexLab.ValidateActor( kMaster as actor ) > 0) &&  (SexLab.ValidateActor(kSlave as actor) > 0) 
+		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt()))
+	Else
+		; Aggressive sex
+		If  (SexLab.ValidateActor( kMaster as actor ) > 0) &&  (SexLab.ValidateActor(kSlave as actor) > 0) 
 
 		actor[] sexActors = new actor[2]
 		sexActors[0] = kSlave as actor
 		sexActors[1] = kMaster  as actor
-		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTag(2, "Aggressive")
-		; SexLab.StartSex(sexActors, animations)
-
- 
+			sslBaseAnimation[] animations = SexLab.GetAnimationsByTag(2, "Aggressive")
+			SexLab.StartSex(sexActors, animations)
+		Else
+			Debug.Notification( "SexLab aggressive sex not ready" )
+		EndIf 
 	EndIf
-
 
 
 EndIf
