@@ -19,7 +19,7 @@ Event OnActivate(ObjectReference akActionRef)
 			cage.Lock( False )
 		EndIf
 		If(akActionRef == Game.GetPlayer()) ;This should really be changed to !Master in order to prevent player from ordering a follower to open the cage, will revisit after playtesting.
-			Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;			Self.GetOwningQuest().ModObjectiveGlobal( 1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 		EndIf
 	EndIf
 EndEvent

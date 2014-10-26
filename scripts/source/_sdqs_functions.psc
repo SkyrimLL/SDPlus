@@ -358,19 +358,20 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				; sexActors[0] = akTarget
 				; sexActors[1] = akSpeaker
 				; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2,  SexLabInTags,  SexLabOutTags)
-				; SexLab.StartSex(sexActors, animations, victim = akTarget )
+				; If (animations != None)
+				;  	SexLab.StartSex(sexActors, animations, victim = akTarget )
+				; EndIf
 
 				; SexLab.QuickStart(SexLab.PlayerRef, akSpeaker, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 
 				sslThreadModel Thread = SexLab.NewThread()
 				Thread.AddActor(akTarget, true) ; // IsVictim = true
 				Thread.AddActor(akSpeaker)
-				; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags);
-				; If (animations != None)
-					Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
-					Thread.StartThread()
-				; EndIf
-
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
+				Thread.StartThread()
+			Else
+				Debug.Notification("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
+				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
 			EndIf
 		Else
 			Debug.Notification("[_sd_naked] Gender check failed: Restrictions= " + genderRestrictions  + " [ " + speakerGender + " / " + targetGender + " ] ")
@@ -379,6 +380,41 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	; Else
 	; 	Debug.Notification("[_sd_naked] Target is not the player")
 	; EndIf
+EndFunction
+
+Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker = True, Bool includeTarget = False)
+	actor kPervert = None
+	Int idx = 0
+	Int iCount = 0
+
+	If ( includeTarget ) 
+		whore.addToQueue( akTarget as ObjectReference )
+	EndIf
+	
+	; try: Actor[] function FindAvailablePartners(actor[] Positions, int TotalActors, int Males = -1, int Females = -1, float Radius = 10000.0)
+		
+	While (iCount < 10) && (idx < 5)
+		If ( includeSpeaker ) && (kPervert != akSpeaker)
+			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 200.0, IgnoreRef1 = akTarget)  	
+		Else
+			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 200.0, IgnoreRef1 = akTarget, IgnoreRef2 = akSpeaker)  	
+		EndIf
+
+		If (kPervert) 
+			If (!kPervert.IsDead()) 
+				whore.addToQueue( kPervert as ObjectReference )
+				iCount += 1
+			EndIf
+		EndIf
+
+		idx += 1
+	EndWhile
+
+	If ( includeSpeaker )
+		whore.addToQueue( akSpeaker as ObjectReference )
+	EndIf
+
+
 EndFunction
 
 Function removeItemsInList( Actor akActor, FormList akItemList )
@@ -428,3 +464,4 @@ Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
 
 ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
+_SDQS_whore Property whore  Auto  

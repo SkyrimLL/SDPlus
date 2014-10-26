@@ -2,6 +2,51 @@
 ;NEXT FRAGMENT INDEX 24
 Scriptname _sdqf_sprigganslave_01 Extends Quest Hidden
 
+;BEGIN ALIAS PROPERTY _SDLA_arcanaeum
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_arcanaeum Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_sprigganmarker
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_sprigganmarker Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_companion
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_companion Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_unpb Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb_b
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_unpb_b Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_cbbe Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_host
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_host Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_sprigganbook
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_sprigganbook Auto
+;END ALIAS PROPERTY
+
 ;BEGIN ALIAS PROPERTY _SDQA_spriggan
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDQA_spriggan Auto
@@ -12,54 +57,9 @@ ReferenceAlias Property Alias__SDQA_spriggan Auto
 ReferenceAlias Property Alias__SDQA_hostarmor_cbbe_b Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDQA_host
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_host Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_unpb Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_cbbe Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb_b
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_unpb_b Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_sprigganmarker
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_sprigganmarker Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_sprigganbook
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_sprigganbook Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_companion
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_companion Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SDQA_spriggangrove
 ;ALIAS PROPERTY TYPE LocationAlias
 LocationAlias Property Alias__SDQA_spriggangrove Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_arcanaeum
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_arcanaeum Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_2
@@ -76,78 +76,19 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_21
-Function Fragment_21()
+;BEGIN FRAGMENT Fragment_14
+Function Fragment_14()
 ;BEGIN CODE
-Actor kSlave = Game.getPlayer()
-
-_SDGVP_sprigganEnslaved.SetValue(1)
-StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 1)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
-;BEGIN CODE
-; stage 80
-aHost = Alias__SDQA_host.GetReference() as Actor
+; stage 90
 oHost = Alias__SDQA_host.GetReference() as ObjectReference
-oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
 
-oSpriggan.Disable()
-; oSpriggan.placeAtMe( _SDABP_sprigganmatron )
-oSpriggan.Delete()
+_SD_host_flare.RemoteCast( oHost, aHost, aHost )
+Utility.Wait(0.5)
 
-_SDSP_cum.RemoteCast( oHost, aHost, aHost )
-;END CODE
-EndFunction
-;END FRAGMENT
+fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
+CompleteAllObjectives()
 
-;BEGIN FRAGMENT Fragment_19
-Function Fragment_19()
-;BEGIN CODE
-SetObjectiveDisplayed( 60 )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18()
-;BEGIN AUTOCAST TYPE _sdqs_sprigganslave
-Quest __temp = self as Quest
-_sdqs_sprigganslave kmyQuest = __temp as _sdqs_sprigganslave
-;END AUTOCAST
-;BEGIN CODE
-; stage 100
-Alias__SDQA_spriggan.Clear()
-Alias__SDQA_host.Clear()
-Alias__SDQA_spriggangrove.Clear()
-Alias__SDQA_hostarmor.Clear()
-Alias__SDQA_sprigganmarker.Clear()
-
-kmyQuest.bQuestActive = False
-
-Game.GetPlayer().RemoveFromFaction(SprigganFaction)
-
-fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")	
-fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
-
-_SDGVP_sprigganEnslaved.SetValue(0)
-_SD_spriggan_punishment.SetValue(0)
-StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 0)
-
-If ( kmyQuest.IsObjectiveDisplayed(10) )
-	kmyQuest.SetObjectiveDisplayed(10, False)
-EndIf
-
-_SDGVP_enslaved.SetValue(0)
-UnregisterForUpdate()
-
-SetObjectiveDisplayed(20, False)
-SetObjectiveDisplayed(30, False)
-SetObjectiveDisplayed(60, False)
-Reset()
+Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -213,19 +154,82 @@ _SDSP_cum.RemoteCast( oHost, aHost, aHost )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_14
-Function Fragment_14()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-; stage 90
+; stage 80
+aHost = Alias__SDQA_host.GetReference() as Actor
 oHost = Alias__SDQA_host.GetReference() as ObjectReference
+oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
 
-_SD_host_flare.RemoteCast( oHost, aHost, aHost )
-Utility.Wait(0.5)
+oSpriggan.Disable()
+; oSpriggan.placeAtMe( _SDABP_sprigganmatron )
+oSpriggan.Delete()
 
-fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
-CompleteAllObjectives()
+_SDSP_cum.RemoteCast( oHost, aHost, aHost )
+;END CODE
+EndFunction
+;END FRAGMENT
 
-Stop()
+;BEGIN FRAGMENT Fragment_19
+Function Fragment_19()
+;BEGIN CODE
+SetObjectiveDisplayed( 60 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18()
+;BEGIN AUTOCAST TYPE _sdqs_sprigganslave
+Quest __temp = self as Quest
+_sdqs_sprigganslave kmyQuest = __temp as _sdqs_sprigganslave
+;END AUTOCAST
+;BEGIN CODE
+; stage 100
+Alias__SDQA_spriggan.Clear()
+Alias__SDQA_host.Clear()
+Alias__SDQA_spriggangrove.Clear()
+Alias__SDQA_hostarmor.Clear()
+Alias__SDQA_sprigganmarker.Clear()
+
+kmyQuest.bQuestActive = False
+
+Game.GetPlayer().RemoveFromFaction(SprigganFaction)
+
+fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")	
+fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
+
+SendModEvent("SDSprigganStop")
+
+_SDGVP_sprigganEnslaved.SetValue(0)
+_SD_spriggan_punishment.SetValue(0)
+StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 0)
+
+If ( kmyQuest.IsObjectiveDisplayed(10) )
+	kmyQuest.SetObjectiveDisplayed(10, False)
+EndIf
+
+_SDGVP_enslaved.SetValue(0)
+UnregisterForUpdate()
+
+SetObjectiveDisplayed(20, False)
+SetObjectiveDisplayed(30, False)
+SetObjectiveDisplayed(60, False)
+Reset()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_21
+Function Fragment_21()
+;BEGIN CODE
+Actor kSlave = Game.getPlayer()
+
+_SDGVP_sprigganEnslaved.SetValue(1)
+StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 1)
+
+SendModEvent("SDSprigganStart")
 ;END CODE
 EndFunction
 ;END FRAGMENT

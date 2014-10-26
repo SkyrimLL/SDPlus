@@ -13,7 +13,7 @@ EndWhile
 
 ; _SDKP_sex.SendStoryEvent(akLoc = akSpeaker.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = akSpeaker.GetDialogueTarget(), aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
-funct.SanguineRape( akSpeaker, SexLab.PlayerRef  , "Aggressive")
+; funct.SanguineRape( akSpeaker, SexLab.PlayerRef  , "Aggressive")
 
 
 If funct.checkGenderRestriction( akSpeaker,  akPlayer )
@@ -29,9 +29,9 @@ If funct.checkGenderRestriction( akSpeaker,  akPlayer )
 		
 			If akPlayer.WornHasKeyword( _SDKP_bound )
 					; item cleanup
-				funct.removeItemsInList( akPlayer, _SDFLP_sex_items )
-				funct.removeItemsInList( akPlayer, _SDFLP_punish_items )
-				funct.removeItemsInList( akPlayer, _SDFLP_master_items )
+				; funct.removeItemsInList( akPlayer, _SDFLP_sex_items )
+				; funct.removeItemsInList( akPlayer, _SDFLP_punish_items )
+				; funct.removeItemsInList( akPlayer, _SDFLP_master_items )
 			EndIf
 			Utility.Wait(2.0)
 

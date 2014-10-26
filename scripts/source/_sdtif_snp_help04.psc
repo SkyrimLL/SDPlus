@@ -10,7 +10,7 @@ Self.GetOwningQuest().Stop()
 
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
-funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
+; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 ;END CODE
 EndFunction

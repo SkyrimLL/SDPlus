@@ -22,7 +22,7 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 
 		if (randomVar > 8)
 			; Start unresistible dance
-			_SDKP_sex.SendStoryEvent(akLoc = (akRef2 as ObjectReference).GetCurrentLocation(), akRef1 = akRef1, akRef2 = akRef2, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
+			_SDKP_sex.SendStoryEvent(akLoc = (akRef2 as ObjectReference).GetCurrentLocation(), akRef1 = akRef1, akRef2 = akRef2, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 		ElseIf  (randomVar > 6)
 			Debug.Notification( "The roots force your legs open ..." )
 			sslThreadModel Thread = SexLab.NewThread()

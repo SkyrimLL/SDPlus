@@ -25,6 +25,13 @@ GlobalVariable Property _SDGVP_state_mcm  Auto
 GlobalVariable Property _SDGVP_config_enableTrainRun  Auto
 GlobalVariable Property _SDGVP_config_blindnessLevel  Auto
 GlobalVariable Property _SDGVP_config_hardcore  Auto
+
+GlobalVariable Property _SDGVP_config_ArmbinderKnee  Auto
+GlobalVariable Property _SDGVP_config_SlaveOnKnees  Auto
+GlobalVariable Property _SDGVP_config_RemoveArmBinder  Auto
+GlobalVariable Property _SDGVP_config_RemovePunishment  Auto
+GlobalVariable Property _SDGVP_config_GagType  Auto
+
 String[] Property _SDSP_config_genderRestrictions  Auto
 
 Quest Property WIAddItem03  Auto  
@@ -75,6 +82,10 @@ Int _SDOID_config_B6
 Int _SDOID_config_B7
 Int _SDOID_config_B8
 Int _SDOID_config_B9
+Int _SDOID_config_B10
+Int _SDOID_config_B11
+Int _SDOID_config_B12
+Int _SDOID_config_B13
 
 Int _SDOID_config_S1
 Float _SDOID_config_S1_min = 0.0
@@ -248,7 +259,7 @@ EndFunction
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;                 2147483647
-Int _SD_mcm_ver = 2014051301
+Int _SD_mcm_ver = 2014103001
 
 int function GetVersion()
 	; patch to fix a screw up
@@ -409,7 +420,14 @@ event OnPageReset(string a_page)
 		_SDOID_config_B6 = AddToggleOption("$SD_OPTION_P0_SHOW_DEMERIT_CHANGES", _SDGVP_config_verboseMerits.GetValue() as Bool) ;18 - 10
 		AddHeaderOption("$SD_HEADER_P0_NPC_REACTION") ;20 - 11
 		_SDOID_config_B8 = AddToggleOption("$SD_OPTION_P0_ENABLE_TRAIN_RUN", _SDGVP_config_enableTrainRun.GetValue() as Bool) ;22 - 12
-
+		;# SDpatch #
+		;###############################################################################################
+		AddHeaderOption("Slave Options")
+		_SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
+		_SDOID_config_B11 = AddToggleOption("Remove Armbinder During Punishments", _SDGVP_config_RemoveArmBinder.GetValue() as Bool) ;
+		_SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
+		_SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
+		;###############################################################################################
 		SetCursorPosition(1)
 		AddHeaderOption("$SD_HEADER_P0_BODY") ;1 - 1
 		_SDOID_config_B4 = AddToggleOption("$SD_OPTION_P0_USING_CBBE", _SDGVP_config_cbbe.GetValue() as Bool) ;3 - 2
@@ -522,7 +540,8 @@ event OnPageReset(string a_page)
 		; AddTextOption("$SD_OPTION_P2_MOVE_AWAY_EXPLAIN", "", OPTION_FLAG_DISABLED)
 		; AddTextOption("$SD_OPTION_P2_MOVE_DOWN_EXPLAIN", "", OPTION_FLAG_DISABLED)
 		; AddTextOption("$SD_OPTION_P2_MOVE_DOWN_EXPLAIN_SHIFT", "", OPTION_FLAG_DISABLED)
-		AddTextOption("$SD_OPTION_P2_SURRENDER_EXPLAIN", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("$SD_OPTION_P2_SURRENDER_EXPLAIN", "", OPTION_FLAG_DISABLED)
+		AddTextOption("The surrender key gives you the option to surrender willingly to your opponent or pray to Sanguine for help. In all cases, pressing this key will apply some safety checks and get you unstuck if you cannot move.", "", OPTION_FLAG_DISABLED)
 
 	; ADDONS
 	ElseIf ( a_page == Pages[3] )
@@ -611,6 +630,16 @@ event OnOptionHighlight(int a_option)
 		SetInfoText("$_SDOID_config_B8")
 	ElseIf ( a_option == _SDOID_config_B9 )
 		SetInfoText("$_SDOID_config_B9")
+	;#################################################################################################
+	ElseIf ( a_option == _SDOID_config_B10 )
+		SetInfoText("Toggle this ON to kneel before your Master while wearing an armbinder. ")
+	ElseIf ( a_option == _SDOID_config_B11 )
+		SetInfoText("Toggle this ON to remove armbinder during punishments. ")
+	ElseIf ( a_option == _SDOID_config_B12 )
+		SetInfoText("Toggle this ON to remove punishing items (i.e. belt) during punishments. ")
+	ElseIf ( a_option == _SDOID_config_B13 )
+		SetInfoText("Toggle this ON to equip harness gag instead of strap one. Make this selection before enslavement. ")
+	;#################################################################################################			
 	ElseIf ( a_option == _SDOID_config_S1 )
 		SetInfoText("$_SDOID_config_S1")
 	ElseIf ( a_option == _SDOID_config_S2 )
@@ -692,6 +721,22 @@ event OnOptionSelect(int a_option)
 	ElseIf ( a_option == _SDOID_config_B9 )
 		_SDGVP_config_hardcore.SetValue( Math.LogicalXor( 1, _SDGVP_config_hardcore.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_hardcore.GetValue() as Bool )
+		
+	;#################################################################################################
+	ElseIf ( a_option == _SDOID_config_B10 )
+		_SDGVP_config_ArmBinderKnee.SetValue( Math.LogicalXor( 1, _SDGVP_config_ArmBinderKnee.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+		;_SDGVP_config_SlaveOnKnees.SetValue(1)
+	ElseIf ( a_option == _SDOID_config_B11 )
+		_SDGVP_config_RemoveArmBinder.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemoveArmBinder.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_RemoveArmBinder.GetValue() as Bool )
+	ElseIf ( a_option == _SDOID_config_B12 )
+		_SDGVP_config_RemovePunishment.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemovePunishment.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+	ElseIf ( a_option == _SDOID_config_B13 )
+		_SDGVP_config_GagType.SetValue( Math.LogicalXor( 1, _SDGVP_config_GagType.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+	;#################################################################################################
 	ElseIf ( _SDOID_quests_o.Find( a_option ) >= 0 )
 		idx = _SDOID_quests_o.Find( a_option )
 		_SDBP_quests_optional_running[idx] = !_SDBP_quests_optional_running[idx]

@@ -1,5 +1,7 @@
 Scriptname _SD_Reset extends Quest  
 
+_SDQS_fcts_slavery Property fctSlavery  Auto
+
 Quest Property _SD_arrested Auto
 Quest Property _SD_bountyslave  Auto
 Quest Property _SD_controller  Auto
@@ -39,10 +41,16 @@ Function Maintenance()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 
-	If fVersion < 2.0 ; <--- Edit this value when updating
-		fVersion = 2.0 ; and this
+	If fVersion < 3.0 ; <--- Edit this value when updating
+		fVersion = 3.0; and this
 		Debug.Notification("Updating to SD+ version: " + fVersion)
 		; Update Code
+
+		; Init slavery API
+		If (!StorageUtil.HasIntValue(game.getPlayer(), "_SD_iAPIInit"))
+			fctSlavery.InitSlaveryState( game.getPlayer() )
+		EndIf
+
 
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
 		_SDGVP_naked_rape_delay.SetValue( fNext )
@@ -65,7 +73,8 @@ Function Maintenance()
 		EndIf
 
 		If ( _SD_enslavement.IsRunning() )
-			; Debug.Notification("Shutting down Enslavement Quest" )
+			Debug.Messagebox("Enslavement Quest is running during an upgrade. Canceling enslavement to apply changes." )
+			SendModEvent("SDFree")
 
 			; Disabled for now
 			; - Sets slave faction to 0 in loop

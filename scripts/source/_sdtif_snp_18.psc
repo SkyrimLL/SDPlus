@@ -15,7 +15,7 @@ If ( kSlave.GetItemCount( kRags ) == 0 )
 Else
 	kSlave.RemoveItem( kRags, 1, False, akSpeaker)
 EndIf
-; kSlave.EquipItem( kRags.GetBaseObject() )
+kSlave.EquipItem( kRags.GetBaseObject() ) ;Inte
 
 akSpeaker.ShowGiftMenu(false, _SDFL_Clothing)
 ;END CODE
@@ -28,3 +28,5 @@ ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDAP_clothing  Auto  
 
 FormList  Property _SDFL_Clothing  Auto  
+
+

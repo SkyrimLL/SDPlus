@@ -21,9 +21,11 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-		fctOutfit.removePunishment( bDevGag = True,  bDevBlindfold = True,  bDevBelt = True,  bDevPlugAnal = True,  bDevPlugVaginal = True)
+;		fctOutfit.removePunishment( bDevGag = True,  bDevBlindfold = True,  bDevBelt = True,  bDevPlugAnal = True,  bDevPlugVaginal = True)
+		fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 	
-		if (Utility.RandomInt(0,100) < 90)
+		if (Utility.RandomInt(0,100) < 77)
 			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
 			Debug.Messagebox("Your Master's Key helps you break free of your chains.")
 		Else

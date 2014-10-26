@@ -246,6 +246,40 @@ Bool Function isBindingEquipped (  Actor akActor )
 	Return False
 EndFunction
 
+Bool Function isArmbinderEquipped (  Actor akActor )
+
+	If ( akActor.WornHasKeyword( _SDKP_bound ) )
+		Return True
+	Else
+
+		Int[] uiSlotMask = New Int[2]
+		uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders
+		uiSlotMask[1] =  0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+
+		Int iFormIndex = uiSlotMask.Length
+		Bool bDeviousDeviceEquipped = False
+
+		While ( iFormIndex > 0 )
+			iFormIndex -= 1
+			Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+			If (kForm != None)
+				Armor kArmor = kForm  as Armor
+				bDeviousDeviceEquipped = ( akActor.isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_DeviousArmbinder")) )
+			Else
+				bDeviousDeviceEquipped = False
+			EndIf
+
+			If bDeviousDeviceEquipped
+				return True 
+			EndIf
+
+		EndWhile
+	EndIf
+
+	Return False
+EndFunction
+
+
 Bool Function isCuffsEquipped (  Actor akActor )
 
 	If ( akActor.WornHasKeyword( _SDKP_bound ) )
@@ -810,11 +844,27 @@ Function setDeviousOutfitHarness ( Int iDevOutfit =-1, Bool bDevEquip = True, St
 	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 8, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
+Function setDeviousOutfitArmbinder ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
+	int iOutfitID 
+
+	if (iDevOutfit== -1)
+		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 9)
+
+		if (iOutfitID == -1)
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+		endif
+	Else
+		iOutfitID =  iDevOutfit
+	EndIf
+	
+	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 9, bEquip = bDevEquip, sMessage = sDevMessage)
+EndFunction
+
 Function clearDeviousOutfit ( Int iDevOutfit =-1, String sDevMessage = "")
 	int iOutfitID 
 
 	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8)
+		iOutfitID =  -1 ; StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8)
 
 		if (iOutfitID == -1)
 			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
@@ -828,7 +878,7 @@ Function clearDeviousOutfit ( Int iDevOutfit =-1, String sDevMessage = "")
 	EndIf
 
 	int index = 0
-	While index <= 8
+	While index <= 9
 		setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = index, bEquip = False, sMessage = "")
 	
 		index += 1
@@ -940,6 +990,14 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
+		If ( (iOutfitPart==9) || (iOutfitPart==-1) )
+			; 1 - Arms - DD Armbinders
+			ddArmorRendered = libs.armbinderRendered
+			ddArmorInventory = libs.armbinderRendered
+			ddArmorKeyword = libs.zad_DeviousArmbinder 
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+		EndIf
 
 
 	; --------------------------------------------------------------------------------------------
@@ -947,8 +1005,8 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - DD Posture Leather Collar
-			ddArmorRendered = libs.cuffsLeatherCollarRendered
-			ddArmorInventory = libs.cuffsLeatherCollar
+			ddArmorRendered = DDiCuffLeatherCollarRendered
+			ddArmorInventory = DDiCuffLeatherCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
@@ -1017,22 +1075,30 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
+		If ( (iOutfitPart==9) || (iOutfitPart==-1) )
+			; 1 - Arms - DD Armbinders
+			ddArmorRendered = libs.armbinderRendered
+			ddArmorInventory = libs.armbinderRendered
+			ddArmorKeyword = libs.zad_DeviousArmbinder 
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+		EndIf
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfit == 2) ; Very Wealthy outfit  - Devious slave items - Steel + Armbinders
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - DD Posture Steel Collar
-			ddArmorRendered = libs.collarPostureRendered
-			ddArmorInventory = libs.collarPosture
+			ddArmorRendered = DDiPostureSteelCollarRendered
+			ddArmorInventory = DDiPostureSteelCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
-			; 1 - Arms - DD Armbinders
-			ddArmorRendered = libs.armbinderRendered
-			ddArmorInventory = libs.armbinderRendered
+			; 1 - Arms - Zaz Iron Cuffs
+			ddArmorRendered = zazIronCuffsRendered 
+			ddArmorInventory = zazIronCuffs
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
@@ -1089,6 +1155,14 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorRendered = libs.harnessBodyRendered
 			ddArmorInventory = libs.harnessBody
 			ddArmorKeyword = libs.zad_DeviousHarness 
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+		EndIf
+		If ( (iOutfitPart==9) || (iOutfitPart==-1) )
+			; 1 - Arms - DD Armbinders
+			ddArmorRendered = libs.armbinderRendered
+			ddArmorInventory = libs.armbinderRendered
+			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
@@ -1378,30 +1452,34 @@ EndFunction
 ; Test Spriggan Host quest and Falmer enslavement
 
 
-Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False)
+Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 
 	If (bDevPlugAnal)
-		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
+		Debug.Notification("An anal plug is viciously forced inside you." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
 			
 		setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	If (bDevPlugVaginal)
-		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
+		Debug.Notification("A plug fills you with harsh, cold metal." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 			
 		setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	; Belt
 	If (bDevBelt)
-		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
+		Debug.Notification("A dreadful chastity belt locks around your waist." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
 		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	; Blinds
 	If (bDevBlindfold)
-		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
+		Debug.Notification("A blindfol covers your eyes, leaving you helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
 		setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
 	EndIf
@@ -1409,38 +1487,53 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	; Gag
 
 	If (bDevGag)
-		Debug.Notification("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
+		Debug.Notification("A gag fills your mouth and muffles your screams." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
 		setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
 
 	EndIf
 
+	;  Armbinder
+
+	If (bDevArmbinder)
+		Debug.Notification("Armbinders painfully lock your arms behind your back." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
+
+		setDeviousOutfitArmbinder ( bDevEquip = True, sDevMessage = "")
+
+	EndIf
+
 EndFunction
 
-Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False)
+Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 
 	If (bDevPlugAnal)
-		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
+		Debug.Notification("The anal plug is removed, making you feel sore and empty." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
 			
 		setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
 	EndIf
 
 	If (bDevPlugVaginal)
-		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
+		Debug.Notification("The vaginal plug is drenched as it is removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
 		setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
 	EndIf
 
 	; Belt
 	If (bDevBelt)
-		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
+		Debug.Notification("The belt finally lets go of its grasp around your hips." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
 			
 		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 	EndIf
 
 	; Blinds
 	If (bDevBlindfold)
-		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
+		Debug.Notification("A flood of painful light makes you squint as the blindfold is removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
 			
 		setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 	EndIf
@@ -1448,15 +1541,28 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 	; Gag
 
 	If (bDevGag)
-		Debug.Notification("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
+		Debug.Notification("The gag is finally removed, leaving a screaming pain in your jaw." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
 
 		setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 
 	EndIf
 
+	;  Armbinder
+
+	If (bDevArmbinder)
+		Debug.Notification("The armbinders make you shake with relief as they are removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
+
+		setDeviousOutfitArmbinder ( bDevEquip = False, sDevMessage = "")
+
+	EndIf
+
 EndFunction
 
-
+Function DDSetAnimating( Actor akActor, Bool isAnimating )
+	libs.SetAnimating( akActor, isAnimating )
+EndFunction
 
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
@@ -1464,6 +1570,11 @@ Keyword Property _SDKP_gagged Auto
 
 zadLibs Property libs Auto
 
+Armor Property DDiPostureSteelCollarRendered Auto         ; Internal Device
+Armor Property DDiPostureSteelCollar Auto        	       ; Inventory Device
+ 
+Armor Property DDiCuffLeatherCollarRendered Auto         ; Internal Device
+Armor Property DDiCuffLeatherCollar Auto        	       ; Inventory Device
  
 Armor Property zazIronCollarRendered Auto         ; Internal Device
 Armor Property zazIronCollar Auto        	       ; Inventory Device

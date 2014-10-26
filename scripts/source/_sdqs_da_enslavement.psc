@@ -24,7 +24,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	Debug.Trace("SD Blackout start master:" + thisAggressor)
 	; Debug.Notification("SD Blackout start master:" + thisAggressor)
 	
-	if (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && ( (thisAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (  fctFactions.checkIfFalmer ( akAggressor) )) && funct.checkGenderRestriction( thisAggressor, thisPlayer ) ) && !fctFactions.actorFactionInList( thisAggressor, _SDFLP_banned_factions )
+	if (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && ( (thisAggressor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( thisAggressor, thisPlayer ) ) || (  fctFactions.checkIfFalmer ( thisAggressor) )) && !thisAggressor.IsGhost() && !fctFactions.actorFactionInList( thisAggressor, _SDFLP_banned_factions )
 		return true
 	else
 		return false
