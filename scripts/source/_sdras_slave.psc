@@ -131,128 +131,12 @@ EndFunction
 
 
 Event OnInit()
-	_maintenance()
-
+ 
 	If ( Self.GetOwningQuest() )
 		RegisterForSingleUpdate( fRFSU )
 	EndIf
 	GoToState("waiting")
 EndEvent
-
-Function _Maintenance()
-;	UnregisterForAllModEvents()
-	Debug.Trace("[_sdras_slave]  Reset custom events")
-	RegisterForModEvent("PCSubSex",   "OnSDStorySex")
-	RegisterForModEvent("PCSubEntertain",   "OnSDStoryEntertain")
-	RegisterForModEvent("PCSubWhip",   "OnSDStoryWhip")
-	RegisterForModEvent("PCSubPunish",   "OnSDStoryPunish")
-	RegisterForModEvent("PCSubTransfer",   "OnSDTransfer")
-	RegisterForModEvent("PCSubFree",   "OnSDFree")
-
-EndFunction
-
-Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
-	; int storyID = _argc as Int
-
-	Debug.Trace("[_sdras_slave] Receiving sex story event [" + _args  + "] [" + _argc as Int + "]")
-
-	If (kTempAggressor != None)
-		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
-	Else
-		kTempAggressor = kMaster
-	EndIf
- 
-	if  (_args == "GangBang")
-
-		funct.SanguineGangRape( kTempAggressor, kSlave, False, False)
-
-	Elseif (_args == "SoloShow")
-
-		funct.SanguineGangRape( kTempAggressor, kSlave, False, True)
-	Else 
-		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 0, aiValue2 = 0 )
-	EndIf
-EndEvent
-
-Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
-	; int storyID = _argc as Int
-
-	Debug.Trace("[_sdras_slave] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
-
-	If (kTempAggressor != None)
-		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
-	Else
-		kTempAggressor = kMaster
-	EndIf
-
-	if  (_args == "GangBang")
-
-		funct.SanguineGangRape( kTempAggressor, kSlave, False, False)
-
-	Elseif (_args == "SoloShow")
-
-		funct.SanguineGangRape( kTempAggressor, kSlave, False, True)
-	Else 
-		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 0 )
-	EndIf
-
-EndEvent
-
-Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
-
-	Debug.Trace("[_sdras_slave] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
-
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 5, aiValue2 = 0 )
-EndEvent
-
-Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
- 
-	Debug.Trace("[_sdras_slave] Receiving punish story event [" + _args  + "] [" + _argc as Int + "]")
-
-	If (kTempAggressor != None)
-		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
-	Else
-		kTempAggressor = kMaster
-	EndIf
- 
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-EndEvent
-
-Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kNewMaster = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
-		
-	Debug.Trace("[_sdras_slave] Receiving 'transfer slave' event - New master: " + kNewMaster)
-
-	If (kNewMaster != None)
-		Self.GetOwningQuest().Stop()
-
-		; new master
-		While ( Self.GetOwningQuest().IsStopping() )
-		EndWhile
-
-		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
-
-		If (_args == "Consensual")
-			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
-		EndIf
-
-		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kSlave, aiValue1 = 0)
-	Else
-		Debug.Notification("[_sdras_slave] Attempted transfer to empty master " )
-	EndIf
-EndEvent
-
-Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-		Debug.Trace("[_sdras_slave] Receiving 'free slave' event")
-		Self.GetOwningQuest().Stop()
-		Wait( fRFSU * 5.0 )
-EndEvent
-
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	If ( _SDFLP_banned_locations.HasForm( akNewLoc ) )
@@ -404,10 +288,11 @@ State monitor
 		If (iDaysSinceLastCheck == 0) ; same day - incremental updates
 			iCountSinceLastCheck += 1
 
-			if (iCountSinceLastCheck >= 50)
+			if (iCountSinceLastCheck >= 100)
 				Debug.Notification( "[SD] Slavery status - hourly update")
 				iCountSinceLastCheck = 0
-				fctSlavery.UpdateStatusHourly( kMaster, kSlave)
+				; Disabled for now - daily update makes more sense
+				; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
 			EndIf
 
 		Else ; day change - full update
@@ -483,14 +368,14 @@ State monitor
 			GoToState("waiting")	
 
 		ElseIf ( fDistance > (_SDGVP_escape_radius.GetValue() * 0.7) ) && ( fDistance < _SDGVP_escape_radius.GetValue() )
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash")
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iMasterFollowSlave") == 0)
 				Debug.Notification( "Your collar tightens around your throat..." )
 				_SD_CollarStrangleImod.Remove()
 			EndIf
 
 		ElseIf ( fDistance > _SDGVP_escape_radius.GetValue() )
 
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash")
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iMasterFollowSlave") == 0)
 
 				fBlackoutRatio = ( funct.floatMin( fDistance, _SDGVP_escape_radius.GetValue() * 2.0 ) - _SDGVP_escape_radius.GetValue() ) / _SDGVP_escape_radius.GetValue()
 
@@ -563,7 +448,7 @@ State monitor
 			EndIf
 
 			; Clean up chocking effect if leash is on
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash")
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iMasterFollowSlave") == 0)
 				_SD_CollarStrangleImod.Remove()
 			EndIf
 

@@ -53,6 +53,7 @@ Quest Property _SD_dreamQuest  Auto
 
 ; reg enslavement
 Quest Property _SDQP_enslavement  Auto
+
 ReferenceAlias Property _SDRAP_master  Auto
 ReferenceAlias Property _SDRAP_bindings  Auto
 ReferenceAlias Property _SDRAP_shackles  Auto
@@ -236,7 +237,7 @@ EndEvent
 
 Function _Maintenance()
 ;	UnregisterForAllModEvents()
-	Debug.Trace("[_sdras_player] Reset custom events")
+	Debug.Notification("[_sdras_player] Register events")
 	RegisterForModEvent("PCSubEnslave",   "OnSDEnslave")
 
 EndFunction
@@ -247,6 +248,16 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
 	If (kNewMaster != None)
+		; if already enslaved, transfer of ownership
+
+		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+			_SDQP_enslavement.Stop()
+
+			While ( _SDQP_enslavement.IsStopping() )
+			EndWhile
+
+		EndIf
+
 		; new master
 
 		StorageUtil.SetFormValue(Game.GetPlayer(), "_SD_TempAggressor", None)
@@ -332,7 +343,7 @@ State monitor
 		If (iDaysSinceLastCheck == 0) ; same day - incremental updates
 			iCountSinceLastCheck += 1
 
-			if (iCountSinceLastCheck >= 250)
+			if (iCountSinceLastCheck >= 500)
 				; Debug.Notification( "[SD] Player status - hourly update")
 				iCountSinceLastCheck = 0
 				

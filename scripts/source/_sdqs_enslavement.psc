@@ -10,7 +10,9 @@ _SDQS_fcts_factions Property fctFactions  Auto
 _SDQS_fcts_slavery Property fctSlavery  Auto
 
 DialogueFollowerScript Property companionDialogue  Auto
- 
+
+Quest Property _SDQP_enslavement  Auto
+
 GlobalVariable Property _SDGVP_enslaved  Auto  
 GlobalVariable Property _SDGVP_positions  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto  
@@ -24,6 +26,7 @@ GlobalVariable Property _SDGVP_state_joined  Auto
 GlobalVariable Property _SDKP_trust_hands Auto
 GlobalVariable Property _SDKP_trust_feet Auto
 GlobalVariable Property _SDGV_leash_length Auto
+GlobalVariable Property _SDGVP_punishments  Auto  
 
 SexLabFramework Property SexLab  Auto  
 
@@ -44,6 +47,7 @@ Keyword Property _SDKP_sex  Auto
 Keyword Property _SDKP_wrists  Auto  
 Keyword Property _SDKP_ankles  Auto  
 Keyword Property ActorTypeNPC  Auto  
+Keyword Property _SDKP_enslave  Auto
 
 Quest Property WEBountyCollectorQST  Auto
 Faction Property _SDFP_bountyhunter  Auto
@@ -283,11 +287,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		fctOutfit.DDSetAnimating( kSlave, true )
 
-		; SetObjectiveDisplayed( 0 )
-		; SetObjectiveDisplayed( 1 )
-		; SetObjectiveDisplayed( 2 )
-		; SetObjectiveDisplayed( 3 )
-		; Utility.Wait(2.0)
+		SetObjectiveDisplayed( 0 )
+		SetObjectiveDisplayed( 1 )
+		SetObjectiveDisplayed( 2 )
+		SetObjectiveDisplayed( 3 )
+		Utility.Wait(2.0)
 
 		; Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )
 
@@ -312,6 +316,131 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	EndIf
 
 EndEvent
+
+Event OnInit()
+	_maintenance()
+
+EndEvent
+
+Function _Maintenance()
+;	UnregisterForAllModEvents()
+	Debug.Notification("[_sdqs_enslavement] Register events")
+
+	RegisterForModEvent("PCSubSex",   "OnSDStorySex")
+	RegisterForModEvent("PCSubEntertain",   "OnSDStoryEntertain")
+	RegisterForModEvent("PCSubWhip",   "OnSDStoryWhip")
+	RegisterForModEvent("PCSubPunish",   "OnSDStoryPunish")
+	RegisterForModEvent("PCSubTransfer",   "OnSDTransfer")
+	RegisterForModEvent("PCSubFree",   "OnSDFree")
+
+EndFunction
+
+Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
+	; int storyID = _argc as Int
+
+	Debug.Trace("[_sdras_slave] Receiving sex story event [" + _args  + "] [" + _argc as Int + "]")
+
+	If (kTempAggressor != None)
+		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
+	Else
+		kTempAggressor = kMaster
+	EndIf
+ 
+	if  (_args == "Gangbang")
+
+		funct.SanguineGangRape( kTempAggressor, kSlave, False, False)
+
+	Elseif (_args == "Soloshow")
+
+		funct.SanguineGangRape( kTempAggressor, kSlave, False, True)
+	Else 
+		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 0, aiValue2 = 0 )
+	EndIf
+EndEvent
+
+Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
+	; int storyID = _argc as Int
+
+	; Debug.Notification("[_sdras_slave] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
+	Debug.Trace("[_sdras_slave] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
+
+	If (kTempAggressor != None)
+		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
+	Else
+		kTempAggressor = kMaster
+	EndIf
+
+	if  (_args == "Gangbang")
+		; Debug.Notification("[_sdras_slave] Receiving Gangbang")
+		funct.SanguineGangRape( kTempAggressor, kSlave, True, False)
+
+	Elseif (_args == "Soloshow")
+		; Debug.Notification("[_sdras_slave] Receiving Show")
+
+		funct.SanguineGangRape( kTempAggressor, kSlave, True, True)
+	Else 
+		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 0 )
+	EndIf
+
+EndEvent
+
+Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
+
+	Debug.Trace("[_sdras_slave] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
+
+	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 5, aiValue2 = 0 )
+EndEvent
+
+Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kTempAggressor = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
+ 
+	Debug.Trace("[_sdras_slave] Receiving punish story event [" + _args  + "] [" + _argc as Int + "]")
+
+	If (kTempAggressor != None)
+		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
+	Else
+		kTempAggressor = kMaster
+	EndIf
+ 
+	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+EndEvent
+
+Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kNewMaster = StorageUtil.GetFormValue( kSlave, "_SD_TempAggressor") as Actor
+		
+	Debug.Trace("[_sdras_slave] Receiving 'transfer slave' event - New master: " + kNewMaster)
+
+	If (kNewMaster != None)
+		_SDQP_enslavement.Stop()
+
+		; new master
+		While ( _SDQP_enslavement.IsStopping() )
+		EndWhile
+
+		StorageUtil.SetFormValue(kSlave, "_SD_TempAggressor", None)
+
+		If (_args == "Consensual")
+			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
+		EndIf
+
+		; New enslavement - changing ownership
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kSlave, aiValue1 = 0)
+	Else
+		Debug.Notification("[_sdras_slave] Attempted transfer to empty master " )
+	EndIf
+EndEvent
+
+Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+		Debug.Trace("[_sdras_slave] Receiving 'free slave' event")
+		_SDQP_enslavement.Stop()
+		Wait( fRFSU * 5.0 )
+EndEvent
+
+
+
 
 Auto State enslaved
 	Event OnUpdate()

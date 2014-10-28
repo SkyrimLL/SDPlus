@@ -392,6 +392,7 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 	EndIf
 	
 	; try: Actor[] function FindAvailablePartners(actor[] Positions, int TotalActors, int Males = -1, int Females = -1, float Radius = 10000.0)
+	Debug.Notification("[_sdqs_functions] Scanning for actors")
 		
 	While (iCount < 10) && (idx < 5)
 		If ( includeSpeaker ) && (kPervert != akSpeaker)
@@ -403,12 +404,16 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 		If (kPervert) 
 			If (!kPervert.IsDead()) 
 				whore.addToQueue( kPervert as ObjectReference )
-				iCount += 1
+				idx += 1
 			EndIf
 		EndIf
 
-		idx += 1
+		iCount += 1
 	EndWhile
+
+	if (idx == 0)
+		Debug.Notification("[_sdqs_functions] No actor found")
+	EndIf
 
 	If ( includeSpeaker )
 		whore.addToQueue( akSpeaker as ObjectReference )

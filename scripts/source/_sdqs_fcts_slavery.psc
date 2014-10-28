@@ -39,12 +39,12 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", kMaster)
 	StorageUtil.SetFormValue(kSlave, "_SD_DesiredOwner", None)
 
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTimeBuffer", 20)  ; number of seconds allowed away from Master
-	StorageUtil.SetIntValue(kMaster,"_SD_iMasterFollowSlave", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20)  ; number of seconds allowed away from Master
+	StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 
 	StorageUtil.SetFormValue(kSlave, "_SD_LeashCenter", kMaster)
 	StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 200)
-	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveDefaultStance", "Kneeling")
+	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Kneeling")
 
 	StorageUtil.SetFloatValue(kSlave, "_SD_fLastEnslavedGameTime", StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavedGameTime"))
 	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavedGameTime", _SDGVP_gametime.GetValue())
@@ -143,85 +143,85 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	EndIf
 
 	; Master satisfaction - negative = angry / positive = happy
-	If (!StorageUtil.HasIntValue(kMaster, "_SD_iMasterDisposition"))
+	If (!StorageUtil.HasIntValue(kMaster, "_SD_iNPCDisposition"))
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
-			StorageUtil.SetIntValue(kMaster, "_SD_iMasterDisposition", Utility.RandomInt(-5,10)   )
+			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", Utility.RandomInt(-5,10)   )
 		else
-			StorageUtil.SetIntValue(kMaster, "_SD_iMasterDisposition", Utility.RandomInt(-10,5)   )
+			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", Utility.RandomInt(-10,5)   )
 		EndIf
 	Else
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iMasterDisposition") * 2   )
+		StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 2   )
 	EndIf
 
 	; Master need and trust ranges - plus or minus value around 0
 	; Some masters are easier to please than others
-	If (!StorageUtil.HasIntValue(kMaster, "_SD_iMasterNeedRange"))
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterNeedRange", Utility.RandomInt(2,5)   )
+	If (!StorageUtil.HasIntValue(kMaster, "_SD_iNeedRange"))
+		StorageUtil.SetIntValue(kMaster, "_SD_iNeedRange", Utility.RandomInt(2,5)   )
 	EndIf
 	; Some masters are easier to convince than others
-	If (!StorageUtil.HasIntValue(kMaster, "_SD_iMasterTrustRange"))
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterTrustRange", Utility.RandomInt(5,15)   )
+	If (!StorageUtil.HasIntValue(kMaster, "_SD_iTrustRange"))
+		StorageUtil.SetIntValue(kMaster, "_SD_iTrustRange", Utility.RandomInt(5,15)   )
 	EndIf
 
-	StorageUtil.SetIntValue(kMaster, "_SD_iMasterGoalFood", Utility.RandomInt(5,10))
-	StorageUtil.SetIntValue(kMaster, "_SD_iMasterGoalSex",  Utility.RandomInt(5,10))
-	StorageUtil.SetIntValue(kMaster, "_SD_iMasterGoalPunishment",  Utility.RandomInt(5,10))
-	StorageUtil.SetIntValue(kMaster, "_SD_iMasterGoalGold",  Utility.RandomInt(15,50))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalFood", Utility.RandomInt(5,10))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalSex",  Utility.RandomInt(5,10))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalPunishment",  Utility.RandomInt(5,10))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalGold",  Utility.RandomInt(15,50))
 	; Special needs based on faction
 	; Special items (firewood, ingredients)
 	; Blood feedings (Vampire)
 
 	; Slave daily progress
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalFood", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalSex", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalPunishment", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalGold", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalSex", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalPunishment", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalGold", 0)
 
 	; Master trust - number of merit points necessary for master to trust slave
-	If (!StorageUtil.HasIntValue(kMaster, "_SD_iMasterTrustThreshold"))
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterTrustThreshold", 20 )
+	If (!StorageUtil.HasIntValue(kMaster, "_SD_iTrustThreshold"))
+		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", 20 )
 	else
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterTrustThreshold", StorageUtil.GetIntValue(kMaster, "_SD_iMasterTrustThreshold") + 10)
+		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") + 10)
 	EndIf
 
 	; Slave privileges
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveMeritPoints", 0)  ; Trust earned by slave
+	StorageUtil.SetIntValue(kSlave, "_SD_iMeritPoints", 0)  ; Trust earned by slave
 
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableLeash", 1)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableLeash", True)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableLeash", 1)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", True)
 
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableStand", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableStand", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableMovement", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableMovement", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableAction", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableAction", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableFight", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableFight", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableStand", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableStand", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableMovement", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableMovement", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableAction", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableAction", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableFight", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableFight", False)
 
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableInventory", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableInventory", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableSprint", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableSprint", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableRideHorse", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableRideHorse", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableFastTravel", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableFastTravel", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableWait", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableWait", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableInventory", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableInventory", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableSprint", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableSprint", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableRideHorse", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableRideHorse", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableFastTravel", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableFastTravel", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableWait", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableWait", False)
 
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableSpellEquip", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableSpellEquip", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableShoutEquip", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableShoutEquip", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableClothingEquip", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableClothingEquip", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableArmorEquip", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableArmorEquip", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableWeaponEquip", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableWeaponEquip", False)
-	; StorageUtil.SetIntValue(kSlave, "_SD_iSlaveEnableMoney", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iSlaveEnableMoney", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableSpellEquip", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableSpellEquip", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableShoutEquip", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableShoutEquip", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableClothingEquip", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableClothingEquip", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableArmorEquip", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableWeaponEquip", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip", False)
+	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableMoney", 0)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableMoney", False)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
@@ -256,12 +256,12 @@ EndFunction
 ; modify master goal (goal ID, amount)
 function UpdateMasterValue( Actor kMaster, string modVariable, int modValue =0, int setNewValue =0)
 
-	; _SD_iMasterDisposition
-	; _SD_iMasterTrustThreshold
-	; _SD_iMasterGoalFood
-	; _SD_iMasterGoalSex
-	; _SD_iMasterGoalPunishment
- 	; _SD_iMasterGoalGold
+	; _SD_iNPCDisposition
+	; _SD_iTrustThreshold
+	; _SD_iGoalFood
+	; _SD_iGoalSex
+	; _SD_iGoalPunishment
+ 	; _SD_iGoalGold
 
 	if (modValue != 0)
 		StorageUtil.SetIntValue(kMaster, modVariable, StorageUtil.GetIntValue(kMaster, modVariable) + modValue )
@@ -278,12 +278,12 @@ function UpdateSlaveStatus( Actor kSlave, string modVariable, int modValue =0, i
 	string storageUtilVariable = ""
 
 	; _SD_iSlaveryLevel
-	; _SD_iSlaveMeritPoints
-	; _SD_iSlaveTimeBuffer
-	; _SD_iSlaveGoalFood
-	; _SD_iSlaveGoalSex
-	; _SD_iSlaveGoalPunishment
-	; _SD_iSlaveGoalGold
+	; _SD_iMeritPoints
+	; _SD_iTimeBuffer
+	; _SD_iGoalFood
+	; _SD_iGoalSex
+	; _SD_iGoalPunishment
+	; _SD_iGoalGold
 
 	if (modValue != 0)
 		StorageUtil.SetIntValue(kSlave, modVariable, StorageUtil.GetIntValue(kSlave, modVariable) + modValue )
@@ -293,7 +293,7 @@ function UpdateSlaveStatus( Actor kSlave, string modVariable, int modValue =0, i
 
 EndFunction
 
-; fctSlavery.UpdateSlaveStatus(kSlave, "_SD_iSlaveGoalSex", modValue = 1)
+; fctSlavery.UpdateSlaveStatus(kSlave, "_SD_iGoalSex", modValue = 1)
 function UpdateSlaveryVariable( Actor kActor, string modVariable, int modValue =0, int setNewValue =0)
 	string storageUtilVariable = ""
 
@@ -311,35 +311,35 @@ Bool function CheckSlavePrivilege( Actor kSlave, string modVariable)
 EndFunction
 
 function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue = True)
-	Bool enableMove = StorageUtil.GetIntValue(kSlave,"_SD_iSlaveEnableMovement") as Bool
-	Bool enableAct = StorageUtil.GetIntValue(kSlave,"_SD_iSlaveEnableAction") as Bool
-	Bool enableFight = StorageUtil.GetIntValue(kSlave,"_SD_iSlaveEnableFight") as Bool
+	Bool enableMove = StorageUtil.GetIntValue(kSlave,"_SD_iEnableMovement") as Bool
+	Bool enableAct = StorageUtil.GetIntValue(kSlave,"_SD_iEnableAction") as Bool
+	Bool enableFight = StorageUtil.GetIntValue(kSlave,"_SD_iEnableFight") as Bool
 
-	If (modVariable == "_SD_iSlaveEnableLeash")
+	If (modVariable == "_SD_iEnableLeash")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 
 			; fctConstraints.playerAutoPilot(modValue)  - not necessary for now
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableMovement")
+	If (modVariable == "_SD_iEnableMovement")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableMove = modValue
 			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableAction")
+	If (modVariable == "_SD_iEnableAction")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableAct = modValue
 			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableFight")
+	If (modVariable == "_SD_iEnableFight")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableFight = modValue
 			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableInventory")
+	If (modVariable == "_SD_iEnableInventory")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; See - http://www.creationkit.com/RegisterForMenu_-_Form
 			; Register for menus and exit menu if not allowed
@@ -347,18 +347,18 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 			; List of menus - http://www.creationkit.com/UI_Script
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableSprint")
+	If (modVariable == "_SD_iEnableSprint")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; How to disable?
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableRideHorse")
+	If (modVariable == "_SD_iEnableRideHorse")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; How to disable? Detect if riding mount and force dismount?
 			; See - http://www.creationkit.com/IsOnMount_-_Actor
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableFastTravel")
+	If (modVariable == "_SD_iEnableFastTravel")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 
 			if (modValue)
@@ -370,7 +370,7 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 			endif
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableWait")
+	If (modVariable == "_SD_iEnableWait")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 
 			if (modValue)
@@ -382,32 +382,32 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 	EndIf
 
 
-	If (modVariable == "_SD_iSlaveEnableSpellEquip")
+	If (modVariable == "_SD_iEnableSpellEquip")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; Augment OnEquip event for slave based on this storageUtil value
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableShoutEquip")
+	If (modVariable == "_SD_iEnableShoutEquip")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; Augment OnEquip event for slave based on this storageUtil value
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableClothingEquip")
+	If (modVariable == "_SD_iEnableClothingEquip")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; Augment OnEquip event for slave based on this storageUtil value
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableArmorEquip")
+	If (modVariable == "_SD_iEnableArmorEquip")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; Augment OnEquip event for slave based on this storageUtil value
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableWeaponEquip")
+	If (modVariable == "_SD_iEnableWeaponEquip")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; Augment OnEquip event for slave based on this storageUtil value
 	EndIf
 
-	If (modVariable == "_SD_iSlaveEnableMoney")
+	If (modVariable == "_SD_iEnableMoney")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			; Augment OnItemAdded event for slave based on this storageUtil value
 	EndIf
@@ -445,8 +445,7 @@ Function UpdateSlaveryLevel(Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 6)
 	EndIf
 
-	Debug.Notification("[_sdqs_fcts_slavery] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure"))
-	Debug.Notification("[_sdqs_fcts_slavery] SLavery level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
+	Debug.Notification("[_sdqs_fcts_slavery] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
 EndFunction
 
 Function UpdateSlaveryRelationshipType(Actor kMaster, Actor kSlave)
@@ -472,16 +471,22 @@ EndFunction
 
 ; automatic refresh - updateStatusHourly() - refresh privileges and variables based on storageUtilValues
 function UpdateStatusHourly( Actor kMaster, Actor kSlave)
+	; Disabled for now - daily update makes more sense
 
-	Int masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iMasterTrustThreshold") 
-	Int masterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iMasterDisposition")
+EndFunction
+
+; automatic refresh - updateStatusDaily() - make duration configurable in MCM 
+function UpdateStatusDaily( Actor kMaster, Actor kSlave)
+	int slaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
+	Int masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
+	Int masterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
 	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
-	Int masterSexNeed = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveGoalSex") - StorageUtil.GetIntValue(kMaster, "_SD_iMasterGoalSex")
-	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iMasterGoalPunish")
-	Int masterFoodNeed = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveGoalFood") - StorageUtil.GetIntValue(kMaster, "_SD_iMasterGoalFood")
-	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iMasterGoalGold")
-	int masterNeedRange =  StorageUtil.GetIntValue(kMaster, "_SD_iMasterNeedRange")
-	int masterTrustRange =  StorageUtil.GetIntValue(kMaster, "_SD_iMasterTrustRange")
+	Int masterSexNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex")
+	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunish")
+	Int masterFoodNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood")
+	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
+	int masterNeedRange =  StorageUtil.GetIntValue(kMaster, "_SD_iNeedRange")
+	int masterTrustRange =  StorageUtil.GetIntValue(kMaster, "_SD_iTrustRange")
 
 	int iSexComplete = 0
 	int iPunishComplete = 0
@@ -489,9 +494,7 @@ function UpdateStatusHourly( Actor kMaster, Actor kSlave)
 	int iGoldComplete = 0
 
 	Debug.Trace("[SD] --- Slavery update" )
-	Debug.Trace("[SD] before masterDisposition: " + masterDisposition)
-	Debug.Trace("[SD] before masterTrust: " + masterTrust )
-	Debug.Trace("[SD] masterPersonalityType: " + masterPersonalityType )
+	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 	Debug.Trace("[SD] masterSexNeed: " + masterSexNeed )
 	Debug.Trace("[SD] masterPunishNeed: " + masterPunishNeed )
 	Debug.Trace("[SD] masterFoodNeed: " + masterFoodNeed )
@@ -504,55 +507,66 @@ function UpdateStatusHourly( Actor kMaster, Actor kSlave)
 	UpdateSlaveryLevel(kSlave)
 	UpdateSlaveryRelationshipType(kMaster, kSlave)
 
+	; If slavery level changed, display new level info
+	If (slaveryLevel != StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
+		DisplaySlaveryLevel(  kMaster, kSlave)
+		slaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
+	EndIf
+
+	; Default privileges unlocked per level
+	If (slaveryLevel >= 1)
+		UpdateSlavePrivilege(kSlave, "_SD_iEnableWait", True)
+	EndIf
+	
 	; - Add tracking of master s needs, mood, trust
 	; :: Compare slave counts against master needs (sex, punish, gold, food)
 	; :: If counts lower than master personality type, master mood -2
 	If (masterSexNeed < (-1 * masterNeedRange))
-		masterDisposition -= 2
+		masterDisposition -= 1
 	EndIf
 	If (masterPunishNeed <  (-1 * masterNeedRange))
-		masterDisposition -= 2
+		masterDisposition -= 1
 	EndIf
-	If (masterGoldNeed <  (-1 * masterNeedRange))
-		masterDisposition -= 2
+	If (masterGoldNeed <  (-1 * masterNeedRange)) && (slaveryLevel >= 1)
+		masterDisposition -= 1
 	EndIf
-	If (masterFoodNeed <  (-1 * masterNeedRange))
-		masterDisposition -= 2
+	If (masterFoodNeed <  (-1 * masterNeedRange)) && (slaveryLevel >= 2)
+		masterDisposition -= 1
 	EndIf
 
 	; :: If counts match master personality type, master mood +1
 	If (masterSexNeed >= (-1 * masterNeedRange)) && (masterSexNeed <= masterNeedRange)
-		masterDisposition += 1
+		masterDisposition += 2
 		iSexComplete += 1
 	EndIf
 	If (masterPunishNeed >= (-1 * masterNeedRange)) && (masterPunishNeed <= masterNeedRange)
-		masterDisposition += 1
+		masterDisposition += 2
 		iPunishComplete += 1
 	EndIf
-	If (masterGoldNeed >= (-1 * masterNeedRange)) && (masterGoldNeed <= masterNeedRange)
-		masterDisposition += 1
+	If (masterGoldNeed >= (-1 * masterNeedRange)) && (masterGoldNeed <= masterNeedRange) && (slaveryLevel >= 1)
+		masterDisposition += 2
 		iFoodComplete += 1
 	EndIf
-	If (masterFoodNeed >= (-1 * masterNeedRange)) && (masterFoodNeed <= masterNeedRange)
-		masterDisposition += 1
+	If (masterFoodNeed >= (-1 * masterNeedRange)) && (masterFoodNeed <= masterNeedRange) && (slaveryLevel >= 2)
+		masterDisposition += 2
 		iGoldComplete += 1
 	EndIf
 
 	; :: If counts exceed master personality, master mood +2
 	If (masterSexNeed > masterNeedRange)
-		masterDisposition += 2
+		masterDisposition += 4
 		iSexComplete += 2 
 	EndIf
 	If (masterPunishNeed > masterNeedRange)
-		masterDisposition += 2
+		masterDisposition += 4
 		iPunishComplete += 2 
 	EndIf
-	If (masterGoldNeed > masterNeedRange)
-		masterDisposition += 2
+	If (masterGoldNeed > masterNeedRange) && (slaveryLevel >= 1)
+		masterDisposition += 4
 		iFoodComplete += 2
 	EndIf
-	If (masterFoodNeed > masterNeedRange)
-		masterDisposition += 2
+	If (masterFoodNeed > masterNeedRange) && (slaveryLevel >= 2)
+		masterDisposition += 4
 		iGoldComplete += 2 
 	EndIf
 
@@ -589,54 +603,45 @@ function UpdateStatusHourly( Actor kMaster, Actor kSlave)
 		EndIf
 	EndIf
 
-	StorageUtil.SetIntValue(kMaster, "_SD_iMasterDisposition", masterDisposition)
-
 	; :: If master mood between -5 and +5, trust +1
 	if (masterDisposition >= (-1 * masterTrustRange) ) && (masterDisposition <= masterTrustRange)
-		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTrustPoints") + 1 )
+		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 1 )
 	EndIf
 
-	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iMasterTrustThreshold") 
+	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
+
+	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
+	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
 
 	if (masterTrust > 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
-		StorageUtil.SetIntValue(kMaster,"_SD_iMasterFollowSlave", 1)
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
+		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
 	Else
-		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
-		StorageUtil.SetIntValue(kMaster,"_SD_iMasterFollowSlave", 0)
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
+		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
 	EndIf
 
-	Debug.Notification("[SD] masterDisposition: " + masterDisposition + " - masterTrust: " + masterTrust )
+	Debug.Notification("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 
-	Debug.Trace("[SD] after masterDisposition: " + masterDisposition + " - masterTrust: " + masterTrust )
-EndFunction
-
-; automatic refresh - updateStatusDaily() - make duration configurable in MCM 
-function UpdateStatusDaily( Actor kMaster, Actor kSlave)
-	Int masterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iMasterDisposition")
-	int masterTrustRange =  StorageUtil.GetIntValue(kMaster, "_SD_iMasterTrustRange")
-
-	; Refresh latest status
-	UpdateStatusHourly(  kMaster,  kSlave)
-
-	; Daily specific updates
+	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 
 	; Reset daily counts for slave
 	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iPunishmentCountToday", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iSubmissiveCountToday", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iAngerCountToday", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalSex", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalPunishment", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalFood", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveGoalGold", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalSex", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalPunishment", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalGold", 0)
 
 	; :: End of the day, if master unhappy, trust * 0.8 (cooldown)
-	if (masterDisposition < (-1 * masterTrustRange))
-		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTrustPoints") * 8 / 10 )
+	if (masterDisposition < 0)
+		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 8 / 10 )
 	EndIf
+
 EndFunction
 
 ; add/remove outfit items and punishment devices
