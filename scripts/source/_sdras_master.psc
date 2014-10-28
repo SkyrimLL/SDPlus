@@ -290,7 +290,7 @@ State monitor
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
 
-		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iMasterFollowSlave") )
+		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave") )
 		kLeashCenter =  StorageUtil.GetFormValue(kSlave, "_SD_LeashCenter") as Actor
 
 		if (kLeashCenter == None)
@@ -363,7 +363,7 @@ State monitor
 
 			; Skipped - Not working as intended - especially under magic attack
 			; Should be detection of an attack by slave against master
-			If ((kSlave.GetEquippedItemType(0) == 9)||(kSlave.GetEquippedItemType(1) == 9 ))  && ( (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableSpellEquip")) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iSlaveEnableShoutEquip")) )
+			If ((kSlave.GetEquippedItemType(0) == 9)||(kSlave.GetEquippedItemType(1) == 9 ))  && ( (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableSpellEquip")) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableShoutEquip")) )
 				Debug.Notification( "You better unequip that spell before I make you swallow it, Slave!")
 
 			;ElseIf ((kSlave.GetEquippedItemType(0) == 11)||(kSlave.GetEquippedItemType(1) == 11))
@@ -486,15 +486,39 @@ State monitor
 	
 	Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 		iuType = akBaseItem.GetType()
+		fGoldEarned = 0.0
 
 		If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
+			; Food
+
+			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 3 )
+				Debug.Notification("Mmm.. that should hit the spot.")
+				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iFoodGold", modValue = 1)
+			Else
+				Debug.Notification("Well? What are you waiting for?.")
+				Debug.Notification("Get back to work slave!")
+			EndIf
 
 		ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
+			; Weapon
 		
 		Else 
 			; Add code to match received items against Master's needs
 			; Update Master's mood and trust
 
+		 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
+		 		fGoldEarned = akBaseItem.GetGoldValue()
+			Else
+				fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
+			EndIf
+
+			If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
+				Debug.Notification("Good slave... keep it coming.")
+				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
+			Else
+				Debug.Notification("That's right.")
+				Debug.Notification("You don't have a use for gold anymore.")
+			EndIf
 
 		; ElseIf false && ( _SDQP_enslavement_tasks.IsRunning() && _SDFLP_trade_items.HasForm( akBaseItem ) && akSourceContainer == kSlave as ObjectReference )
 		; 	If ( tasks._SDBP_task_complete )
@@ -632,3 +656,4 @@ State caged
 		EndIf
 	EndEvent
 EndState
+

@@ -14,8 +14,8 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 	
 	If (  akNewContainer == Game.GetPlayer() )
 		Actor kContainer = akNewContainer as Actor
-		funct.removeItemsInList( kContainer, _SDFLP_sex_items )
-		funct.removeItemsInList( kContainer, _SDFLP_punish_items )
+;		funct.removeItemsInList( kContainer, _SDFLP_sex_items )
+;		funct.removeItemsInList( kContainer, _SDFLP_punish_items )
 
 		Debug.Trace("[_sdks_master_key] Master key - Stop enslavement")
 
@@ -32,6 +32,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 		EndIf
 
+		SendModEvent("SDFree")
 		_SDSP_freedom.RemoteCast( akNewContainer, kContainer, kContainer )
 		Game.GetPlayer().RemoveItem(Self, Game.GetPlayer().GetItemCount( Self ))
 	EndIf	

@@ -49,6 +49,7 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 	While ( !bRemoved && iIdx < _SDORP_queue.Length )
 		If ( _SDORP_queue[iIdx] != None )
 			Debug.Trace("[Whore queue] Removing actor from queue: " + _SDORP_queue[iIdx])
+			Debug.Notification("Next!")
 
 			bRemoved = True
 			If ( !_SDORP_queue[iIdx].GetCurrentScene() && _SDORP_queue[iIdx].GetParentCell() == akWhore.GetParentCell() )
@@ -72,9 +73,6 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 						
 						funct.SanguineRape( _SDORP_queue[iIdx]  as actor,  akWhore as actor  , "Dirty")
 
-					EndIf
-					If (iIdx != 0)
-						Debug.Notification("Next!")
 					EndIf
 
 				Else
@@ -126,7 +124,7 @@ State monitor
 		If ( Self.IsStopping() || Self.IsStopped() )
 			GoToState("waiting")
 		;ElseIf ( whore && !whore.GetCurrentScene() && Game.IsMovementControlsEnabled() && _SDGVP_state_playerRagdoll.GetValueInt() == 0 )
-		ElseIf ( whore && ( whore as Actor ).GetPlayerControls() ) ; && _SDGVP_state_playerRagdoll.GetValueInt() == 0 )
+		ElseIf ( whore ) ; && ( whore as Actor ).GetPlayerControls() ) ; && _SDGVP_state_playerRagdoll.GetValueInt() == 0 )
 			removeFromQueue( whore )
 		EndIf
 
