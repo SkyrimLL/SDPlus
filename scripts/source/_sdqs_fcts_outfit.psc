@@ -1475,7 +1475,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 
 	; Blinds
 	If (bDevBlindfold)
-		Debug.Notification("A blindfol covers your eyes, leaving you helpless." )
+		Debug.Notification("A blindfold covers your eyes, leaving you helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
 		setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
@@ -1497,6 +1497,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 		Debug.Notification("Armbinders painfully lock your arms behind your back." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
 
+		setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		setDeviousOutfitArmbinder ( bDevEquip = True, sDevMessage = "")
 
 	EndIf
@@ -1552,6 +1553,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
 
 		setDeviousOutfitArmbinder ( bDevEquip = False, sDevMessage = "")
+		setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")
 
 	EndIf
 
