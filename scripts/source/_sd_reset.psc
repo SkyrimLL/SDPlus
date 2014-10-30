@@ -41,8 +41,8 @@ Function Maintenance()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 
-	If fVersion < 3.0 ; <--- Edit this value when updating
-		fVersion = 3.0; and this
+	If fVersion < 3.01 ; <--- Edit this value when updating
+		fVersion = 3.01; and this
 		Debug.Notification("Updating to SD+ version: " + fVersion)
 		; Update Code
 
@@ -74,13 +74,13 @@ Function Maintenance()
 
 		If ( _SD_enslavement.IsRunning() )
 			Debug.Messagebox("Enslavement Quest is running during an upgrade. Canceling enslavement to apply changes." )
-			SendModEvent("SDFree")
+			; SendModEvent("SDFree")
 
 			; Disabled for now
 			; - Sets slave faction to 0 in loop
 			; - Breaks enslavement
 
-			; _SD_enslavement.SetStage(100)
+			_SD_enslavement.Stop()
 		EndIf
 
 		If ( _SD_dream.GetStage() > 0 )

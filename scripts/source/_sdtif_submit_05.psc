@@ -8,25 +8,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor akPlayer = SexLab.PlayerRef 
 
-If funct.checkGenderRestriction( akSpeaker,  akPlayer )
-;			_SDGVP_enslaved.SetValue(1)
-;			_SDGV_leash_length.SetValue(400)
-;		
-;			If akPlayer.WornHasKeyword( _SDKP_bound )
-;					; item cleanup
-;				funct.removeItemsInList( akPlayer, _SDFLP_sex_items )
-;				funct.removeItemsInList( akPlayer, _SDFLP_punish_items )
-;				funct.removeItemsInList( akPlayer, _SDFLP_master_items )
-;			EndIf
-;			Utility.Wait(2.0)
-;
-;			; Debug.Trace("_SDKP_enslave akAggressor:" + akAggressor + " akPlayer:" + akPlayer )
+StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 
-			_SDKP_enslave.SendStoryEvent( akLoc = akSpeaker.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = akPlayer, aiValue1 = 0, aiValue2 = 0)
-
-Else
-	Debug.Notification("You are not worth my time...")
-EndIf
+SendModEvent("PCSubTransfer")
 ;END CODE
 EndFunction
 ;END FRAGMENT

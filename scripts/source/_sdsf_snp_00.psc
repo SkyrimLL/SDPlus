@@ -29,7 +29,7 @@ _SDGVP_snp_busy.SetValue(-1)
 
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSexCountToday", modValue = 1)
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSexCountTotal", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveGoalSex", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalSex", modValue = 1)
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 ;END CODE
 EndFunction

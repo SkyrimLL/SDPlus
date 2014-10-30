@@ -29,9 +29,7 @@ EndIf
 If ( _SDRAP_bystander_05 )
 	whore.addToQueue( _SDRAP_bystander_05.GetReference() as ObjectReference )
 EndIf
-If ( _SDRAP_female ) && (Utility.RandomInt(0,100) > 80)
-	whore.addToQueue( _SDRAP_female.GetReference() as ObjectReference )
-EndIf
+
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -50,7 +48,10 @@ _SDGVP_snp_busy.SetValue(-1)
 ; Game.EnablePlayerControls( abMovement = True )
 ; Game.SetPlayerAIDriven( False )
 
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveGoalPunishment", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -73,7 +74,7 @@ Function Fragment_71()
 ;BEGIN CODE
 snp._SDUIP_phase = 3
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("The urge is irresistible [dance sex]")
+; Debug.Notification("The urge is irresistible [dance sex]")
 Utility.wait(2)
 ;END CODE
 EndFunction

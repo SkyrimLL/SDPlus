@@ -151,7 +151,7 @@ _SDGVP_snp_busy.SetValue(-1)
 ; Self.GetowningQuest().Stop()
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveGoalPunishment", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 ;END CODE
 EndFunction
