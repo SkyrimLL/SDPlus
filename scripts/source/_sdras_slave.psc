@@ -289,7 +289,7 @@ State monitor
 			iCountSinceLastCheck += 1
 
 			if (iCountSinceLastCheck >= 100)
-				Debug.Notification( "[SD] Slavery status - hourly update")
+				; Debug.Notification( "[SD] Slavery status - hourly update")
 				iCountSinceLastCheck = 0
 				; Disabled for now - daily update makes more sense
 				; fctSlavery.UpdateStatusHourly( kMaster, kSlave)

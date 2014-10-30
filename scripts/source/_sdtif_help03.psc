@@ -11,10 +11,7 @@ EndWhile
 
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
-Self.GetOwningQuest().Stop()
-
-
-funct.removeItemsInList( SexLab.PlayerRef , _SDFLP_sex_items )
+SendModEvent("PCSubFree")
 _SDSP_freedom.RemoteCast( SexLab.PlayerRef , SexLab.PlayerRef , SexLab.PlayerRef )
 
 funct.SanguineRape( akSpeaker, SexLab.PlayerRef , "Sex")

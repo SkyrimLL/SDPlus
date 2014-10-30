@@ -707,7 +707,7 @@ Function setDeviousOutfitCollar ( Int iDevOutfit =-1, Bool bDevEquip = True, Str
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 0)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -723,7 +723,7 @@ Function setDeviousOutfitArms ( Int iDevOutfit =-1, Bool bDevEquip = True, Strin
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 1)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -739,7 +739,7 @@ Function setDeviousOutfitLegs ( Int iDevOutfit =-1, Bool bDevEquip = True, Strin
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 2)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -755,7 +755,7 @@ Function setDeviousOutfitGag ( Int iDevOutfit =-1, Bool bDevEquip = True, String
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 3)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -771,7 +771,7 @@ Function setDeviousOutfitPlugAnal ( Int iDevOutfit =-1, Bool bDevEquip = True, S
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 4)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -787,7 +787,7 @@ Function setDeviousOutfitPlugVaginal ( Int iDevOutfit =-1, Bool bDevEquip = True
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 5)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -803,7 +803,7 @@ Function setDeviousOutfitBlindfold ( Int iDevOutfit =-1, Bool bDevEquip = True, 
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 6)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -819,7 +819,7 @@ Function setDeviousOutfitBelt ( Int iDevOutfit =-1, Bool bDevEquip = True, Strin
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 7)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -835,7 +835,7 @@ Function setDeviousOutfitHarness ( Int iDevOutfit =-1, Bool bDevEquip = True, St
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -851,7 +851,7 @@ Function setDeviousOutfitArmbinder ( Int iDevOutfit =-1, Bool bDevEquip = True, 
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 9)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -867,7 +867,7 @@ Function clearDeviousOutfit ( Int iDevOutfit =-1, String sDevMessage = "")
 		iOutfitID =  -1 ; StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iDevOutfit
@@ -887,7 +887,7 @@ EndFunction
 
 
 Function setDeviousOutfitID ( Int iOutfit, String sMessage = "")
-	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit", iOutfit)
+	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iOutfit", iOutfit)
 
 	If (sMessage != "")
 		Debug.MessageBox(sMessage)
@@ -1364,7 +1364,7 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart)
 
 		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 		endif
 	Else
 		iOutfitID =  iOutfit
@@ -1430,19 +1430,19 @@ EndFunction
 ; int Function IsWearingDevice(actor akActor, armor deviceRendered, keyword zad_DeviousDevice)
 
 Function equipDeviousOutfitPart ( Int iDevOutfitPart = -1, String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 
 	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = True, sMessage = sDevMessage )
 EndFunction
 
 Function removeDeviousOutfitPart ( Int iDevOutfitPart = -1, String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 
 	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = False, sMessage = sDevMessage)
 EndFunction
 
 Function switchDeviousOutfitPart ( Int iDevOutfitPart = -1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSlaveOutfit")
+	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
 
 	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction

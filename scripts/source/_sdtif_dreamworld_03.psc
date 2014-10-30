@@ -13,11 +13,19 @@ Int IButton = _SD_rapeMenu.Show()
 
 If IButton == 0 ; Show the thing.
 
- 	; Whipping
-	; _SDKP_sex.SendStoryEvent(akRef1 = akSpeaker, akRef2 = Game.GetPlayer(), aiValue1 = 5 )
+Int randomNum = Utility.RandomInt(0, 100)
+StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+
+If (randomNum > 70)
+	SendModEvent("PCSubPunish") ; Punishment
+ElseIf (randomNum > 30)
+	SendModEvent("PCSubWhip") ; Whipping
+Else
+	SendModEvent("PCSubSex") ; Sex
+EndIf
 
 	; Just sex
-	funct.SanguineRape( akSpeaker, Game.GetPlayer()  , "Sex,Aggressive")
+	; funct.SanguineRape( akSpeaker, Game.GetPlayer()  , "Sex,Aggressive")
 EndIf
 ;END CODE
 EndFunction

@@ -31,22 +31,22 @@ Event OnUpdate()
 	; EndIf
 
 ; Add Master privileges flags
-	If ( kTarget.GetEquippedWeapon() ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iSlaveEnableWeaponEquip") )
+	If ( kTarget.GetEquippedWeapon() ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableWeaponEquip") )
 		kTarget.UnequipItem( kTarget.GetEquippedWeapon(), false, True )
 		kTarget.RemoveItem( kTarget.GetEquippedWeapon(), 1, True )
 	EndIf
-	If ( kTarget.GetEquippedWeapon(True) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iSlaveEnableWeaponEquip")  )
+	If ( kTarget.GetEquippedWeapon(True) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableWeaponEquip")  )
 		kTarget.UnequipItem( kTarget.GetEquippedWeapon(True), false, True )
 		kTarget.RemoveItem( kTarget.GetEquippedWeapon(True), 1, True )
 	EndIf
-	If ( kTarget.GetEquippedShield() ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iSlaveEnableWeaponEquip")   )
+	If ( kTarget.GetEquippedShield() ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableWeaponEquip")   )
 		kTarget.UnequipItem( kTarget.GetEquippedShield(), false, True )
 		kTarget.RemoveItem( kTarget.GetEquippedShield(), 1, True )
 	EndIf
-	If ( kTarget.GetEquippedSpell(0) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iSlaveEnableSpellEquip")  )
+	If ( kTarget.GetEquippedSpell(0) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableSpellEquip")  )
 		kTarget.UnequipSpell( kTarget.GetEquippedSpell(0), 0 )
 	EndIf
-	If ( kTarget.GetEquippedSpell(1) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iSlaveEnableSpellEquip") )
+	If ( kTarget.GetEquippedSpell(1) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableSpellEquip") )
 		kTarget.UnequipSpell( kTarget.GetEquippedSpell(1), 1 )
 	EndIf
 
@@ -59,51 +59,51 @@ Event OnUpdate()
 		;	fctConstraints.togglePlayerControlsOff()
 		; EndIf
 
-		; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iSlaveEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance"))
+		; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
 
 		if (kMaster)
 
 
 
-			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iMasterTrustThreshold") - StorageUtil.GetIntValue(kTarget, "_SD_iSlaveMeritPoints")
-			Int disposition = StorageUtil.GetIntValue(kMaster, "_SD_iMasterDisposition")
+			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") - StorageUtil.GetIntValue(kTarget, "_SD_iTrustPoints")
+			Int disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
 
 			If ( kTarget.GetDistance( kMaster ) < 512 && kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
 
-				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iSlaveEnableStand") )
+				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )
 				EndIf
 
 				If (kTarget == kPlayer) 
-					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iSlaveEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Standing")
+					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
 						fctConstraints.SetAnimating(false)
 
 					ElseIf ( trust < 0 ) && (disposition < 0)
 						fctConstraints.SetAnimating(true)
-						If  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Kneeling")
+						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							kTarget.PlayIdle( _SDIAP_bound[4] )
-						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Crawling")
+						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 							kTarget.PlayIdle( _SDIAP_bound[5] ) ; Crawling
 						EndIf
 
 					ElseIf ( trust >= 0 ) && (disposition < 0)
 						fctConstraints.SetAnimating(true)
-						If  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Kneeling")
+						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							kTarget.PlayIdle( _SDIAP_bound[2] )
-						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Crawling")
+						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 							kTarget.PlayIdle( _SDIAP_bound[5] ) ; Crawling
 						EndIf
 
 					Else
 						fctConstraints.SetAnimating(true)
-						If  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Kneeling") 
+						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
 							kTarget.PlayIdle( _SDIAP_bound[1] )
-						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Crawling")
+						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 							kTarget.PlayIdle( _SDIAP_bound[5] ) ; Crawling
 						EndIf
 					EndIf
 				Else
-					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iSlaveEnableStand") )
+					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 						fctConstraints.SetAnimating(false)
 
 					Else
@@ -113,11 +113,11 @@ Event OnUpdate()
 				EndIf
 			Else
 				; Debug.Notification("[SD] Turning DD animations on - 4");
-				;If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iSlaveEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Standing")
+				;If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
 					fctConstraints.SetAnimating(false)
-				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Kneeling") 
+				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
 				;	kTarget.PlayIdle( _SDIAP_bound[1] )
-				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sSlaveDefaultStance") == "Crawling")
+				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 				;	kTarget.PlayIdle( _SDIAP_bound[5] ) ; Crawling
 				;EndIf
 				; kTarget.PlayIdle( _SDIAP_bound[0] )
