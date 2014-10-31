@@ -24,8 +24,6 @@ Float fRFSU = 0.1
 Function PlayIdleWrapper(actor akActor, idle theIdle)
 	If (!fctConstraints.libs.IsAnimating(akActor))
 		akActor.PlayIdle(theIdle)
-	Else
-		fctConstraints.libs.log(akActor + " is animating, not playing bound anim.")
 	EndIf
 EndFunction
 
