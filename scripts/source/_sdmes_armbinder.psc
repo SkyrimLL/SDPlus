@@ -6,7 +6,7 @@ Function DoRegister()
 EndFunction
 
 Event OnUpdate()
-
+	libs.UpdateControls()
 EndEvent
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
@@ -49,4 +49,9 @@ EndEvent
 
 Event OnKeyUp(int KeyCode, float HoldTime)
 
+EndEvent
+
+
+Event OnPlayerLoadGame()
+	libs.UpdateControls()
 EndEvent
