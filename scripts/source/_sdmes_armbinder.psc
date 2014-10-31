@@ -2,11 +2,14 @@ ScriptName _SDMES_ARMBINDER extends zadArmbinderEffect
 
 ; SD handles bound animations behavior through _sdmes_bound, rather than on the enchantment itself. Thus, remove that behavior.
 Function DoRegister() 
-
+	RegisterForSingleUpdate(5.0)
 EndFunction
 
 Event OnUpdate()
-	libs.UpdateControls()
+	If !libs.IsAnimating(target)
+		libs.UpdateControls() ; TODO: Replace with call to centralized SD function.
+	EndIf
+	DoRegister()
 EndEvent
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
@@ -25,6 +28,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	if target == libs.PlayerRef
 		libs.UpdateControls()
 	Endif
+	DoRegister()
 EndEvent
 
 
@@ -53,5 +57,5 @@ EndEvent
 
 
 Event OnPlayerLoadGame()
-	libs.UpdateControls()
+	OnUpdate()
 EndEvent
