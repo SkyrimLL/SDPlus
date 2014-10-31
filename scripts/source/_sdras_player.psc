@@ -244,7 +244,7 @@ EndEvent
 
 Function _Maintenance()
 ;	UnregisterForAllModEvents()
-	Debug.Notification("[_sdras_player] Register events")
+	Debug.Trace("[_sdras_player] Register events")
 	RegisterForModEvent("PCSubEnslave",   "OnSDEnslave")
 	RegisterForModEvent("PCSubSex",   "OnSDStorySex")
 	RegisterForModEvent("PCSubEntertain",   "OnSDStoryEntertain")
