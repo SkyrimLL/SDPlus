@@ -102,35 +102,37 @@ Event OnDeath(Actor akKiller)
 
 	Self.GetOwningQuest().Stop()
 
-	If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && funct.checkGenderRestriction( akKiller, kSlave ) ) && !fctFactions.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && fctFactions.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
-		; new master
-		While ( Self.GetOwningQuest().IsStopping() )
-		EndWhile
+	If (akKiller)
+		If (GetState() != "search") && (akKiller != kSlave) && ( (akKiller.HasKeyword( _SDKP_actorTypeNPC ) || (akKiller.GetRace() == falmerRace)) && funct.checkGenderRestriction( akKiller, kSlave ) ) && !fctFactions.actorFactionInList( akKiller, _SDFLP_banned_factions ) ; && fctFactions.actorFactionInList( akKiller, _SDFLP_slavers, _SDFLP_banned_factions ) )
+			; new master
+			While ( Self.GetOwningQuest().IsStopping() )
+			EndWhile
 
-		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
-		
-			;kMaster = _SDRAP_master.GetReference() as Actor
-			;kSlave = _SDRAP_slave.GetReference() as Actor
-		Wait(7.0)
+			; New enslavement - changing ownership
+			_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
+			
+				;kMaster = _SDRAP_master.GetReference() as Actor
+				;kSlave = _SDRAP_slave.GetReference() as Actor
+			Wait(7.0)
 
-		; Welcome scene after changing ownership 
-		Int iRandomNum = RandomInt(0,100)
-		Debug.Notification( "You are mine!" )
-		Wait(3.0) 
-		If (iRandomNum > 75)
-			; Punishment
-			_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-		ElseIf (iRandomNum > 50)
-			; Whipping
-			_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 5 )
-		ElseIf (iRandomNum > 25)
-			enslavement.PunishSlave(akKiller,kSlave)
-		Else
-			; Sex
-			_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+			; Welcome scene after changing ownership 
+			Int iRandomNum = RandomInt(0,100)
+			Debug.Notification( "You are mine!" )
+			Wait(3.0) 
+			If (iRandomNum > 75)
+				; Punishment
+				_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			ElseIf (iRandomNum > 50)
+				; Whipping
+				_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 5 )
+			ElseIf (iRandomNum > 25)
+				enslavement.PunishSlave(akKiller,kSlave)
+			Else
+				; Sex
+				_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+			EndIf
+			
 		EndIf
-		
 	EndIf
 EndEvent
 
