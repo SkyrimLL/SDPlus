@@ -6,8 +6,9 @@ Import SKSE
 zadLibs Property libs Auto
 
 Function SetAnimating( Bool abEnable = True )
-	libs.SetAnimating(Game.GetPlayer(), abEnable)
+	libs.SetAnimating(libs.playerRef, abEnable)
 EndFunction
+
 
 Function playerAutoPilot( Bool abEnable = True )
 	If ( abEnable )
