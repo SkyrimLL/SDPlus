@@ -653,7 +653,7 @@ function DisplaySlaveryLevel( Actor kMaster, Actor kSlave )
 	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
 
 	If (slaveryLevel == 1) ; collared but resisting
-		Debug.MessageBox("As the cold iron clams shut around your neck and wrists, you are now at the mercy of your new owner. You feel exposed and helpless. The rage of defeat fuels your desire to escape at the first occasion. ")
+		Debug.MessageBox("As the cold iron clamps shut around your neck and wrists, you are now at the mercy of your new owner. You feel exposed and helpless. The rage of defeat fuels your desire to escape at the first occasion. ")
 			
 	ElseIf (slaveryLevel == 2) ; not resisting but sobbing
 		If (masterPersonalityType == 0) || (masterPersonalityType == 5) || (masterPersonalityType == 6)
