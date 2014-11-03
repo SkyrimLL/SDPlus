@@ -22,9 +22,10 @@ ObjectReference kMaster
 Float fRFSU = 0.1
 
 Function PlayIdleWrapper(actor akActor, idle theIdle)
-	If (!fctConstraints.libs.IsAnimating(akActor))
+	; SkyrimLL - Disabled for now. This test blocks application of idles when SetAnimating is False
+	; If (!fctConstraints.libs.IsAnimating(akActor))
 		akActor.PlayIdle(theIdle)
-	EndIf
+	; EndIf
 EndFunction
 
 
@@ -58,7 +59,9 @@ Event OnUpdate()
 	EndIf
 
 	
-	
+	; Debug.Notification("[SD] AutoKneelingOff: " + StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
+	; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
+		
 
 	If ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling") )
 
@@ -83,9 +86,15 @@ Event OnUpdate()
 
 				If (kTarget == kPlayer)
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
+						; SkyrimLL - Enabled these calls again to prevent a loop between standing and kneeling
+						; 			 Something is causing the player character to stand up frequently when kneeling.
+						; 			 These calls block that behavior and force DD animations to play only when player is standing up
+
 						fctConstraints.SetAnimating(false)
+
 					ElseIf ( trust < 0 ) && (disposition < 0)
 						fctConstraints.SetAnimating(true)
+
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kTarget, _SDIAP_bound[4] )
 						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
@@ -94,6 +103,7 @@ Event OnUpdate()
 
 					ElseIf ( trust >= 0 ) && (disposition < 0)
 						fctConstraints.SetAnimating(true)
+
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kTarget, _SDIAP_bound[2] )
 						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
@@ -102,6 +112,7 @@ Event OnUpdate()
 
 					Else
 						fctConstraints.SetAnimating(true)
+						
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
 							PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
 						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
@@ -120,7 +131,7 @@ Event OnUpdate()
 			Else
 				; Debug.Notification("[SD] Turning DD animations on - 4");
 				;If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
-					; fctConstraints.SetAnimating(false)
+					 fctConstraints.SetAnimating(false)
 				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
 				;	PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
 				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
