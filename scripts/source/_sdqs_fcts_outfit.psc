@@ -1400,11 +1400,12 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 			; If outfitid == -1, force remove part anyway
 
 			; If ( (iOutfit != -1) && ( StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) == iOutfit) ) || (iOutfit == -1)
-
 				If (bDestroy)
 					libs.Log("[SD] SetOutfit: destroy - " + iOutfit + " [ " + iOutfitPart + "] " )
 					StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
-		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
+					if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
+		 				libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
+					EndIf
 		 			; libs.AcquireAndSpinlock();
 					; libs.DeviceMutex = false ; Free the mutex we just acquired.
 					; Utility.Wait(2.0)
@@ -1412,7 +1413,9 @@ Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip =
 				Else
 					libs.Log("[SD] SetOutfit: remove - " + iOutfit + " [ " + iOutfitPart + "] " )
 					StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
-		 			libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, True)
+					if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
+		 				libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, True)
+					EndIf
 				EndIf
 			; Else
 			; 	libs.Log("[SD] SetOutfit: conflict detected - not removed - " + iOutfit + " [ " + iOutfitPart + "] - " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) )		

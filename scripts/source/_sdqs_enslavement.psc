@@ -285,7 +285,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		EndIf
 
-		fctOutfit.DDSetAnimating( kSlave, true )
+		; fctOutfit.DDSetAnimating( kSlave, true )
 
 		SetObjectiveDisplayed( 0 )
 		SetObjectiveDisplayed( 1 )
