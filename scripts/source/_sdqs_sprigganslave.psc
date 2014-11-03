@@ -255,7 +255,7 @@ Event OnUpdateGameTime()
 		EndIf
 
 		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 8 ))
-			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your boby, leaving you gasping for air.")	
+			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 2 )
 			Debug.Trace("[SD] Skipping spriggan body - slot in use")
 		EndIf
