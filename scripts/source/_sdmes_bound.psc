@@ -72,7 +72,7 @@ Event OnUpdate()
 
 
 
-			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") - StorageUtil.GetIntValue(kTarget, "_SD_iTrustPoints")
+			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 			Int disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
 
 			If ( kTarget.GetDistance( kMaster ) < 512 && kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
@@ -83,9 +83,9 @@ Event OnUpdate()
 
 				If (kTarget == kPlayer)
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
-						; fctConstraints.SetAnimating(false)
+						fctConstraints.SetAnimating(false)
 					ElseIf ( trust < 0 ) && (disposition < 0)
-						; fctConstraints.SetAnimating(true)
+						fctConstraints.SetAnimating(true)
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kTarget, _SDIAP_bound[4] )
 						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
@@ -93,7 +93,7 @@ Event OnUpdate()
 						EndIf
 
 					ElseIf ( trust >= 0 ) && (disposition < 0)
-						; fctConstraints.SetAnimating(true)
+						fctConstraints.SetAnimating(true)
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kTarget, _SDIAP_bound[2] )
 						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
@@ -101,7 +101,7 @@ Event OnUpdate()
 						EndIf
 
 					Else
-						; fctConstraints.SetAnimating(true)
+						fctConstraints.SetAnimating(true)
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
 							PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
 						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
@@ -110,10 +110,10 @@ Event OnUpdate()
 					EndIf
 				Else
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
-						; fctConstraints.SetAnimating(false)
+						fctConstraints.SetAnimating(false)
 
 					Else
-						; fctConstraints.SetAnimating(true)
+						fctConstraints.SetAnimating(true)
 						PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
 					EndIf
 				EndIf
@@ -126,7 +126,7 @@ Event OnUpdate()
 				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 				;	PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
 				;EndIf
-				PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
+				; PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
 			EndIf
 
 		EndIf
