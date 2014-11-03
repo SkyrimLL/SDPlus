@@ -280,3 +280,5 @@ ObjectReference Property _SD_DremoraChallenger  Auto
 ReferenceAlias Property _SDRAP_redguard_girl  Auto  
 
 SPELL Property _SDSP_SanguineBound  Auto  
+
+

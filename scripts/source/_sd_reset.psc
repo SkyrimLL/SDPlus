@@ -41,15 +41,10 @@ Function Maintenance()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 
-	If fVersion < 3.01 ; <--- Edit this value when updating
-		fVersion = 3.01; and this
+	If fVersion < 3.02 ; <--- Edit this value when updating
+		fVersion = 3.02; and this
 		Debug.Notification("Updating to SD+ version: " + fVersion)
 		; Update Code
-
-		; Init slavery API
-		If (!StorageUtil.HasIntValue(game.getPlayer(), "_SD_iAPIInit"))
-			fctSlavery.InitSlaveryState( game.getPlayer() )
-		EndIf
 
 
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
@@ -95,6 +90,12 @@ Function Maintenance()
 			;_SD_dream.Stop()
 		EndIf
 
+		; Init slavery API
+		;If (!StorageUtil.HasIntValue(game.getPlayer(), "_SD_iAPIInit"))
+			fctSlavery.InitSlaveryState( game.getPlayer() )
+		;EndIf
+
+
 	EndIf
 
 	Actor master = Alias__SDRA_master.GetReference() as Actor
@@ -107,7 +108,7 @@ Function Maintenance()
 				Debug.Notification("You are still enslaved." )
 				Debug.Notification("Shutting down Enslavement Quest" )
 				_SDGVP_enslaved.SetValue(0)
-				_SD_enslavement.SetStage(100)
+				_SD_enslavement.Stop()
 			EndIf
 		EndIf
 	EndIf

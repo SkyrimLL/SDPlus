@@ -30,6 +30,7 @@ GlobalVariable Property _SDGVP_config_verboseMerits  Auto
 GlobalVariable Property _SDDVP_buyoutEarned  Auto
 GlobalVariable Property _SDGVP_state_caged  Auto  
 GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto  
+GlobalVariable Property _SDGVP_health_threshold Auto
 
 LocationAlias Property _SDLAP_masters_location  Auto  
 
@@ -44,6 +45,7 @@ FormList Property _SDFLP_trade_items  Auto
 FormList Property _SDFLP_banned_factions  Auto  
 FormList Property _SDFLP_forced_allied  Auto  
 
+Keyword Property _SDKP_spriggan  Auto  
 Keyword Property _SDKP_sex  Auto  
 Keyword Property _SDKP_enslave  Auto
 Keyword Property _SDKP_master  Auto
@@ -441,6 +443,7 @@ State monitor
 			; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 6 )
 			;;enslavement.uiLastDemerits = iCheckdemerits
 		Else
+
 			fSlaveLastSeen = GetCurrentRealTime()
 
 			; If ( _SDQP_enslavement_tasks.IsRunning() )
@@ -459,6 +462,11 @@ State monitor
 			If ( distance <= fLeashLength )
 				fSlaveFreeTime += 0.05
 				enslavement.bSearchForSlave = False
+
+				If ( kMaster.WornHasKeyword( _SDKP_spriggan ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+					SendModEvent("SDSprigganEnslaved")
+				EndIf
+
 
 			ElseIf ( RandomFloat( 0.0, 100.0 ) < fLibido )
 				fLibido = 0.0

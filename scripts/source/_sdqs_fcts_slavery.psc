@@ -225,6 +225,8 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
+
+	UpdateStatusDaily(  kMaster,  kSlave)
 EndFunction
 
 
@@ -375,9 +377,9 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 
 			if (modValue)
 				; Disable waiting
-				Game.SetInChargen(false, false, false)
+			;	Game.SetInChargen(false, false, false)
 			Else
-				Game.SetInChargen(false, true, true)
+			;	Game.SetInChargen(false, true, true)
 			EndIf
 	EndIf
 
