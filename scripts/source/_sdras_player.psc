@@ -19,7 +19,7 @@ GlobalVariable[] Property _SDGVP_config  Auto
 GlobalVariable Property _SDGVP_sprigganEnslaved  Auto
 GlobalVariable Property _SDGVP_enslaved  Auto
 GlobalVariable Property _SDGV_leash_length  Auto
-
+GlobalVariable Property _SDGVP_health_threshold Auto
 ; ragdolling
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto
 
@@ -118,7 +118,7 @@ Bool Function checkIfSpriggan ( Actor akActor )
 EndFunction
 
 Bool Function checkIfSlaver ( Actor akActor )
-	return ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, kPlayer ) ) || (  fctFactions.checkIfFalmer ( akActor) )) && !akActor.IsGhost() && !fctFactions.actorFactionInList( akActor, _SDFLP_banned_factions )
+	return ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, kPlayer ) ) || (  fctFactions.checkIfFalmer ( akActor) )) && !akActor.IsGhost() && (akActor != Game.GetPlayer()) && !fctFactions.actorFactionInList( akActor, _SDFLP_banned_factions )
 EndFunction
 
 Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerbose )
@@ -138,13 +138,13 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1)  &&  checkIfSlaver (  akAggressor )
 
-		Debug.Notification("Your aggressor accepts your surrender...")
+		; Debug.Notification("Your aggressor accepts your surrender...")
 
-		StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender", 0) 
-		Utility.Wait(4.0) ; if we could know for sure that the player is ragdolling, we could wait for the event sent at the end of ragdoll. --BM
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender", 0) 
+		; Utility.Wait(4.0) ; if we could know for sure that the player is ragdolling, we could wait for the event sent at the end of ragdoll. --BM
 
 		; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
-		_SDKP_enslave.SendStoryEvent( akLoc = akAggressor.GetCurrentLocation(), akRef1 = akAggressor as Actor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+		; _SDKP_enslave.SendStoryEvent( akLoc = akAggressor.GetCurrentLocation(), akRef1 = akAggressor as Actor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
 	
 	ElseIf (Utility.RandomInt(0,100) > 70) && (_SD_dreamQuest.GetStage() != 0) && (raped>=2)
 		; Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
@@ -226,6 +226,10 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	; 	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 	;	Utility.Wait(0.5)
 	; EndIf
+
+	If ( kPlayer.WornHasKeyword( _SDKP_spriggan ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+		SendModEvent("SDSprigganEnslaved")
+	EndIf
 EndEvent
 
 Event OnInit()
@@ -252,6 +256,8 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubPunish",   "OnSDStoryPunish")
 	RegisterForModEvent("PCSubTransfer",   "OnSDTransfer")
 	RegisterForModEvent("PCSubFree",   "OnSDFree")
+	RegisterForModEvent("SDSprigganEnslave",   "OnSDSprigganEnslave")
+	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
 
 EndFunction
 
@@ -260,7 +266,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		
 	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)
+	If (kNewMaster != None)  &&  checkIfSlaver (  kNewMaster )
 		; if already enslaved, transfer of ownership
 
 		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
@@ -286,6 +292,38 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 	EndIf
 EndEvent
 
+Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kNewMaster = StorageUtil.GetFormValue( Game.GetPlayer() , "_SD_TempAggressor") as Actor
+	ObjectReference kNewMasterRef
+		
+	Debug.Trace("[_sdras_player] Receiving 'spriggan enslave' event - New master: " + kNewMaster)
+
+
+	If (kNewMaster != None)  &&  checkIfSpriggan (  kNewMaster )
+		; new master
+
+		StorageUtil.SetFormValue(Game.GetPlayer(), "_SD_TempAggressor", None)
+
+		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
+ 
+	Else
+		Debug.Trace("[_sdras_player] Attempted spriggan enslavement to empty master " )
+		kNewMasterRef = Game.GetPlayer().placeAtMe( _SD_SprigganSwarm )
+		
+		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMasterRef as Actor, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
+	EndIf
+EndEvent
+
+
+Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+
+	; Dreamworld has to be visited at least once for this event to work
+
+	If (_SDGVP_sanguine_blessing.GetValue() > 0) 
+		_SD_dreamQuest.SetStage(15)
+	EndIf
+
+EndEvent
 
 Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
@@ -533,13 +571,13 @@ State monitor
 
 				_SD_dreamQuest.SetStage(100)
 			ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) 
-				Debug.Notification("Your aggressor pins you down...")
+			;	Debug.Notification("Your aggressor pins you down...")
 
-				if (kPlayer.GetCombatTarget() as Actor)
-					checkForEnslavement( kPlayer.GetCombatTarget() as Actor, kPlayer, True )
-				elseIf (StorageUtil.GetFormValue(kPlayer, "_SD_DesiredOwner") != None)
-					checkForEnslavement( StorageUtil.GetFormValue(kPlayer, "_SD_DesiredOwner") as Actor, kPlayer, True )
-				EndIf
+			;	if (kPlayer.GetCombatTarget() as Actor)
+			;		checkForEnslavement( kPlayer.GetCombatTarget() as Actor, kPlayer, True )
+			;	elseIf (StorageUtil.GetFormValue(kPlayer, "_SD_TempAggressor") != None)
+			;		checkForEnslavement( StorageUtil.GetFormValue(kPlayer, "_SD_TempAggressor") as Actor, kPlayer, True )
+			;	EndIf
 
 
 			; ElseIf (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1)
@@ -631,11 +669,10 @@ State monitor
 				Monitor.SetBlackScreenEffect(false)
 				Monitor.SetPlayerControl(true)
 
+				Actor kCombatTarget = kPlayer.GetCombatTarget() as Actor
 
-				If (IButton == 0 ) && (kPlayer.GetCombatTarget() as Actor) ; && (isInKWeakenedState)
-					; Surrender to aggressor	
+				If (IButton == 0 ) 
 					StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender", 1)	
-					Debug.Notification("You surrender to your aggressor...")
 
 				ElseIf (IButton == 1)
 					; Pray to Sanguine
@@ -697,6 +734,8 @@ State monitor
 	  if (akTarget != Game.GetPlayer())
 
 	    rapeAttempts = 0
+	    ; Clear forced surrender to fit only current combat
+	    StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender",0) 
 
 	  endIf
 	endEvent
@@ -704,21 +743,47 @@ State monitor
 	Event OnMagicEffectApply(ObjectReference akCaster, MagicEffect akEffect)
 		; Old trigger - disabled for compatibility with Death Alternative
  
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) && (akCaster!=Game.getPlayer())
+			StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender",0) 
+				
+			If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") != 1)  
 
+				Debug.Notification("You surrender to your aggressor...")
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
+
+				SendModEvent("PCSubEnslave") ; Enslavement
+
+			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
+
+				Debug.Notification("You submit to your new master...")
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
+
+				SendModEvent("PCSubTransfer") ; Enslavement
+			EndIf
+		EndIf
 	EndEvent
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 		; Debug.Notification("[_sdras_player] OnHit - Aggressor:" + akAggressor)
 
-		; Cap on kill state for better integration with DA (avoid immortal / frozen state)
-		Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 5/100 )  ; funct.actorInWeakenedState( kPlayer, _SDGVP_config[2].GetValue()/100 )
-		Bool isInKillState = funct.actorInKillState( kPlayer, 0.5 )   ; funct.actorInKillState( 
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) 
+			StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender",0) 
+				
+			If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") != 1)  
 
-		; if (isInKWeakenedState) && checkForEnslavement( akAggressor as Actor, kPlayer as Actor, False )
-			; Chance of rape on kill state
-		; Else
-			; Debug.Notification("Not dead yet (Kill state failed)")
-		; EndIf
+				Debug.Notification("You surrender to your aggressor...")
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
+
+				SendModEvent("PCSubEnslave") ; Enslavement
+
+			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
+
+				Debug.Notification("You submit to your new master...")
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
+
+				SendModEvent("PCSubTransfer") ; Enslavement
+			EndIf
+		EndIf
 	EndEvent
 
 	Event OnTrapHit(ObjectReference akTarget, float afXVel, float afYVel, float afZVel, float afXPos, float afYPos, float afZPos, int aeMaterial, bool abInitialHit, int aeMotionType)
@@ -760,4 +825,7 @@ SPELL Property Calm  Auto
 daymoyl_MonitorScript 		Property Monitor 		Auto
 Message Property _SD_safetyMenu  Auto  
 
+GlobalVariable Property _SDGVP_sanguine_blessing auto
+
+ObjectReference Property _SD_SprigganSwarm Auto
 
