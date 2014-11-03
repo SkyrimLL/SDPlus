@@ -16,7 +16,7 @@ int Function OnEquippedFilter(actor akActor, bool silent=false)
 		; EndIf
 		; return 2
 	Endif
-	return 2
+	return 0
 EndFunction
 
 Function OnEquippedPre(actor akActor, bool silent=false)
@@ -83,18 +83,7 @@ Function DeviceMenu(Int msgChoice = 0)
 	elseif msgChoice==1 ; Wearing a belt, no plugs
 		Debug.MessageBox(strFailEquip)
 	elseif msgChoice==2 ; Not wearing a belt, plugs
-		string msg = ""
-		if Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Desire")
-			msg = "You easily slide the plugs out of your holes and feel no regret."
-		elseif Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Horny")
-			msg = "Despite the pleasure they provide, you remove the plugs from your holes."
-		elseif Aroused.GetActorExposure(libs.PlayerRef) < libs.ArousalThreshold("Desperate")
-			msg = "Despite your body telling you otherwise, you reluctantly pull the plugs from your now well lubricated openings."
-		else
-			msg = "It takes all the willpower that you can muster to relax your muscles enough to let the plugs slide out."
-		endif
-		libs.NotifyPlayer(msg, true)
-		RemoveDevice(libs.PlayerRef)
+		NoKeyFailMessage(libs.PlayerRef) ; Sanguine's artifact cannot be removed by hand.
 	elseif msgChoice==3 ; Wearing a belt, plugs
 		NoKeyFailMessage(libs.PlayerRef)
 	Endif

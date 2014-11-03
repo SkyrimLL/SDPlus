@@ -22,10 +22,9 @@ ObjectReference kMaster
 Float fRFSU = 0.1
 
 Function PlayIdleWrapper(actor akActor, idle theIdle)
-	; SkyrimLL - Disabled for now. This test blocks application of idles when SetAnimating is False
-	; If (!fctConstraints.libs.IsAnimating(akActor))
+	If (!fctConstraints.libs.IsAnimating(akActor))
 		akActor.PlayIdle(theIdle)
-	; EndIf
+	EndIf
 EndFunction
 
 
@@ -86,14 +85,10 @@ Event OnUpdate()
 
 				If (kTarget == kPlayer)
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
-						; SkyrimLL - Enabled these calls again to prevent a loop between standing and kneeling
-						; 			 Something is causing the player character to stand up frequently when kneeling.
-						; 			 These calls block that behavior and force DD animations to play only when player is standing up
-
-						fctConstraints.SetAnimating(false)
+						; fctConstraints.SetAnimating(false)
 
 					ElseIf ( trust < 0 ) && (disposition < 0)
-						fctConstraints.SetAnimating(true)
+						; fctConstraints.SetAnimating(true)
 
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kTarget, _SDIAP_bound[4] )
@@ -102,7 +97,7 @@ Event OnUpdate()
 						EndIf
 
 					ElseIf ( trust >= 0 ) && (disposition < 0)
-						fctConstraints.SetAnimating(true)
+						; fctConstraints.SetAnimating(true)
 
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kTarget, _SDIAP_bound[2] )
@@ -111,7 +106,7 @@ Event OnUpdate()
 						EndIf
 
 					Else
-						fctConstraints.SetAnimating(true)
+						; fctConstraints.SetAnimating(true)
 						
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
 							PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
@@ -121,10 +116,10 @@ Event OnUpdate()
 					EndIf
 				Else
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
-						fctConstraints.SetAnimating(false)
+						; fctConstraints.SetAnimating(false)
 
 					Else
-						fctConstraints.SetAnimating(true)
+						; fctConstraints.SetAnimating(true)
 						PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
 					EndIf
 				EndIf
@@ -137,7 +132,7 @@ Event OnUpdate()
 				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 				;	PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
 				;EndIf
-				; PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
+				PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
 			EndIf
 
 		EndIf
