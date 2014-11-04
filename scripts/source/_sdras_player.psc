@@ -475,6 +475,10 @@ State monitor
 		keys[1] = config._SDUIP_keys[6]
 		RegisterForKey( keys[0] )
 		RegisterForKey( keys[1] )
+		if ( StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved", 0) > 0 )
+			; Suspend Deviously Helpless attacks.
+			SendModEvent("dhlp-Suspend")
+		EndIf
 	EndEvent
 
 	Event OnEndState()
