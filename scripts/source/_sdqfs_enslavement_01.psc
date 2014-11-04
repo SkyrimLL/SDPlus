@@ -260,6 +260,8 @@ SetObjectiveDisplayed(100, False)
 
 SendModEvent("SDEnslavedStop") 
 
+; Resume Deviously Helpless attacks.
+SendModEvent("dhlp-Resume")
 
 Reset()
 ;END CODE
@@ -320,6 +322,9 @@ SetObjectiveDisplayed(100, False)
 
 SendModEvent("SDEnslavedStop") 
 
+; Resume Deviously Helpless attacks.
+SendModEvent("dhlp-Resume")
+
 Reset()
 ;END CODE
 EndFunction
@@ -333,6 +338,9 @@ Actor kSlave = Game.GetPlayer()
 
 SendModEvent("SDEnslavedStart") 
 
+; Suspend Deviously Helpless attacks.
+SendModEvent("dhlp-Suspend")
+
 ; fctSlavery.StartSlavery( kMaster, kSlave)
 
 ; If Game.IsFastTravelEnabled()
@@ -341,6 +349,7 @@ SendModEvent("SDEnslavedStart")
 ; EndIf
 
 ;master.AllowPCDialogue( True )
+
 SetStage( 10 )
 ;END CODE
 EndFunction
@@ -394,6 +403,9 @@ SetObjectiveDisplayed(90, False)
 SetObjectiveDisplayed(100, False)
 
 SendModEvent("SDEnslavedStop") 
+
+; Resume Deviously Helpless attacks.
+SendModEvent("dhlp-Resume")
 
 Reset()
 ;END CODE
