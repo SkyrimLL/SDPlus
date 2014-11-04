@@ -99,7 +99,7 @@ Event OnDeath(Actor akKiller)
 	kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
 	Wait(2.0)
 	
-	; SendModEvent("SDFree")
+	; SendModEvent("PCSubFree")
 	; It may be better to directly stop the quest here instead of relying on Mod Events
 
 	Self.GetOwningQuest().Stop()
@@ -140,7 +140,8 @@ EndEvent
 
 Event OnEnterBleedout()
 	if (kMaster.IsEssential()) && (Variables.FollowerSetting==0)
-		SendModEvent("SDFree")
+		Debug.Trace("[_sdras_master] Essential master bleeding out - Stop enslavement")
+		SendModEvent("PCSubFree")
 		; Self.GetOwningQuest().Stop()
 	EndIf
 EndEvent
@@ -321,7 +322,7 @@ State monitor
 			Debug.Trace("[_sdras_master] Master dead or disabled - Stop enslavement")
 
 			; Self.GetOwningQuest().Stop()
-			SendModEvent("SDFree")
+			SendModEvent("PCSubFree")
 
 		ElseIf ( _SDGV_leash_length.GetValue() == -10) ; escape trigger in some situations
 		;	If (RandomInt( 0, 100 ) > 80 )
@@ -389,7 +390,7 @@ State monitor
 				; Debug.Trace("[_sdras_master] Slave attacking - Stop enslavement")
 
 				; Self.GetOwningQuest().Stop()
-				; SendModEvent("SDFree")
+				; SendModEvent("PCSubFree")
 
 				Wait(0.5)
 				; kSlave.PlayAnimation("ZazAPC055");Inte
@@ -577,7 +578,7 @@ State search
 	Event OnDeath(Actor akKiller)
 		Debug.Trace("[_sdras_master] Master death event - Stop enslavement")
 
-		SendModEvent("SDFree")
+		SendModEvent("PCSubFree")
 		; Self.GetOwningQuest().Stop()
 	EndEvent
 
@@ -588,7 +589,7 @@ State search
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in search - Stop enslavement")
 
-			SendModEvent("SDFree")
+			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 
 		ElseIf (( kMaster.GetDistance( kSlave ) <= _SDGV_leash_length.GetValue() )  && ( _SDGV_leash_length.GetValue() > 0))
@@ -623,7 +624,7 @@ State combat
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in combat- Stop enslavement")
 
-			SendModEvent("SDFree")
+			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
@@ -655,7 +656,7 @@ State caged
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in caged - Stop enslavement")
 
-			SendModEvent("SDFree")
+			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 		ElseIf ( !_SDGVP_state_caged.GetValueInt() )
 			GoToState("monitor")

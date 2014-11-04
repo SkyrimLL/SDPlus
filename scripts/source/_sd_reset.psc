@@ -69,7 +69,7 @@ Function Maintenance()
 
 		If ( _SD_enslavement.IsRunning() )
 			Debug.Messagebox("Enslavement Quest is running during an upgrade. Canceling enslavement to apply changes." )
-			; SendModEvent("SDFree")
+			; SendModEvent("PCSubFree")
 
 			; Disabled for now
 			; - Sets slave faction to 0 in loop

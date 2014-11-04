@@ -145,13 +145,13 @@ EndEvent
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	If ( _SDFLP_banned_locations.HasForm( akNewLoc ) )
 		Debug.Trace("[_sdras_slave] Banned location - Stop enslavement")
-		SendModEvent("SDFree") ; Self.GetOwningQuest().Stop()
+		SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
 	If ( _SDFLP_banned_worldspaces.HasForm( kSlave.GetWorldSpace() ) )
 
 		Debug.Trace("[_sdras_slave] Banned worldspace - Stop enslavement")
-		SendModEvent("SDFree") ; Self.GetOwningQuest().Stop()
+		SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
 EndEvent
@@ -201,7 +201,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 
 		kSlave.RemoveItem(akItemReference, aiItemCount)
 
- 		SendModEvent("SDFree")
+ 		SendModEvent("PCSubFree")
 		; Self.GetOwningQuest().Stop()
 		; Utility.Wait(2.0)
 		Return
@@ -232,7 +232,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 
 				fLastEscape = GetCurrentRealTime()
- 				SendModEvent("SDFree")
+ 				SendModEvent("PCSubFree")
 				; Self.GetOwningQuest().Stop()
 				Return
 			Else
@@ -332,6 +332,7 @@ State monitor
 
 
 		If (_SDGVP_config_safeword.GetValue() as bool)
+			Debug.Trace("[_sdras_slave] Safeword - Stop enslavement")
 			Debug.MessageBox( "Safeword: You are released from enslavement.")
 			_SDGVP_state_joined.SetValue( 0 )
 			_SDGVP_config_safeword.SetValue(0)
@@ -561,7 +562,7 @@ State monitor
 			_SDKP_trust_hands.SetValue(1) 
 			_SDKP_trust_feet.SetValue(1) 
 
-			SendModEvent("SDFree")
+			SendModEvent("PCSubFree")
 
 			Return
 		ElseIf ( kSlave.WornHasKeyword( _SDKP_bound ) )
@@ -620,7 +621,7 @@ State monitor
 						fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
 						fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 
-						SendModEvent("SDFree") ; Self.GetOwningQuest().Stop()
+						SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 						Return
 					Else
 						kSlave.DropObject(akBaseItem, aiItemCount)
@@ -704,6 +705,8 @@ State escape
 		fDistance = kSlave.GetDistance( kMaster )
 
 		If (_SDGVP_config_safeword.GetValue() as bool)
+
+			Debug.Trace("[_sdras_slave] Safeword on escape - Stop enslavement")
 			Debug.MessageBox( "Safeword: You are released from enslavement.")
 			_SDGVP_state_joined.SetValue( 0 )
 			_SDGVP_config_safeword.SetValue(0)
@@ -759,7 +762,7 @@ State escape
 
 					SendModEvent("SDEscapeStart") 
 
-					; SendModEvent("SDFree") ; Self.GetOwningQuest().Stop()
+					; SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 					; Return
 
 					If (Utility.RandomInt(0,100)>=90)
