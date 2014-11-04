@@ -686,6 +686,11 @@ State monitor
 
 						_SD_dreamQuest.SetStage(100)
 
+					ElseIf (Utility.RandomInt(0,100) > 95) && (!isInKWeakenedState)	
+						; Send PC some help
+
+						SendModEvent("da_StartSecondaryQuest", "Both")
+
 					ElseIf (Utility.RandomInt(0,100) > 40) && (isInKWeakenedState)	
 						; Send PC some help
 
@@ -748,6 +753,7 @@ State monitor
 				
 			If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") != 1)  
 
+				Debug.Trace("[_sdras_player] Forced surrender on magic effect - Start enslavement")
 				Debug.Notification("You surrender to your aggressor...")
 				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
 
@@ -755,6 +761,7 @@ State monitor
 
 			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
 
+				Debug.Trace("[_sdras_player] Forced surrender on magic effect - Start transfer")
 				Debug.Notification("You submit to your new master...")
 				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
 
@@ -771,6 +778,7 @@ State monitor
 				
 			If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") != 1)  
 
+				Debug.Trace("[_sdras_player] Forced surrender on hit - Start enslavement")
 				Debug.Notification("You surrender to your aggressor...")
 				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
 
@@ -778,6 +786,7 @@ State monitor
 
 			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
 
+				Debug.Trace("[_sdras_player] Forced surrender on hit - Start transfer")
 				Debug.Notification("You submit to your new master...")
 				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
 

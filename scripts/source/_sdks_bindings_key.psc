@@ -21,7 +21,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		Debug.Trace("[_sdks_master_key] Master key - Stop enslavement")
 
 		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
-			SendModEvent("SDFree")			
+			SendModEvent("PCSubFree")			
 		EndIf
 
 		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
