@@ -498,6 +498,38 @@ Function PunishSlave(Actor akMaster, Actor akSlave)
 
 EndFunction
 
+Function RewardSlave(Actor akMaster, Actor akSlave)
+
+	If (akSlave == Game.GetPlayer())
+		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+
+		If (fMasterDistance <= 300)
+			Debug.MessageBox("Your owner is forcing a punishment on you.")
+
+			if (!fctOutfit.IsGagEquipped(akSlave))
+				RemoveSlavePunishment( kActor = akSlave, bGag = True)
+
+			Elseif (!fctOutfit.IsBlindfoldEquipped(kSlave))
+				RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
+
+			ElseIf  (!fctOutfit.IsPlugEquipped(kSlave)) 
+				RemoveSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
+
+			ElseIf  (!fctOutfit.IsArmbinderEquipped(kSlave)) 
+				RemoveSlavePunishment( kActor = akSlave, bArmbinder = True)
+
+			EndIf
+
+		ElseIf (fMasterDistance > 300)
+			Debug.Notification("Your owner is too far to punish you.")
+		EndIf
+	Else
+		Debug.Trace("[_sdqs_enslavement] Punish slave: Target is not the player")
+	EndIf
+
+
+EndFunction
+
 
 Function UpdateSlaveFollowerState(Actor akSlave)
 		Int idx = 0

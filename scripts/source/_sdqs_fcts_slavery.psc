@@ -152,6 +152,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	Else
 		StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 2   )
 	EndIf
+	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
 
 	; Master need and trust ranges - plus or minus value around 0
 	; Some masters are easier to please than others
@@ -482,6 +483,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	int slaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
 	Int masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
 	Int masterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
+	Int overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
 	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
 	Int masterSexNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex")
 	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunish")
@@ -495,14 +497,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	int iFoodComplete = 0
 	int iGoldComplete = 0
 
-	Debug.Trace("[SD] --- Slavery update" )
-	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
-	Debug.Trace("[SD] masterSexNeed: " + masterSexNeed )
-	Debug.Trace("[SD] masterPunishNeed: " + masterPunishNeed )
-	Debug.Trace("[SD] masterFoodNeed: " + masterFoodNeed )
-	Debug.Trace("[SD] masterGoldNeed: " + masterGoldNeed )
-	Debug.Trace("[SD] masterNeedRange: " + masterNeedRange )
-	Debug.Trace("[SD] masterTrustRange: " + masterTrustRange )
 
 	Debug.Notification("[SD] master needs: " + masterSexNeed + " "  + masterPunishNeed + " " + masterFoodNeed + " " + masterGoldNeed )
 
@@ -625,10 +619,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
 	EndIf
 
-	Debug.Notification("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
-
-	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
-
 	; Reset daily counts for slave
 	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iPunishmentCountToday", 0)
@@ -643,6 +633,27 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	if (masterDisposition < 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 8 / 10 )
 	EndIf
+
+	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iDisposition") < 0)
+		overallMasterDisposition -= 1
+	Else
+		overallMasterDisposition += 1
+	EndIf
+	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
+
+	Debug.Notification("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+	Debug.Notification("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
+ 
+	Debug.Trace("[SD] --- Slavery update" )
+	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
+	Debug.Trace("[SD] masterSexNeed: " + masterSexNeed )
+	Debug.Trace("[SD] masterPunishNeed: " + masterPunishNeed )
+	Debug.Trace("[SD] masterFoodNeed: " + masterFoodNeed )
+	Debug.Trace("[SD] masterGoldNeed: " + masterGoldNeed )
+	Debug.Trace("[SD] masterNeedRange: " + masterNeedRange )
+	Debug.Trace("[SD] masterTrustRange: " + masterTrustRange )
 
 EndFunction
 
@@ -706,7 +717,12 @@ function DisplaySlaveryLevel( Actor kMaster, Actor kSlave )
 	
 EndFunction
 
+Float Function GetEnslavementDuration(Actor kSlave)
+	Return ( _SDGVP_gametime.GetValue() -	StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavedGameTime" ) )
+EndFunction
+
 SexLabFrameWork Property SexLab Auto
 
 GlobalVariable Property _SDGVP_gametime  Auto  
 GlobalVariable Property _SDGVP_enslaved  Auto  
+ 
