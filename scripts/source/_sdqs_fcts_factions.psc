@@ -3,6 +3,14 @@ Scriptname _sdqs_fcts_factions extends Quest
 Import Utility
 Import SKSE
 
+_SDQS_functions Property funct  Auto
+
+Keyword Property _SDKP_actorTypeNPC  Auto
+FormList Property _SDFLP_banned_factions  Auto
+
+Bool Function checkIfSlaver ( Actor akActor )
+	return ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) )) && !akActor.IsGhost() && (akActor != Game.GetPlayer()) && !actorFactionInList( akActor, _SDFLP_banned_factions )
+EndFunction
 
 Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormList akBannedFactionList = None )
 	Int index

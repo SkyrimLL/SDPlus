@@ -422,11 +422,11 @@ event OnPageReset(string a_page)
 		_SDOID_config_B8 = AddToggleOption("$SD_OPTION_P0_ENABLE_TRAIN_RUN", _SDGVP_config_enableTrainRun.GetValue() as Bool) ;22 - 12
 		;# SDpatch #
 		;###############################################################################################
-		AddHeaderOption("Slave Options")
-		_SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
-		_SDOID_config_B11 = AddToggleOption("Remove Armbinder During Punishments", _SDGVP_config_RemoveArmBinder.GetValue() as Bool) ;
-		_SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
-		_SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
+		; AddHeaderOption("Slave Options")
+		; _SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
+		; _SDOID_config_B11 = AddToggleOption("Remove Armbinder During Punishments", _SDGVP_config_RemoveArmBinder.GetValue() as Bool) ;
+		; _SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
+		; _SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
 		;###############################################################################################
 		SetCursorPosition(1)
 		AddHeaderOption("$SD_HEADER_P0_BODY") ;1 - 1

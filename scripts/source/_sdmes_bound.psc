@@ -37,25 +37,6 @@ Event OnUpdate()
 	;	Debug.Notification( "Your collar weighs around your neck..." )
 	; EndIf
 
-; Add Master privileges flags
-	If ( kTarget.GetEquippedWeapon() ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableWeaponEquip") )
-		kTarget.UnequipItem( kTarget.GetEquippedWeapon(), false, True )
-		kTarget.RemoveItem( kTarget.GetEquippedWeapon(), 1, True )
-	EndIf
-	If ( kTarget.GetEquippedWeapon(True) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableWeaponEquip")  )
-		kTarget.UnequipItem( kTarget.GetEquippedWeapon(True), false, True )
-		kTarget.RemoveItem( kTarget.GetEquippedWeapon(True), 1, True )
-	EndIf
-	If ( kTarget.GetEquippedShield() ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableWeaponEquip")   )
-		kTarget.UnequipItem( kTarget.GetEquippedShield(), false, True )
-		kTarget.RemoveItem( kTarget.GetEquippedShield(), 1, True )
-	EndIf
-	If ( kTarget.GetEquippedSpell(0) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableSpellEquip")  )
-		kTarget.UnequipSpell( kTarget.GetEquippedSpell(0), 0 )
-	EndIf
-	If ( kTarget.GetEquippedSpell(1) ) && (fctSlavery.CheckSlavePrivilege( kTarget , "_SD_iEnableSpellEquip") )
-		kTarget.UnequipSpell( kTarget.GetEquippedSpell(1), 1 )
-	EndIf
 
 	
 	; Debug.Notification("[SD] AutoKneelingOff: " + StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))

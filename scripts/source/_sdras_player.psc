@@ -102,24 +102,7 @@ Float fRFSU = 0.5
  
 
 
-Bool Function checkIfSpriggan ( Actor akActor )
-	Bool bIsSpriggan = False
 
-	if (akActor)
-		Int index = 0
-		Int size = _SDFLP_spriggan_factions.GetSize()
-		While ( !bIsSpriggan && index < size )
-			bIsSpriggan = akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")
-			index += 1
-		EndWhile
-	EndIf
-	
-	Return bIsSpriggan
-EndFunction
-
-Bool Function checkIfSlaver ( Actor akActor )
-	return ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, kPlayer ) ) || (  fctFactions.checkIfFalmer ( akActor) )) && !akActor.IsGhost() && (akActor != Game.GetPlayer()) && !fctFactions.actorFactionInList( akActor, _SDFLP_banned_factions )
-EndFunction
 
 Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerbose )
 	ObjectReference shackles = _SDRAP_shackles.GetReference() as ObjectReference
@@ -136,7 +119,7 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 
 
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1)  &&  checkIfSlaver (  akAggressor )
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1)  &&  fctFactions.checkIfSlaver (  akAggressor )
 
 		; Debug.Notification("Your aggressor accepts your surrender...")
 
@@ -153,7 +136,7 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 		raped = 0
 		_SD_dreamQuest.SetStage(100)
 
-	ElseIf ( !checkIfSpriggan ( akAggressor ) && fctFactions.actorFactionInList( akAggressor, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquipped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akAggressor.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akAggressor, _SDFL_banned_sex )   && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
+	ElseIf ( !fctFactions.checkIfSpriggan ( akAggressor ) && fctFactions.actorFactionInList( akAggressor, _SDFL_allowed_creature_sex )  && ( fctOutfit.isPunishmentEquipped (akPlayer) && ( !akPlayer.WornHasKeyword( _SDKP_armorCuirass )) ) ) || ( akAggressor.IsInFaction( _SDFP_humanoidCreatures ) )  && !fctFactions.actorFactionInList( akAggressor, _SDFL_banned_sex )   && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
 		
 		Debug.Notification( "(Creature Rape attempt)")
 
@@ -175,7 +158,7 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 			; Debug.Notification( "(Rape attempt failed)")
 			rapeAttempts = rapeAttempts + 1
 		EndIf
-	ElseIf ( !checkIfSpriggan ( akAggressor ) && ( akAggressor.HasKeyword( _SDKP_actorTypeNPC )) )  && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
+	ElseIf ( !fctFactions.checkIfSpriggan ( akAggressor ) && ( akAggressor.HasKeyword( _SDKP_actorTypeNPC )) )  && (Utility.RandomInt(0,100)<= (rapeAttempts * 5) )
 			
 		Debug.Notification( "(Rape attempt)")
 
@@ -266,7 +249,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		
 	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)  &&  checkIfSlaver (  kNewMaster )
+	If (kNewMaster != None)  &&  fctFactions.checkIfSlaver (  kNewMaster )
 		; if already enslaved, transfer of ownership
 
 		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
@@ -299,7 +282,7 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 	Debug.Trace("[_sdras_player] Receiving 'spriggan enslave' event - New master: " + kNewMaster)
 
 
-	If (kNewMaster != None)  &&  checkIfSpriggan (  kNewMaster )
+	If (kNewMaster != None)  &&  fctFactions.checkIfSpriggan (  kNewMaster )
 		; new master
 
 		StorageUtil.SetFormValue(Game.GetPlayer(), "_SD_TempAggressor", None)
@@ -409,7 +392,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		
 	Debug.Trace("[_sdras_player] Receiving 'transfer slave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)   &&  checkIfSlaver (  kNewMaster )
+	If (kNewMaster != None)   &&  fctFactions.checkIfSlaver (  kNewMaster )
 		_SDQP_enslavement.Stop()
 
 		; new master
@@ -475,7 +458,7 @@ State monitor
 		keys[1] = config._SDUIP_keys[6]
 		RegisterForKey( keys[0] )
 		RegisterForKey( keys[1] )
-		if ( StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved", 0) > 0 )
+		if ( StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved") > 0 )
 			; Suspend Deviously Helpless attacks.
 			SendModEvent("dhlp-Suspend")
 		EndIf
