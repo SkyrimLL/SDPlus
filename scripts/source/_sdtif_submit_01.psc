@@ -9,8 +9,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor akPlayer = SexLab.PlayerRef 
 
 StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
-SendModEvent("PCSubTransfer")
+SendModEvent("PCSubEnslave")
 ;END CODE
 EndFunction
 ;END FRAGMENT

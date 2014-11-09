@@ -66,8 +66,11 @@ EndFunction
 ; ObjectReference akRef1 = master
 ; ObjectReference akRef2 = slave
 Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRef1, ObjectReference akRef2, int aiValue1, int aiValue2)
-	bAllyToActor = fctFactions.allyToActor( akRef1 as Actor, akRef2 as Actor, _SDFLP_slaver, _SDFLP_allied )
-	If ( !bQuestActive && bAllyToActor )
+	; bAllyToActor = fctFactions.allyToActor( akRef1 as Actor, akRef2 as Actor, _SDFLP_slaver, _SDFLP_allied )
+	; Debug.Notification("[SD] Receiving spriggan story...")		
+
+	If ( !bQuestActive ) ; && bAllyToActor )
+		; Debug.Notification("[SD] Starting spriggan story...")		
 		bQuestActive = True
 		If ( _SDGVP_config[0].GetValue() )
 		;	( akRef2 as Actor ).GetActorBase().SetEssential( False )

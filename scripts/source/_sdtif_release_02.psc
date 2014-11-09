@@ -21,9 +21,10 @@ If   (Utility.RandomInt(0,100)>60)
 
 	funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")
 Else
-	_SDGVP_demerits.SetValue( -25.0 )
-	_SDKP_enslave.SendStoryEvent( akLoc = akSpeakerRef.GetCurrentLocation(), akRef1 = akSpeakerRef, akRef2 = kPlayer, aiValue1 = _SDGVP_demerits.GetValueInt(), aiValue2 = 0 )
+	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
+	SendModEvent("PCSubEnslave")
 EndIf
 ;END CODE
 EndFunction

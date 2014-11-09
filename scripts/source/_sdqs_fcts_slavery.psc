@@ -50,6 +50,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavedGameTime", _SDGVP_gametime.GetValue())
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentGameTime", 0.0)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
+	StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 0)
 
 	; Acts performed today
 	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)

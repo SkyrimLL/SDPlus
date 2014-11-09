@@ -948,7 +948,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazWoodenBit 
 			ddArmorKeyword = libs.zad_DeviousGag 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
 			; 4 - Plug Anal - DD Primitive Anal
@@ -956,7 +956,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.plugPrimitiveAn
 			ddArmorKeyword = libs.zad_DeviousPlugAnal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
 			; 5 - Plug Vaginal - DD Primitive Vaginal
@@ -964,7 +964,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.plugPrimitiveVag
 			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
 			; 6 - Blindfold - Zaz Blinds
@@ -972,7 +972,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazBlinds
 			ddArmorKeyword = libs.zad_DeviousBlindfold 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
 			; 7 - Belt - DD Belt Iron
@@ -980,7 +980,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.beltIron
 			ddArmorKeyword = libs.zad_DeviousBelt 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==8) || (iOutfitPart==-1) )
 			; 8 - Harness
@@ -988,7 +988,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.harnessBody
 			ddArmorKeyword = libs.zad_DeviousHarness 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==9) || (iOutfitPart==-1) )
 			; 1 - Arms - DD Armbinders
@@ -996,7 +996,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.armbinderRendered
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 
 
@@ -1033,7 +1033,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.gagStrapRing
 			ddArmorKeyword = libs.zad_DeviousGag 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
 			; 4 - Plug Anal - DD Iron Plug Anal
@@ -1041,7 +1041,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.plugIronAn
 			ddArmorKeyword = libs.zad_DeviousPlugAnal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
 			; 5 - Plug Vaginal - DD Iron Plug Vaginal
@@ -1049,7 +1049,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.plugIronVag
 			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
 			; 6 - Blindfold
@@ -1057,7 +1057,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.blindfold
 			ddArmorKeyword = libs.zad_DeviousBlindfold 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
 			; 7 - Belt - DD Belt Padded
@@ -1065,7 +1065,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.beltPadded
 			ddArmorKeyword = libs.zad_DeviousBelt 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==8) || (iOutfitPart==-1) )
 			; 8 - Harness
@@ -1073,7 +1073,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.harnessBodyRendered
 			ddArmorKeyword = libs.zad_DeviousHarness 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==9) || (iOutfitPart==-1) )
 			; 1 - Arms - DD Armbinders
@@ -1081,7 +1081,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.armbinderRendered
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 
 	; --------------------------------------------------------------------------------------------
@@ -1117,14 +1117,14 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.gagStrapBall
 			ddArmorKeyword = libs.zad_DeviousGag 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
 			; 4 - Plug Anal - DD Soul Gem Plug Anal
 			ddArmorRendered = libs.plugSoulgemAnRendered
 			ddArmorInventory = libs.plugSoulgemAn
 			ddArmorKeyword = libs.zad_DeviousPlugAnal 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
 			; 5 - Plug Vaginal - DD Soul Gem  Plug Vaginal
@@ -1132,7 +1132,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.plugSoulgemVag
 			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
 			; 6 - Blindfold
@@ -1140,7 +1140,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.blindfold
 			ddArmorKeyword = libs.zad_DeviousBlindfold
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
 			; 7 - Belt - DDBelt Padded
@@ -1148,7 +1148,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.beltPadded
 			ddArmorKeyword = libs.zad_DeviousBelt 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==8) || (iOutfitPart==-1) )
 			; 8 - Harness
@@ -1156,7 +1156,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.harnessBody
 			ddArmorKeyword = libs.zad_DeviousHarness 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 		If ( (iOutfitPart==9) || (iOutfitPart==-1) )
 			; 1 - Arms - DD Armbinders
@@ -1164,7 +1164,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.armbinderRendered
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, True)
 		EndIf
 
 	; --------------------------------------------------------------------------------------------
