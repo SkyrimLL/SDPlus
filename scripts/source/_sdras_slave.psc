@@ -36,9 +36,11 @@ GlobalVariable Property _SDKP_trust_hands  Auto
 GlobalVariable Property _SDKP_trust_feet   Auto  
 GlobalVariable Property _SDKP_snp_busy   Auto  
 GlobalVariable Property _SDGVP_punishments  Auto  
- 
+GlobalVariable Property _SDGVP_join_days  Auto  
+GlobalVariable Property _SDGVP_can_join  Auto  
 GlobalVariable Property _SDGVP_work_start  Auto
 GlobalVariable Property _SDGVP_buyout  Auto
+GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto  
 
 
 ReferenceAlias Property _SDRAP_cage  Auto
@@ -138,7 +140,7 @@ Function freedomTimer( Float afTime )
 		_SDSP_SelfTinglingEffect.Cast(kSlave as Actor)
 	Else 
 		; Debug.Notification( Math.Floor( afTime ) + " sec. and you're free!" )
-		Debug.Notification("The collar is sending shocks." )
+		; Debug.Notification("The collar is sending shocks." )
 		; _SDSP_SelfShockEffect.Cast(kSlave as Actor)
 	EndIf
 EndFunction
@@ -315,6 +317,7 @@ State monitor
 			iGameDateLastCheck = daysPassed
 			iCountSinceLastCheck = 0
 			fctSlavery.UpdateStatusDaily( kMaster, kSlave)
+			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays", 0) + 1)
 
 		EndIf
 
@@ -391,8 +394,8 @@ State monitor
 
 			GoToState("waiting")
 
-		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < -20) && (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
-			; Slavery 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
+		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < -20) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() )
+			; Slavery negative 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
 			; Disabled for now
 
 			; Use	StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
@@ -401,6 +404,11 @@ State monitor
 			; If fBuyout > 0, slave eligible for release
 			; If fBuyout < 0, slave can be sold
 			; 		Use fEnslavementDuration to decide if slave is sold or left for dead
+
+		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") > 0) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() )
+			; Slavery positive 'endgame' - player can join master or be cast away
+
+	 		_SDGVP_can_join.SetValue(1) 
 
 		ElseIf ( Self.GetOwningQuest().GetStage() >= 90 )
 			; Grace period if slave declines to join the master at the end of enslavement ('Get out of my sight')
@@ -439,7 +447,14 @@ State monitor
 
 			If (Utility.RandomInt(0,100) > 70)
 				Debug.Notification( "Your master is in combat. Stay close..." )
+
+				If (fMasterDistance >  StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+					StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", 	StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") - 1)
+
+				EndIf
 			EndIf
+
+
 
 		ElseIf (kSlave.GetParentCell() == kMaster.GetParentCell())  &&  (kMaster.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0) )  
 			; Special handling of interior cells (for large caves with connecting rooms)
@@ -723,6 +738,8 @@ State escape
 		If (kSlave.GetDistance(kMaster)< (_SDGV_leash_length.GetValue() / 2) ) && (!kMaster.IsDead()) 
 			; Slave is close to master and master is not dead, stop escape state
 
+			Debug.Notification("The collar is sending shocks." )
+			_SDSMP_choke.Play( Game.GetPlayer() )
 			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 			
 			kSlave.DispelSpell( _SDSP_Weak )
@@ -803,11 +820,19 @@ State escape
 
 					; Automatic end of enslavement after escape is disabled for now... master is still lurking around
 					; TO DO - add expiration code (free slave after enough time outside timed buffer)
+					; TO DO - turn on master follow slave / turn off later
+
+					if (StorageUtil.GetIntValue(kMaster,"_SD_iFollowSlave") == 0)
+						StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
+						_SDGVP_state_MasterFollowSlave.SetValue(1) 
+					EndIf
 
 					; SendModEvent("PCSubFree")  
 
 					If (Utility.RandomInt(0,100)>=90)
 
+						Debug.Notification("The collar is sending shocks." )
+						_SDSMP_choke.Play( Game.GetPlayer() )
 						_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 
 						If (Utility.RandomInt(0,100)>=95)

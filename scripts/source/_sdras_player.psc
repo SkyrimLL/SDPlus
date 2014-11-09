@@ -39,6 +39,7 @@ Keyword Property _SDKP_actorTypeNPC  Auto
 
 ; spriggan enslavement
 Keyword Property _SDKP_spriggan  Auto
+Keyword Property _SDKP_spriggan_infected  Auto
 FormList Property _SDFLP_spriggan_factions  Auto
 
 ; Thug enslavement
@@ -73,6 +74,7 @@ Spell Property _SDSP_spent Auto
 Quest Property _SD_spriggan  Auto
 Faction Property _SDFP_humanoidCreatures  Auto
 GlobalVariable Property _SDGVP_punishments  Auto  
+GlobalVariable Property _SDGVP_can_join  Auto  
 
 ; local
 Actor kPlayer
@@ -210,9 +212,13 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	;	Utility.Wait(0.5)
 	; EndIf
 
-	If ( kPlayer.WornHasKeyword( _SDKP_spriggan ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
-		SendModEvent("SDSprigganEnslaved")
-	EndIf
+	; If ( Game.GetPlayer().WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+	; 	Debug.Notification("[SD] Infected by spriggan roots...")
+	;	SendModEvent("SDSprigganEnslave")
+
+	; ElseIf Game.GetPlayer().WornHasKeyword( _SDKP_spriggan_infected )
+	;	Debug.Notification("[SD] Playing with spriggan roots...")
+	; EndIf
 EndEvent
 
 Event OnInit()
@@ -241,6 +247,9 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubFree",   "OnSDFree")
 	RegisterForModEvent("SDSprigganEnslave",   "OnSDSprigganEnslave")
 	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
+	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
+	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
+	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
 
 EndFunction
 
@@ -291,9 +300,11 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
  
 	Else
 		Debug.Trace("[_sdras_player] Attempted spriggan enslavement to empty master " )
-		kNewMasterRef = Game.GetPlayer().placeAtMe( _SD_SprigganSwarm )
-		
-		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMasterRef as Actor, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
+		_SD_SprigganSwarm.MoveTo( Game.GetPlayer()  as ObjectReference)
+
+		; Debug.Notification("[SD] Sending spriggan story...")		
+		_SDKP_spriggan.SendStoryEvent(akRef1 = _SD_SprigganSwarm as Actor, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
+
 	EndIf
 EndEvent
 
@@ -419,7 +430,37 @@ Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 		Wait( fRFSU * 5.0 )
 EndEvent
 
+Event OnSDEmancipateSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving emancipate slave event [" + _args  + "] [" + _argc as Int + "]")
 
+	_SDGVP_can_join.SetValue(1) 
+EndEvent
+
+Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving punish slave event [" + _args  + "] [" + _argc as Int + "]")
+
+	; TO DO - Add code to pass keyword to force a specific type of punishment item (use with Equip Device by Leyword)
+
+	If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+		_SD_Enslaved.PunishSlave(_SD_Enslaved.GetMaster() as Actor, Game.GetPlayer() )
+	Else
+		Return
+	EndIf
+
+EndEvent
+
+Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving reward slave event [" + _args  + "] [" + _argc as Int + "]")
+
+	; TO DO - Add code to pass keyword to remove a specific type of punishment item (use with Equip Device by Leyword)
+
+	If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+		_SD_Enslaved.RewardSlave(_SD_Enslaved.GetMaster() as Actor, Game.GetPlayer() )
+	Else
+		Return
+	EndIf
+
+EndEvent
 
 State waiting
 	Event OnUpdate()
@@ -530,53 +571,41 @@ State monitor
 
 		; if (isInKillState)  
 		;	Debug.Notification("You should be dead")
-
-		; Disabled for now - handled by DA events
-			If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedDreamworld") ==1) && (_SD_dreamQuest.GetStage() != 0) && (_SDGVP_config[4].GetValue() == 1) 
-				Debug.MessageBox("Your true master is calling you...")
-
-				Monitor.SetBlackScreenEffect(false)
-				Monitor.SetPlayerControl(true)
-				Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
-				Monitor.GoToState("")
-				; Debug.SetGodMode( True )
-				; kPlayer.EndDeferredKill()
-				; Debug.SetGodMode( False )
-				; kPlayer.StartDeferredKill()	
-
-				Utility.Wait(1.0)
-
-				Game.SetPlayerAIDriven(false)
-				Game.SetInCharGen(false, false, false)
-				; Game.EnablePlayerControls() ; just in case	
-				Game.EnablePlayerControls( abMovement = True )
-				; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
-
-				StorageUtil.SetIntValue(kPlayer, "_SD_iForcedDreamworld", 0) 
-
-				Utility.Wait(1.0)
-
-				_SD_dreamQuest.SetStage(100)
-			ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) 
-			;	Debug.Notification("Your aggressor pins you down...")
-
-			;	if (kPlayer.GetCombatTarget() as Actor)
-			;		checkForEnslavement( kPlayer.GetCombatTarget() as Actor, kPlayer, True )
-			;	elseIf (StorageUtil.GetFormValue(kPlayer, "_SD_TempAggressor") != None)
-			;		checkForEnslavement( StorageUtil.GetFormValue(kPlayer, "_SD_TempAggressor") as Actor, kPlayer, True )
-			;	EndIf
-
-
-			; ElseIf (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1)
-				; StorageUtil.SetIntValue(none, "_SD_iForcedDreamworld", 0) 
-				; Debug.SetGodMode(false) 
-				; kPlayer.EndDeferredKill()
-				; kPlayer.KillEssential(kPlayer)
-
-			EndIf
-		; Else
-		;	Debug.Notification("Not dead yet (Kill state failed)")
 		; EndIf
+
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedDreamworld") ==1) && (_SD_dreamQuest.GetStage() != 0) && (_SDGVP_config[4].GetValue() == 1) 
+			Debug.MessageBox("Your true master is calling you...")
+
+			Monitor.SetBlackScreenEffect(false)
+			Monitor.SetPlayerControl(true)
+			Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
+			Monitor.GoToState("")
+			; Debug.SetGodMode( True )
+			; kPlayer.EndDeferredKill()
+			; Debug.SetGodMode( False )
+			; kPlayer.StartDeferredKill()	
+
+			Utility.Wait(1.0)
+
+			Game.SetPlayerAIDriven(false)
+			Game.SetInCharGen(false, false, false)
+			; Game.EnablePlayerControls() ; just in case	
+			Game.EnablePlayerControls( abMovement = True )
+			; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
+
+			StorageUtil.SetIntValue(kPlayer, "_SD_iForcedDreamworld", 0) 
+
+			Utility.Wait(1.0)
+
+			_SD_dreamQuest.SetStage(100)
+
+		EndIf
+
+		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+			; Chance of spriggan infection if slave is wearing a spriggan root armor item
+			; Debug.Notification("[SD] Infected by spriggan roots...")
+			SendModEvent("SDSprigganEnslave")
+		EndIf			
 
 		If ( kPlayer && Self.GetOwningQuest() )
 			RegisterForSingleUpdate( 0.1 )

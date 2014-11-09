@@ -11,6 +11,7 @@ GlobalVariable Property _SDGVP_config_buyout  Auto
 GlobalVariable Property _SDGVP_config_escape_radius  Auto
 GlobalVariable Property _SDGVP_config_escape_timer  Auto
 GlobalVariable Property _SDGVP_config_work_start  Auto
+GlobalVariable Property _SDGVP_config_join_days  Auto
 GlobalVariable Property _SDGVP_config_safeword  Auto
 GlobalVariable Property _SDGVP_config_lust  Auto
 GlobalVariable Property _SDGVP_config_cbbe  Auto
@@ -416,10 +417,10 @@ event OnPageReset(string a_page)
 		_SDOID_config_B3 = AddToggleOption("$SD_OPTION_P0_LIMITED_REMOVAL", _SDGVP_config_itemRemovalType.GetValue() as Bool) ;10 - 6
 		AddHeaderOption("$SD_HEADER_P0_ORIENTATION") ;12 - 7
 		_SDOID_config_T2 = AddTextOption("$SD_OPTION_P0_GENDER_RESTRICTION", _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String ) ;14 - 8
-		AddHeaderOption("$SD_HEADER_P0_NOTIFICATION") ;16 - 9
-		_SDOID_config_B6 = AddToggleOption("$SD_OPTION_P0_SHOW_DEMERIT_CHANGES", _SDGVP_config_verboseMerits.GetValue() as Bool) ;18 - 10
-		AddHeaderOption("$SD_HEADER_P0_NPC_REACTION") ;20 - 11
-		_SDOID_config_B8 = AddToggleOption("$SD_OPTION_P0_ENABLE_TRAIN_RUN", _SDGVP_config_enableTrainRun.GetValue() as Bool) ;22 - 12
+		; AddHeaderOption("$SD_HEADER_P0_NOTIFICATION") ;16 - 9
+		; _SDOID_config_B6 = AddToggleOption("$SD_OPTION_P0_SHOW_DEMERIT_CHANGES", _SDGVP_config_verboseMerits.GetValue() as Bool) ;18 - 10
+		; AddHeaderOption("$SD_HEADER_P0_NPC_REACTION") ;20 - 11
+		; _SDOID_config_B8 = AddToggleOption("$SD_OPTION_P0_ENABLE_TRAIN_RUN", _SDGVP_config_enableTrainRun.GetValue() as Bool) ;22 - 12
 		;# SDpatch #
 		;###############################################################################################
 		; AddHeaderOption("Slave Options")
@@ -437,7 +438,8 @@ event OnPageReset(string a_page)
 		_SDOID_config_S3 = AddSliderOption("$SD_SLIDER_P0_BYOUT_AMOUNT", _SDGVP_config_buyout.GetValue() as Float, "$SD_GOLD") ;11 - 6
 		_SDOID_config_S4 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_RADIUS", _SDGVP_config_escape_radius.GetValue() as Float, "$SD_UNITS") ;13 - 7
 		_SDOID_config_S5 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_TIMER", _SDGVP_config_escape_timer.GetValue() as Float, "$SD_SECONDS") ;15 - 8
-		_SDOID_config_S6 = AddSliderOption("$SD_SLIDER_P0_DAYS_TO_START_TASKS", _SDGVP_config_work_start.GetValue() as Float, "$SD_DAYS") ; 17 - 9
+		; _SDOID_config_S6 = AddSliderOption("$SD_SLIDER_P0_DAYS_TO_START_TASKS", _SDGVP_config_work_start.GetValue() as Float, "$SD_DAYS") ; 17 - 9
+		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
 		AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
 		_SDOID_config_S7 = AddSliderOption("$SD_SLIDER_P0_BLINDNESS_LEVEL", _SDGVP_config_blindnessLevel.GetValue() as Float, "$SD_PERCENT") ; 23 - 12
@@ -652,7 +654,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_S5 )
 		SetInfoText("$_SDOID_config_S5")
 	ElseIf ( a_option == _SDOID_config_S6 )
-		SetInfoText( decimalDaysToString( _SDGVP_config_work_start.GetValue() as Float ) )
+		SetInfoText( decimalDaysToString( _SDGVP_config_join_days.GetValue() as Float ) )
 	ElseIf ( a_option == _SDOID_config_S7 )
 		SetInfoText("$_SDOID_config_S7")
 	ElseIf ( a_option == _SDOID_config_M1 )
@@ -785,8 +787,8 @@ event OnOptionDefault(int a_option)
 		_SDGVP_config_escape_timer.SetValue( _SDOID_config_S5_default )
 		SetSliderDialogStartValue( _SDGVP_config_escape_timer.GetValue() as Float )
 	ElseIf ( a_option == _SDOID_config_S6 )
-		_SDGVP_config_work_start.SetValue( _SDOID_config_S6_default )
-		SetSliderDialogStartValue( _SDGVP_config_work_start.GetValue() as Float )
+		_SDGVP_config_join_days.SetValue( _SDOID_config_S6_default )
+		SetSliderDialogStartValue( _SDGVP_config_join_days.GetValue() as Float )
 	ElseIf ( a_option == _SDOID_config_T2 )
 		_SDGVP_config_genderRestrictions.SetValue( 0 )
 		SetTextOptionValue(a_option, _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String )
@@ -826,7 +828,7 @@ event OnOptionSliderOpen(int a_option)
 		SetSliderDialogRange( _SDOID_config_S5_min, _SDOID_config_S5_max )
 		SetSliderDialogInterval( _SDOID_config_S5_inc )
 	ElseIf ( a_option == _SDOID_config_S6 )
-		SetSliderDialogStartValue( _SDGVP_config_work_start.GetValue() as Float )
+		SetSliderDialogStartValue( _SDGVP_config_join_days.GetValue() as Float )
 		SetSliderDialogDefaultValue( _SDOID_config_S6_default )
 		SetSliderDialogRange( _SDOID_config_S6_min, _SDOID_config_S6_max )
 		SetSliderDialogInterval( _SDOID_config_S6_inc )
@@ -858,7 +860,7 @@ event OnOptionSliderAccept(int a_option, float a_value)
 		_SDGVP_config_escape_timer.SetValue( a_value )
 		SetSliderOptionValue(_SDOID_config_S5, a_value, "$SD_SECONDS")
 	ElseIf ( a_option == _SDOID_config_S6 )
-		_SDGVP_config_work_start.SetValue( a_value )
+		_SDGVP_config_join_days.SetValue( a_value )
 		SetSliderOptionValue(_SDOID_config_S6, a_value, "$SD_DAYS")
 	ElseIf ( a_option == _SDOID_config_S7 )
 		_SDGVP_config_blindnessLevel.SetValue( a_value )

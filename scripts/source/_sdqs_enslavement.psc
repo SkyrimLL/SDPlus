@@ -275,15 +275,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
 		EndIf
 
-		if (!fctOutfit.isGagEquipped(kSlave)) && (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
-			AddSlavePunishment( kActor = kSlave, bGag = True)
-
+		if  (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
+			PunishSlave( kMaster,  kSlave)
 		EndIf
 
-		if (!fctOutfit.isBlindfoldEquipped(kSlave)) && (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
-			AddSlavePunishment( kActor = kSlave, bBlindfold = True)
-
-		EndIf
+ 
 
 		; fctOutfit.DDSetAnimating( kSlave, true )
 
@@ -379,7 +375,6 @@ Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = 
 		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBlindfold as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int)
 		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
 
-		; Self.ModObjectiveGlobal( _SDFP_slaverCrimeFaction.GetCrimeGold() / 100.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 		_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
 		uiLastDemerits = _SDGVP_demerits.GetValueInt()
 
@@ -405,7 +400,7 @@ Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold
 		EndIf
 
 	Else
-		Debug.Trace("[_sdqs_enslavement] Removing punishment: Target is not the player")
+		Debug.Trace("[_sdqs_enslavement] Remove punishment: Target is not the player")
 	EndIf
 
 EndFunction
@@ -421,39 +416,18 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
 
 		If (fPunishmentDuration > 0)
-			; if (Utility.RandomInt(0,100) > 90)
-			;	Debug.Notification("[SD]   Punishment time:" + fPunishmentRemainingtime  )
-			; EndIf
+			Debug.Trace("[SD]   Punishment time:" + fPunishmentRemainingtime  )
 
 			; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
-			; Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
+			Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
 			; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
-			; Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance)
+			Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance + " - Leash: " + StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
 
-			If ( (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime) >= fPunishmentDuration) && (fMasterDistance <= 300)
+			If ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength")) &&  (!fctOutfit.IsPunishmentEquipped(akSlave))
 
+				RewardSlave(  akMaster,   akSlave)
 
-				if (fctOutfit.IsGagEquipped(akSlave)) && ( _SDGVP_demerits.GetValueInt() < 80 )
-					Debug.MessageBox("Your owner releases you from your gag.")
-					RemoveSlavePunishment( kActor = akSlave, bGag = True)
-
-				Elseif (fctOutfit.IsBlindfoldEquipped(kSlave)) && ( _SDGVP_demerits.GetValueInt() < 100 )
-					Debug.MessageBox("Your owner releases you from your blindfold.")
-					RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
-
-				ElseIf  (fctOutfit.IsPlugEquipped(kSlave)) &&  ( _SDGVP_demerits.GetValueInt() < 120 )
-					Debug.MessageBox("Your owner releases you from your belt.")
-					RemoveSlavePunishment( kActor = akSlave, bPlugAnal = True,  bPlugVaginal = True)
-
-					If (Utility.RandomInt(0,100)>80)
-						RemoveSlavePunishment( kActor = akSlave, bBelt = True)
-					EndIf
-				ElseIf  (fctOutfit.IsArmbinderEquipped(kSlave)) &&  ( _SDGVP_demerits.GetValueInt() < 140 )
-					Debug.MessageBox("Your owner releases you from your armbinders.")
-					RemoveSlavePunishment( kActor = akSlave, bArmbinder = True)
-				EndIf
-
-			ElseIf ( (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime) >= fPunishmentDuration) && (fMasterDistance > 300)
+			ElseIf ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
 				Debug.Trace("Your owner is too far to remove your punishment.")
 			Else
 				; Debug.Trace("Your punishment is not over yet.")
@@ -471,8 +445,7 @@ Function PunishSlave(Actor akMaster, Actor akSlave)
 	If (akSlave == Game.GetPlayer())
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
-		If (fMasterDistance <= 300)
-			Debug.MessageBox("Your owner is forcing a punishment on you.")
+		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
 
 			if (!fctOutfit.IsGagEquipped(akSlave))
 				AddSlavePunishment( kActor = akSlave, bGag = True)
@@ -488,7 +461,7 @@ Function PunishSlave(Actor akMaster, Actor akSlave)
 
 			EndIf
 
-		ElseIf (fMasterDistance > 300)
+		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
 			Debug.Notification("Your owner is too far to punish you.")
 		EndIf
 	Else
@@ -503,8 +476,7 @@ Function RewardSlave(Actor akMaster, Actor akSlave)
 	If (akSlave == Game.GetPlayer())
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
-		If (fMasterDistance <= 300)
-			Debug.MessageBox("Your owner is forcing a punishment on you.")
+		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
 
 			if (!fctOutfit.IsGagEquipped(akSlave))
 				RemoveSlavePunishment( kActor = akSlave, bGag = True)
@@ -520,11 +492,11 @@ Function RewardSlave(Actor akMaster, Actor akSlave)
 
 			EndIf
 
-		ElseIf (fMasterDistance > 300)
-			Debug.Notification("Your owner is too far to punish you.")
+		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+			Debug.Notification("Your owner is too far to remove your punishment.")
 		EndIf
 	Else
-		Debug.Trace("[_sdqs_enslavement] Punish slave: Target is not the player")
+		Debug.Trace("[_sdqs_enslavement] Reward slave: Target is not the player")
 	EndIf
 
 

@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 5
-Scriptname _sdtif_release_01 Extends TopicInfo Hidden
+Scriptname _sdtif_release_01a Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_4
 Function Fragment_4(ObjectReference akSpeakerRef)
@@ -12,7 +12,7 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 Game.GetPlayer().RemoveItem(Gold, 100 )
-
+ 
 fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
 fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
 fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")

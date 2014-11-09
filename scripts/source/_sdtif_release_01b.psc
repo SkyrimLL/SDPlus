@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 5
-Scriptname _sdtif_release_01 Extends TopicInfo Hidden
+Scriptname _sdtif_release_01b Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_4
 Function Fragment_4(ObjectReference akSpeakerRef)
@@ -11,12 +11,14 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 ; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-Game.GetPlayer().RemoveItem(Gold, 100 )
+Game.GetPlayer().RemoveItem(Gold, 200 )
+ 
+fctOutfit.setDeviousOutfitPlugAnal (  bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitPlugVaginal (  bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitBelt (  bDevEquip = False, sDevMessage = "")
 
-fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
-fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
+
+		funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -23,6 +23,8 @@ GlobalVariable Property _SDGVP_positions  Auto
 GlobalVariable Property _SDGVP_punishments  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto 
 GlobalVariable Property _SDGVP_demerits_join  Auto  
+GlobalVariable Property _SDGVP_join_days  Auto  
+GlobalVariable Property _SDGVP_can_join  Auto  
 GlobalVariable Property _SDGVP_buyout  Auto  
 GlobalVariable Property _SDGVP_buyoutEarned  Auto  
 GlobalVariable Property _SDGVP_escape_radius  Auto  
@@ -46,6 +48,7 @@ FormList Property _SDFLP_banned_factions  Auto
 FormList Property _SDFLP_forced_allied  Auto  
 
 Keyword Property _SDKP_spriggan  Auto  
+Keyword Property _SDKP_spriggan_infected  Auto  
 Keyword Property _SDKP_sex  Auto  
 Keyword Property _SDKP_enslave  Auto
 Keyword Property _SDKP_master  Auto
@@ -98,9 +101,11 @@ Event OnDeath(Actor akKiller)
 
 	ObjectReference  kPlayerStorage = _SDRAP_playerStorage.GetReference()
 
-	; Move all items back from Sanguine Storage into Master
-	kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
-	Wait(2.0)
+	If (kSlave.GetDistance( kMaster ) <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+		; Move all items back from Sanguine Storage into Master if slave is nearby
+		kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
+		Wait(2.0)
+	EndIf
 	
 	; SendModEvent("PCSubFree")
 	; It may be better to directly stop the quest here instead of relying on Mod Events
@@ -112,6 +117,11 @@ Event OnDeath(Actor akKiller)
 			; new master
 			While ( Self.GetOwningQuest().IsStopping() )
 			EndWhile
+
+			; Send all items back to Dreamworld storage
+			Actor kLastOwner = StorageUtil.GetFormValue(kSlave, "_SD_LastOwner") as Actor
+			kLastOwner.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+			
 
 			; New enslavement - changing ownership
 			_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
@@ -338,28 +348,12 @@ State monitor
 			GoToState("waiting")
 
 		ElseIf ( !Game.IsMovementControlsEnabled() || kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
-			; Slave is locked in place somewhere,
+			; Slave is in the middle of a scene (snp)
 			; Add events here - master checking on slave, random punishment...
 
 			fSlaveLastSeen = GetCurrentRealTime()
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
-
-			if (fMasterDistance < StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-				Int iRandomNum = Utility.RandomInt(0,100)
-
-				if (iRandomNum > 75)
-					; Punishment
-					enslavement.PunishSlave(kMaster,kSlave)
-					_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-				ElseIf (iRandomNum > 50)
-					; Whipping
-					_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-				Else
-					; Sex
-					_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
-				EndIf
-			EndIf
 
 		ElseIf ( Self.GetOwningQuest().GetStage() >= 90 ) ; || _SDCP_sanguines_realms.Find( kSlave.GetParentCell() ) > -1 )
 			; Grace period after slave rejects master's offer to join
@@ -491,9 +485,10 @@ State monitor
 				fSlaveFreeTime += 0.05
 				enslavement.bSearchForSlave = False
 
-				If ( kMaster.WornHasKeyword( _SDKP_spriggan ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
 					; Chance of spriggan infection if slave in close proximity of infected master
-					SendModEvent("SDSprigganEnslaved")
+					; Debug.Notification("[SD] Infected by spriggan swarm...")
+					SendModEvent("SDSprigganEnslave")
 					
 				ElseIf ( RandomFloat( 0.0, 100.0 ) < fLibido )
 					; TO DO - Update this code with checks on SL Aroused level for Master
@@ -562,7 +557,7 @@ State monitor
 			If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 				Debug.Notification("Good slave... keep it coming.")
 				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
-			Else
+			ElseIf (fGoldEarned > 0)
 				Debug.Notification("That's right.")
 				Debug.Notification("You don't have a use for gold anymore.")
 			EndIf
@@ -574,7 +569,7 @@ State monitor
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 		If ( akAggressor == kSlave )
-			; Disabled for now - seems to conflict with other mods 
+			; Disabled for now - seems to conflict with other mods (cloak effect?)
 			; Handle attacks by slave differently
 
 			; bAttackedBySlave = True
@@ -583,8 +578,8 @@ State monitor
 			; Debug.Trace("[_sdras_master] Master hit by slave - Stop enslavement")
 
 			; Self.GetOwningQuest().Stop()
-			Debug.Notification("Watch what you are doing!!")
-			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
+			; Debug.Notification("Watch what you are doing!!")
+			; _SDSP_SelfShockEffect.Cast(kSlave as Actor)
 
 		EndIf
 	EndEvent

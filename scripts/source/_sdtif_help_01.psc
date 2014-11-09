@@ -11,7 +11,8 @@ Actor akPlayer = SexLab.PlayerRef
 While ( Utility.IsInMenuMode() )
 EndWhile
 
-StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
 SendModEvent("PCSubTransfer")
 ;END CODE
