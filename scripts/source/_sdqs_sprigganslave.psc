@@ -133,13 +133,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; fctOutfit.clearDeviousOutfit ( )
 		; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
 		; Utility.Wait(1.0)
-		fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
+		; fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
 			
 		if (!fctOutfit.isCuffsEquipped(kSlave as Actor))
-			fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")	
+			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "Roots swarm around you.")	
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave as Actor))
-			fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
 		EndIf	
 		; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
 		; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	

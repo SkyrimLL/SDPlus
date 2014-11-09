@@ -33,7 +33,8 @@ EndFunction
 
 function StartSlavery( Actor kMaster, Actor kSlave)
 	_SDGVP_enslaved.SetValue( 1 )
-
+	_SDGVP_can_join.SetValue( 0 )
+	
 	; API variables
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 1)
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", kMaster)
@@ -449,6 +450,15 @@ Function UpdateSlaveryLevel(Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 6)
 	EndIf
 
+	; Correct slavery level based on user preference
+	If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") < _SDGVP_config_min_slavery_level.GetValue() )
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", _SDGVP_config_min_slavery_level.GetValue() as Int )
+	EndIf
+
+	If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") > _SDGVP_config_max_slavery_level.GetValue() )
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", _SDGVP_config_max_slavery_level.GetValue() as Int )
+	EndIf
+
 	Debug.Notification("[_sdqs_fcts_slavery] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
 EndFunction
 
@@ -726,4 +736,8 @@ SexLabFrameWork Property SexLab Auto
 
 GlobalVariable Property _SDGVP_gametime  Auto  
 GlobalVariable Property _SDGVP_enslaved  Auto  
+GlobalVariable Property _SDGVP_can_join  Auto  
  
+GlobalVariable Property _SDGVP_config_min_slavery_level Auto
+GlobalVariable Property _SDGVP_config_max_slavery_level Auto
+GlobalVariable Property _SDGVP_config_slavery_level_mult Auto

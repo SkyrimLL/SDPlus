@@ -548,12 +548,14 @@ State monitor
 			iCountSinceLastCheck = 0
 
 			; Cooldown of slavery exposure when released
-			If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)
-				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0,StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") - 5) )
+			; If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
+				Float fNewExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float) * (_SDGVP_config_slavery_level_mult.GetValue() as Float)
+
+				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
 				fctSlavery.UpdateSlaveryLevel(kPlayer) 
 				
 				; Debug.Notification( "[SD] Player status - slavery exposure: " + StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure"))
-			EndIf
+			; EndIf
 		EndIf
 		
 		If ( keys[0] != config._SDUIP_keys[1] || keys[1] != config._SDUIP_keys[6] )
@@ -854,3 +856,4 @@ GlobalVariable Property _SDGVP_sanguine_blessing auto
 
 ObjectReference Property _SD_SprigganSwarm Auto
 
+GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
