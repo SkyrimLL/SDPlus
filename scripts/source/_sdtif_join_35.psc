@@ -17,6 +17,9 @@ akSpeaker.SetAV( "Confidence", 3)
 _SDGVP_state_joined.SetValue( 1 )
 Self.GetOwningQuest().Stop()
 
+; ObjectReference kPlayerStorage = _SDRAP_playerStorage.GetReference()
+; kPlayerStorage .RemoveAllItems(akTransferTo = akSpeaker, abKeepOwnership = True)
+
 akSpeaker.ShowGiftMenu(False, None, True, False)
 ;END CODE
 EndFunction
@@ -32,3 +35,5 @@ Faction Property CurrentFollowerFaction  Auto
 Faction Property PotentialFollowerFaction  Auto  
 
 Faction Property PotentialMarriageFaction  Auto  
+
+ReferenceAlias Property _SDRAP_playerStorage  Auto  

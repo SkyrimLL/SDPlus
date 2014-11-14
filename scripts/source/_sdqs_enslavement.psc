@@ -230,31 +230,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	
-		; Outfit selection - Commoner by default
-		int outfitID = 0
-		ActorBase PlayerBase = Game.GetPlayer().GetActorBase()
+		fctSlavery.StartSlavery( kMaster, kSlave)
 
-		if (kMaster.HasKeyword( ActorTypeNPC ))
-			if (PlayerBase.GetSex() == 0)
-  				; Player is male - force outfit 1 for model compatibility
-  				outfitID = 1
+		fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
 
-			Elseif ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
-				; Greater magicka - use magicka outfit
-				outfitID = 2
+		Int outfitID =	StorageUtil.GetIntValue(kMaster, "_SD_iOutfitID")
 
-			Elseif ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Magicka") as Int) ) && ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Stamina") as Int) )
-				; Greater health - use wealthy outfit
-				outfitID = 1
-
-			EndIf
-		ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
-			outfitID = 5
-		Else
-			outfitID = 3
-		EndIf
-
-		fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "")
+		; fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "")
 
 		if (!fctOutfit.isCollarEquipped(kSlave))
 			; if (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
@@ -264,15 +246,15 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 				; Utility.Wait(1.0)
 				; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")
 			; Else
-				fctOutfit.setDeviousOutfitCollar ( bDevEquip = True, sDevMessage = "")
+				fctOutfit.setDeviousOutfitCollar ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
 			; EndIf
 		EndIf
 
 		if (!fctOutfit.isCuffsEquipped(kSlave))
-			fctOutfit.setDeviousOutfitArms ( bDevEquip = True, sDevMessage = "")
+			fctOutfit.setDeviousOutfitArms ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave))
-			fctOutfit.setDeviousOutfitLegs ( bDevEquip = True, sDevMessage = "")
+			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
 		EndIf
 
 		if  (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
@@ -297,11 +279,6 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			; _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
 		; EndIf
-
-		fctSlavery.StartSlavery( kMaster, kSlave)
-
-		fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
-
 
 		If ( Self )
 			RegisterForSingleUpdate( fRFSU )
