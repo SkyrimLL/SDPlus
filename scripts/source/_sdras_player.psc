@@ -603,7 +603,7 @@ State monitor
 
 		EndIf
 
-		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<= ( (_SDGVP_health_threshold.GetValue() as Int ) / 10) ) 
 			; Chance of spriggan infection if slave is wearing a spriggan root armor item
 			; Debug.Notification("[SD] Infected by spriggan roots...")
 			SendModEvent("SDSprigganEnslave")

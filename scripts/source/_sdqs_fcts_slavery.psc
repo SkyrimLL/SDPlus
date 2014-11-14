@@ -2,6 +2,15 @@ Scriptname _sdqs_fcts_slavery extends Quest
 
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
+
+; Properties redefined to allow upgrade to SD+ V3 without a need for a new save game
+; Older properties may have None value baked into save game at this point
+_SDQS_fcts_constraints Property fctConstraintsV3  Auto
+_SDQS_fcts_outfit Property fctOutfitV3  Auto
+_SDQS_fcts_factions Property fctFactionsV3  Auto
+
+Keyword Property ActorTypeNPC  Auto  
 
 function InitSlaveryState( Actor kSlave )
 	; Called during SD initialization - Sanguine is watching
@@ -226,10 +235,101 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableMoney", 0)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableMoney", False)
 
+	; Slavery items preferences
+	; List initialization if it hasn't been set yet
+	fctOutfitV3.registerDeviousOutfits ( )
+
+	; Outfit selection - Commoner by default
+	int outfitID = 0
+	ActorBase PlayerBase = Game.GetPlayer().GetActorBase()
+				
+	if (kMaster.HasKeyword( ActorTypeNPC ))
+		if (PlayerBase.GetSex() == 0)
+				; Player is male - force outfit 1 for model compatibility
+				outfitID = 1
+
+		Elseif ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
+			; Greater magicka - use magicka outfit
+			outfitID = 2
+
+		Elseif ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Magicka") as Int) ) && ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Stamina") as Int) )
+			; Greater health - use wealthy outfit
+			outfitID = 1
+
+		EndIf
+	ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
+		outfitID = 5
+	Else
+		outfitID = 3
+	EndIf
+
+	StorageUtil.SetIntValue(kMaster, "_SD_iOutfitID", outfitID)
+
+	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
+
+	if (StorageUtil.StringListCount( kMaster, "_SD_lDevices") == 0)
+		InitMasterDevices( kMaster, outfitID)
+
+	EndIf
+
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
 
 	UpdateStatusDaily(  kMaster,  kSlave)
+EndFunction
+
+function InitMasterDevices( Actor kMaster, Int iOutfit)
+
+	Debug.Trace("[SD] Init master devices - outfitID: " + iOutfit)
+
+	fctOutfitV3.registerDeviousOutfitsKeywords (  kMaster )
+
+	if (iOutfit == 0) ; Iron
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
+
+		; Harness disabled for now as it overlaps with collar
+		; StorageUtil.StringListAdd(Game.GetPlayer(), "_SD_lDevices", "harness,leather,black") ; 6 - Harness
+
+	Elseif (iOutfit == 1) ; Leather
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
+
+	Elseif (iOutfit == 2) ; Metal padded
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,padded") ; 5 - Belt
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
+	Else ; Other
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
+	EndIf
 EndFunction
 
 
@@ -323,25 +423,25 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 	If (modVariable == "_SD_iEnableLeash")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 
-			; fctConstraints.playerAutoPilot(modValue)  - not necessary for now
+			; fctConstraintsV3.playerAutoPilot(modValue)  - not necessary for now
 	EndIf
 
 	If (modVariable == "_SD_iEnableMovement")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableMove = modValue
-			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			fctConstraintsV3.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
 	If (modVariable == "_SD_iEnableAction")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableAct = modValue
-			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			fctConstraintsV3.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
 	If (modVariable == "_SD_iEnableFight")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableFight = modValue
-			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			fctConstraintsV3.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
 	If (modVariable == "_SD_iEnableInventory")
