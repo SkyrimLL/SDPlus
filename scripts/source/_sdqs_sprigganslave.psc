@@ -195,7 +195,7 @@ Event OnUpdateGameTime()
 
     randomVar = RandomInt( 0, 100 ) 
 
-    If (!( kSlave as Actor ).IsInCombat() && !( kSlave as Actor ).GetDialogueTarget() ) ; !( kSlave as Actor ).GetCurrentScene() && 
+    If (!( kSlave as Actor ).IsInCombat() && !( kSlave as Actor ).GetDialogueTarget() ) && !(( kSlave as Actor ).IsOnMount()); !( kSlave as Actor ).GetCurrentScene() && 
         ; Debug.Notification( randomVar )
 		If (randomVar >= 98 ) &&  (SexLab.ValidateActor(kSlave as Actor) > 0) 
 			_SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
@@ -257,8 +257,8 @@ Event OnUpdateGameTime()
 			Debug.Trace("[SD] Skipping spriggan feet - slot in use")
 		EndIf
 
-		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 8 ))
-			fctOutfit.setDeviousOutfitHarness ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
+		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isDeviousOutfitPartByKeyword (  kSlave as Actor, 5 ))
+			fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 2 )
 			Debug.Trace("[SD] Skipping spriggan body - slot in use")
 		EndIf

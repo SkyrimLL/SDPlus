@@ -159,6 +159,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	    ; Game.FadeOutGame(true, true, 0.5, 15)
 		; Utility.Wait(5.0)
 
+		; Remove current collar if already equipped
+		if (fctOutfit.isCollarEquipped(kSlave))
+			fctOutfit.clearCollar ( true, true )
+		EndIf
+
 		; Transfer of inventory
 		If ( aiValue2 == 0 )
 			If ( _SDGVP_config[3].GetValue() as Bool )

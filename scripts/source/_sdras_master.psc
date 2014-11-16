@@ -113,14 +113,25 @@ Event OnDeath(Actor akKiller)
 	Self.GetOwningQuest().Stop()
 
 	If (akKiller)
-		If (GetState() != "search") && (akKiller != kSlave) &&  fctFactions.checkIfSlaver (  akKiller )
+		If (akKiller == kSlave)
+			; Send all items back to Dreamworld storage
+			Actor kLastOwner = StorageUtil.GetFormValue(kSlave, "_SD_LastOwner") as Actor
+			kLastOwner.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+
 			; new master
 			While ( Self.GetOwningQuest().IsStopping() )
 			EndWhile
 
+
+		ElseIf (GetState() != "search") && (akKiller != kSlave) &&  fctFactions.checkIfSlaver (  akKiller )
+
 			; Send all items back to Dreamworld storage
 			Actor kLastOwner = StorageUtil.GetFormValue(kSlave, "_SD_LastOwner") as Actor
 			kLastOwner.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+
+			; new master
+			While ( Self.GetOwningQuest().IsStopping() )
+			EndWhile
 			
 
 			; New enslavement - changing ownership
