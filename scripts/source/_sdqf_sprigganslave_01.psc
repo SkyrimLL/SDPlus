@@ -114,7 +114,7 @@ Game.GetPlayer().AddToFaction(SprigganFaction)
 
 	; fctOutfit.setDeviousOutfitID ( iOutfit = -1, sMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
 		
-	fctOutfit.setDeviousOutfitHarness (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+	fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
 	fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
 
 ; _SD_sprigganHusk.Enable()

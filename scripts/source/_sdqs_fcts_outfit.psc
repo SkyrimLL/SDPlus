@@ -1061,6 +1061,14 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 
+		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
+			; 5 - Belt - Spriggan belt
+			ddArmorRendered = zazSprigganBodyRendered
+			ddArmorInventory = zazSprigganBody
+			ddArmorKeyword = libs.zad_DeviousBelt 
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		EndIf
 
 
 
@@ -1161,6 +1169,11 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 		Debug.MessageBox(sMessage)
 	EndIf
 
+EndFunction
+
+Function clearCollar ( bool skipEvents = false, bool skipMutex = false )
+	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
+	libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, libs.zad_DeviousCollar, False, skipEvents,  skipMutex)
 EndFunction
 
 Function setDeviousOutfitByTags ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "" )

@@ -24,18 +24,21 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		Utility.Wait( 1.0 )
 	endWhile
 
-	Game.ForceThirdPerson()
-	Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
+	If (funct.checkGenderRestriction( akSpeaker,  akTarget))
 
-	Int IButton = _SD_rapeMenu.Show()
+		Game.ForceThirdPerson()
+		Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
 
-	If IButton == 0 ; Show the thing.
+		Int IButton = _SD_rapeMenu.Show()
 
-		; Debug.Messagebox("An overwhelming craving stops you in your tracks and feeds the lust of your aggressor.")
-		; Utility.Wait(2)
-		funct.SanguineRape(akSpeaker, akTarget,SexLabInTags,SexLabOutTags )
-	Else
-		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+		If IButton == 0 ; Show the thing.
+
+			; Debug.Messagebox("An overwhelming craving stops you in your tracks and feeds the lust of your aggressor.")
+			; Utility.Wait(2)
+			funct.SanguineRape(akSpeaker, akTarget,SexLabInTags,SexLabOutTags )
+		Else
+			SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+		EndIf
 	EndIf
 	
 EndFunction

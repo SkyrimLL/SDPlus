@@ -58,7 +58,7 @@ Event OnUpdate()
 			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 			Int disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
 
-			If ( kTarget.GetDistance( kMaster ) < 512 && kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
+			If ( kTarget.GetDistance( kMaster ) < StorageUtil.GetIntValue( kTarget, "_SD_iLeashLength") ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
 
 				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )
