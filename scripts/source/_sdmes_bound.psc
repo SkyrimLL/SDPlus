@@ -20,6 +20,7 @@ Actor kPlayer
 ObjectReference kMaster
 
 Float fRFSU = 0.1
+int throttle = 0 
 
 Function PlayIdleWrapper(actor akActor, idle theIdle)
 	If (!fctConstraints.libs.IsAnimating(akActor))
@@ -41,9 +42,13 @@ Event OnUpdate()
 	
 	; Debug.Notification("[SD] AutoKneelingOff: " + StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
 	; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
-		
-
-	If ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling") )
+	if (! kTarget.WornHasKeyword(fctConstraints.libs.zbf.zbfWornWrist)) ; Stop kneeling restriction if the cuffs are escaped from.
+		throttle += 1
+		if throttle >= 15 ; Avoid updating controls 10 times per second...
+			fctConstraints.libs.UpdateControls()
+			throttle = 0
+		EndIf		
+	ElseIf ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
 
 		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
 		;	fctConstraints.togglePlayerControlsOff()
