@@ -110,25 +110,16 @@ Event OnDeath(Actor akKiller)
 	; SendModEvent("PCSubFree")
 	; It may be better to directly stop the quest here instead of relying on Mod Events
 
-	Self.GetOwningQuest().Stop()
-
 	If (akKiller)
-		If (akKiller == kSlave)
-			; Send all items back to Dreamworld storage
-			Actor kLastOwner = StorageUtil.GetFormValue(kSlave, "_SD_LastOwner") as Actor
-			kLastOwner.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
-
-			; new master
-			While ( Self.GetOwningQuest().IsStopping() )
-			EndWhile
-
-
-		ElseIf (GetState() != "search") && (akKiller != kSlave) &&  fctFactions.checkIfSlaver (  akKiller )
+		If (GetState() != "search") && (akKiller != kSlave) &&  fctFactions.checkIfSlaver (  akKiller ) &&  !fctFactions.checkIfFollower (  akKiller ) 
+			; Followers are not allowed to forcefully take the player as a slave to prevent friendly fire or rescue
+			; Only voluntary submission to followers is allowed
 
 			; Send all items back to Dreamworld storage
 			Actor kLastOwner = StorageUtil.GetFormValue(kSlave, "_SD_LastOwner") as Actor
 			kLastOwner.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
+			Self.GetOwningQuest().Stop()
 			; new master
 			While ( Self.GetOwningQuest().IsStopping() )
 			EndWhile
@@ -317,7 +308,7 @@ State monitor
 		EndWhile
 
 		; Master variable updates
-		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave") )
+		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") )
 		kLeashCenter =  StorageUtil.GetFormValue(kSlave, "_SD_LeashCenter") as Actor
 
 		if (kLeashCenter == None)

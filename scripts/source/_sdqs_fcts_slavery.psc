@@ -50,6 +50,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetFormValue(kSlave, "_SD_DesiredOwner", None)
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20)  ; number of seconds allowed away from Master
+
 	StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 
 	StorageUtil.SetFormValue(kSlave, "_SD_LeashCenter", kMaster)
@@ -728,6 +729,11 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
+	EndIf
+
+	If fctFactions.checkIfFalmer (  kMaster ) 
+		; Falmers follow slave by default
+		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
 	EndIf
 
 	; Reset daily counts for slave

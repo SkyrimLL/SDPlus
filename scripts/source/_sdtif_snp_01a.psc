@@ -50,7 +50,7 @@ ElseIf ((randomVar == 7 ) || (randomVar == 6)) ; Dance
 	Debug.Notification( "Your captor starts singing and cheering you on" )
 ;	Self.GetOwningQuest().ModObjectiveGlobal( -10.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-	; Start unresistible dance
+	; Start irresistible dance
 
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 Else ; Just sex

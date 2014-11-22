@@ -49,7 +49,6 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 	While ( !bRemoved && iIdx < _SDORP_queue.Length )
 		If ( _SDORP_queue[iIdx] != None )
 			Debug.Trace("[Whore queue] Removing actor from queue: " + _SDORP_queue[iIdx])
-			Debug.Notification("Next!")
 
 			bRemoved = True
 			If ( !_SDORP_queue[iIdx].GetCurrentScene() && _SDORP_queue[iIdx].GetParentCell() == akWhore.GetParentCell() )
@@ -62,11 +61,14 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 				If  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor(akWhore as actor) > 0) 
 
 					If ( ( _SDORP_queue[iIdx] as actor ) == (akWhore as actor))
+						Debug.Notification("Next!")
 
 						funct.SanguineRape( akWhore as Actor , akWhore as Actor , "Masturbation", "Masturbation")
 
 
 					Else
+						Debug.Notification("Next!")
+						
 						actor[] sexActors = new actor[2]
 						sexActors[0] = akWhore as actor
 						sexActors[1] = _SDORP_queue[iIdx]  as actor
