@@ -29,19 +29,19 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; 7 - Belt
 	; 8 - Harness
 	
-	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 0 ))
+	if (!fctOutfit.isCollarEquipped (  akTarget ))
 		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine collar - slot in use")
 	EndIf
 
-	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 1 ))
+	if (!fctOutfit.isCuffsEquipped (  akTarget ))
 		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
 	EndIf
 
-	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 2 ))
+	if (!fctOutfit.isShacklesEquipped (  akTarget ))
 		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine shackles - slot in use")
@@ -50,17 +50,17 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 
-	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 3 )) && (Utility.RandomInt(0,100) > 40)
+	if (!fctOutfit.IsGagEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
 		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine gag - slot in use")
 	EndIf
 	
-	if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 5 ))
-		fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
-	Else
-		Debug.Trace("[SD] Skipping sanguine artefact - slot in use")
-	EndIf
+	; if (!fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 5 ))
+	;	fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+	; Else
+	;	Debug.Trace("[SD] Skipping sanguine artefact - slot in use")
+	; EndIf
 	; kDreamer.EquipItem(  _SDA_gag , False, True )
 
 	fTimer = fRFSU * Utility.RandomInt(5,10)

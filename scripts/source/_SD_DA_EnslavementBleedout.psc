@@ -75,7 +75,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 				; Debug.Notification( "(Rape attempt)")
 
 
-			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) && (Utility.RandomInt(0,100)>80)
+			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0)  
 				_SDSP_spent.Cast(akPlayer, akPlayer)
 
 				SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
@@ -84,7 +84,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 		ElseIf ( !fctFactions.checkIfSpriggan ( akMaster) && ( akMaster.HasKeyword( _SDKP_actorTypeNPC )) )  
 				; Debug.Notification( "(Rape attempt)")
 
-			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) && (Utility.RandomInt(0,100)>80)
+			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) 
 				_SDSP_spent.Cast(akPlayer, akPlayer)
 
 				SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")

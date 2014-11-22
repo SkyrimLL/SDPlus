@@ -55,7 +55,7 @@ ElseIf (randomVar >=  40 ) ; Force feed skooma
 
 ElseIf (randomVar >= 30 ) ; Dance
 	Debug.Notification( "Your captor is forcing you to dance..." )
-	; Start unresistible dance
+	; Start irresistible dance
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt( 1, _SDGVP_dances.GetValueInt() ) )
 Else
 	 _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave,	aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt()) )

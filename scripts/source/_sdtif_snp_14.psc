@@ -47,7 +47,7 @@ ElseIf (randomVar >= 60  ) ; Straining positions
 ElseIf (randomVar >=  40) ; Dance
 	Debug.Notification( "You shall dance for me, Slave!" )
 
-	; Start unresistible dance
+	; Start irresistible dance
 
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 

@@ -100,9 +100,12 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	kMaster = akRef1 as Actor
 	kSlave = akRef2 as Actor
 	kCrimeFaction = kMaster.GetCrimeFaction()
+
+	; Debug.Trace("[SD] Receiving enslavement story.")
 	
 ; 	Debug.Notification("_SDQS_enslavement:: bQuestActive == " + bQuestActive)
 	If ( !bQuestActive )
+		; Debug.Trace("[SD] Starting enslavement story.")
 		bQuestActive = True
 	    					
 		fEnslavementStart = GetCurrentGameTime()

@@ -47,6 +47,8 @@ ReferenceAlias Property _SDRAP_cage  Auto
 ReferenceAlias Property _SDRAP_masters_key  Auto
 ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_master  Auto
+ReferenceAlias Property _SDRAP_slaver  Auto
+ReferenceAlias Property _SDRAP_wanderer  Auto
 ReferenceAlias Property _SDRAP_bindings  Auto
 ReferenceAlias Property _SDRAP_shackles  Auto
 Float Property _SDFP_bindings_health = 10.0 Auto
@@ -108,6 +110,8 @@ Float fLastEscape
 
 Actor kMaster
 Actor kSlave
+Actor kSlaver
+Actor kWanderer
 Actor kCombatTarget
 Actor kLeashCenter
 ObjectReference kBindings
@@ -272,6 +276,8 @@ State monitor
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 		kSlave = _SDRAP_slave.GetReference() as Actor
+		kSlaver = _SDRAP_slaver.GetReference() as Actor
+		kWanderer = _SDRAP_wanderer.GetReference() as Actor
 ;		kBindings = _SDRAP_bindings.GetReference() as ObjectReference
 ;		kShackles = _SDRAP_shackles.GetReference() as ObjectReference
 ;		kCollar = _SDRAP_collar.GetReference() as ObjectReference
@@ -394,17 +400,51 @@ State monitor
 
 			GoToState("waiting")
 
-		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < -20) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() )
+		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < -20) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene()
 			; Slavery negative 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
-			; Disabled for now
 
-			; Use	StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
+			If (Utility.RandomInt(0,100)>90) && (_SD_dreamQuest.GetStage() != 0)
+				; Player saved by Sanguine
+				Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+				_SD_dreamQuest.SetStage(20)
 
-			; If random pick && (_SD_dreamQuest.GetStage() != 0) , _SD_dreamQuest.SetStage(20)
-			; If fBuyout > 0, slave eligible for release
-			; If fBuyout < 0, slave can be sold
-			; 		Use fEnslavementDuration to decide if slave is sold or left for dead
+			ElseIf (fBuyout >= 0) && !kSLaver.IsDead()
+				; Master made profit - slave can be sold
+				_SDSMP_choke.Play( Game.GetPlayer() )
 
+                Game.FadeOutGame(true, true, 0.5, 5)
+				kSlave.MoveTo( kSlaver )
+				Game.FadeOutGame(false, true, 2.0, 20)
+
+				Utility.Wait( 1.0 )
+
+				Debug.MessageBox( "Your owner is very disappointed in you and sells you off." )
+
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaver)
+				SendModEvent("PCSubTransfer")
+
+
+			ElseIf (fBuyout < 0) 
+				; Master lost money - get rid of slave
+				_SDSMP_choke.Play( Game.GetPlayer() )
+
+                Game.FadeOutGame(true, true, 0.5, 5)
+				kSlave.MoveTo( kWanderer )
+				Game.FadeOutGame(false, true, 2.0, 20)
+
+				Utility.Wait( 1.0 )
+
+				Debug.MessageBox( "Your owner is tired of you and discards you like an old shoe." )
+
+				SendModEvent("PCSubFree")
+
+				If (Utility.RandomInt(0,100) > 90) 
+					; Send PC some help
+					SendModEvent("da_StartSecondaryQuest", "Both")
+				EndIf
+
+			EndIf
+ 
 		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") > 0) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() )
 			; Slavery positive 'endgame' - player can join master or be cast away
 
@@ -456,15 +496,15 @@ State monitor
 
 
 
-		ElseIf (kSlave.GetParentCell() == kMaster.GetParentCell())  &&  (kMaster.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0) )  
+		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  
 			; Special handling of interior cells (for large caves with connecting rooms)
-			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep
+			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep or if master is following (prevent collar teleport when changing cells )
 
 			; If (RandomInt( 0, 100 ) > 95 )
 			; 	Debug.Notification( "Your collar weighs around your neck..." )
 			; EndIf
 
-			GoToState("waiting")	
+			GoToState("escape")	
 
 		ElseIf ( fDistance > _SDGVP_escape_radius.GetValue() )
 			; Distance based leash - decrease field of view for the slave as distance increases until blackout and teleport back to master
@@ -594,7 +634,7 @@ State monitor
 	
 	Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 
-		If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) )
+		If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) ) || kSlave.GetCurrentScene()
 			Return
 		EndIf
 
@@ -777,11 +817,11 @@ State escape
 			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 
-		ElseIf  (kSlave.GetParentCell() == kMaster.GetParentCell())  &&  (kMaster.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0) )  
-			; Slave free to roam around indoors, if master is asleep or slave is trusted
-			If (RandomInt( 0, 100 ) > 70 )
-				Debug.Notification( "Your captors are watching. Don't stray too far...")
-			EndIf
+		ElseIf  (kSlave.GetParentCell() == kMaster.GetParentCell()) ; && (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) )   
+			; Slave back in same cell as master, turn off escape mode
+			; If (RandomInt( 0, 100 ) > 70 )
+			;	Debug.Notification( "Your captors are watching. Don't stray too far...")
+			; EndIf
  
 			GoToState("monitor")
 		Else

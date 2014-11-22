@@ -9,7 +9,19 @@ Keyword Property _SDKP_actorTypeNPC  Auto
 FormList Property _SDFLP_banned_factions  Auto
 
 Bool Function checkIfSlaver ( Actor akActor )
-	return ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) )) && !akActor.IsGhost() && (akActor != Game.GetPlayer()) && !actorFactionInList( akActor, _SDFLP_banned_factions )
+	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions )
+
+	; Debug.Trace("[SD] Enslavement check - " + akActor)
+	; Debug.Trace("[SD] Actor is NPC - " + akActor.HasKeyword( _SDKP_actorTypeNPC ))
+	; Debug.Trace("[SD] Gender restriction check - " + funct.checkGenderRestriction( akActor, Game.GetPlayer() ))
+	; Debug.Trace("[SD] Actor is Falmer - " + checkIfFalmer ( akActor))
+	; Debug.Trace("[SD] Actor is Ghost - " + akActor.IsGhost())
+	; Debug.Trace("[SD] Actor is Player - " + (akActor != Game.GetPlayer()))
+	; Debug.Trace("[SD] Member of banned faction - " + actorFactionInList( akActor, _SDFLP_banned_factions ))
+	; Debug.Trace("[SD] Enslavement check - " + akActor)
+	; Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
+
+	return isSlaver
 EndFunction
 
 Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormList akBannedFactionList = None )
@@ -143,8 +155,24 @@ Bool Function checkIfFalmer ( Actor akActor )
 	Return bIsFalmer
 EndFunction
 
+Bool Function checkIfFollower ( Actor akActor )
+	Bool bIsFollower = False
+
+	if (akActor)
+		Int index = 0
+		Int size = _SDFLP_follower_factions.GetSize()
+		While ( !bIsFollower && index < size )
+			bIsFollower = akActor.IsInFaction( _SDFLP_follower_factions.GetAt(index) as Faction )  
+			index += 1
+		EndWhile
+	EndIf
+	
+	Return bIsFollower
+EndFunction
+
 
 Race Property FalmerRace  Auto  
 Race Property SprigganRace  Auto  
 FormList Property _SDFLP_falmer_factions  Auto
+FormList Property _SDFLP_follower_factions  Auto
 FormList Property _SDFLP_spriggan_factions  Auto

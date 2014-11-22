@@ -11,7 +11,7 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 	Actor akRef1 = akSpeaker
 	Actor akRef2 = SexLab.PlayerRef
 
-	Debug.Messagebox( "The sweet scent of your sap drenched skin is unresistible..." )
+	Debug.Messagebox( "The sweet scent of your sap drenched skin is irresistible..." )
 
 	Game.ForceThirdPerson()
 	Debug.SendAnimationEvent(akRef2 as ObjectReference, "bleedOutStart")

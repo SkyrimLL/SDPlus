@@ -6,8 +6,8 @@ Scriptname _sdtif_join_01a Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-_SDGVP_trusted_hands.SetValue(1)
-akSpeaker.SetRelationshipRank(Game.GetPlayer(), 2)
+; _SDGVP_trusted_hands.SetValue(1)
+; akSpeaker.SetRelationshipRank(Game.GetPlayer(), 2)
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -14,14 +14,14 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 	Actor akRef1 = akSpeaker
 	Actor akRef2 = SexLab.PlayerRef
 
-	Debug.Notification( "The sweet scent of your sap drenched skin is unresistible..." )
+	Debug.Notification( "The sweet scent of your sap drenched skin is irresistible..." )
 	SprigganFX.Play( akSpeakerRef, 30 )
 	_SDSP_host_flare.RemoteCast(akRef2 , akRef2 , akRef2 )
 
 		Int randomVar = Utility.RandomInt( 0,10 )
 
 		if (randomVar > 8)
-			; Start unresistible dance
+			; Start irresistible dance
 			_SDKP_sex.SendStoryEvent(akLoc = (akRef2 as ObjectReference).GetCurrentLocation(), akRef1 = akRef1, akRef2 = akRef2, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 		ElseIf  (randomVar > 6)
 			Debug.Notification( "The roots force your legs open ..." )
