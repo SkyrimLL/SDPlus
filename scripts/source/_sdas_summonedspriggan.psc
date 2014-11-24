@@ -17,7 +17,7 @@ Actor kPlayer
 Event OnInit()
 	bDispel = False
 	fSummonTime = GetCurrentRealTime()
-	kPlayer = _SDRAP_player.GetReference() as Actor
+	kPlayer = Game.GetPlayer() ; _SDRAP_player.GetReference() as Actor
 
 	If ( Self )
 		RegisterForSingleUpdate( fRFSU )
@@ -28,7 +28,8 @@ Event OnUpdate()
 	If ( !bDispel && !Self.IsInCombat() && GetCurrentRealTime() - fSummonTime >= 10.0 )
 		bDispel = True
 		fSummonTime = GetCurrentRealTime() + 30.0
-		If ( !( kPlayer.GetWornForm(0x00000004) as Armor ).HasKeyword(_SDKP_spriggan) )
+		; If ( !( kPlayer.GetWornForm(0x00000004) as Armor ).HasKeyword(_SDKP_spriggan) )
+		If (_SD_spriggan_punishment.GetValue() >= 1 )
 			_SDKP_spriggan.SendStoryEvent(akRef1 = Self, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
 		Else
 			; need to summon a host in
@@ -45,3 +46,5 @@ Event OnUpdate()
 		RegisterForSingleUpdate( fRFSU )
 	EndIf
 EndEvent
+
+GlobalVariable Property _SD_spriggan_punishment  Auto  

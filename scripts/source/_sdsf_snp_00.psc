@@ -2,40 +2,6 @@
 ;NEXT FRAGMENT INDEX 159
 Scriptname _sdsf_snp_00 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_117
-Function Fragment_117()
-;BEGIN CODE
-;Actor male = _SDRAP_male.GetReference() as Actor
-;Actor female = _SDRAP_female.GetReference() as Actor
-
-;male.DispelSpell(_SDSP_sex)
-;female.DispelSpell(_SDSP_sex)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_29
-Function Fragment_29()
-;BEGIN CODE
-snp._SDUIP_phase = 2
-; Debug.Notification("[sex] phase =" + snp._SDUIP_phase)
-
-Actor male = _SDRAP_male.GetReference() as Actor
-Actor female = _SDRAP_female.GetReference() as Actor
-
-; snp.updatePos( male, female )
-
-_SDSP_spent.Cast( male, female )
-_SDSP_spent.Cast( female, male )
-
-If ( female == Game.GetPlayer() && female.HasKeyword( _SDKP_vampire ) && _SDGVP_config_sexvampire.GetValueInt() == 1 )
-	female.StartVampireFeed( male )
-	; PlayerVampireQuest.VampireFeed()
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_28
 Function Fragment_28()
 ;BEGIN CODE
@@ -59,20 +25,34 @@ EndIf
 
 _SDGVP_snp_busy.SetValue(-1)
 ; Self.GetowningQuest().Stop()
+; libs.SetAnimating(Game.GetPlayer(),false)
+
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSexCountToday", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSexCountTotal", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalSex", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_81
-Function Fragment_81()
+;BEGIN FRAGMENT Fragment_29
+Function Fragment_29()
 ;BEGIN CODE
-snp._SDUIP_phase = 1
+snp._SDUIP_phase = 2
 ; Debug.Notification("[sex] phase =" + snp._SDUIP_phase)
 
+Actor male = _SDRAP_male.GetReference() as Actor
 Actor female = _SDRAP_female.GetReference() as Actor
-ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 
-marker.MoveTo( female, -64, 0, 0 )
+; snp.updatePos( male, female )
+
+_SDSP_spent.Cast( male, female )
+_SDSP_spent.Cast( female, male )
+
+If ( female == Game.GetPlayer() && female.HasKeyword( _SDKP_vampire ) && _SDGVP_config_sexvampire.GetValueInt() == 1 )
+	female.StartVampireFeed( male )
+	PlayerVampireQuest.VampireFeed()
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -85,6 +65,7 @@ _SDGVP_snp_busy.SetValue(0)
 ; Debug.Notification("Hands grope you as you walk by [" + snp._SDUIP_phase+"]")
 
 ; Debug.Notification("Hands grope you as you walk by [sex start]")
+; libs.SetAnimating(Game.GetPlayer(), true)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -104,13 +85,39 @@ _SDSP_sex.Cast( male, female )
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_81
+Function Fragment_81()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[sex] phase =" + snp._SDUIP_phase)
+
+Actor female = _SDRAP_female.GetReference() as Actor
+ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
+
+marker.MoveTo( female, -64, 0, 0 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_117
+Function Fragment_117()
+;BEGIN CODE
+;Actor male = _SDRAP_male.GetReference() as Actor
+;Actor female = _SDRAP_female.GetReference() as Actor
+
+;male.DispelSpell(_SDSP_sex)
+;female.DispelSpell(_SDSP_sex)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 Import Utility
 
 _SDQS_snp Property snp Auto
 _SDQS_functions Property funct  Auto
-;PlayerVampireQuestScript Property PlayerVampireQuest  Auto  
+PlayerVampireQuestScript Property PlayerVampireQuest  Auto  
 
 ReferenceAlias Property _SDRAP_male  Auto  
 ReferenceAlias Property _SDRAP_female  Auto  
@@ -132,3 +139,5 @@ Keyword Property _SDKP_vampire  Auto
 
 
 GlobalVariable Property _SDGVP_snp_busy  Auto  
+_SDQS_fcts_slavery Property fctSlavery  Auto
+zadlibs Property libs  Auto  

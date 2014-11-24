@@ -50,10 +50,12 @@ Event OnUpdate()
 		RegisterForSingleUpdate(10.0)
 		bFirstUpdate = false
 	else
-		Debug.Trace("SD DA dreamworld death failed: Timeout")
+		Debug.Notification("SD DA dreamworld death failed: Timeout")
 		UnregisterForModEvent("da_PlayerRecovered")	
 		
 		; what to do? do we risk starting enslavement anyway?
+		Debug.Notification("SD DA dreamworld death: Teleport anyway")
+		_SD_dreamQuest.SetStage(100)
 	endif
 endEvent
 

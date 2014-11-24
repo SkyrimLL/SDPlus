@@ -1,6 +1,7 @@
 Scriptname _SDQS_dream extends Quest  Conditional
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 ReferenceAlias Property _SDRAP_dreamer  Auto  
 ReferenceAlias Property _SDRAP_enter  Auto  
@@ -25,6 +26,7 @@ Actor kNaamah
 Actor kSanguine
 Actor kMeridiana
 Actor kNordGirl
+Actor kRedguardGirl
 Actor kImperialMan
 Actor kEisheth
 Actor kSvana
@@ -42,21 +44,7 @@ Function sendDreamerBack( Int aiStage )
 	;
 	EndWhile
 
-	if (Utility.RandomInt(0, 100) > 40)
-		kDreamer.RemoveItem( _SDA_collar_blood, 1, False  )
-	EndIf
-
-	if (Utility.RandomInt(0, 100) > 10)
-		kDreamer.RemoveItem( _SDA_bindings, 1, False  )
-	EndIf
-
-	if (Utility.RandomInt(0, 100) > 40)
-		kDreamer.RemoveItem( _SDA_gag, 1, False  )
-	EndIf
-
-	kDreamer.RemoveItem( _SDA_sanguine_chosen, 1, False  )
-
-     Game.FadeOutGame(true, true, 5.0, 10.0)
+    Game.FadeOutGame(true, true, 5.0, 10.0)
 	StorageUtil.SetIntValue(none, "DN_ONOFF", 0)
 
 	If ((aiStage == 10) || (aiStage == 15)) && (kEnter.GetDistance(kLeave)>200)  ; sent back to where player started
@@ -72,6 +60,8 @@ Function sendDreamerBack( Int aiStage )
 		dreamDest.getDestination()
 		Utility.Wait( 1.0 )
 	      _SD_dream_destinations.Stop()
+
+		SendModEvent("SDDreamworldStop") 
 
 		kSafeHarbor = _SDLA_safeHarbor.GetReference() as ObjectReference 
 
@@ -120,79 +110,16 @@ Function positionVictims( Int aiStage )
 	kNaamah = _SDRAP_naamah.GetReference() as Actor
 	kMeridiana = _SDRAP_meridiana.GetReference() as Actor
 	kNordGirl = _SDRAP_nord_girl.GetReference() as Actor
+	kRedguardGirl = _SDRAP_redguard_girl.GetReference() as Actor
 	kImperialMan = _SDRAP_imperial_man.GetReference() as Actor
 	kEisheth = _SDRAP_eisheth.GetReference() as Actor
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
+	SendModEvent("SDDreamworldStart") 
 
-	kDreamer.StopCombatAlarm()
-	kDreamer.StopCombat()
-	Utility.Wait(0.1)
+	kSanguine.Disable()
 
-	Game.SetPlayerAIDriven(false)
-	Game.SetInCharGen(false, false, false)
-	Game.EnablePlayerControls() ; just in case	
-
-	; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
-	; Game.SetCameraTarget(Game.GetPlayer())
-
-    ; Game.DisablePlayerControls(abMovement = false, abFighting = false, abCamSwitch = true, abMenu = false, abActivate = false, abJournalTabs = false, aiDisablePOVType = 1)
-    Game.ForceThirdPerson()
-    ; Game.ShowFirstPersonGeometry(false)
-	; Utility.Wait(0.1)
-
-    ; Game.EnablePlayerControls(abMovement = false, abFighting = false, abCamSwitch = true, abLooking = false, abSneaking = false, abMenu = false, abActivate = false, abJournalTabs = false, aiDisablePOVType = 1)
-    ; Game.ShowFirstPersonGeometry(true)
-
-	Game.DisablePlayerControls( abMenu = True )
-	Utility.Wait(0.1)
-
-	if (_SDGVP_enslaved.GetValue()==0) && (_SDGVP_enslavedSpriggan.GetValue()==1)
-		Int[] uiSlotMask = New Int[4]
-		uiSlotMask[0]  = 0x00000001 ;30
-		uiSlotMask[1]  = 0x00000004 ;32
-		uiSlotMask[2]  = 0x00010000 ;46
-		uiSlotMask[3] = 0x00004000 ;44  DD Gags
-
-		Int iFormIndex = uiSlotMask.Length
-		While ( iFormIndex > 0 )
-			iFormIndex -= 1
-			Form kForm = kDreamer.GetWornForm( uiSlotMask[iFormIndex] ) 
-			If (kForm)
-				Armor kArmor = kForm  as Armor
-				bDeviousDeviceEquipped = ( Game.GetPlayer().isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_spriggan") || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
-
-				If ( kArmor && !kArmor.HasKeywordString("_SD_nounequip") )  && !(bDeviousDeviceEquipped)
-					kDreamer.UnequipItem(kArmor as Armor, False, True )
-				EndIf
-				If (Game.GetPlayer().isEquipped(kForm) && kForm.hasKeywordString("zad_DeviousGag") )
-					fGagDevice = kForm
-					Game.GetPlayer().UnequipItem(fGagDevice)
-				EndIf
-			EndIf
-		EndWhile
-	EndIf
-
-	Utility.Wait(0.1)
-
-	kDreamer.EquipItem(  _SDA_collar_blood , False, True )
-	kDreamer.EquipItem(  _SDA_bindings , True, True )
-	kDreamer.EquipItem(  _SDA_gag , False, True )
-	kDreamer.EquipItem(  _SDA_sanguine_chosen , True, True )
-
-	kDreamer.resethealthandlimbs()
-
-	; _SDSP_spent.Cast( kDreamer, kDreamer)
-
-	kSanguine.Enable()
-
-	Utility.Wait(1.0)
-
-	kSanguine.StopCombatAlarm()
-	kSanguine.StopCombat()
-	Utility.Wait(0.1)
-	
 	kNaamah.EvaluatePackage()
 	kMeridiana.EvaluatePackage()
 	kEisheth.EvaluatePackage()
@@ -218,6 +145,46 @@ Function positionVictims( Int aiStage )
 		kDremoraChallenger.disable()
 
 	EndIf
+
+	kDreamer.StopCombatAlarm()
+	kDreamer.StopCombat()
+	Utility.Wait(0.1)
+
+	Game.SetPlayerAIDriven(false)
+	Game.SetInCharGen(false, false, false)
+	Game.EnablePlayerControls() ; just in case	
+
+	; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
+	; Game.SetCameraTarget(Game.GetPlayer())
+
+    ; Game.DisablePlayerControls(abMovement = false, abFighting = false, abCamSwitch = true, abMenu = false, abActivate = false, abJournalTabs = false, aiDisablePOVType = 1)
+    Game.ForceThirdPerson()
+    ; Game.ShowFirstPersonGeometry(false)
+	; Utility.Wait(0.1)
+
+    ; Game.EnablePlayerControls(abMovement = false, abFighting = false, abCamSwitch = true, abLooking = false, abSneaking = false, abMenu = false, abActivate = false, abJournalTabs = false, aiDisablePOVType = 1)
+    ; Game.ShowFirstPersonGeometry(true)
+
+	Game.DisablePlayerControls( abMenu = True )
+	SexLab.ActorLib.StripActor(kDreamer, DoAnimate= false)
+
+	Utility.Wait(0.1)
+
+	; kDreamer.resethealthandlimbs()
+	_SDSP_SanguineBound.RemoteCast(kDreamer, kDreamer, kDreamer)
+
+	; _SDSP_spent.Cast( kDreamer, kDreamer)
+
+	kSanguine.Enable()
+	StorageUtil.StringListAdd(kSanguine, "_DDR_DialogExclude", "SD+:Sanguine")
+	StorageUtil.StringListAdd(kNordGirl, "_DDR_DialogExclude", "SD+:Sanguine")
+	StorageUtil.StringListAdd(kRedguardGirl, "_DDR_DialogExclude", "SD+:Sanguine")
+
+	Utility.Wait(1.0)
+
+	kSanguine.StopCombatAlarm()
+	kSanguine.StopCombat()
+	Utility.Wait(0.1)
 
 	slaUtil.SetActorExhibitionist(kSanguine, True)
       slaUtil.UpdateActorExposureRate(kSanguine, 10.0)
@@ -309,3 +276,9 @@ GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_enslavedSpriggan Auto
 
 ObjectReference Property _SD_DremoraChallenger  Auto  
+
+ReferenceAlias Property _SDRAP_redguard_girl  Auto  
+
+SPELL Property _SDSP_SanguineBound  Auto  
+
+

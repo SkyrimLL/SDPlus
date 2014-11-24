@@ -13,7 +13,16 @@ Int IButton = _SD_rapeMenu.Show()
 
 If IButton == 0 ; Show the thing.
 
-	funct.SanguineRape( akSpeaker, Game.GetPlayer() , "Masturbation" , "Masturbation")
+Int randomNum = Utility.RandomInt(0, 100)
+StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+
+If (randomNum > 70)
+	SendModEvent("PCSubPunish") ; Punishment
+ElseIf (randomNum > 30)
+	SendModEvent("PCSubWhip") ; Whipping
+Else
+	SendModEvent("PCSubSex") ; Sex
+EndIf
 
 EndIf
 ;END CODE

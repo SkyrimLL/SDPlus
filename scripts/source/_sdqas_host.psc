@@ -50,8 +50,9 @@ State monitor
 		kCombatTarget = kHost.GetCombatTarget()
 
 		If ( kCombatTarget && kCombatTarget.IsInFaction( _SDFP_spriggan ) )
+			Debug.Trace("[SD] Spriggan anger detected")
 			_SDSMP_spriggananger.play( kHost )
-			_SDKP_sex.SendStoryEvent( akRef1 = kSeed, akRef2 = kHost, aiValue1 = 8, aiValue2 = Utility.RandomInt( 0, 6 ) )
+			; _SDKP_sex.SendStoryEvent( akRef1 = kSeed, akRef2 = kHost, aiValue1 = 8, aiValue2 = Utility.RandomInt( 0, 6 ) )
 		EndIf
 
 		If ( Self.GetOwningQuest() )

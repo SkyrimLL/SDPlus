@@ -38,20 +38,33 @@ Function removeSDSpells()
 EndFunction
 
 Function removeSDItems()
-	idx = 0
+	Actor kActor = Game.GetPlayer()
+	Game.EnablePlayerControls()
+	Game.SetInChargen(false, false, false)
 
-	While idx < _SDFLP_uninstall_items.GetSize()
-		nthArmor = _SDFLP_uninstall_items.GetAt(idx) as Armor
-		iCount = player.GetItemCount( nthArmor )
+	Debug.Notification("Cleaning up devices")
 
-		If ( iCount )
-			If ( player.IsEquipped( nthArmor ) )
-				player.UnEquipItem( nthArmor )
-			EndIf
-			player.RemoveItem( nthArmor, iCount )
+		If (kActor.WornHasKeyword(Libs.zad_DeviousBlindfold))
+			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousBlindfold, false, false, false)
 		EndIf
-		idx += 1
-	EndWhile
+		
+		Utility.Wait(3.0)
+		If (kActor.WornHasKeyword(Libs.zad_Deviousgag))
+			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_Deviousgag, false, false, false)
+		EndIf
+		
+		Utility.Wait(3.0)
+		If (kActor.WornHasKeyword(libs.zad_DeviousArmbinder))
+			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousArmbinder, false, false, false)
+		EndIf	
+		
+		Utility.Wait(3.0)
+		If (kActor.WornHasKeyword(libs.zad_DeviousCollar))
+			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousCollar, false, false, false)
+		EndIf
+
+	Debug.Notification("Done cleaning up devices")
+
 EndFunction
 
 Function resetGlobals()
@@ -307,3 +320,6 @@ State resetting
 		EndIf
 	EndEvent
 EndState
+
+
+zadLibs Property libs Auto

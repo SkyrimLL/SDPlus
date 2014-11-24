@@ -5,7 +5,7 @@ Topic Property _SDTP_sayOnHit  Auto
 Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 	If akTarget.GetCurrentScene() == None
-		; akTarget.Say(_SDTP_sayOnHit)
+		akTarget.Say(_SDTP_sayOnHit)
 	EndIf
 
 EndEvent

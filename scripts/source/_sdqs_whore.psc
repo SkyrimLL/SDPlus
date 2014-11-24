@@ -14,6 +14,8 @@ Keyword Property _SDKP_sex  Auto
 Quest Property _SDQP_enslavement  Auto  
 ObjectReference[] Property _SDORP_queue  Auto  
 
+SPELL Property _SDSP_Weak Auto
+
 ; ragdolling
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto  
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
@@ -48,11 +50,10 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 		If ( _SDORP_queue[iIdx] != None )
 			Debug.Trace("[Whore queue] Removing actor from queue: " + _SDORP_queue[iIdx])
 
-
 			bRemoved = True
 			If ( !_SDORP_queue[iIdx].GetCurrentScene() && _SDORP_queue[iIdx].GetParentCell() == akWhore.GetParentCell() )
 				If ( _SDQP_enslavement.IsRunning() && fctFactions.actorFactionInList( _SDORP_queue[iIdx] as Actor, _SDFLP_forced_allied ) )
-					_SDQP_enslavement.ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+					; _SDQP_enslavement.ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 				EndIf
 			
 				; _SDKP_sex.SendStoryEvent( akLoc = akWhore.GetCurrentLocation(), akRef1 = _SDORP_queue[iIdx], akRef2 = akWhore, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
@@ -60,11 +61,14 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 				If  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor(akWhore as actor) > 0) 
 
 					If ( ( _SDORP_queue[iIdx] as actor ) == (akWhore as actor))
+						Debug.Notification("Next!")
 
 						funct.SanguineRape( akWhore as Actor , akWhore as Actor , "Masturbation", "Masturbation")
 
 
 					Else
+						Debug.Notification("Next!")
+						
 						actor[] sexActors = new actor[2]
 						sexActors[0] = akWhore as actor
 						sexActors[1] = _SDORP_queue[iIdx]  as actor
@@ -72,12 +76,13 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 						funct.SanguineRape( _SDORP_queue[iIdx]  as actor,  akWhore as actor  , "Dirty")
 
 					EndIf
+
 				Else
 					Debug.Trace("[Whore queue] Actors busy: " + SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) + " - " + akWhore as actor)
 				EndIf
 
 
-				Utility.Wait( 10.0 )
+				Utility.Wait( 5.0 )
 			Else
 				Debug.Trace( "_SD::Queue abort - Actor in scene or out of player cell." )
 			EndIf
@@ -94,6 +99,9 @@ EndFunction
 
 Event OnInit()
 	whore = _SDRAP_whore.GetReference() as ObjectReference
+
+	_SDSP_Weak.Cast(whore as Actor)
+
 	RegisterForSingleUpdate( fRegForUpdate )
 	GoToState("waiting")
 EndEvent
@@ -118,7 +126,7 @@ State monitor
 		If ( Self.IsStopping() || Self.IsStopped() )
 			GoToState("waiting")
 		;ElseIf ( whore && !whore.GetCurrentScene() && Game.IsMovementControlsEnabled() && _SDGVP_state_playerRagdoll.GetValueInt() == 0 )
-		ElseIf ( whore && ( whore as Actor ).GetPlayerControls() ) ; && _SDGVP_state_playerRagdoll.GetValueInt() == 0 )
+		ElseIf ( whore ) ; && ( whore as Actor ).GetPlayerControls() ) ; && _SDGVP_state_playerRagdoll.GetValueInt() == 0 )
 			removeFromQueue( whore )
 		EndIf
 

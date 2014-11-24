@@ -4,6 +4,8 @@ Import Utility
 
 _SDQS_snp Property snp Auto
 _SDQS_functions Property funct Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
+
 _SDQS_config Property config Auto
 SexLabFramework property SexLab auto
 
@@ -79,13 +81,10 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; uiPosition = Math.Floor( snp._SDUIP_position * 4 )
 
 
-	Debug.MessageBox("Roots swarm arount you...")
+	; Debug.MessageBox("Roots swarm arount you...")
 
 	; kTarget.RemoveAllItems(akTransferTo = _SD_sprigganHusk)
 	; Utility.Wait(1.0)
-
-	kCaster.RemoveAllItems(akTransferTo = kTarget)
-	Utility.Wait(1.0)
 
 	_SDSP_cum.RemoteCast(kTarget, kTarget, kTarget)
 	kCaster.GetActorBase().SetProtected()
@@ -96,7 +95,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 
 	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
-		Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
+		; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
 		; HACK: select rough sexlab animations 
 		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1, "Masturbation,Female")
 
@@ -123,8 +122,6 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		kCaster.DeleteWhenAble()
 	Else
 
-	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
-	     ; _SD_sprigganHusk.Disable()
 
 	     kCaster.MoveTo( _SDRAP_grovemarker.GetReference() )
 	     kCaster.SetAlpha(1.0)

@@ -8,25 +8,29 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 ObjectReference kSlave=_SDRAP_slave.GetReference() as ObjectReference
 ObjectReference kMaster=_SDRAP_master.GetReference() as ObjectReference
-Int randomVar = Utility.RandomInt( 0, 100 ) 
+Int randomVar = Utility.RandomInt( 0, 10 ) 
 
-Self.GetOwningQuest().ModObjectiveGlobal(  2.0 -  Utility.RandomInt( 1, 10), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;Self.GetOwningQuest().ModObjectiveGlobal( -1, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-If (randomVar >= 0  ) ; Straining positions - used to be 60
-	Debug.Notification( "You will pay for that!" )
-
+If (randomVar >= 5  ) ; Straining positions - used to be 60
+	;Debug.Notification( "You will pay for that!" ) ;Why? I dont get this? 
+	Debug.Notification( "Go on..." )
+	Utility.Wait(1.0)
+	;Debug.Notification( "You've got " +  _SDGVP_demerits + "points, out of" + _SDGVP_demerits_join + "" )
+	;Debug.Notification("[_sdqs_snp] Receiving scene:" + aiValue1 + " [ " + aiValue2 + " ]")
 	; Punishment
 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = 5 ) ; Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 	
 	; Whipping
-	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+	;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 
 Else
-	 _SDKP_sex.SendStoryEvent( \
-		akRef1 = _SDRAP_master.GetReference() as ObjectReference, \
-		akRef2 = _SDRAP_slave.GetReference() as ObjectReference, \
-		aiValue1 = 0, \
-		aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() )  )
+	Debug.Notification( "Stop bugging me, Slave!" )
+	; _SDKP_sex.SendStoryEvent( \
+	;	akRef1 = _SDRAP_master.GetReference() as ObjectReference, \
+	;	akRef2 = _SDRAP_slave.GetReference() as ObjectReference, \
+	;	aiValue1 = 0, \
+	;	aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() )  )
 
 EndIf
 
