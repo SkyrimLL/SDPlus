@@ -127,12 +127,15 @@ EndFunction
 
 Bool Function checkIfSpriggan ( Actor akActor )
 	Bool bIsSpriggan = False
+	Race _SD_Race_SprigganEarthMother = StorageUtil.GetFormValue(None, "_SD_Race_SprigganEarthMother") as Race
+	Race _SD_Race_SprigganBurnt = StorageUtil.GetFormValue(None, "_SD_Race_SprigganBurnt") as Race
+
 
 	if (akActor)
 		Int index = 0
 		Int size = _SDFLP_spriggan_factions.GetSize()
 		While ( !bIsSpriggan && index < size )
-			bIsSpriggan = (akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")) || (akActor.GetRace() == SprigganRace)
+			bIsSpriggan = (akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")) || (akActor.GetRace() == SprigganRace) || ( (_SD_Race_SprigganEarthMother!=None) && (akActor.GetRace() == _SD_Race_SprigganEarthMother)) || ( (_SD_Race_SprigganBurnt!=None) && (akActor.GetRace() == _SD_Race_SprigganBurnt))
 			index += 1
 		EndWhile
 	EndIf
@@ -142,12 +145,13 @@ EndFunction
 
 Bool Function checkIfFalmer ( Actor akActor )
 	Bool bIsFalmer = False
+	Race _SD_Race_FalmerFrozen = StorageUtil.GetFormValue(None, "_SD_Race_FalmerFrozen") as Race
 
 	if (akActor)
 		Int index = 0
 		Int size = _SDFLP_falmer_factions.GetSize()
 		While ( !bIsFalmer && index < size )
-			bIsFalmer = akActor.IsInFaction( _SDFLP_falmer_factions.GetAt(index) as Faction ) || akActor.GetRace() == FalmerRace 
+			bIsFalmer = akActor.IsInFaction( _SDFLP_falmer_factions.GetAt(index) as Faction ) || akActor.GetRace() == FalmerRace  || ( (_SD_Race_FalmerFrozen!=None) && (akActor.GetRace() == _SD_Race_FalmerFrozen))
 			index += 1
 		EndWhile
 	EndIf
@@ -155,6 +159,7 @@ Bool Function checkIfFalmer ( Actor akActor )
 	Return bIsFalmer
 EndFunction
 
+  
 Bool Function checkIfFollower ( Actor akActor )
 	Bool bIsFollower = False
 

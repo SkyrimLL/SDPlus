@@ -136,6 +136,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Debug.SendAnimationEvent(Game.GetPlayer(), "Unequip")
 		; Debug.SendAnimationEvent(Game.GetPlayer(), "ZazAPC057")
 	
+		; Testing - stop combat should happen outside of enslavement, to allow for fight between old and new master on transfer of ownership
+		; Still needed after all. Weird things happen if new master is killed before enslavement fully starts.
+		; Keeping the attempt at fighting for the atmosphere and role play for now
 		kSlave.StopCombatAlarm()
 		kSlave.StopCombat()
 
@@ -350,6 +353,114 @@ Auto State enslaved
 	EndEvent
 EndState
 
+Function UpdateSlaveState(Actor akMaster, Actor akSlave)
+
+	If (akSlave == Game.GetPlayer())
+
+		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
+		Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
+		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
+
+		If (fPunishmentDuration > 0)
+			; Debug.Trace("[SD]   Punishment time:" + fPunishmentRemainingtime  )
+
+			; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
+			; Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
+			; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
+			; Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance + " - Leash: " + StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
+
+			If ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength")) &&  (fctOutfit.IsPunishmentEquipped(akSlave))
+
+				If (!RewardSlave(  akMaster,   akSlave))
+					Debug.Notification("[SD] Clear punishment duration")
+					StorageUtil.SetFloatValue(akSlave, "_SD_fPunishmentDuration",0.0)
+				EndIf
+
+			ElseIf ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
+				; Debug.Notification("Your owner is too far to remove your punishment.")
+			Else
+				; Debug.Trace("Your punishment is not over yet.")
+			EndIf
+		EndIf
+	Else
+		Debug.Trace("[_sdqs_enslavement] Update slave state: Target is not the player")
+	EndIf
+
+
+EndFunction
+
+Bool Function PunishSlave(Actor akMaster, Actor akSlave)
+	Bool punishmentAdded = False
+
+	If (akSlave == Game.GetPlayer())
+		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+
+		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+			Debug.Notification("[SD] Slave Punishment")
+
+			if (!fctOutfit.IsGagEquipped(akSlave))
+				AddSlavePunishment( kActor = akSlave, bGag = True)
+				punishmentAdded = True
+
+			ElseIf  (!fctOutfit.IsPlugEquipped(kSlave)) 
+				AddSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
+				punishmentAdded = True
+				
+			Elseif (!fctOutfit.IsBlindfoldEquipped(kSlave))
+				AddSlavePunishment( kActor = akSlave, bBlindfold = True)
+				punishmentAdded = True
+
+			Else
+				Debug.Trace("[_sdqs_enslavement] Punish slave: Nothing to add")
+			EndIf
+
+		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+			Debug.Notification("Your owner is too far to punish you.")
+		EndIf
+	Else
+		Debug.Trace("[_sdqs_enslavement] Punish slave: Target is not the player")
+	EndIf
+
+	Return 	punishmentAdded 
+EndFunction
+
+Bool Function RewardSlave(Actor akMaster, Actor akSlave)
+	Bool punishmentRemoved = False
+
+	If (akSlave == Game.GetPlayer())
+		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+
+		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+			Debug.Notification("[SD] Slave Reward")
+
+			if (fctOutfit.IsBlindfoldEquipped(kSlave))
+				RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
+				punishmentRemoved = True
+
+			Elseif  (fctOutfit.IsPlugEquipped(kSlave)) 
+				RemoveSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
+				punishmentRemoved = True
+
+			Elseif (fctOutfit.IsGagEquipped(akSlave))
+				RemoveSlavePunishment( kActor = akSlave, bGag = True)
+				punishmentRemoved = True
+
+			Else
+				Debug.Trace("[_sdqs_enslavement] Reward slave: Nothing to remove")
+
+			EndIf
+
+		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+			Debug.Notification("Your owner is too far to remove your punishment.")
+		EndIf
+	Else
+		Debug.Trace("[_sdqs_enslavement] Reward slave: Target is not the player")
+	EndIf
+
+	Return punishmentRemoved 
+EndFunction
+
 Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False, Bool bArmbinder = False)
 
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
@@ -358,10 +469,10 @@ Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,5))
 
 		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBlindfold as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int)
-		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
+		
+		Debug.Notification("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
 
 		_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
-		uiLastDemerits = _SDGVP_demerits.GetValueInt()
 
 		fctOutfit.addPunishment( bDevGag = bGag,  bDevBlindfold = bBlindfold,  bDevBelt = bBelt,  bDevPlugAnal = bPlugAnal,  bDevPlugVaginal = bPlugVaginal, bDevArmbinder = bArmbinder)
 
@@ -378,115 +489,15 @@ Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,2))
 
-		fctOutfit.removePunishment( bDevGag = bGag,  bDevBlindfold = bBlindfold,  bDevBelt = bBelt,  bDevPlugAnal = bPlugAnal,  bDevPlugVaginal = bPlugVaginal, bDevArmbinder = bArmbinder)
+		Debug.Notification("[_sdqs_enslavement] Removing punishment"  )
 
-		If (!fctOutfit.IsPunishmentEquipped(kActor))
-			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.0)
-		EndIf
+		fctOutfit.removePunishment( bDevGag = bGag,  bDevBlindfold = bBlindfold,  bDevBelt = bBelt,  bDevPlugAnal = bPlugAnal,  bDevPlugVaginal = bPlugVaginal, bDevArmbinder = bArmbinder)
 
 	Else
 		Debug.Trace("[_sdqs_enslavement] Remove punishment: Target is not the player")
 	EndIf
 
 EndFunction
-
-
-Function UpdateSlaveState(Actor akMaster, Actor akSlave)
-
-	If (akSlave == Game.GetPlayer())
-
-		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
-		Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
-		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
-		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
-
-		If (fPunishmentDuration > 0)
-			Debug.Trace("[SD]   Punishment time:" + fPunishmentRemainingtime  )
-
-			; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
-			Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
-			; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
-			Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance + " - Leash: " + StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
-
-			If ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength")) &&  (!fctOutfit.IsPunishmentEquipped(akSlave))
-
-				RewardSlave(  akMaster,   akSlave)
-
-			ElseIf ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
-				Debug.Trace("Your owner is too far to remove your punishment.")
-			Else
-				; Debug.Trace("Your punishment is not over yet.")
-			EndIf
-		EndIf
-	Else
-		Debug.Trace("[_sdqs_enslavement] Update slave state: Target is not the player")
-	EndIf
-
-
-EndFunction
-
-Function PunishSlave(Actor akMaster, Actor akSlave)
-
-	If (akSlave == Game.GetPlayer())
-		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
-
-		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-
-			if (!fctOutfit.IsGagEquipped(akSlave))
-				AddSlavePunishment( kActor = akSlave, bGag = True)
-
-			Elseif (!fctOutfit.IsBlindfoldEquipped(kSlave))
-				AddSlavePunishment( kActor = akSlave, bBlindfold = True)
-
-			ElseIf  (!fctOutfit.IsPlugEquipped(kSlave)) 
-				AddSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
-
-			ElseIf  (!fctOutfit.IsArmbinderEquipped(kSlave)) 
-				AddSlavePunishment( kActor = akSlave, bArmbinder = True)
-
-			EndIf
-
-		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			Debug.Notification("Your owner is too far to punish you.")
-		EndIf
-	Else
-		Debug.Trace("[_sdqs_enslavement] Punish slave: Target is not the player")
-	EndIf
-
-
-EndFunction
-
-Function RewardSlave(Actor akMaster, Actor akSlave)
-
-	If (akSlave == Game.GetPlayer())
-		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
-
-		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-
-			if (!fctOutfit.IsGagEquipped(akSlave))
-				RemoveSlavePunishment( kActor = akSlave, bGag = True)
-
-			Elseif (!fctOutfit.IsBlindfoldEquipped(kSlave))
-				RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
-
-			ElseIf  (!fctOutfit.IsPlugEquipped(kSlave)) 
-				RemoveSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
-
-			ElseIf  (!fctOutfit.IsArmbinderEquipped(kSlave)) 
-				RemoveSlavePunishment( kActor = akSlave, bArmbinder = True)
-
-			EndIf
-
-		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			Debug.Notification("Your owner is too far to remove your punishment.")
-		EndIf
-	Else
-		Debug.Trace("[_sdqs_enslavement] Reward slave: Target is not the player")
-	EndIf
-
-
-EndFunction
-
 
 Function UpdateSlaveFollowerState(Actor akSlave)
 		Int idx = 0

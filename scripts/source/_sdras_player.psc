@@ -245,44 +245,26 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubPunish",   "OnSDStoryPunish")
 	RegisterForModEvent("PCSubTransfer",   "OnSDTransfer")
 	RegisterForModEvent("PCSubFree",   "OnSDFree")
+	RegisterForModEvent("PCSubStatus",   "OnSDStatusUpdate")
 	RegisterForModEvent("SDSprigganEnslave",   "OnSDSprigganEnslave")
 	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
 	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
 
+	; Check for DLC Races
+	Race SprigganEarthMotherRace = Game.GetFormFromFile(0x00013B77, "Dawnguard.esm") As Race
+	Race DLC2SprigganBurntRace = Game.GetFormFromFile(0x0001B644, "Dragonborn.esm") As Race
+	Race FalmerFrozenVampRace = Game.GetFormFromFile(0x0001AACC, "Dawnguard.esm") As Race
+
+	StorageUtil.SetFormValue(None, "_SD_Race_SprigganEarthMother", SprigganEarthMotherRace)
+	StorageUtil.SetFormValue(None, "_SD_Race_SprigganBurnt", DLC2SprigganBurntRace)
+	StorageUtil.SetFormValue(None, "_SD_Race_FalmerFrozen", FalmerFrozenVampRace)
+
+
 EndFunction
 
-Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kNewMaster = StorageUtil.GetFormValue( Game.GetPlayer() , "_SD_TempAggressor") as Actor
-		
-	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)  &&  fctFactions.checkIfSlaver (  kNewMaster )
-		; if already enslaved, transfer of ownership
-
-		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
-			_SDQP_enslavement.Stop()
-
-			While ( _SDQP_enslavement.IsStopping() )
-			EndWhile
-
-		EndIf
-
-		; new master
-
-		StorageUtil.SetFormValue(Game.GetPlayer(), "_SD_TempAggressor", None)
-
-		If (_args == "Consensual")
-			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
-		EndIf
-
-		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = Game.GetPlayer(), aiValue1 = 0)
-	Else
-		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
-	EndIf
-EndEvent
 
 Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Actor kNewMaster = StorageUtil.GetFormValue( Game.GetPlayer() , "_SD_TempAggressor") as Actor
@@ -308,6 +290,111 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 	EndIf
 EndEvent
 
+Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kNewMaster = StorageUtil.GetFormValue( Game.GetPlayer() , "_SD_TempAggressor") as Actor
+	Actor kCurrentMaster
+		
+	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
+
+	If (kNewMaster != None)  &&  fctFactions.checkIfSlaver (  kNewMaster )
+		; if already enslaved, transfer of ownership
+
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+			kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
+
+			If (!kCurrentMaster.IsDead()) && (kPlayer.GetDistance( kCurrentMaster ) <= ( StorageUtil.GetIntValue(kPlayer, "_SD_iLeashLength") * 2) ) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSold") != 1 )
+				kCurrentMaster.SetRelationshipRank( kPlayer, StorageUtil.GetIntValue(kCurrentMaster, "_SD_iOriginalRelationshipRank") )
+				If (Utility.RandomInt(0,100) >= 0) || ( StorageUtil.GetIntValue(kCurrentMaster, "_SD_iDisposition") > 0)
+					Debug.Notification("(Owner) Who do you think you are!")
+					kCurrentMaster.StartCombat(kNewMaster)
+				Else
+					Debug.Notification("(Owner) Good riddance...")
+				EndIf
+			EndIf
+
+			_SDQP_enslavement.Stop()
+
+			While ( _SDQP_enslavement.IsStopping() )
+			EndWhile
+
+		EndIf
+
+		; new master
+
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+
+		If (_args == "Consensual")
+			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
+		EndIf
+
+		; New enslavement - changing ownership
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = Game.GetPlayer(), aiValue1 = 0)
+	Else
+		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
+	EndIf
+EndEvent
+
+Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kNewMaster = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+	Actor kCurrentMaster
+		
+	Debug.Trace("[_sdras_player] Receiving 'transfer slave' event - New master: " + kNewMaster)
+
+	If (kNewMaster != None)   &&  fctFactions.checkIfSlaver (  kNewMaster )
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+			kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
+
+			If (!kCurrentMaster.IsDead()) && (kPlayer.GetDistance( kCurrentMaster ) <= ( StorageUtil.GetIntValue(kPlayer, "_SD_iLeashLength") * 2 ) ) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSold") != 1 )
+				kCurrentMaster.SetRelationshipRank( kPlayer, StorageUtil.GetIntValue(kCurrentMaster, "_SD_iOriginalRelationshipRank") )
+				If (Utility.RandomInt(0,100) >= 0) || ( StorageUtil.GetIntValue(kCurrentMaster, "_SD_iDisposition") > 0)
+					Debug.Notification("(Owner) Who do you think you are!")
+					kCurrentMaster.StartCombat(kNewMaster)
+				Else
+					Debug.Notification("(Owner) Good riddance...")
+				EndIf
+			EndIf
+
+			_SDQP_enslavement.Stop()
+
+			While ( _SDQP_enslavement.IsStopping() )
+			EndWhile
+
+		EndIf
+
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+
+		If (_args == "Consensual")
+			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
+		EndIf
+
+		; New enslavement - changing ownership
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
+	Else
+		Debug.Trace("[_sdras_slave] Attempted transfer to empty master " )
+		Debug.Notification("You are not worth my time...")	
+	EndIf
+EndEvent
+
+Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_slave] Receiving 'free slave' event")
+	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+
+	_SDQP_enslavement.Stop()
+	Wait( fRFSU * 5.0 )
+
+
+EndEvent
+
+Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kActor
+	Debug.Trace("[_sdras_slave] Receiving 'slavery status update' event")
+
+	If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+		kActor = _SD_Enslaved.GetMaster() as Actor
+		fctSlavery.UpdateStatusDaily( kActor, kPlayer)
+	EndIf
+
+EndEvent
 
 Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 
@@ -341,7 +428,11 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 
 		funct.SanguineGangRape( kTempAggressor, kPlayer, False, True)
 	Else 
-		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0 )
+		; Debug.Trace("[_sdras_player] Sending sex story")
+
+		; _SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0 )
+		funct.SanguineRape( kTempAggressor, kPlayer, "Aggressive")
+
 	EndIf
 EndEvent
 
@@ -369,6 +460,7 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 
 		funct.SanguineGangRape( kTempAggressor, kPlayer, True, True)
 	Else 
+		; Dance
 		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 7, aiValue2 = 0 )
 	EndIf
 
@@ -396,38 +488,6 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 	EndIf
  
 	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-EndEvent
-
-Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Actor kNewMaster = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
-		
-	Debug.Trace("[_sdras_player] Receiving 'transfer slave' event - New master: " + kNewMaster)
-
-	If (kNewMaster != None)   &&  fctFactions.checkIfSlaver (  kNewMaster )
-		_SDQP_enslavement.Stop()
-
-		; new master
-		While ( _SDQP_enslavement.IsStopping() )
-		EndWhile
-
-		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
-
-		If (_args == "Consensual")
-			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
-		EndIf
-
-		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
-	Else
-		Debug.Trace("[_sdras_slave] Attempted transfer to empty master " )
-		Debug.Notification("You are not worth my time...")	
-	EndIf
-EndEvent
-
-Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-		Debug.Trace("[_sdras_slave] Receiving 'free slave' event")
-		_SDQP_enslavement.Stop()
-		Wait( fRFSU * 5.0 )
 EndEvent
 
 Event OnSDEmancipateSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -699,12 +759,12 @@ State monitor
 					; Debug.SetGodMode( True )
 					; kPlayer.EndDeferredKill()
 					
-					If (Utility.RandomInt(0,100) > 40) && (_SD_dreamQuest.GetStage() != 0) 
+					If (Utility.RandomInt(0,100) > 90) && (_SD_dreamQuest.GetStage() != 0) 
 						; Send PC to Dreamworld
 
 						_SD_dreamQuest.SetStage(100)
 
-					ElseIf (Utility.RandomInt(0,100) > 95) && (!isInKWeakenedState)	
+					ElseIf (Utility.RandomInt(0,100) > 70) && (!isInKWeakenedState)	
 						; Send PC some help
 
 						SendModEvent("da_StartSecondaryQuest", "Both")
