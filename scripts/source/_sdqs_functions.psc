@@ -281,6 +281,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	Int    speakerGender = akSpeaker.GetLeveledActorBase().GetSex() as Int
 	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
 	Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+	Int 	IButton = 0
 
 	; Devious devices and punishment items restrictions
 	; Debug.Notification("[SD sex] Speaker gender: " + speakerGender + " [ " + akSpeaker + " ] ")
@@ -330,67 +331,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		; Gender restrictions - 2 actors
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
 
-			Int[] uiSlotMask = New Int[12]
-			uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
-			uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-			uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
-			uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
-			uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
-			uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
-			uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
-			uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
-			uiSlotMask[8] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
-			uiSlotMask[9] = 0x00000004 ;32  Spriggan host
-			uiSlotMask[10]= 0x00100000 ;50  DD Gag Straps
-			uiSlotMask[11]= 0x01000000 ;54  DD Plugs (Vaginal)
-
-
-			Int iFormIndex = uiSlotMask.Length
-			Form kForm
-
-			; uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders
-			kForm = akTarget.GetWornForm( uiSlotMask[0] ) 
-			if (kForm)
-				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("_SD_nounequip")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
-			;		SexLabInTags = SexLabInTags + ",Anal"
-			;		SexLabOutTags = SexLabOutTags + ",Blowjob"
-				EndIf
-			EndIf
-
-			; uiSlotMask[2] = 0x00040000 ;48  Ankles / DD plugs
-			kForm = akTarget.GetWornForm( uiSlotMask[2] ) 
-			if (kForm)
-				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousPlug") ) )
-			;		SexLabInTags = SexLabInTags + ",Oral"
-			;		SexLabOutTags = SexLabOutTags + ",Anal,Vaginal"
-				EndIf
-			EndIf
-
-			; uiSlotMask[3] = 0x02000000 ;55  Gag
-			; uiSlotMask[4] = 0x00004000 ;44  DD Gags
-			kForm = akTarget.GetWornForm( uiSlotMask[3] ) 
-			if (kForm)
-				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("_SD_nounequip")) )
-			;		SexLabInTags = "Cuddling"
-			;		SexLabOutTags = SexLabOutTags + ",Oral"
-				EndIf		
-			EndIf
-			if (kForm)
-				kForm = akTarget.GetWornForm( uiSlotMask[4] ) 
-				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousGag") ) )
-			;		SexLabInTags = "Cuddling"
-			;		SexLabOutTags = SexLabOutTags + ",Oral"
-				EndIf
-			EndIf
-
-			; uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
-			kForm = akTarget.GetWornForm( uiSlotMask[5] ) 
-			if (kForm)
-				if (Game.GetPlayer().isEquipped(kForm) && (kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_DeviousBelt") ) )
-			;		SexLabInTags = SexLabInTags + ",Kissing,Cuddling"
-			;		SexLabOutTags = SexLabOutTags + ",Anal,Vaginal"
-				EndIf
-			EndIf
+			SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
 		
 			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) )
 				If (speakerGender  == 0)
@@ -401,7 +342,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			ElseIf ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
 					
 					If (speakerGender == 1) ; Mistress and Male slave
-						SexLabInTags = SexLabInTags + ",Cowgirl"
+					;	SexLabInTags = SexLabInTags + ",Cowgirl"
 					ElseIf  (speakerGender == 0) ; Master and Female slave
 					;	SexLabInTags = SexLabInTags + ",Doggystyle"
 					EndIf
@@ -417,27 +358,68 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				; sexActors[0] = akTarget
 				; sexActors[1] = akSpeaker
 				; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2,  SexLabInTags,  SexLabOutTags)
-				; SexLab.StartSex(sexActors, animations, victim = akTarget )
+				; If (animations != None)
+				;  	SexLab.StartSex(sexActors, animations, victim = akTarget )
+				; EndIf
 
 				; SexLab.QuickStart(SexLab.PlayerRef, akSpeaker, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
 
 				sslThreadModel Thread = SexLab.NewThread()
 				Thread.AddActor(akTarget, true) ; // IsVictim = true
 				Thread.AddActor(akSpeaker)
-				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags);
-				If (animations != None)
-					Thread.SetAnimations(animations)
-					Thread.StartThread()
-				EndIf
-
+				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
+				Thread.StartThread()
+			Else
+				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
+				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
 			EndIf
 		Else
-			Debug.Notification("[_sd_naked] Gender check failed: Restrictions= " + genderRestrictions  + " [ " + speakerGender + " / " + targetGender + " ] ")
+			Debug.Trace("[_sd_naked] Gender check failed: Restrictions= " + genderRestrictions  + " [ " + speakerGender + " / " + targetGender + " ] ")
 		EndIf
 
 	; Else
 	; 	Debug.Notification("[_sd_naked] Target is not the player")
 	; EndIf
+EndFunction
+
+Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker = True, Bool includeTarget = False)
+	actor kPervert = None
+	Int idx = 0
+	Int iCount = 0
+
+	If ( includeTarget ) 
+		whore.addToQueue( akTarget as ObjectReference )
+	EndIf
+	
+	; try: Actor[] function FindAvailablePartners(actor[] Positions, int TotalActors, int Males = -1, int Females = -1, float Radius = 10000.0)
+	Debug.Notification("[_sdqs_functions] Scanning for actors")
+		
+	While (iCount < 10) && (idx < 5)
+		If ( includeSpeaker ) && (kPervert != akSpeaker)
+			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 200.0, IgnoreRef1 = akTarget)  	
+		Else
+			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 200.0, IgnoreRef1 = akTarget, IgnoreRef2 = akSpeaker)  	
+		EndIf
+
+		If (kPervert) 
+			If (!kPervert.IsDead()) 
+				whore.addToQueue( kPervert as ObjectReference )
+				idx += 1
+			EndIf
+		EndIf
+
+		iCount += 1
+	EndWhile
+
+	if (idx == 0)
+		Debug.Notification("[_sdqs_functions] No actor found")
+	EndIf
+
+	If ( includeSpeaker )
+		whore.addToQueue( akSpeaker as ObjectReference )
+	EndIf
+
+
 EndFunction
 
 Function removeItemsInList( Actor akActor, FormList akItemList )
@@ -487,3 +469,4 @@ Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
 
 ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
+_SDQS_whore Property whore  Auto  

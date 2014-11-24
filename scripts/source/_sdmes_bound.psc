@@ -2,6 +2,7 @@ Scriptname _SDMES_bound extends activemagiceffect
 { USED }
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
+_SDQS_fcts_slavery Property fctSlavery  Auto
 
 ReferenceAlias Property _SDRAP_master  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto  
@@ -19,50 +20,111 @@ Actor kPlayer
 ObjectReference kMaster
 
 Float fRFSU = 0.1
+int throttle = 0 
+
+Function PlayIdleWrapper(actor akActor, idle theIdle)
+	If (!fctConstraints.libs.IsAnimating(akActor))
+		akActor.PlayIdle(theIdle)
+	EndIf
+EndFunction
+
 
 Event OnUpdate()
 	If (!kMaster) || (!kTarget)
 		Return
 	EndIf
 
-	If ( kTarget.GetEquippedWeapon() )
-		kTarget.UnequipItem( kTarget.GetEquippedWeapon(), false, True )
-		kTarget.RemoveItem( kTarget.GetEquippedWeapon(), 1, True )
-	EndIf
-	If ( kTarget.GetEquippedWeapon(True) )
-		kTarget.UnequipItem( kTarget.GetEquippedWeapon(True), false, True )
-		kTarget.RemoveItem( kTarget.GetEquippedWeapon(True), 1, True )
-	EndIf
-	If ( kTarget.GetEquippedShield() )
-		kTarget.UnequipItem( kTarget.GetEquippedShield(), false, True )
-		kTarget.RemoveItem( kTarget.GetEquippedShield(), 1, True )
-	EndIf
-	If ( kTarget.GetEquippedSpell(0) )
-		kTarget.UnequipSpell( kTarget.GetEquippedSpell(0), 0 )
-	EndIf
-	If ( kTarget.GetEquippedSpell(1) )
-		kTarget.UnequipSpell( kTarget.GetEquippedSpell(1), 1 )
-	EndIf
+	; If (Utility.RandomInt( 0, 100 ) >= 99 )
+	;	Debug.Notification( "Your collar weighs around your neck..." )
+	; EndIf
 
-	If ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction))
-		If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer )
-			fctConstraints.togglePlayerControlsOff()
-		EndIf
 
-		If (1 == 0) && ( kMaster && kTarget.GetDistance( kMaster ) < 512 && kTarget.GetAnimationVariableFloat("Speed") == 0 )  ; Automatic kneeling disabled for now
-			If ( _SDGVP_demerits.GetValue() <= _SDGVP_demerits_join.GetValueInt() )
-				kTarget.PlayIdle( _SDIAP_bound[0] )
-			ElseIf ( _SDGVP_demerits.GetValue() < -10 )
-				kTarget.PlayIdle( _SDIAP_bound[4] )
-			ElseIf ( _SDGVP_demerits.GetValue() <  10 )
-				kTarget.PlayIdle( _SDIAP_bound[2] )
+	
+	; Debug.Notification("[SD] AutoKneelingOff: " + StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
+	; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
+	if (! kTarget.WornHasKeyword(fctConstraints.libs.zbf.zbfWornWrist)) ; Stop kneeling restriction if the cuffs are escaped from.
+		throttle += 1
+		if throttle >= 15 ; Avoid updating controls 10 times per second...
+			fctConstraints.libs.UpdateControls()
+			throttle = 0
+		EndIf		
+	ElseIf ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
+
+		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
+		;	fctConstraints.togglePlayerControlsOff()
+		; EndIf
+
+		; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
+
+		if (kMaster)
+
+
+
+			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+			Int disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
+
+			If ( kTarget.GetDistance( kMaster ) < StorageUtil.GetIntValue( kTarget, "_SD_iLeashLength") ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
+
+				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
+					Debug.Notification( "The collar forces you down on your knees." )
+				EndIf
+
+				If (kTarget == kPlayer)
+					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
+						; fctConstraints.SetAnimating(false)
+
+					ElseIf ( trust < 0 ) && (disposition < 0)
+						; fctConstraints.SetAnimating(true)
+
+						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
+							PlayIdleWrapper(kTarget, _SDIAP_bound[4] )
+						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
+							PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
+						EndIf
+
+					ElseIf ( trust >= 0 ) && (disposition < 0)
+						; fctConstraints.SetAnimating(true)
+
+						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
+							PlayIdleWrapper(kTarget, _SDIAP_bound[2] )
+						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
+							PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
+						EndIf
+
+					Else
+						; fctConstraints.SetAnimating(true)
+						
+						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
+							PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
+						ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
+							PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
+						EndIf
+					EndIf
+				Else
+					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
+						; fctConstraints.SetAnimating(false)
+
+					Else
+						; fctConstraints.SetAnimating(true)
+						PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
+					EndIf
+				EndIf
 			Else
-				kTarget.PlayIdle( _SDIAP_bound[1] )
+				; Debug.Notification("[SD] Turning DD animations on - 4");
+				;If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
+					 fctConstraints.SetAnimating(false)
+				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling") 
+				;	PlayIdleWrapper(kTarget, _SDIAP_bound[1] )
+				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
+				;	PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
+				;EndIf
+				PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
 			EndIf
-		Else
-			kTarget.PlayIdle( _SDIAP_bound[0] )
+
 		EndIf
 	EndIf
+
+	
 
 	;Debug.SendAnimationEvent(kTarget, "Unequip")
 	;Debug.SendAnimationEvent(kTarget, "UnequipNoAnim")
@@ -77,7 +139,10 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	If ( kTarget == kPlayer )
 		fctConstraints.togglePlayerControlsOff()
 	EndIf
-	akTarget.PlayIdle( _SDIAP_bound[0] )
+	PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
+
+	Debug.Notification("The collar snaps around your neck.")
+	Debug.Notification("You feel sluggish and unable to resist your owner's commands.")
 
 	RegisterForSingleUpdate( fRFSU )
 EndEvent
@@ -91,5 +156,9 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		fctConstraints.togglePlayerControlsOff( False )
 	EndIf
 	kTarget.PlayIdle( _SDIAP_reset )	
+
+	Debug.Notification("The collar releases its grasp around your will, ...")
+	Debug.Notification("leaving behind a screaming headache and bruises around your neck.")
+
 EndEvent
 

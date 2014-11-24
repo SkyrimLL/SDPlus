@@ -6,21 +6,9 @@ Scriptname _SDTIF_help03 Extends TopicInfo Hidden
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-While ( Utility.IsInMenuMode() )
-EndWhile
-
-Actor kPlayer = _SDRAP_player.GetReference() as Actor
-
+SendModEvent("PCSubFree")
 
 funct.SanguineRape( akSpeaker, SexLab.PlayerRef , "Sex")
-
-
-
-Self.GetOwningQuest().Stop()
-
-
-funct.removeItemsInList( SexLab.PlayerRef , _SDFLP_sex_items )
-_SDSP_freedom.RemoteCast( SexLab.PlayerRef , SexLab.PlayerRef , SexLab.PlayerRef )
 ;END CODE
 EndFunction
 ;END FRAGMENT

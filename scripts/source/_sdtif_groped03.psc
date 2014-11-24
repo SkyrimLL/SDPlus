@@ -17,15 +17,12 @@ Actor akSpeaker = akSpeakerRef as Actor
              Game.EnablePlayerControls( abMovement = True )
              Game.SetPlayerAIDriven( False )
 
-If (Utility.RandomInt(0,100) > 80)
+
 	; Aggressive sex
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
 		funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor )
 	EndIf
-
- 
-EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

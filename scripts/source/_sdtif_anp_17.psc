@@ -21,7 +21,7 @@ _SDGVP_sorry.SetValue(0)
 
 If (randomVar >= 9  ) ; Change appearance
 	Debug.Notification( "I don't like the way you look..." )
-	Self.GetOwningQuest().ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -5.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 	Utility.Wait(0.5)
 
 	Int IButton = _SD_racemenu.Show()
@@ -35,7 +35,7 @@ If (randomVar >= 9  ) ; Change appearance
 ElseIf (randomVar > 6  ) ; Surprise punishment
 	Debug.Notification( "Nothing would please me more than hear your screams..." )
 	; Here -Punishment is a reward
-	Self.GetOwningQuest().ModObjectiveGlobal( -6.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -6.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 	If ( demerits <= 0 )
 		slave.UnequipItem( _SDAP_gag, False, True )
@@ -49,14 +49,14 @@ ElseIf (randomVar > 6  ) ; Surprise punishment
 
 ElseIf ((randomVar == 3 ) || (randomVar == 4 ) || (randomVar == 5)) ; Dance
 	Debug.Notification( "Your captor starts singing and cheering you on" )
-	Self.GetOwningQuest().ModObjectiveGlobal( -3.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -3.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
-	; Start unresistible dance
+	; Start irresistible dance
 
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 Else ; Just sex
 	Debug.Notification( "Your captor's smile sends shivers down your spine" )
-	Self.GetOwningQuest().ModObjectiveGlobal( -2.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+;	Self.GetOwningQuest().ModObjectiveGlobal( -2.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 	If ( demerits <= 0 )
 		slave.UnequipItem( _SDAP_gag, False, True )

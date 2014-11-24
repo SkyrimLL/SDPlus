@@ -11,7 +11,12 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 ; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.removeDeviousOutfitPart ( iDevOutfitPart = 2, sDevMessage = "You have been released from your chains")
+Game.GetPlayer().RemoveItem(Gold, 100 )
+
+fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
+fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
+fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -26,3 +31,5 @@ Spell Property _SDSP_freedom  Auto
 ReferenceAlias Property _SDRAP_player  Auto  
 
 _sdqs_fcts_outfit Property fctOutfit  Auto  
+
+MiscObject Property Gold  Auto  

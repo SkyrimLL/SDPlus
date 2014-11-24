@@ -6,12 +6,14 @@ Scriptname _sdtif_snp_help04 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Self.GetOwningQuest().Stop()
+; Self.GetOwningQuest().Stop()
 
-Actor kPlayer = _SDRAP_player.GetReference() as Actor
+; Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
-funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
-_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
+; _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+
+SendModEvent("PCSubFree")
 ;END CODE
 EndFunction
 ;END FRAGMENT

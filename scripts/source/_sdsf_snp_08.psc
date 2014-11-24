@@ -7,7 +7,7 @@ Function Fragment_1()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
 
-Actor female = _SDRAP_female.GetReference() as Actor
+Actor female = Game.GetPlayer() ; _SDRAP_female.GetReference() as Actor
 female.DispelSpell( _SDSP_host_punish )
 
 female.PushActorAway(female, 0.1)
@@ -24,7 +24,7 @@ Function Fragment_0()
 snp._SDUIP_phase = 0
 _SDGVP_snp_busy.SetValue(8)
 
-Actor female = _SDRAP_female.GetReference() as Actor
+Actor female = Game.GetPlayer() ; _SDRAP_female.GetReference() as Actor
 _SDSP_host_punish.Cast( female, female )
 ;END CODE
 EndFunction

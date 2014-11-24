@@ -2,42 +2,6 @@
 ;NEXT FRAGMENT INDEX 147
 Scriptname _sdsf_snp_07 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_95
-Function Fragment_95()
-;BEGIN CODE
-snp._SDUIP_phase = 4
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
-Utility.Wait(0.5)
-; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_69
-Function Fragment_69()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-snp._SDUIP_phase = -1
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("The dance leaves you breathless. [dance end]")
-
-_SDGVP_snp_busy.SetValue(-1)
-; Self.GetowningQuest().Stop()
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_89
 Function Fragment_89()
 ;BEGIN CODE
@@ -65,9 +29,29 @@ EndIf
 If ( _SDRAP_bystander_05 )
 	whore.addToQueue( _SDRAP_bystander_05.GetReference() as ObjectReference )
 EndIf
-If ( _SDRAP_female ) && (Utility.RandomInt(0,100) > 80)
-	whore.addToQueue( _SDRAP_female.GetReference() as ObjectReference )
-EndIf
+
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+snp._SDUIP_phase = -1
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+; Debug.Notification("The dance leaves you breathless. ")
+
+_SDGVP_snp_busy.SetValue(-1)
+; Self.GetowningQuest().Stop()
+; libs.SetAnimating(Game.GetPlayer(), false)
+; enslave.AddArmbinder(Game.GetPlayer(), True)
+; Game.EnablePlayerControls( abMovement = True )
+; Game.SetPlayerAIDriven( False )
+
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -85,16 +69,28 @@ Game.SetPlayerAIDriven( False )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
+;BEGIN FRAGMENT Fragment_71
+Function Fragment_71()
 ;BEGIN CODE
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(7)
-
+snp._SDUIP_phase = 3
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("You start dancing under the cheers of your owners. [dance start]")
+; Debug.Notification("The urge is irresistible [dance sex]")
+Utility.wait(2)
+;END CODE
+EndFunction
+;END FRAGMENT
 
-Game.ForceThirdPerson()
+;BEGIN FRAGMENT Fragment_95
+Function Fragment_95()
+;BEGIN CODE
+snp._SDUIP_phase = 4
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+;Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
+slaveREF.PlayAnimation("IdleSilentBow");Inte
+Utility.Wait(0.5)
+; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -128,12 +124,25 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_71
-Function Fragment_71()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-snp._SDUIP_phase = 3
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(7)
+
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("The urge is irresistible [dance sex]")
+Debug.Notification("Your owner forces you to dance...")
+Game.ForceThirdPerson()
+; libs.SetAnimating(Game.GetPlayer(), true)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_69
+Function Fragment_69()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -161,3 +170,5 @@ ReferenceAlias Property _SDRAP_marker  Auto
 SexLabFramework Property SexLab  Auto  
 
 GlobalVariable Property _SDGVP_snp_busy  Auto  
+zadLibs Property libs Auto
+_SDQS_fcts_slavery Property fctSlavery  Auto

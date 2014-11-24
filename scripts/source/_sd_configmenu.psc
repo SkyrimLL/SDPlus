@@ -11,6 +11,7 @@ GlobalVariable Property _SDGVP_config_buyout  Auto
 GlobalVariable Property _SDGVP_config_escape_radius  Auto
 GlobalVariable Property _SDGVP_config_escape_timer  Auto
 GlobalVariable Property _SDGVP_config_work_start  Auto
+GlobalVariable Property _SDGVP_config_join_days  Auto
 GlobalVariable Property _SDGVP_config_safeword  Auto
 GlobalVariable Property _SDGVP_config_lust  Auto
 GlobalVariable Property _SDGVP_config_cbbe  Auto
@@ -25,6 +26,17 @@ GlobalVariable Property _SDGVP_state_mcm  Auto
 GlobalVariable Property _SDGVP_config_enableTrainRun  Auto
 GlobalVariable Property _SDGVP_config_blindnessLevel  Auto
 GlobalVariable Property _SDGVP_config_hardcore  Auto
+
+GlobalVariable Property _SDGVP_config_ArmbinderKnee  Auto
+GlobalVariable Property _SDGVP_config_SlaveOnKnees  Auto
+GlobalVariable Property _SDGVP_config_RemoveArmBinder  Auto
+GlobalVariable Property _SDGVP_config_RemovePunishment  Auto
+GlobalVariable Property _SDGVP_config_GagType  Auto
+
+GlobalVariable Property _SDGVP_config_min_slavery_level Auto
+GlobalVariable Property _SDGVP_config_max_slavery_level Auto
+GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+
 String[] Property _SDSP_config_genderRestrictions  Auto
 
 Quest Property WIAddItem03  Auto  
@@ -75,6 +87,10 @@ Int _SDOID_config_B6
 Int _SDOID_config_B7
 Int _SDOID_config_B8
 Int _SDOID_config_B9
+Int _SDOID_config_B10
+Int _SDOID_config_B11
+Int _SDOID_config_B12
+Int _SDOID_config_B13
 
 Int _SDOID_config_S1
 Float _SDOID_config_S1_min = 0.0
@@ -111,6 +127,21 @@ Float _SDOID_config_S7_min = 50.0
 Float _SDOID_config_S7_max = 100.0
 Float _SDOID_config_S7_default = 100.0
 Float _SDOID_config_S7_inc = 10.0
+Int _SDOID_config_S8
+Float _SDOID_config_S8_min = 1.0
+Float _SDOID_config_S8_max = 6.0
+Float _SDOID_config_S8_default = 0.0
+Float _SDOID_config_S8_inc = 1.0
+Int _SDOID_config_S9
+Float _SDOID_config_S9_min = 1.0
+Float _SDOID_config_S9_max = 6.0
+Float _SDOID_config_S9_default = 6.0
+Float _SDOID_config_S9_inc = 1.0
+Int _SDOID_config_S10
+Float _SDOID_config_S10_min = 0.0
+Float _SDOID_config_S10_max = 2.0
+Float _SDOID_config_S10_default = 0.8
+Float _SDOID_config_S10_inc = 0.1
 
 Int _SDOID_config_M1 ;unused
 
@@ -248,7 +279,7 @@ EndFunction
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;                 2147483647
-Int _SD_mcm_ver = 2014051301
+Int _SD_mcm_ver = 2014103001
 
 int function GetVersion()
 	; patch to fix a screw up
@@ -283,9 +314,15 @@ Function initMod( Bool bResetGlobals = False )
 		kQuests.resetGlobals()
 	EndIf
 
-	pThug1.GetActorReference().Delete()
-	pThug2.GetActorReference().Delete()
-	pThug3.GetActorReference().Delete()
+	if (pThug1)
+		pThug1.GetActorReference().Delete()
+	EndIf
+	if (pThug2)
+		pThug2.GetActorReference().Delete()
+	EndIf
+	if (pThug3)
+		pThug3.GetActorReference().Delete()
+	EndIf
 	WIAddItem03.Stop()
 
 	Pages = New String[5]
@@ -399,11 +436,21 @@ event OnPageReset(string a_page)
 		_SDOID_config_B3 = AddToggleOption("$SD_OPTION_P0_LIMITED_REMOVAL", _SDGVP_config_itemRemovalType.GetValue() as Bool) ;10 - 6
 		AddHeaderOption("$SD_HEADER_P0_ORIENTATION") ;12 - 7
 		_SDOID_config_T2 = AddTextOption("$SD_OPTION_P0_GENDER_RESTRICTION", _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String ) ;14 - 8
-		AddHeaderOption("$SD_HEADER_P0_NOTIFICATION") ;16 - 9
-		_SDOID_config_B6 = AddToggleOption("$SD_OPTION_P0_SHOW_DEMERIT_CHANGES", _SDGVP_config_verboseMerits.GetValue() as Bool) ;18 - 10
+		; AddHeaderOption("$SD_HEADER_P0_NOTIFICATION") ;16 - 9
+		; _SDOID_config_B6 = AddToggleOption("$SD_OPTION_P0_SHOW_DEMERIT_CHANGES", _SDGVP_config_verboseMerits.GetValue() as Bool) ;18 - 10
 		AddHeaderOption("$SD_HEADER_P0_NPC_REACTION") ;20 - 11
 		_SDOID_config_B8 = AddToggleOption("$SD_OPTION_P0_ENABLE_TRAIN_RUN", _SDGVP_config_enableTrainRun.GetValue() as Bool) ;22 - 12
-
+		;# SDpatch #
+		;###############################################################################################
+		AddHeaderOption("Slave Options")
+		; _SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
+		; _SDOID_config_B11 = AddToggleOption("Remove Armbinder During Punishments", _SDGVP_config_RemoveArmBinder.GetValue() as Bool) ;
+		; _SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
+		; _SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
+		_SDOID_config_S8 = AddSliderOption("Min slavery level", _SDGVP_config_min_slavery_level.GetValue() as Float)
+		_SDOID_config_S9 = AddSliderOption("Max slavery level", _SDGVP_config_max_slavery_level.GetValue() as Float)
+		_SDOID_config_S10 = AddSliderOption("Slavery exposure cooldown multiplier", _SDGVP_config_slavery_level_mult.GetValue() as Float,"{1}")
+		;###############################################################################################
 		SetCursorPosition(1)
 		AddHeaderOption("$SD_HEADER_P0_BODY") ;1 - 1
 		_SDOID_config_B4 = AddToggleOption("$SD_OPTION_P0_USING_CBBE", _SDGVP_config_cbbe.GetValue() as Bool) ;3 - 2
@@ -413,7 +460,8 @@ event OnPageReset(string a_page)
 		_SDOID_config_S3 = AddSliderOption("$SD_SLIDER_P0_BYOUT_AMOUNT", _SDGVP_config_buyout.GetValue() as Float, "$SD_GOLD") ;11 - 6
 		_SDOID_config_S4 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_RADIUS", _SDGVP_config_escape_radius.GetValue() as Float, "$SD_UNITS") ;13 - 7
 		_SDOID_config_S5 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_TIMER", _SDGVP_config_escape_timer.GetValue() as Float, "$SD_SECONDS") ;15 - 8
-		_SDOID_config_S6 = AddSliderOption("$SD_SLIDER_P0_DAYS_TO_START_TASKS", _SDGVP_config_work_start.GetValue() as Float, "$SD_DAYS") ; 17 - 9
+		; _SDOID_config_S6 = AddSliderOption("$SD_SLIDER_P0_DAYS_TO_START_TASKS", _SDGVP_config_work_start.GetValue() as Float, "$SD_DAYS") ; 17 - 9
+		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
 		AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
 		_SDOID_config_S7 = AddSliderOption("$SD_SLIDER_P0_BLINDNESS_LEVEL", _SDGVP_config_blindnessLevel.GetValue() as Float, "$SD_PERCENT") ; 23 - 12
@@ -516,7 +564,8 @@ event OnPageReset(string a_page)
 		; AddTextOption("$SD_OPTION_P2_MOVE_AWAY_EXPLAIN", "", OPTION_FLAG_DISABLED)
 		; AddTextOption("$SD_OPTION_P2_MOVE_DOWN_EXPLAIN", "", OPTION_FLAG_DISABLED)
 		; AddTextOption("$SD_OPTION_P2_MOVE_DOWN_EXPLAIN_SHIFT", "", OPTION_FLAG_DISABLED)
-		AddTextOption("$SD_OPTION_P2_SURRENDER_EXPLAIN", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("$SD_OPTION_P2_SURRENDER_EXPLAIN", "", OPTION_FLAG_DISABLED)
+		AddTextOption("The surrender key gives you the option to surrender willingly to your opponent or pray to Sanguine for help. In all cases, pressing this key will apply some safety checks and get you unstuck if you cannot move.", "", OPTION_FLAG_DISABLED)
 
 	; ADDONS
 	ElseIf ( a_page == Pages[3] )
@@ -567,6 +616,7 @@ event OnPageReset(string a_page)
 
 		SetCursorPosition(1)
 		AddHeaderOption("$SD_HEADER_P4_VERIFIED_CONFLICTS")
+		AddTextOption("SPERG", "", OPTION_FLAG_DISABLED)
 		AddTextOption("PCEA - PC Exclusive Animation Path", "", OPTION_FLAG_DISABLED)
 		AddTextOption("WARZONES - Civil Unrest", "", OPTION_FLAG_DISABLED)
 		AddTextOption("Tundra Defence", "", OPTION_FLAG_DISABLED)
@@ -605,6 +655,22 @@ event OnOptionHighlight(int a_option)
 		SetInfoText("$_SDOID_config_B8")
 	ElseIf ( a_option == _SDOID_config_B9 )
 		SetInfoText("$_SDOID_config_B9")
+	;#################################################################################################
+	ElseIf ( a_option == _SDOID_config_B10 )
+		SetInfoText("Toggle this ON to kneel before your Master while wearing an armbinder. ")
+	ElseIf ( a_option == _SDOID_config_B11 )
+		SetInfoText("Toggle this ON to remove armbinder during punishments. ")
+	ElseIf ( a_option == _SDOID_config_B12 )
+		SetInfoText("Toggle this ON to remove punishing items (i.e. belt) during punishments. ")
+	ElseIf ( a_option == _SDOID_config_B13 )
+		SetInfoText("Toggle this ON to equip harness gag instead of strap one. Make this selection before enslavement. ")
+	ElseIf ( a_option == _SDOID_config_S8 )
+		SetInfoText("Minimum value for slavery level (0 = defiant, 6 = total submissive). Should be lower than Max Slavery Level.")
+	ElseIf ( a_option == _SDOID_config_S9 )
+		SetInfoText("Maximum value for slavery level (0 = defiant, 6 = total submissive). Should be higher than Min Slavery Level.")
+	ElseIf ( a_option == _SDOID_config_S10 )
+		SetInfoText("Value multipler reduce (or increase) slavery exposure after each day.")
+	;#################################################################################################			
 	ElseIf ( a_option == _SDOID_config_S1 )
 		SetInfoText("$_SDOID_config_S1")
 	ElseIf ( a_option == _SDOID_config_S2 )
@@ -617,7 +683,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_S5 )
 		SetInfoText("$_SDOID_config_S5")
 	ElseIf ( a_option == _SDOID_config_S6 )
-		SetInfoText( decimalDaysToString( _SDGVP_config_work_start.GetValue() as Float ) )
+		SetInfoText( decimalDaysToString( _SDGVP_config_join_days.GetValue() as Float ) )
 	ElseIf ( a_option == _SDOID_config_S7 )
 		SetInfoText("$_SDOID_config_S7")
 	ElseIf ( a_option == _SDOID_config_M1 )
@@ -686,6 +752,23 @@ event OnOptionSelect(int a_option)
 	ElseIf ( a_option == _SDOID_config_B9 )
 		_SDGVP_config_hardcore.SetValue( Math.LogicalXor( 1, _SDGVP_config_hardcore.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_hardcore.GetValue() as Bool )
+		
+	;#################################################################################################
+	ElseIf ( a_option == _SDOID_config_B10 )
+		_SDGVP_config_ArmBinderKnee.SetValue( Math.LogicalXor( 1, _SDGVP_config_ArmBinderKnee.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+		;_SDGVP_config_SlaveOnKnees.SetValue(1)
+	ElseIf ( a_option == _SDOID_config_B11 )
+		_SDGVP_config_RemoveArmBinder.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemoveArmBinder.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_RemoveArmBinder.GetValue() as Bool )
+	ElseIf ( a_option == _SDOID_config_B12 )
+		_SDGVP_config_RemovePunishment.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemovePunishment.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+	ElseIf ( a_option == _SDOID_config_B13 )
+		_SDGVP_config_GagType.SetValue( Math.LogicalXor( 1, _SDGVP_config_GagType.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+
+	;#################################################################################################
 	ElseIf ( _SDOID_quests_o.Find( a_option ) >= 0 )
 		idx = _SDOID_quests_o.Find( a_option )
 		_SDBP_quests_optional_running[idx] = !_SDBP_quests_optional_running[idx]
@@ -734,8 +817,8 @@ event OnOptionDefault(int a_option)
 		_SDGVP_config_escape_timer.SetValue( _SDOID_config_S5_default )
 		SetSliderDialogStartValue( _SDGVP_config_escape_timer.GetValue() as Float )
 	ElseIf ( a_option == _SDOID_config_S6 )
-		_SDGVP_config_work_start.SetValue( _SDOID_config_S6_default )
-		SetSliderDialogStartValue( _SDGVP_config_work_start.GetValue() as Float )
+		_SDGVP_config_join_days.SetValue( _SDOID_config_S6_default )
+		SetSliderDialogStartValue( _SDGVP_config_join_days.GetValue() as Float )
 	ElseIf ( a_option == _SDOID_config_T2 )
 		_SDGVP_config_genderRestrictions.SetValue( 0 )
 		SetTextOptionValue(a_option, _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String )
@@ -775,7 +858,7 @@ event OnOptionSliderOpen(int a_option)
 		SetSliderDialogRange( _SDOID_config_S5_min, _SDOID_config_S5_max )
 		SetSliderDialogInterval( _SDOID_config_S5_inc )
 	ElseIf ( a_option == _SDOID_config_S6 )
-		SetSliderDialogStartValue( _SDGVP_config_work_start.GetValue() as Float )
+		SetSliderDialogStartValue( _SDGVP_config_join_days.GetValue() as Float )
 		SetSliderDialogDefaultValue( _SDOID_config_S6_default )
 		SetSliderDialogRange( _SDOID_config_S6_min, _SDOID_config_S6_max )
 		SetSliderDialogInterval( _SDOID_config_S6_inc )
@@ -784,6 +867,21 @@ event OnOptionSliderOpen(int a_option)
 		SetSliderDialogDefaultValue( _SDOID_config_S7_default )
 		SetSliderDialogRange( _SDOID_config_S7_min, _SDOID_config_S7_max )
 		SetSliderDialogInterval( _SDOID_config_S7_inc )
+	ElseIf ( a_option == _SDOID_config_S8 )
+		SetSliderDialogStartValue( _SDGVP_config_min_slavery_level.GetValue() as Float )
+		SetSliderDialogDefaultValue( _SDOID_config_S8_default )
+		SetSliderDialogRange( _SDOID_config_S8_min, _SDOID_config_S8_max )
+		SetSliderDialogInterval( _SDOID_config_S8_inc )
+	ElseIf ( a_option == _SDOID_config_S9 )
+		SetSliderDialogStartValue( _SDGVP_config_max_slavery_level.GetValue() as Float )
+		SetSliderDialogDefaultValue( _SDOID_config_S9_default )
+		SetSliderDialogRange( _SDOID_config_S9_min, _SDOID_config_S9_max )
+		SetSliderDialogInterval( _SDOID_config_S9_inc )
+	ElseIf ( a_option == _SDOID_config_S10 )
+		SetSliderDialogStartValue( _SDGVP_config_slavery_level_mult.GetValue() as Float )
+		SetSliderDialogDefaultValue( _SDOID_config_S10_default )
+		SetSliderDialogRange( _SDOID_config_S10_min, _SDOID_config_S10_max )
+		SetSliderDialogInterval( _SDOID_config_S10_inc )
 	EndIf
 endEvent
 
@@ -807,13 +905,29 @@ event OnOptionSliderAccept(int a_option, float a_value)
 		_SDGVP_config_escape_timer.SetValue( a_value )
 		SetSliderOptionValue(_SDOID_config_S5, a_value, "$SD_SECONDS")
 	ElseIf ( a_option == _SDOID_config_S6 )
-		_SDGVP_config_work_start.SetValue( a_value )
+		_SDGVP_config_join_days.SetValue( a_value )
 		SetSliderOptionValue(_SDOID_config_S6, a_value, "$SD_DAYS")
 	ElseIf ( a_option == _SDOID_config_S7 )
 		_SDGVP_config_blindnessLevel.SetValue( a_value )
 		SetSliderOptionValue(_SDOID_config_S7, a_value, "$SD_PERCENT")
+	ElseIf ( a_option == _SDOID_config_S8 )
+		if ( a_value > (_SDGVP_config_max_slavery_level.GetValue( ) as Float) )
+			a_value =  (_SDGVP_config_max_slavery_level.GetValue( ) as Float) 
+		EndIf
+		_SDGVP_config_min_slavery_level.SetValue( a_value )
+		SetSliderOptionValue(_SDOID_config_S8, a_value)
+	ElseIf ( a_option == _SDOID_config_S9 )
+		if ( a_value < (_SDGVP_config_min_slavery_level.GetValue( ) as Float) )
+			a_value =  (_SDGVP_config_min_slavery_level.GetValue( ) as Float) 
+		EndIf
+		_SDGVP_config_max_slavery_level.SetValue( a_value )
+		SetSliderOptionValue(_SDOID_config_S9, a_value)
+	ElseIf ( a_option == _SDOID_config_S10 )
+		_SDGVP_config_slavery_level_mult.SetValue( a_value )
+		SetSliderOptionValue(_SDOID_config_S10, a_value,"{1}")
 	EndIf
 endEvent
+
 
 ; @implements SKI_ConfigBase
 event OnOptionMenuOpen(int a_option)

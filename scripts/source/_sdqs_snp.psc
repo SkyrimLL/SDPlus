@@ -67,7 +67,7 @@ EndFunction
 ; aiValue2 = package selection within scene or animation
 Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRef1, ObjectReference akRef2, int aiValue1, int aiValue2)
 
-	Debug.Notification("[_sdqs_snp] Receiving scene:" + aiValue1 + " [ " + aiValue2 + " ]")
+	; Debug.Notification("[_sdqs_snp] Receiving scene:" + aiValue1 + " [ " + aiValue2 + " ]")
 	Debug.Trace("[_sdqs_snp] Receiving scene:" + aiValue1 + " [ " + aiValue2 + " ]")
 
 	If( iQuestActive == 0 )
@@ -149,7 +149,7 @@ Auto State waiting
 						EndIf
 						_SDSP_sexScenes[ _SDUIP_scene ].Start()
 					Else
-						Debug.Notification("[_sdqs_snp] Scene skipped:" + _SDUIP_scene)	
+						Debug.Trace("[_sdqs_snp] Scene skipped:" + _SDUIP_scene)	
 					EndIf
 				ElseIf   (_SDUIP_scene >=9 ) && (_SDUIP_scene <=18 )
 					; Scenes 9 and 10 not used right now

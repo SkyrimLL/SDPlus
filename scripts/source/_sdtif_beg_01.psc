@@ -13,7 +13,18 @@ If (Utility.RandomInt(0,100)>80) && ( akSpeaker.GetRelationshipRank(kPlayer) >= 
 EndIf
 
 If   (Utility.RandomInt(0,100)>50)
-	funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")
+	Game.ForceThirdPerson()
+	Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
+
+	Int IButton = _SD_rapeMenu.Show()
+
+	If IButton == 0 ; Show the thing.
+
+		funct.SanguineRape( akSpeaker, SexLab.PlayerRef, "Aggressive")
+	Else
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+
+	EndIf
 EndIf
 ;END CODE
 EndFunction
@@ -31,3 +42,5 @@ ReferenceAlias Property _SDRAP_player  Auto
 SexLabFramework Property SexLab  Auto  
 
 MiscObject Property Gold  Auto  
+
+Message Property _SD_rapeMenu  Auto  
