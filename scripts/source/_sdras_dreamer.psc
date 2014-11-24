@@ -48,7 +48,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	ObjectReference lust_m = Alias__SDRA_lust_m.GetReference() as ObjectReference
 	Actor kPlayer = Game.GetPlayer() as Actor
 
-	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)<= (_SDGVP_health_threshold.GetValue() / 20))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) ) ) && dbe.pSleepyTime != 1
+	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)<= ( (_SDGVP_health_threshold.GetValue() as Int) / 20))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) ) ) && dbe.pSleepyTime != 1
 
 			; Debug.Notification("Reality slips away...")
 			; Debug.Notification("[dream] Sanguine finds you in your dream")
@@ -70,7 +70,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	;		Utility.Wait(1.0)
 
-	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)> (_SDGVP_health_threshold.GetValue() / 4))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1)
+	elseif Game.GetPlayer().GetCurrentLocation().IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)<= (( _SDGVP_health_threshold.GetValue() as Int) / 4))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1)
 			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 	  	_SD_dreamQuest.SetStage(15)
 	  	

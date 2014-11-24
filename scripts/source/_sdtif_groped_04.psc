@@ -6,15 +6,11 @@ Scriptname _sdtif_groped_04 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-If (Utility.RandomInt(0,100) > 80)
-	; Aggressive sex 
+; Aggressive sex 
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
 		funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Doggystyle")
 	EndIf
-
- 
-EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

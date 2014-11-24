@@ -61,8 +61,8 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
-	funct.setRandomActorExpression( akTarget, -1 )
-	funct.setRandomActorExpression( akCaster, -1 )
+	; funct.setRandomActorExpression( akTarget, -1 )
+	; funct.setRandomActorExpression( akCaster, -1 )
 EndEvent
 
  

@@ -11,10 +11,19 @@ Actor akPlayer = SexLab.PlayerRef
 While ( Utility.IsInMenuMode() )
 EndWhile
 
+
+If (Utility.RandomInt(0,100) > 80)
 	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
-SendModEvent("PCSubTransfer")
+	SendModEvent("PCSubTransfer")
+Else
+	; SendModEvent("PCSubFree")
+
+	; Free + Sex events can conflict - keep only sex for now 
+	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	SendModEvent("PCSubSex")
+Endif
 ;END CODE
 EndFunction
 ;END FRAGMENT

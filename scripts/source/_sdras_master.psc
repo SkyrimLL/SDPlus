@@ -111,13 +111,13 @@ Event OnDeath(Actor akKiller)
 	; It may be better to directly stop the quest here instead of relying on Mod Events
 
 	If (akKiller)
+
 		If (GetState() != "search") && (akKiller != kSlave) &&  fctFactions.checkIfSlaver (  akKiller ) &&  !fctFactions.checkIfFollower (  akKiller ) 
 			; Followers are not allowed to forcefully take the player as a slave to prevent friendly fire or rescue
 			; Only voluntary submission to followers is allowed
 
 			; Send all items back to Dreamworld storage
-			Actor kLastOwner = StorageUtil.GetFormValue(kSlave, "_SD_LastOwner") as Actor
-			kLastOwner.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+			kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
 			Self.GetOwningQuest().Stop()
 			; new master
@@ -252,14 +252,14 @@ Event OnInit()
 	; Welcome scene to replace rape after defeat
 	Int iRandomNum = Utility.RandomInt(0,100)
 
-	if (iRandomNum > 75)
+	if (iRandomNum > 85)
 		; Punishment
 		enslavement.PunishSlave(kMaster,kSlave)
 		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-	ElseIf (iRandomNum > 50)
+	ElseIf (iRandomNum > 70)
 		; Whipping
 		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-	Else
+	ElseIf (iRandomNum > 50)
 		; Sex
 		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 	EndIf
@@ -310,6 +310,7 @@ State monitor
 		; Master variable updates
 		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") )
 		kLeashCenter =  StorageUtil.GetFormValue(kSlave, "_SD_LeashCenter") as Actor
+		fctSlavery.SlaveryRefreshGlobalValues( kMaster, kSlave)
 
 		if (kLeashCenter == None)
 			fctConstraints.setLeashCenterRef(kMaster as ObjectReference)

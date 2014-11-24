@@ -45,6 +45,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	_SDGVP_can_join.SetValue( 0 )
 	
 	; API variables
+	StorageUtil.SetIntValue(kSlave, "_SD_iSold", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 1)
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", kMaster)
 	StorageUtil.SetFormValue(kSlave, "_SD_DesiredOwner", None)
@@ -275,6 +276,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
+	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
 
 	UpdateStatusDaily(  kMaster,  kSlave)
 EndFunction
@@ -294,7 +296,6 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
 
 		; Harness disabled for now as it overlaps with collar
 		; StorageUtil.StringListAdd(Game.GetPlayer(), "_SD_lDevices", "harness,leather,black") ; 6 - Harness
@@ -308,18 +309,16 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
 
-	Elseif (iOutfit == 2) ; Metal padded
+	Elseif (iOutfit == 2) ; Random
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,padded") ; 5 - Belt
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag") ; 3 - Gag
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold") ; 4 - Blindfold
+		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt") ; 5 - Belt
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
 	Else ; Other
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
@@ -329,7 +328,6 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather,black") ; 8 - Armbinders
 	EndIf
 EndFunction
 
@@ -350,10 +348,12 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 0)
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iSold", 0)
 	_SDGVP_enslaved.SetValue( 0 )
 
 	; Compatibility with other mods
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
+	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 EndFunction
 
 ; I know - these two functions could be turned into one. I am keeping them separate for now in case I need to treat master and slave differently later on
@@ -527,8 +527,24 @@ EndFunction
 
 ; refreshGlobalValues() - map some storageUtil values to GlobalValues for use with dialogue conditions
 function SlaveryRefreshGlobalValues( Actor kMaster, Actor kSlave)
+	Int masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
+	Int masterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
+	Int overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
+	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
+	Int masterSexNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex")
+	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunish")
+	Int masterFoodNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood")
+	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
 
-
+	_SDGVP_MasterDisposition.SetValue( masterDisposition ) 
+	_SDGVP_MasterDispositionOverall.SetValue( overallMasterDisposition ) 
+	_SDGVP_MasterTrust.SetValue( masterTrust ) 
+	_SDGVP_MasterPersonalityType.SetValue( masterPersonalityType ) 
+	_SDGVP_MasterNeedFood.SetValue( masterFoodNeed ) 
+	_SDGVP_MasterNeedGold.SetValue( masterGoldNeed ) 
+	_SDGVP_MasterNeedSex.SetValue( masterSexNeed ) 
+	_SDGVP_MasterNeedPunishment.SetValue( masterPunishNeed ) 
+	_SDGVP_SlaveryLevel.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") )
 EndFunction
 
 Function UpdateSlaveryLevel(Actor kSlave)
@@ -560,7 +576,7 @@ Function UpdateSlaveryLevel(Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", _SDGVP_config_max_slavery_level.GetValue() as Int )
 	EndIf
 
-	Debug.Notification("[_sdqs_fcts_slavery] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
+	Debug.Trace("[_sdqs_fcts_slavery] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
 EndFunction
 
 Function UpdateSlaveryRelationshipType(Actor kMaster, Actor kSlave)
@@ -609,9 +625,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	int iFoodComplete = 0
 	int iGoldComplete = 0
 
-
-	Debug.Notification("[SD] master needs: " + masterSexNeed + " "  + masterPunishNeed + " " + masterFoodNeed + " " + masterGoldNeed )
-
 	UpdateSlaveryLevel(kSlave)
 	UpdateSlaveryRelationshipType(kMaster, kSlave)
 
@@ -629,6 +642,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	; - Add tracking of master s needs, mood, trust
 	; :: Compare slave counts against master needs (sex, punish, gold, food)
 	; :: If counts lower than master personality type, master mood -2
+	; Do not count negative disposition for missing food and gold targets at early slavery stages
 	If (masterSexNeed < (-1 * masterNeedRange))
 		masterDisposition -= 1
 	EndIf
@@ -651,11 +665,11 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		masterDisposition += 2
 		iPunishComplete += 1
 	EndIf
-	If (masterGoldNeed >= (-1 * masterNeedRange)) && (masterGoldNeed <= masterNeedRange) && (slaveryLevel >= 1)
+	If (masterGoldNeed >= (-1 * masterNeedRange)) && (masterGoldNeed <= masterNeedRange) 
 		masterDisposition += 2
 		iFoodComplete += 1
 	EndIf
-	If (masterFoodNeed >= (-1 * masterNeedRange)) && (masterFoodNeed <= masterNeedRange) && (slaveryLevel >= 2)
+	If (masterFoodNeed >= (-1 * masterNeedRange)) && (masterFoodNeed <= masterNeedRange) 
 		masterDisposition += 2
 		iGoldComplete += 1
 	EndIf
@@ -669,19 +683,14 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		masterDisposition += 4
 		iPunishComplete += 2 
 	EndIf
-	If (masterGoldNeed > masterNeedRange) && (slaveryLevel >= 1)
+	If (masterGoldNeed > masterNeedRange) 
 		masterDisposition += 4
 		iFoodComplete += 2
 	EndIf
-	If (masterFoodNeed > masterNeedRange) && (slaveryLevel >= 2)
+	If (masterFoodNeed > masterNeedRange) 
 		masterDisposition += 4
 		iGoldComplete += 2 
 	EndIf
-
-	Debug.Trace("[SD] iSexComplete: " + iSexComplete )
-	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete )
-	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete )
-	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete )
 
 	; - Master personality profile
 	; If (masterPersonalityType == 0) ; 0 - Simple profile. No additional constraints
@@ -752,16 +761,49 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	EndIf
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
-	If (StorageUtil.GetIntValue(kSlave, "_SD_iDisposition") < 0)
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0)
 		overallMasterDisposition -= 1
 	Else
 		overallMasterDisposition += 1
 	EndIf
 	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
 
-	Debug.Notification("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
-	Debug.Notification("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
- 
+ 	SlaveryRefreshGlobalValues( kMaster, kSlave)
+
+	; Debug.Notification("[SD] master needs: " + masterSexNeed + " "  + masterPunishNeed + " " + masterFoodNeed + " " + masterGoldNeed )
+	; Debug.Notification("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+	; Debug.Notification("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
+
+	String statusSex = "Horny - "
+	String statusPunishment = "Vicious \n"
+	String statusFood = "Hungry - "
+	String statusGold = "Greedy \n"
+	String statusMood = "Angry - "
+	String statusTrust = "Suspicious \n"
+
+	If (iSexComplete==1)
+		statusSex = ""
+	Endif
+	If (iPunishComplete==1)
+		statusPunishment = ""
+	Endif
+	If (iFoodComplete==1)
+		statusFood = ""
+	Endif
+	If (iGoldComplete==1)
+		statusGold = ""
+	Endif
+	If (masterDisposition>=0)
+		statusMood = "Happy - "
+	EndIf
+	If (masterTrust>=0)
+		statusTrust = "Trusting \n"
+	Endif
+
+	Debug.Messagebox("It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust )
+
+	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust)
+
 	Debug.Trace("[SD] --- Slavery update" )
 	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
@@ -771,6 +813,10 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Debug.Trace("[SD] masterGoldNeed: " + masterGoldNeed )
 	Debug.Trace("[SD] masterNeedRange: " + masterNeedRange )
 	Debug.Trace("[SD] masterTrustRange: " + masterTrustRange )
+	Debug.Trace("[SD] iSexComplete: " + iSexComplete )
+	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete )
+	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete )
+	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete )
 
 EndFunction
 
@@ -847,3 +893,15 @@ GlobalVariable Property _SDGVP_can_join  Auto
 GlobalVariable Property _SDGVP_config_min_slavery_level Auto
 GlobalVariable Property _SDGVP_config_max_slavery_level Auto
 GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+
+GlobalVariable Property _SDGVP_MasterDisposition  Auto  
+GlobalVariable Property _SDGVP_MasterDispositionOverall  Auto  
+GlobalVariable Property _SDGVP_MasterTrust  Auto  
+GlobalVariable Property _SDGVP_MasterPersonalityType  Auto  
+GlobalVariable Property _SDGVP_MasterNeedFood  Auto  
+GlobalVariable Property _SDGVP_MasterNeedGold  Auto  
+GlobalVariable Property _SDGVP_MasterNeedSex  Auto  
+GlobalVariable Property _SDGVP_MasterNeedPunishment  Auto  
+GlobalVariable Property _SDGVP_SlaveryLevel  Auto  
+
+

@@ -519,14 +519,26 @@ State monitor
 					_SD_CollarStrangleImod.Remove()
 					Debug.Notification( "Your collar tightens around your throat..." )
 					_SD_CollarStrangleImod.Apply(fBlackoutRatio)
+					if (Utility.RandomInt(0,100)>80)
+						_SDSMP_choke.Play( Game.GetPlayer() )
+					EndIf
+
 				ElseIf (fBlackoutRatio < 0.6)
 					;_SD_CollarStrangleImod.Remove()
 					Debug.Notification( "Your breathing is painful..." )
 					_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
+					if (Utility.RandomInt(0,100)>80)
+						_SDSMP_choke.Play( Game.GetPlayer() )
+					EndIf
+
 				Else
 					;_SD_CollarStrangleImod.Remove()
 					Debug.Notification( "Your collar is choking you..." )
 					_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
+					if (Utility.RandomInt(0,100)>80)
+						_SDSMP_choke.Play( Game.GetPlayer() )
+					EndIf
+
 				EndIf
 
 				If (fBlackoutRatio >= 0.95)
