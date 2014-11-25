@@ -1,26 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 4
-Scriptname _SDQF_patch_frostfall_01 Extends Quest Hidden
-
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-GoToState("null")
-
-Int idx = 0
-While ( heatsources && idx < kArmor.Length )
-	If ( heatsources.Find( kArmor[idx] ) >= 0 )
-		heatsources.RemoveAddedForm( kArmor[idx] )
-	EndIf
-	idx += 1
-EndWhile
-
-_SDGVP_mirror_frostfallMortality.SetValue( -1 )
-_SDGVP_mirror_frostfallExposure.SetValue( -1 )
-mortality.SetValue( 0 )
-;END CODE
-EndFunction
-;END FRAGMENT
+Scriptname _SD_addon_frostfall_01 Extends Quest Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
@@ -43,6 +23,26 @@ While ( heatsources && idx < kArmor.Length )
 EndWhile
 
 RegisterForSingleUpdate( 1.0 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+GoToState("null")
+
+Int idx = 0
+While ( heatsources && idx < kArmor.Length )
+	If ( heatsources.Find( kArmor[idx] ) >= 0 )
+		heatsources.RemoveAddedForm( kArmor[idx] )
+	EndIf
+	idx += 1
+EndWhile
+
+_SDGVP_mirror_frostfallMortality.SetValue( -1 )
+_SDGVP_mirror_frostfallExposure.SetValue( -1 )
+mortality.SetValue( 0 )
 ;END CODE
 EndFunction
 ;END FRAGMENT
