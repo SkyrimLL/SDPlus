@@ -3,7 +3,7 @@ SDPlus
 
 This repository includes code for Skyrim mod 'Sanguine Debauchery +' and related add-ons.
 
-It is meant for development purpose only and includes onlye loose file.
+It is meant for development purpose and includes only loose files.
 
 For a more compact version with BSA file, use the released version at the official download link:
 
