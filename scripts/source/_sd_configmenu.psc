@@ -36,6 +36,7 @@ GlobalVariable Property _SDGVP_config_GagType  Auto
 GlobalVariable Property _SDGVP_config_min_slavery_level Auto
 GlobalVariable Property _SDGVP_config_max_slavery_level Auto
 GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+GlobalVariable Property _SDGVP_config_disposition_threshold Auto
 
 String[] Property _SDSP_config_genderRestrictions  Auto
 
@@ -142,6 +143,11 @@ Float _SDOID_config_S10_min = 0.0
 Float _SDOID_config_S10_max = 2.0
 Float _SDOID_config_S10_default = 0.8
 Float _SDOID_config_S10_inc = 0.1
+Int _SDOID_config_S11
+Float _SDOID_config_S11_min = 1.0
+Float _SDOID_config_S11_max = 20.0
+Float _SDOID_config_S11_default = 5.0
+Float _SDOID_config_S11_inc = 1.0
 
 Int _SDOID_config_M1 ;unused
 
@@ -461,6 +467,7 @@ event OnPageReset(string a_page)
 		_SDOID_config_S4 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_RADIUS", _SDGVP_config_escape_radius.GetValue() as Float, "$SD_UNITS") ;13 - 7
 		_SDOID_config_S5 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_TIMER", _SDGVP_config_escape_timer.GetValue() as Float, "$SD_SECONDS") ;15 - 8
 		; _SDOID_config_S6 = AddSliderOption("$SD_SLIDER_P0_DAYS_TO_START_TASKS", _SDGVP_config_work_start.GetValue() as Float, "$SD_DAYS") ; 17 - 9
+		_SDOID_config_S11 = AddSliderOption("Disposition threshold", _SDGVP_config_disposition_threshold.GetValue() as Float,"{1}")
 		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
 		AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
@@ -670,6 +677,8 @@ event OnOptionHighlight(int a_option)
 		SetInfoText("Maximum value for slavery level (0 = defiant, 6 = total submissive). Should be higher than Min Slavery Level.")
 	ElseIf ( a_option == _SDOID_config_S10 )
 		SetInfoText("Value multipler reduce (or increase) slavery exposure after each day.")
+	ElseIf ( a_option == _SDOID_config_S11 )
+		SetInfoText("Overall disposition to be considered for slave to be released (or disposed of). Use this as an Enslavement Difficulty setting.")
 	;#################################################################################################			
 	ElseIf ( a_option == _SDOID_config_S1 )
 		SetInfoText("$_SDOID_config_S1")
@@ -882,6 +891,11 @@ event OnOptionSliderOpen(int a_option)
 		SetSliderDialogDefaultValue( _SDOID_config_S10_default )
 		SetSliderDialogRange( _SDOID_config_S10_min, _SDOID_config_S10_max )
 		SetSliderDialogInterval( _SDOID_config_S10_inc )
+	ElseIf ( a_option == _SDOID_config_S11 )
+		SetSliderDialogStartValue( _SDGVP_config_disposition_threshold.GetValue() as Float )
+		SetSliderDialogDefaultValue( _SDOID_config_S11_default )
+		SetSliderDialogRange( _SDOID_config_S11_min, _SDOID_config_S11_max )
+		SetSliderDialogInterval( _SDOID_config_S11_inc )
 	EndIf
 endEvent
 
@@ -925,6 +939,9 @@ event OnOptionSliderAccept(int a_option, float a_value)
 	ElseIf ( a_option == _SDOID_config_S10 )
 		_SDGVP_config_slavery_level_mult.SetValue( a_value )
 		SetSliderOptionValue(_SDOID_config_S10, a_value,"{1}")
+	ElseIf ( a_option == _SDOID_config_S11 )
+		_SDGVP_config_disposition_threshold.SetValue( a_value )
+		SetSliderOptionValue(_SDOID_config_S11, a_value,"{1}")
 	EndIf
 endEvent
 

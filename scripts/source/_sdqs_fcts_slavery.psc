@@ -60,6 +60,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	StorageUtil.SetFloatValue(kSlave, "_SD_fLastEnslavedGameTime", StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavedGameTime"))
 	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavedGameTime", _SDGVP_gametime.GetValue())
+	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavementDuration", 0.0)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentGameTime", 0.0)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
 	StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 0)
@@ -117,7 +118,9 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryExposure")) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") == 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryExposure", 1)
 	EndIf
-
+	
+	StorageUtil.SetIntValue(kSlave, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
+	; Tracking also _SD_iSub and _SD_iDom (through the player's answers to Resist or Submit menus
 
 	; - Master personality profile
 	; 0 - Simple profile. No additional constraints
@@ -244,11 +247,11 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; Outfit selection - Commoner by default
 	int outfitID = 0
 	ActorBase PlayerBase = Game.GetPlayer().GetActorBase()
-				
+
 	if (kMaster.HasKeyword( ActorTypeNPC ))
 		if (PlayerBase.GetSex() == 0)
-				; Player is male - force outfit 1 for model compatibility
-				outfitID = 1
+				; Player is male - force outfit 0 for model compatibility
+				outfitID = 0
 
 		Elseif ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
 			; Greater magicka - use magicka outfit
@@ -259,7 +262,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			outfitID = 1
 
 		EndIf
-	ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
+	ElseIf ( fctFactionsV3.checkIfFalmer ( kMaster) )
 		outfitID = 5
 	Else
 		outfitID = 3
@@ -279,6 +282,9 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
 
 	UpdateStatusDaily(  kMaster,  kSlave)
+
+	SendModEvent("SDEnslavedStart") 
+
 EndFunction
 
 function InitMasterDevices( Actor kMaster, Int iOutfit)
@@ -545,6 +551,7 @@ function SlaveryRefreshGlobalValues( Actor kMaster, Actor kSlave)
 	_SDGVP_MasterNeedSex.SetValue( masterSexNeed ) 
 	_SDGVP_MasterNeedPunishment.SetValue( masterPunishNeed ) 
 	_SDGVP_SlaveryLevel.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") )
+	_SDGVP_sanguine_blessings.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iSanguineBlessings")  )
 EndFunction
 
 Function UpdateSlaveryLevel(Actor kSlave)
@@ -576,7 +583,7 @@ Function UpdateSlaveryLevel(Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", _SDGVP_config_max_slavery_level.GetValue() as Int )
 	EndIf
 
-	Debug.Trace("[_sdqs_fcts_slavery] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
+	Debug.Trace("[SD] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
 EndFunction
 
 Function UpdateSlaveryRelationshipType(Actor kMaster, Actor kSlave)
@@ -649,7 +656,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	If (masterPunishNeed <  (-1 * masterNeedRange))
 		masterDisposition -= 1
 	EndIf
-	If (masterGoldNeed <  (-1 * masterNeedRange)) && (slaveryLevel >= 1)
+	If (masterGoldNeed <  (-5 * masterNeedRange)) && (slaveryLevel >= 1)
 		masterDisposition -= 1
 	EndIf
 	If (masterFoodNeed <  (-1 * masterNeedRange)) && (slaveryLevel >= 2)
@@ -665,7 +672,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		masterDisposition += 2
 		iPunishComplete += 1
 	EndIf
-	If (masterGoldNeed >= (-1 * masterNeedRange)) && (masterGoldNeed <= masterNeedRange) 
+	If (masterGoldNeed >= (-5 * masterNeedRange)) && (masterGoldNeed <= (masterNeedRange * 5)) 
 		masterDisposition += 2
 		iFoodComplete += 1
 	EndIf
@@ -683,7 +690,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		masterDisposition += 4
 		iPunishComplete += 2 
 	EndIf
-	If (masterGoldNeed > masterNeedRange) 
+	If (masterGoldNeed > (masterNeedRange * 5)) 
 		masterDisposition += 4
 		iFoodComplete += 2
 	EndIf
@@ -740,7 +747,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
 	EndIf
 
-	If fctFactions.checkIfFalmer (  kMaster ) 
+	If fctFactionsV3.checkIfFalmer (  kMaster ) 
 		; Falmers follow slave by default
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
 	EndIf
@@ -761,10 +768,10 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	EndIf
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
-	If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0)
-		overallMasterDisposition -= 1
-	Else
+	If ( (iSexComplete + iPunishComplete + iFoodComplete + iGoldComplete) >=2 ) ; (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0)
 		overallMasterDisposition += 1
+	Else
+		overallMasterDisposition -= 1
 	EndIf
 	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
 
@@ -800,23 +807,20 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		statusTrust = "Trusting \n"
 	Endif
 
-	Debug.Messagebox("It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust )
+	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust 
+	Debug.Messagebox(statusMessage + "OverallDisposition: " + overallMasterDisposition)
 
-	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust)
+	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
 	Debug.Trace("[SD] --- Slavery update" )
-	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+	Debug.Trace("[SD] " + statusMessage)
+	Debug.Trace("[SD] iSexComplete: " + iSexComplete + " SexNeed: " + masterSexNeed + " +/- " + masterNeedRange)
+	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete + " PunishNeed: " + masterPunishNeed + " +/- " + masterNeedRange )
+	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete + " FoodNeed: " + masterFoodNeed + " +/- " + masterNeedRange  )
+	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete + " GoldNeed: " + masterGoldNeed + " +/- " + masterNeedRange * 5 )
 	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
-	Debug.Trace("[SD] masterSexNeed: " + masterSexNeed )
-	Debug.Trace("[SD] masterPunishNeed: " + masterPunishNeed )
-	Debug.Trace("[SD] masterFoodNeed: " + masterFoodNeed )
-	Debug.Trace("[SD] masterGoldNeed: " + masterGoldNeed )
-	Debug.Trace("[SD] masterNeedRange: " + masterNeedRange )
-	Debug.Trace("[SD] masterTrustRange: " + masterTrustRange )
-	Debug.Trace("[SD] iSexComplete: " + iSexComplete )
-	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete )
-	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete )
-	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete )
+	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition )
+	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
 EndFunction
 
@@ -889,6 +893,7 @@ SexLabFrameWork Property SexLab Auto
 GlobalVariable Property _SDGVP_gametime  Auto  
 GlobalVariable Property _SDGVP_enslaved  Auto  
 GlobalVariable Property _SDGVP_can_join  Auto  
+GlobalVariable Property _SDGVP_sanguine_blessings Auto  
  
 GlobalVariable Property _SDGVP_config_min_slavery_level Auto
 GlobalVariable Property _SDGVP_config_max_slavery_level Auto

@@ -15,12 +15,14 @@ Quest Property _SDQP_enslavement_tasks  Auto
 Quest Property _SDQP_thug_slave  Auto
 
 Quest Property _SD_dreamQuest  Auto
+_sdqs_dream Property dreamQuest Auto
 
 ReferenceAlias Property Alias__SDRA_lust_m  Auto
 ReferenceAlias Property Alias__SDRA_lust_f  Auto
 
 Cell[] Property _SDCP_sanguines_realms  Auto  
 
+GlobalVariable Property _SDGVP_gender_restrictions Auto
 GlobalVariable Property _SDGVP_config_lust auto
 GlobalVariable Property _SDGV_leash_length  Auto
 GlobalVariable Property _SDGV_free_time  Auto
@@ -48,7 +50,8 @@ ReferenceAlias Property _SDRAP_masters_key  Auto
 ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_master  Auto
 ReferenceAlias Property _SDRAP_slaver  Auto
-ReferenceAlias Property _SDRAP_wanderer  Auto
+ReferenceAlias Property _SDRAP_slaver2_m  Auto
+ReferenceAlias Property _SDRAP_slaver2_f  Auto
 ReferenceAlias Property _SDRAP_bindings  Auto
 ReferenceAlias Property _SDRAP_shackles  Auto
 Float Property _SDFP_bindings_health = 10.0 Auto
@@ -110,14 +113,17 @@ Float fLastEscape
 
 Actor kMaster
 Actor kSlave
-Actor kSlaver
-Actor kWanderer
+ObjectReference kSlaverDest
+ObjectReference kSlaver
+ObjectReference kSlaver2_m
+ObjectReference kSlaver2_f
 Actor kCombatTarget
 Actor kLeashCenter
 ObjectReference kBindings
 ObjectReference kShackles
 ObjectReference kCollar
 ObjectReference kGag
+int iPlayerGender
 
 Float fRFSU = 0.5
 
@@ -276,8 +282,10 @@ State monitor
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 		kSlave = _SDRAP_slave.GetReference() as Actor
-		kSlaver = _SDRAP_slaver.GetReference() as Actor
-		kWanderer = _SDRAP_wanderer.GetReference() as Actor
+
+		kSlaver = _SDRAP_slaver.GetReference() as ObjectReference
+		kSlaver2_m = _SDRAP_slaver2_m.GetReference() as ObjectReference
+		kSlaver2_f = _SDRAP_slaver2_f.GetReference() as ObjectReference
 ;		kBindings = _SDRAP_bindings.GetReference() as ObjectReference
 ;		kShackles = _SDRAP_shackles.GetReference() as ObjectReference
 ;		kCollar = _SDRAP_collar.GetReference() as ObjectReference
@@ -285,6 +293,7 @@ State monitor
 		fOutOfCellTime = GetCurrentRealTime()
 		fLastEscape = GetCurrentRealTime() - 5.0
 		fLastIngest = GetCurrentRealTime() - 5.0
+		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
 
 		; If ( RegisterForAnimationEvent(kSlave, "weaponDraw") )
 		; EndIf
@@ -342,6 +351,7 @@ State monitor
 
 		fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
 		fEnslavementDuration = fctSlavery.GetEnslavementDuration( kSlave)
+		StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavementDuration", fEnslavementDuration ) 
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -400,43 +410,91 @@ State monitor
 
 			GoToState("waiting")
 
-		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < -20) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene()
+		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene()
 			; Slavery negative 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
 
-			If (Utility.RandomInt(0,100)>90) && (_SD_dreamQuest.GetStage() != 0)
+			; Debug.Notification("[SD] Endgame: " + kSlaver )
+			; Debug.Notification("[SD] Buyout: " + fBuyout)
+
+			; genderRestrictions = 0 - any / 1 - same / 2 - opposite
+
+			if (Utility.RandomInt(0,100)>50)
+				kSlaverDest = kSlaver
+			else
+				kSlaverDest = kSlaver2_m
+			Endif
+		
+			Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+
+			If (iPlayerGender  == 0)
+				; iPlayerGender = 0 - male
+				if (genderRestrictions == 2)
+					kSlaverDest = kSlaver2_f
+				endif
+					
+			Else
+				; iPlayerGender = 1 - female
+				if (genderRestrictions == 1)
+					kSlaverDest = kSlaver2_f
+				endif
+				
+			EndIf
+
+			; Debug.MessageBox("[SD] PlayerGender: " + iPlayerGender + "\n Restrictions: " + genderRestrictions)
+
+			If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest)  )
 				; Player saved by Sanguine
 				Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
 				_SD_dreamQuest.SetStage(20)
+			
+			ElseIf (_SD_dreamQuest.GetStage() == 0) && (!kSlaverDest)
+				; Player saved by Sanguine
+				; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+				_SD_dreamQuest.SetStage(10)
 
-			ElseIf (fBuyout >= 0) && !kSLaver.IsDead()
+			ElseIf (fBuyout < 0) && kSlaverDest
 				; Master made profit - slave can be sold
-				_SDSMP_choke.Play( Game.GetPlayer() )
+				if (iPlayerGender==0)
+					_SDSMP_choke_m.Play( Game.GetPlayer() )
+				else
+					_SDSMP_choke.Play( Game.GetPlayer() )
+				endif
 
-                Game.FadeOutGame(true, true, 0.5, 5)
-				kSlave.MoveTo( kSlaver )
-				Game.FadeOutGame(false, true, 2.0, 20)
+				Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
+				; Reset to 0 to avoid loop with endgame situations
+				StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
+				fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
 
-				Utility.Wait( 1.0 )
-
-				Debug.MessageBox( "Your owner is very disappointed in you and sells you off." )
-
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaver)
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
 				SendModEvent("PCSubTransfer")
 
-
-			ElseIf (fBuyout < 0) 
-				; Master lost money - get rid of slave
-				_SDSMP_choke.Play( Game.GetPlayer() )
-
                 Game.FadeOutGame(true, true, 0.5, 5)
-				kSlave.MoveTo( kWanderer )
+				(kSlave as ObjectReference).MoveTo( kSlaverDest )
 				Game.FadeOutGame(false, true, 2.0, 20)
 
 				Utility.Wait( 1.0 )
 
-				Debug.MessageBox( "Your owner is tired of you and discards you like an old shoe." )
+
+
+			ElseIf (fBuyout >= 0) && kSlaverDest
+				; Master lost money - get rid of slave
+				if (iPlayerGender==0)
+					_SDSMP_choke_m.Play( Game.GetPlayer() )
+				else
+					_SDSMP_choke.Play( Game.GetPlayer() )
+				endif
+
+				Debug.MessageBox( "Your owner is tired of your attitude and suddenly hits the back of your head and renders you unconscious.\n When you come to your senses, you find yourself discarded in the wilderness like an old shoe." )
+				; Reset to 0 to avoid loop with endgame situations
+				StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
 
 				SendModEvent("PCSubFree")
+
+                ; Game.FadeOutGame(true, true, 0.5, 5)
+				; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+				; Replace by code to dreamDestination
+				dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
+				; Game.FadeOutGame(false, true, 2.0, 20)
 
 				If (Utility.RandomInt(0,100) > 90) 
 					; Send PC some help
@@ -445,7 +503,7 @@ State monitor
 
 			EndIf
  
-		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") > 0) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementDuration") > _SDGVP_join_days.GetValue() )
+		ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") >  (_SDGVP_config_disposition_threshold.GetValue() as Int)) || (fBuyout >= 0)  ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() )
 			; Slavery positive 'endgame' - player can join master or be cast away
 
 	 		_SDGVP_can_join.SetValue(1) 
@@ -520,7 +578,12 @@ State monitor
 					Debug.Notification( "Your collar tightens around your throat..." )
 					_SD_CollarStrangleImod.Apply(fBlackoutRatio)
 					if (Utility.RandomInt(0,100)>80)
-						_SDSMP_choke.Play( Game.GetPlayer() )
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( Game.GetPlayer() )
+						else
+							_SDSMP_choke.Play( Game.GetPlayer() )
+						endif
+
 					EndIf
 
 				ElseIf (fBlackoutRatio < 0.6)
@@ -528,7 +591,12 @@ State monitor
 					Debug.Notification( "Your breathing is painful..." )
 					_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
 					if (Utility.RandomInt(0,100)>80)
-						_SDSMP_choke.Play( Game.GetPlayer() )
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( Game.GetPlayer() )
+						else
+							_SDSMP_choke.Play( Game.GetPlayer() )
+						endif
+
 					EndIf
 
 				Else
@@ -536,7 +604,12 @@ State monitor
 					Debug.Notification( "Your collar is choking you..." )
 					_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
 					if (Utility.RandomInt(0,100)>80)
-						_SDSMP_choke.Play( Game.GetPlayer() )
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( Game.GetPlayer() )
+						else
+							_SDSMP_choke.Play( Game.GetPlayer() )
+						endif
+
 					EndIf
 
 				EndIf
@@ -544,7 +617,12 @@ State monitor
 				If (fBlackoutRatio >= 0.95)
 				;	Debug.Notification("You should blackout here.")
 					_SD_CollarStrangleImod.Remove()
-					_SDSMP_choke.Play( Game.GetPlayer() )
+					if (iPlayerGender==0)
+						_SDSMP_choke_m.Play( Game.GetPlayer() )
+					else
+						_SDSMP_choke.Play( Game.GetPlayer() )
+					endif
+
 
 	                Game.FadeOutGame(true, true, 0.5, 5)
 					kSlave.MoveTo( kMaster )
@@ -685,10 +763,11 @@ State monitor
 		ElseIf ( kSlave.WornHasKeyword( _SDKP_collar ) )
 			; Slave is collared - control item awareness
 
-			Debug.Notification( "$SD_MESSAGE_MASTER_AWARE" )
+			; Debug.Notification( "$SD_MESSAGE_MASTER_AWARE" )
 			
-			If ( iuType == 46 || akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || akBaseItem.HasKeyword( _SDKP_food_vendor ) )
+			If ( akSourceContainer == (kMaster as ObjectReference) ) && ( iuType == 46 || akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || akBaseItem.HasKeyword( _SDKP_food_vendor ) )
 				; kPotion = 46 or food
+				; Only check when Master is feeding Slave
 
 				If ( GetCurrentRealTime() - fLastIngest > 5.0 && !fctOutfit.isGagEquipped(kSlave) )
 					If ( aiItemCount - 1 > 0 )
@@ -791,7 +870,12 @@ State escape
 			; Slave is close to master and master is not dead, stop escape state
 
 			Debug.Notification("The collar is sending shocks." )
-			_SDSMP_choke.Play( Game.GetPlayer() )
+			if (iPlayerGender==0)
+				_SDSMP_choke_m.Play( Game.GetPlayer() )
+			else
+				_SDSMP_choke.Play( Game.GetPlayer() )
+			endif
+
 			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 			
 			kSlave.DispelSpell( _SDSP_Weak )
@@ -884,7 +968,12 @@ State escape
 					If (Utility.RandomInt(0,100)>=90)
 
 						Debug.Notification("The collar is sending shocks." )
-						_SDSMP_choke.Play( Game.GetPlayer() )
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( Game.GetPlayer() )
+						else
+							_SDSMP_choke.Play( Game.GetPlayer() )
+						endif
+
 						_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 
 						If (Utility.RandomInt(0,100)>=95)
@@ -934,6 +1023,7 @@ EndState
 
 GlobalVariable Property _SDGVP_state_joined  Auto  
 GlobalVariable Property _SDGVP_state_housekeeping  Auto   
+GlobalVariable Property _SDGVP_config_disposition_threshold Auto
 
 SexLabFramework Property SexLab  Auto  
 
@@ -951,3 +1041,5 @@ Keyword Property _SDKP_hunt  Auto
 Sound Property _SDSMP_choke  Auto  
 
 ImageSpaceModifier Property _SD_CollarStrangleImod  Auto  
+
+Sound Property _SDSMP_choke_m  Auto  
