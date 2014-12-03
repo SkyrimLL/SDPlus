@@ -339,6 +339,9 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 	Actor kCurrentMaster
 		
 	Debug.Trace("[_sdras_player] Receiving 'transfer slave' event - New master: " + kNewMaster)
+	If (kNewMaster)
+		Debug.Trace("[_sdras_player] Faction check: " + fctFactions.checkIfSlaver (  kNewMaster ) )
+	EndIf
 
 	If (kNewMaster != None)   &&  fctFactions.checkIfSlaver (  kNewMaster )
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
@@ -612,6 +615,8 @@ State monitor
 				Float fNewExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float) * (_SDGVP_config_slavery_level_mult.GetValue() as Float)
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
+
+				StorageUtil.SetIntValue(kPlayer, "_SD_iGenderRestrictions",  _SDGVP_config[3].GetValue() as Int )
 				fctSlavery.UpdateSlaveryLevel(kPlayer) 
 				
 				; Debug.Notification( "[SD] Player status - slavery exposure: " + StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure"))
@@ -759,7 +764,7 @@ State monitor
 					; Debug.SetGodMode( True )
 					; kPlayer.EndDeferredKill()
 					
-					If (Utility.RandomInt(0,100) > 90) && (_SD_dreamQuest.GetStage() != 0) 
+					If (Utility.RandomInt(0,100) > 95) && (_SD_dreamQuest.GetStage() != 0) 
 						; Send PC to Dreamworld
 
 						_SD_dreamQuest.SetStage(100)

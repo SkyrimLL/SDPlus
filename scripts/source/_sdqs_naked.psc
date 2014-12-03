@@ -35,8 +35,10 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 			; Debug.Messagebox("An overwhelming craving stops you in your tracks and feeds the lust of your aggressor.")
 			; Utility.Wait(2)
+			StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
 			funct.SanguineRape(akSpeaker, akTarget,SexLabInTags,SexLabOutTags )
 		Else
+			StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iDom", StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iDom") + 1)
 			SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 		EndIf
 	EndIf

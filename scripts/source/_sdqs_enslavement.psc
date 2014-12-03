@@ -242,6 +242,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	
 		fctSlavery.StartSlavery( kMaster, kSlave)
+		Utility.Wait(2.0)
 
 		fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
 
@@ -397,7 +398,7 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave)
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
 		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			Debug.Notification("[SD] Slave Punishment")
+			; Debug.Notification("[SD] Slave Punishment")
 
 			if (!fctOutfit.IsGagEquipped(akSlave))
 				AddSlavePunishment( kActor = akSlave, bGag = True)
@@ -432,7 +433,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave)
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
 		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			Debug.Notification("[SD] Slave Reward")
+			; Debug.Notification("[SD] Slave Reward")
 
 			if (fctOutfit.IsBlindfoldEquipped(kSlave))
 				RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
