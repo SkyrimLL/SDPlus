@@ -25,4 +25,4 @@ For discussions about issues, ideas and a list of work in progress, use the offi
 - a progressive slavery level, from rebelious to totally submissive. This will track exposure to being a slave and cooldown after being released (if you are free for too long, you will have to start from scratch at the next enslavement)
 - an API for modders to trigger enslavement and control the dialogues from other mods
 - many bug fixes and small adjustments
-- 
+
