@@ -93,7 +93,7 @@ Bool Function isArmorRemovable ( Armor kArmor )
 		Return False
 	EndIf
 
-	Return (!kArmor.HasKeywordString("_SD_nounequip")  && !kArmor.HasKeywordString("_SD_Spriggan")  && !kArmor.HasKeywordString("SOS_Underwear")  && !kArmor.HasKeywordString("SOS_Genitals") && !kArmor.HasKeywordString("_SLMC_MCdevice") && !kArmor.HasKeywordString("SexLabNoStrip") && !kArmor.hasKeywordString("zad_Lockable") && !kArmor.hasKeywordString("zad_deviousplug") && !kArmor.hasKeywordString("zad_DeviousArmbinder") )
+	Return (!kArmor.HasKeywordString("_SD_nounequip")  && !kArmor.HasKeywordString("_SD_DeviousSpriggan")  && !kArmor.HasKeywordString("SOS_Underwear")  && !kArmor.HasKeywordString("SOS_Genitals") && !kArmor.HasKeywordString("_SLMC_MCdevice") && !kArmor.HasKeywordString("SexLabNoStrip") && !kArmor.hasKeywordString("zad_Lockable") && !kArmor.hasKeywordString("zad_deviousplug") && !kArmor.hasKeywordString("zad_DeviousArmbinder") )
 
 EndFunction
 
@@ -165,7 +165,7 @@ Bool Function isPunishmentEquipped (  Actor akActor )
 		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
 		If (kForm != None)
 			Armor kArmor = kForm  as Armor
-			bDeviousDeviceEquipped = (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_Spriggan")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_DeviousArmbinder")) 
+			bDeviousDeviceEquipped = (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_DeviousSpriggan")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_DeviousArmbinder")) 
 		Else
 			bDeviousDeviceEquipped = False
 		EndIf
@@ -441,21 +441,21 @@ EndFunction
 ; 4 - Blindfold
 ; 5 - Belt
 ; 6 - Plug Anal
-; 7 - Plug Vaginal
-; 8 - Armbinders
+; 7 - Plug Vaginal 
 
 Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1 )
 	Form kForm
-	Int[] uiSlotMask = New Int[9]
+	Int[] uiSlotMask = New Int[8]
 	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
 	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms) 
 	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
 	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
-	uiSlotMask[4] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[5]=  0x01000000 ;54  DD Plugs (Vaginal)
-	uiSlotMask[6] = 0x02000000 ;55  DD Blindfold
-	uiSlotMask[7] = 0x00080000 ;49  DD Chastity Belts
-	uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
+	uiSlotMask[4] = 0x02000000 ;55  DD Blindfold
+	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
+	uiSlotMask[6] = 0x00040000 ;48  DD plugs (Anal)
+	uiSlotMask[7]=  0x01000000 ;54  DD Plugs (Vaginal)
+
+	; uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
 	; uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
 	; uiSlotMask[10] = 0x00000008 ;33  Bindings / DD Armbinders
 	; uiSlotMask[11]= 0x00000004 ;32  Spriggan host
@@ -468,7 +468,7 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 		If (kForm != None)
 			Armor kArmor = kForm  as Armor
 			Debug.Trace("[SD] SetOutfit: test zad_lockable for part " +  iOutfitPart + " - " + kForm.hasKeywordString("zad_Lockable") )
-			return (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_Spriggan")  || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_deviousGag") || kForm.hasKeywordString("zad_DeviousArmbinder")  ) 
+			return (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_DeviousSpriggan")  || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_deviousGag") || kForm.hasKeywordString("zad_DeviousArmbinder")  ) 
 		Else
 			Debug.Trace("[SD] SetOutfit: test zad_lockable - nothing equipped for part " +  iOutfitPart )
 			Return False
@@ -479,6 +479,47 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 	Return False
 EndFunction
 
+; 0 - Collar
+Bool Function isEquippedCollarKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 0, sKeyword )
+EndFunction
+
+; 1 - Arms
+Bool Function isEquippedCuffsKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 1, sKeyword )
+EndFunction
+
+; 2 - Legs
+Bool Function isEquippedShacklesKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 2, sKeyword )
+EndFunction
+
+; 3 - Gag
+Bool Function isEquippedGagKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 3, sKeyword )
+EndFunction
+
+; 4 - Blindfold
+Bool Function isEquippedBlindfoldKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 4, sKeyword )
+EndFunction
+
+; 5 - Belt
+Bool Function isEquippedBeltKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 5, sKeyword )
+EndFunction
+
+; 6 - Plug Anal
+Bool Function isEquippedPlugAnalKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 6, sKeyword )
+EndFunction
+
+; 7 - Plug Vaginal 
+Bool Function isEquippedPlugVaginalKeyword( Actor akActor,  String sKeyword  )
+	Return isDeviousOutfitPartByKeyword (  akActor, 7, sKeyword )
+EndFunction
+
+
 Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -1, String deviousKeyword = "zad_Lockable"  )
 	Form kForm
 	Int[] uiSlotMask = New Int[9]
@@ -486,11 +527,12 @@ Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -
 	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
 	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
 	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
-	uiSlotMask[4] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[5]=  0x01000000 ;54  DD Plugs (Vaginal)
-	uiSlotMask[6] = 0x02000000 ;55  DD Blindfold
-	uiSlotMask[7] = 0x00080000 ;49  DD Chastity Belts
-	uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
+	uiSlotMask[4] = 0x02000000 ;55  DD Blindfold
+	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
+	uiSlotMask[6] = 0x00040000 ;48  DD plugs (Anal)
+	uiSlotMask[7]=  0x01000000 ;54  DD Plugs (Vaginal)
+
+	; uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
 	; uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
 	; uiSlotMask[10] = 0x00000008 ;33  Bindings / DD Armbinders
 	; uiSlotMask[11]= 0x00000004 ;32  Spriggan host

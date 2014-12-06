@@ -41,8 +41,8 @@ Function Maintenance()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 
-	If fVersion < 3.02 ; <--- Edit this value when updating
-		fVersion = 3.02; and this
+	If fVersion < 3.03 ; <--- Edit this value when updating
+		fVersion = 3.03; and this
 		Debug.Notification("Updating to SD+ version: " + fVersion)
 		; Update Code
 
@@ -50,6 +50,11 @@ Function Maintenance()
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
 		_SDGVP_naked_rape_delay.SetValue( fNext )
 		_SDGVP_naked_rape_chance.SetValue(25.0)
+
+		If ( _SD_controller.IsRunning() )
+			_SD_controller.Reset()
+
+		EndIf
 
 		If ( _SD_dream_destinations.IsRunning() )
 			_SD_dream_destinations.Stop()

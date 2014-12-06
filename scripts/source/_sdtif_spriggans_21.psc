@@ -14,7 +14,7 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 	Debug.Messagebox( "The sweet scent of your sap drenched skin is irresistible..." )
 
 	Game.ForceThirdPerson()
-	Debug.SendAnimationEvent(akRef2 as ObjectReference, "bleedOutStart")
+	; Debug.SendAnimationEvent(akRef2 as ObjectReference, "bleedOutStart")
 
 	SprigganFX.Play( akSpeakerRef, 30 )
 	_SDSP_host_flare.RemoteCast(akRef2 , akRef2 , akRef2 )

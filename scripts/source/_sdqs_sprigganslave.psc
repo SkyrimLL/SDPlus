@@ -104,7 +104,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Debug.SendAnimationEvent(Game.GetPlayer(), "Unequip")
 		; Debug.SendAnimationEvent(Game.GetPlayer(), "ZazAPC231")
-
+		akSlave.StopCombatAlarm()
+		akSlave.StopCombat()
 
 		fDaysEnslaved = GetCurrentGameTime()
 		fSprigganPunish = -1.0
@@ -171,6 +172,7 @@ EndEvent
 
 Event OnUpdateGameTime()
 	; Debug.Notification( "[Spriggan slave loop] kSlave = " + kSlave)
+	Actor kPlayer = Game.getPlayer()
 
 	If (!kSlave)
 		Return
@@ -182,7 +184,7 @@ Event OnUpdateGameTime()
 	; Debug.Notification( "[Spriggan slave loop] kSlave = Loaded " )
 
 	fTimeElapsed = GetCurrentGameTime() - fDaysEnslaved
-	fSprigganPunish = funct.floatWithinRange( fTimeElapsed * 5.0, 2.5, 80.0 )
+	fSprigganPunish = funct.floatWithinRange( fTimeElapsed * 5.0, 2.5, 40.0 ) ; original settings - 2.5, 80.0
 	
 	If ( fTimeElapsed < 120.0 )
 		fSprigganPower = funct.floatLinearInterpolation( 0.0625, 1.0, 0.0, fTimeElapsed, 120.0 )
@@ -196,10 +198,13 @@ Event OnUpdateGameTime()
 
     randomVar = RandomInt( 0, 100 ) 
 
-    If (!( kSlave as Actor ).IsInCombat() && !( kSlave as Actor ).GetDialogueTarget() ) && !(( kSlave as Actor ).IsOnMount()); !( kSlave as Actor ).GetCurrentScene() && 
-        ; Debug.Notification( randomVar )
-		If (randomVar >= 98 ) &&  (SexLab.ValidateActor(kSlave as Actor) > 0) 
-			_SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
+    If !kPlayer.IsInCombat() && !kPlayer.IsOnMount()
+    	; !( kSlave as Actor ).GetCurrentScene() 
+    	; && !kPlayer.GetDialogueTarget()  ; always false when used on player - http://www.creationkit.com/Talk:GetDialogueTarget_-_Actor
+
+        ; Debug.Notification( randomVar ) 
+		If (randomVar >= 98 ) &&  (SexLab.ValidateActor(kPlayer) > 0) 
+			_SDSP_host_flare.RemoteCast(kPlayer, kPlayer, kPlayer)
 			Debug.Notification( "Tendrils are digging deeper under your skin..." )
 
 			SprigganFX.Play( kSlave, 60 )
@@ -231,13 +236,22 @@ Event OnUpdateGameTime()
 			SexLab.ApplyCum(kSlave as Actor, 1)
 		EndIf
 	Else
-		; Debug.Notification( "[Spriggan slave loop] Player is busy: " + SexLab.ValidateActor(kSlave as Actor) )       
+		; Debug.Notification( "[SD] Issue with Spriggan root validation." )
+		Debug.Trace( "[Spriggan slave loop] Player is busy: SexLab.ValidateActor code: " + SexLab.ValidateActor(kPlayer) + " - Combat: " + !kPlayer.IsInCombat()  + " - Dialogue: " +  !kPlayer.GetDialogueTarget()   + " - Mount: " +  !kPlayer.IsOnMount() )       
 	EndIf
 
 	; Add housekeeping for parts of the armor
+	If fctOutfit.isEquippedBeltKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
+			Debug.Notification( "[SD] Adding player to: " + SprigganFaction )
+			Debug.Trace( "[SD] Adding player to: " + SprigganFaction )
+			kPlayer.AddToFaction(SprigganFaction)
+			kPlayer.AddToFaction(GiantFaction)
+			; GiantFaction.SetReaction(PlayerFaction, 3)
+			; SprigganFaction.SetReaction(PlayerFaction, 3)
+	EndIf
 
 	; random punishment events
-	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !( kSlave as Actor ).GetCurrentScene() && !( kSlave as Actor ).IsInCombat() && !( kSlave as Actor ).GetDialogueTarget() )
+	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !kPlayer.GetCurrentScene() && !kPlayer.IsInCombat() ) ;  && !kPlayer.GetDialogueTarget() )
 		; _SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
 		Game.ForceThirdPerson()
 		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
@@ -260,6 +274,12 @@ Event OnUpdateGameTime()
 
 		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isBeltEquipped (  kSlave as Actor ))
 			fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
+
+			kPlayer.AddToFaction(SprigganFaction)
+			kPlayer.AddToFaction(GiantFaction)
+			; GiantFaction.SetReaction(PlayerFaction, 3)
+			; SprigganFaction.SetReaction(PlayerFaction, 3)
+
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 2 )
 			Debug.Trace("[SD] Skipping spriggan body - slot in use")
 		EndIf
@@ -281,7 +301,7 @@ Event OnUpdateGameTime()
 		_SDSMP_spriggananger.play( kSlave )
 		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 8, aiValue2 = RandomInt( 0, _SDGVP_poses.GetValueInt() ) )
 	Else
-		; Debug.Notification("[SD] Spriggan roots grow - failed")
+		; Debug.Notification("[SD] Spriggan roots grow - failed") 
     EndIf
 	; Initial stage
 	If (GetStage() == 0)
@@ -336,3 +356,7 @@ ObjectReference Property _SD_sprigganHusk  Auto
 FormList Property _SDFLP_ignore_items  Auto
 
 ReferenceAlias Property _SDRAP_grovemarker  Auto
+
+Faction Property GiantFaction  Auto  
+Faction Property SprigganFaction  Auto  
+Faction Property PlayerFaction  Auto  

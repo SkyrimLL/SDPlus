@@ -470,8 +470,8 @@ event OnPageReset(string a_page)
 		_SDOID_config_S11 = AddSliderOption("Disposition threshold", _SDGVP_config_disposition_threshold.GetValue() as Float,"{1}")
 		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
-		AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
-		_SDOID_config_S7 = AddSliderOption("$SD_SLIDER_P0_BLINDNESS_LEVEL", _SDGVP_config_blindnessLevel.GetValue() as Float, "$SD_PERCENT") ; 23 - 12
+		; AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
+		; _SDOID_config_S7 = AddSliderOption("$SD_SLIDER_P0_BLINDNESS_LEVEL", _SDGVP_config_blindnessLevel.GetValue() as Float, "$SD_PERCENT") ; 23 - 12
 
 	; STATUS
 	ElseIf ( a_page == Pages[1] )
@@ -518,11 +518,12 @@ event OnPageReset(string a_page)
 		If ( _SDGVP_state_mcm.GetValueInt() == 0 )
 			_SDOID_config_T1 = AddTextOption(s_config_T1_text[i_T1_action], s_config_T1_value[i_T1_action], i_config_T1_flag[i_T1_action])
 			AddToggleOption("$SD_TOGGLE_P1_IS_PLAYER_ENSLAVED", _SDGVP_enslaved.GetValue() as Bool, OPTION_FLAG_DISABLED)
-			_SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
+			; _SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
+			_SDOID_config_B2 = AddToggleOption("Start after A Night to remember", _SDGVP_config_lust.GetValue() as Bool )
 			If (_SDGVP_enslaved.GetValue() as Bool)
 				_SDOID_config_B21 = AddToggleOption("SAFE WORD", False )
 			Else
-				AddToggleOption("SAFE WORD", _SDGVP_config_lust.GetValue() as Bool, OPTION_FLAG_DISABLED )
+				AddToggleOption("SAFE WORD", _SDGVP_config_safeword.GetValue() as Bool, OPTION_FLAG_DISABLED )
 			EndIf
 						
 			SetCursorPosition( _SDQP_quests_secondary.Length * 2 + 5)
@@ -645,7 +646,8 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_B1 )
 		SetInfoText("$_SDOID_config_B1")
 	ElseIf ( a_option == _SDOID_config_B2 )
-		SetInfoText("$_SDOID_config_B2")
+		; SetInfoText("$_SDOID_config_B2")
+		SetInfoText("Check if you want to delay visits to Dreamworld until after 'A Night to Remember' (Level 14).")
 	ElseIf ( a_option == _SDOID_config_B21 )
 		SetInfoText("Emergency release from your current master - useful in case of friendly fire or static NPC.")
 	ElseIf ( a_option == _SDOID_config_B3 )

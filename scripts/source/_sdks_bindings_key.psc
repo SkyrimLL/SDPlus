@@ -18,21 +18,33 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 ;		funct.removeItemsInList( kContainer, _SDFLP_sex_items )
 ;		funct.removeItemsInList( kContainer, _SDFLP_punish_items )
 
-		Debug.Trace("[_sdks_master_key] Master key - Stop enslavement")
+		Debug.Trace("[_sdks_bindings_key] Master key - Stop enslavement")
 
-		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+		If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
 			SendModEvent("PCSubFree")			
 		EndIf
 
-		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-;		fctOutfit.removePunishment( bDevGag = True,  bDevBlindfold = True,  bDevBelt = True,  bDevPlugAnal = True,  bDevPlugVaginal = True)
-		fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		If !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSanguine"  )
+			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+		EndIf
+
+		If !fctOutfit.isEquippedShacklesKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedShacklesKeyword( kContainer,  "_SD_DeviousSanguine"  )
+			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+		EndIf
+
+		If !fctOutfit.isEquippedBlindfoldKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedBlindfoldKeyword( kContainer,  "_SD_DeviousSanguine"  )
+			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		EndIf
+
+		If !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSanguine"  )
+			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		EndIf
 
 		if (Utility.RandomInt(0,100) < 77)
-			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-			Debug.Messagebox("Your Master's Key helps you break free of your chains.")
+			If !fctOutfit.isEquippedCollarKeyword( kContainer,  "_SD_DeviousSanguine"  )
+				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+				Debug.Messagebox("Your Master's Key helps you break free of your chains.")
+			EndIf
 		Else
 			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 		EndIf

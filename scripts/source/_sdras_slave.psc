@@ -208,18 +208,17 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 		; escape
 		Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
 
-		fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-;		fctOutfit.removePunishment( bDevGag = True,  bDevBlindfold = True,  bDevBelt = True,  bDevPlugAnal = True,  bDevPlugVaginal = True)
-		fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 	
-		if (Utility.RandomInt(0,100) < 60)
-			fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-			Debug.Messagebox("Your Master's Key helps you break free of your chains.")
-		Else
-			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
-		EndIf
+		; if (Utility.RandomInt(0,100) < 60)
+		;	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+		;	Debug.Messagebox("Your Master's Key helps you break free of your chains.")
+		; Else
+		;	Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
+		;EndIf
 
 		kSlave.RemoveItem(akItemReference, aiItemCount)
 
@@ -333,6 +332,11 @@ State monitor
 			iCountSinceLastCheck = 0
 			fctSlavery.UpdateStatusDaily( kMaster, kSlave)
 			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays", 0) + 1)
+
+			; Cooldown at end of day
+			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kSlave, "_SD_iDisposition") * 8 / 10 )
+			StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kSlave, "_SD_iTrust") * 8 / 10 )
+			StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 8 / 10 )
 
 		EndIf
 

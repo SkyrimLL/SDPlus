@@ -488,7 +488,7 @@ State monitor
 				fSlaveFreeTime += 0.05
 				enslavement.bSearchForSlave = False
 
-				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())
+				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()/10)
 					; Chance of spriggan infection if slave in close proximity of infected master
 					; Debug.Notification("[SD] Infected by spriggan swarm...")
 					SendModEvent("SDSprigganEnslave")

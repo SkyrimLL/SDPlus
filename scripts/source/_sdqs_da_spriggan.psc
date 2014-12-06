@@ -20,7 +20,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	UnregisterForModEvent("da_PlayerRecovered")
 
 	
-	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) &&  ( ( fctFactions.checkIfSpriggan ( akAggressor) ) && !(thisPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(Game.GetPlayer(), "SacrSpriggans_iSprigganInfected") != 1) ) 
+	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) &&  ( ( fctFactions.checkIfSpriggan ( akAggressor) ) && !(thisPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) 
 		Debug.Trace("[SD DA integration] QuestCondition - Spriggan - Passed")
 		return true
 	else

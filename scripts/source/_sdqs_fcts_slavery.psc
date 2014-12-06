@@ -6,9 +6,9 @@ _SDQS_fcts_factions Property fctFactions  Auto
 
 ; Properties redefined to allow upgrade to SD+ V3 without a need for a new save game
 ; Older properties may have None value baked into save game at this point
-_SDQS_fcts_constraints Property fctConstraintsV3  Auto
-_SDQS_fcts_outfit Property fctOutfitV3  Auto
-_SDQS_fcts_factions Property fctFactionsV3  Auto
+; _SDQS_fcts_constraints Property fctConstraintsV3  Auto
+; _SDQS_fcts_outfit Property fctOutfitV3  Auto
+; _SDQS_fcts_factions Property fctFactionsV3  Auto
 
 Keyword Property ActorTypeNPC  Auto  
 
@@ -242,7 +242,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; Slavery items preferences
 	; List initialization if it hasn't been set yet
-	fctOutfitV3.registerDeviousOutfits ( )
+	fctOutfit.registerDeviousOutfits ( )
 
 	; Outfit selection - Commoner by default
 	int outfitID = 0
@@ -262,7 +262,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			outfitID = 1
 
 		EndIf
-	ElseIf ( fctFactionsV3.checkIfFalmer ( kMaster) )
+	ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
 		outfitID = 5
 	Else
 		outfitID = 3
@@ -291,7 +291,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 
 	Debug.Trace("[SD] Init master devices - outfitID: " + iOutfit)
 
-	fctOutfitV3.registerDeviousOutfitsKeywords (  kMaster )
+	fctOutfit.registerDeviousOutfitsKeywords (  kMaster )
 
 	if (iOutfit == 0) ; Iron
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
@@ -436,19 +436,19 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 	If (modVariable == "_SD_iEnableMovement")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableMove = modValue
-			fctConstraintsV3.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
 	If (modVariable == "_SD_iEnableAction")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableAct = modValue
-			fctConstraintsV3.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
 	If (modVariable == "_SD_iEnableFight")
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableFight = modValue
-			fctConstraintsV3.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
 	EndIf
 
 	If (modVariable == "_SD_iEnableInventory")
@@ -632,6 +632,8 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	int iFoodComplete = 0
 	int iGoldComplete = 0
 
+	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
+
 	UpdateSlaveryLevel(kSlave)
 	UpdateSlaveryRelationshipType(kMaster, kSlave)
 
@@ -747,7 +749,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
 	EndIf
 
-	If fctFactionsV3.checkIfFalmer (  kMaster ) 
+	If fctFactions.checkIfFalmer (  kMaster ) 
 		; Falmers follow slave by default
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
 	EndIf
@@ -761,11 +763,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kSlave, "_SD_iGoalPunishment", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iGoalGold", 0)
-
-	; :: End of the day, if master unhappy, trust * 0.8 (cooldown)
-	if (masterDisposition < 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 8 / 10 )
-	EndIf
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
 	If ( (iSexComplete + iPunishComplete + iFoodComplete + iGoldComplete) >=2 ) ; (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0)

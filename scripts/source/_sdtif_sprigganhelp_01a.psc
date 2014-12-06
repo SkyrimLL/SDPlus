@@ -20,6 +20,8 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 	SprigganFX.Play( akSpeakerRef, 30 )
 	_SDSP_host_flare.RemoteCast(akRef2 , akRef2 , akRef2 )
 
+      if (Utility.RandomInt(0,100) > 80)
+
 		Int randomVar = Utility.RandomInt( 0,10 )
 
 		if (randomVar > 8)
@@ -46,6 +48,7 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 			Thread.StartThread()
 		EndIf
 
+	EndIf
 EndIf
 ;END CODE
 EndFunction

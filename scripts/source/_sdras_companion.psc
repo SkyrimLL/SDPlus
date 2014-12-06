@@ -105,6 +105,10 @@ Function enslaveCompanion( Actor kActor)
 			; Humanoid followers
 			kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 
+			If !(StorageUtil.HasIntValue(kActor, "_SD_iCanBeStripped") )
+				StorageUtil.SetIntValue(kActor, "_SD_iCanBeStripped", 1)
+			EndIf
+
 			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") != 0 )
 
 				kActor.SetOutfit( _SDOP_naked )
