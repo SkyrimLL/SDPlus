@@ -49,6 +49,18 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor kPlayer = Game.GetPlayer() as Actor
 	Location kLocation = Game.GetPlayer().GetCurrentLocation()
 
+	Debug.Trace("[_sdras_dreamer] Start after Night to remember?: " + _SDGVP_config_lust.GetValue())
+	Debug.Trace("[_sdras_dreamer] Is Night to remember completed?: " + ANightQuest.IsCompleted())
+	Debug.Trace("[_sdras_dreamer] Sanguine Blessing: " + _SDGVP_sanguine_blessing.GetValue())
+	Debug.Trace("[_sdras_dreamer] Number times enslaved: " + _SDGVP_stats_enslaved.GetValueInt())
+
+	; Disable Dreamworld on Sleep if delay option is checked and DA14 quest not done yet
+	If  ( (_SDGVP_config_lust.GetValue()==1) && (!ANightQuest.IsCompleted()) )
+		_SDGVP_sanguine_blessing.SetValue(-1)
+	ElseIf (_SDGVP_sanguine_blessing.GetValue() == -1)
+		_SDGVP_sanguine_blessing.SetValue(0)
+	EndIf
+
 	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)<= ( (_SDGVP_health_threshold.GetValue() as Int) / 20))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) ) ) && dbe.pSleepyTime != 1
 
 			; Debug.Notification("Reality slips away...")
@@ -56,6 +68,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
  	;		Game.FadeOutGame(true, true, 5.0, 10.0)
 
 			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
+			_SDGVP_config_lust.SetValue(0)
+
 			If (_SDGVP_sanguine_blessing.GetValue() == 0) 
 				If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
 					kConfig._SDBP_quests_primary_running[1] = True
@@ -75,10 +89,14 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 		If kLocation.IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)<= (( _SDGVP_health_threshold.GetValue() as Int) / 4))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1)
 				StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
+
+			_SDGVP_config_lust.SetValue(0)
 		  	_SD_dreamQuest.SetStage(15)
 		  	
 		elseif kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
 				StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
+				_SDGVP_config_lust.SetValue(0)
+
 				If (_SDGVP_sanguine_blessing.GetValue() == 0) 
 					If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
 						kConfig._SDBP_quests_primary_running[1] = True
@@ -86,6 +104,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 						kConfig._SDBP_quests_primary_running[2] = True
 						kConfig._SDQP_quests_primary[2].Start()
 					EndIf
+
 
 					_SD_dreamQuest.SetStage(10)
 				Else
@@ -125,3 +144,5 @@ _SD_ConfigMenu Property kConfig  Auto
  
 Spell Property _SDSP_freedom  Auto  
 
+
+Quest Property ANightQuest  Auto  

@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname _sdtif_sprigganhelp_01 Extends TopicInfo Hidden
+Scriptname _sdtif_sprigganhelp1b Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -20,7 +20,7 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 	SprigganFX.Play( akSpeakerRef, 30 )
 	_SDSP_host_flare.RemoteCast(akRef2 , akRef2 , akRef2 )
 
-      if (Utility.RandomInt(0,100) > 20)
+      if (Utility.RandomInt(0,100) > 50)
 
 		Int randomVar = Utility.RandomInt( 0,10 )
 

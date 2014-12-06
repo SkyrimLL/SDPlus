@@ -85,7 +85,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDUIP_scene = aiValue1
 		_SDUIP_position = aiValue2
 
-		_SDSP_sexSpells[1].RemoteCast(akRef2, akRef2 as Actor, akRef2)
+		; _SDSP_sexSpells[1].RemoteCast(akRef2, akRef2 as Actor, akRef2)
 
 		; Debug.Notification("[_sdqs_snp] Waiting for Ragdoll")
 		; While ( _SDGVP_state_playerRagdoll.GetValueInt() == 1 )

@@ -150,9 +150,9 @@ Function positionVictims( Int aiStage )
 	kDreamer.StopCombat()
 	Utility.Wait(0.1)
 
-	Game.SetPlayerAIDriven(false)
-	Game.SetInCharGen(false, false, false)
-	Game.EnablePlayerControls() ; just in case	
+	; Game.SetPlayerAIDriven(false)
+	; Game.SetInCharGen(false, false, false)
+	; Game.EnablePlayerControls() ; just in case	
 
 	; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
 	; Game.SetCameraTarget(Game.GetPlayer())
@@ -165,7 +165,7 @@ Function positionVictims( Int aiStage )
     ; Game.EnablePlayerControls(abMovement = false, abFighting = false, abCamSwitch = true, abLooking = false, abSneaking = false, abMenu = false, abActivate = false, abJournalTabs = false, aiDisablePOVType = 1)
     ; Game.ShowFirstPersonGeometry(true)
 
-	Game.DisablePlayerControls( abMenu = True )
+	; Game.DisablePlayerControls( abMenu = True )
 	SexLab.ActorLib.StripActor(kDreamer, DoAnimate= false)
 
 	Utility.Wait(0.1)

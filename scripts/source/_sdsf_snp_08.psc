@@ -2,22 +2,6 @@
 ;NEXT FRAGMENT INDEX 3
 Scriptname _sdsf_snp_08 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_1
-Function Fragment_1()
-;BEGIN CODE
-snp._SDUIP_phase = -1
-
-Actor female = Game.GetPlayer() ; _SDRAP_female.GetReference() as Actor
-female.DispelSpell( _SDSP_host_punish )
-
-female.PushActorAway(female, 0.1)
-
-_SDGVP_snp_busy.SetValue(-1)
-Self.GetowningQuest().Stop()
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
@@ -34,6 +18,22 @@ EndFunction
 Function Fragment_2()
 ;BEGIN CODE
 snp._SDUIP_phase = 1
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1()
+;BEGIN CODE
+snp._SDUIP_phase = -1
+
+Actor female = Game.GetPlayer() ; _SDRAP_female.GetReference() as Actor
+female.DispelSpell( _SDSP_host_punish )
+
+; female.PushActorAway(female, 0.1)
+
+_SDGVP_snp_busy.SetValue(-1)
+; Self.GetowningQuest().Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -261,6 +261,15 @@ Function _Maintenance()
 	StorageUtil.SetFormValue(None, "_SD_Race_SprigganBurnt", DLC2SprigganBurntRace)
 	StorageUtil.SetFormValue(None, "_SD_Race_FalmerFrozen", FalmerFrozenVampRace)
 
+	; Restore compatibility flags with Deviously Helpless on load if enslaved or infected
+
+	If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") == 1) || (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved")==1)
+
+		SendModEvent("dhlp-Suspend")
+	EndIf
+
+
+
 
 EndFunction
 
@@ -668,7 +677,7 @@ State monitor
 
 		EndIf
 
-		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<= ( (_SDGVP_health_threshold.GetValue() as Int ) / 10) ) 
+		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<= ( (_SDGVP_health_threshold.GetValue() as Int ) / 20) ) 
 			; Chance of spriggan infection if slave is wearing a spriggan root armor item
 			; Debug.Notification("[SD] Infected by spriggan roots...")
 			SendModEvent("SDSprigganEnslave")
@@ -720,7 +729,7 @@ State monitor
 					kPlayer.GetCurrentScene().Stop()
 				EndIf
 			ElseIf ( altPress && !kPlayer.IsInCombat() && funct.GetPlayerDialogueTarget() )
-				kPlayer.PushActorAway( funct.GetPlayerDialogueTarget(), 0.0 )
+				; kPlayer.PushActorAway( funct.GetPlayerDialogueTarget(), 0.0 )
 			ElseIf ( _SDQP_enslavement.IsRunning() && _SDQP_enslavement.GetStage() < 90 )
 				iMsgResponse = _SDMP_scene_stalled.Show()
 				If ( iMsgResponse == 0 )
