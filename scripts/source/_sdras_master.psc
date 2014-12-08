@@ -101,7 +101,7 @@ Event OnDeath(Actor akKiller)
 
 	ObjectReference  kPlayerStorage = _SDRAP_playerStorage.GetReference()
 
-	If (kSlave.GetDistance( kMaster ) <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
+	If (kSlave.GetDistance( kMaster ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") * 2.0))
 		; Move all items back from Sanguine Storage into Master if slave is nearby
 		kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
 		Wait(2.0)
@@ -532,6 +532,10 @@ State monitor
 	Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 		iuType = akBaseItem.GetType()
 		fGoldEarned = 0.0
+
+		If (kMaster.IsDead())
+			Return
+		EndIf
 
 		If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
 			; Master receives Food

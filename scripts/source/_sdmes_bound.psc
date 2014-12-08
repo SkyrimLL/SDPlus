@@ -19,6 +19,10 @@ Actor kTarget
 Actor kPlayer
 ObjectReference kMaster
 
+Int trust  
+Int disposition 
+Float kneelingDistance 
+
 Float fRFSU = 0.1
 int throttle = 0 
 
@@ -60,10 +64,11 @@ Event OnUpdate()
 
 
 
-			Int trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
-			Int disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
+			trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+			disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
+			kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
 
-			If ( kTarget.GetDistance( kMaster ) < StorageUtil.GetIntValue( kTarget, "_SD_iLeashLength") ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
+			If ( kTarget.GetDistance( kMaster ) < kneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
 
 				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )

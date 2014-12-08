@@ -76,6 +76,8 @@ Float Property ufBindingsHealth = 10.0 Auto Conditional
 Float fRFSU = 0.5
 Float fRFSUGT = 3.0
 Float fEnslavementStart = 0.0
+Float kneelingDistance
+Int trust
 
 Float fFadeOutTime = 30.0
 
@@ -490,7 +492,7 @@ Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,2))
 
-		Debug.Notification("[_sdqs_enslavement] Removing punishment"  )
+		Debug.Trace("[_sdqs_enslavement] Removing punishment"  )
 
 		fctOutfit.removePunishment( bDevGag = bGag,  bDevBlindfold = bBlindfold,  bDevBelt = bBelt,  bDevPlugAnal = bPlugAnal,  bDevPlugVaginal = bPlugVaginal, bDevArmbinder = bArmbinder)
 
@@ -503,13 +505,37 @@ EndFunction
 Function UpdateSlaveFollowerState(Actor akSlave)
 		Int idx = 0
 		Actor nthActor
+
+		; For now, follower slavery is simple: always bound, always kneeling at rest and close to master
+		; We will have to make this part more elaborate in a future version
+
+		; Housekeeping - equip cuffs
 		While idx < _SDRAP_companions.Length
 			nthActor = _SDRAP_companions[idx].GetReference() as Actor
 			If ( nthActor )
-				nthActor.EquipItem(  _SDA_bindings , True, True )
+				If (!nthActor.WornHasKeyword(_SDKP_wrists)) ; _SDKP_wrists
+					nthActor.EquipItem(  _SDA_bindings , True, True )
+				EndIf
+
+				; Force follower to kneel down
+				trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+				kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
+
+				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) 
+
+					Debug.SendAnimationEvent(nthActor, "ZazAPC018")
+
+				Else
+
+					Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
+
+				EndIf
+
 			EndIf
 			idx += 1
 		EndWhile
+
+
 EndFunction
 
 Faction Property _SDFP_slaverCrimeFaction  Auto 

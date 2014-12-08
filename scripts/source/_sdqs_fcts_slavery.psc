@@ -50,7 +50,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", kMaster)
 	StorageUtil.SetFormValue(kSlave, "_SD_DesiredOwner", None)
 
-	StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20)  ; number of seconds allowed away from Master
+	StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 30)  ; number of seconds allowed away from Master
 
 	StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 
@@ -740,11 +740,11 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
 
 	if (masterTrust > 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
-		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
+		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 300 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
 	Else
-		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
 	EndIf
@@ -752,6 +752,8 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	If fctFactions.checkIfFalmer (  kMaster ) 
 		; Falmers follow slave by default
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
+		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 100 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
 	EndIf
 
 	; Reset daily counts for slave

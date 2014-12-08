@@ -9,7 +9,8 @@ Keyword Property _SDKP_actorTypeNPC  Auto
 FormList Property _SDFLP_banned_factions  Auto
 
 Bool Function checkIfSlaver ( Actor akActor )
-	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions )
+	Int  playerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
+	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) && (playerGender == 1) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions )
 
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	; Debug.Trace("[SD] Actor is NPC - " + akActor.HasKeyword( _SDKP_actorTypeNPC ))

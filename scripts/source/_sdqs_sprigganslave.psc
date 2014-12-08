@@ -241,7 +241,7 @@ Event OnUpdateGameTime()
 	EndIf
 
 	; Add housekeeping for parts of the armor
-	If fctOutfit.isEquippedBeltKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
+	If fctOutfit.isBeltEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
 			Debug.Notification( "[SD] Adding player to: " + SprigganFaction )
 			Debug.Trace( "[SD] Adding player to: " + SprigganFaction )
 			kPlayer.AddToFaction(SprigganFaction)
@@ -290,12 +290,15 @@ Event OnUpdateGameTime()
 			Debug.Trace("[SD] Skipping spriggan mask - slot in use")
 		EndIf
 
-		Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(133, 16) + Math.LeftShift(184, 8) + 160
-		StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
-		StorageUtil.SetFloatValue(none, "_SLH_fBreast", Utility.RandomFloat(0.8, 1.4) ) 
-		StorageUtil.SetFloatValue(none, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
-		StorageUtil.SetFloatValue(none, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
+
+			Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(133, 16) + Math.LeftShift(184, 8) + 160
+			StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
+			StorageUtil.SetFloatValue(none, "_SLH_fBreast", Utility.RandomFloat(0.8, 1.4) ) 
+			StorageUtil.SetFloatValue(none, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
+			StorageUtil.SetFloatValue(none, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
+			StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		EndIf
 
 		SprigganFX.Play( kSlave, 30 )
 		_SDSMP_spriggananger.play( kSlave )
