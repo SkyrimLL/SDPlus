@@ -214,8 +214,9 @@ EndFunction
 
 Bool Function isCuffsEquipped (  Actor akActor )
 
-	Int[] uiSlotMask = New Int[1]
+	Int[] uiSlotMask = New Int[2]
 	uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders 
+	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
 
 	Int iFormIndex = uiSlotMask.Length
 	Bool bDeviousDeviceEquipped = False
@@ -225,7 +226,7 @@ Bool Function isCuffsEquipped (  Actor akActor )
 		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
 		If (kForm != None)
 			Armor kArmor = kForm  as Armor
-			bDeviousDeviceEquipped = ( akActor.isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_DeviousArmbinder")) )
+			bDeviousDeviceEquipped = ( akActor.isEquipped(kForm) && (kForm.hasKeywordString("zad_DeviousArmbinder")  || kForm.hasKeywordString("zbfWornWrist")) )
 		Else
 			bDeviousDeviceEquipped = False
 		EndIf
@@ -480,42 +481,42 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 EndFunction
 
 ; 0 - Collar
-Bool Function isEquippedCollarKeyword( Actor akActor,  String sKeyword  )
+Bool Function isCollarEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 0, sKeyword )
 EndFunction
 
 ; 1 - Arms
-Bool Function isEquippedCuffsKeyword( Actor akActor,  String sKeyword  )
+Bool Function isCuffsEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 1, sKeyword )
 EndFunction
 
 ; 2 - Legs
-Bool Function isEquippedShacklesKeyword( Actor akActor,  String sKeyword  )
+Bool Function isShacklesEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 2, sKeyword )
 EndFunction
 
 ; 3 - Gag
-Bool Function isEquippedGagKeyword( Actor akActor,  String sKeyword  )
+Bool Function isGagEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 3, sKeyword )
 EndFunction
 
 ; 4 - Blindfold
-Bool Function isEquippedBlindfoldKeyword( Actor akActor,  String sKeyword  )
+Bool Function isBlindfoldEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 4, sKeyword )
 EndFunction
 
 ; 5 - Belt
-Bool Function isEquippedBeltKeyword( Actor akActor,  String sKeyword  )
+Bool Function isBeltEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 5, sKeyword )
 EndFunction
 
 ; 6 - Plug Anal
-Bool Function isEquippedPlugAnalKeyword( Actor akActor,  String sKeyword  )
+Bool Function isPlugAnalEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 6, sKeyword )
 EndFunction
 
 ; 7 - Plug Vaginal 
-Bool Function isEquippedPlugVaginalKeyword( Actor akActor,  String sKeyword  )
+Bool Function isPlugVaginalEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 7, sKeyword )
 EndFunction
 

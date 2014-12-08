@@ -20,28 +20,25 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 		Debug.Trace("[_sdks_bindings_key] Master key - Stop enslavement")
 
-		If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
-			SendModEvent("PCSubFree")			
-		EndIf
 
-		If !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isCuffsEquipped( kContainer ) && !fctOutfit.isCuffsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isCuffsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If !fctOutfit.isEquippedShacklesKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedShacklesKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isShacklesEquipped( kContainer ) && !fctOutfit.isShacklesEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isShacklesEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If !fctOutfit.isEquippedBlindfoldKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedBlindfoldKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isBlindfoldEquipped( kContainer ) && !fctOutfit.isBlindfoldEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isBlindfoldEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isEquippedCuffsKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isGagEquipped( kContainer ) && !fctOutfit.isGagEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isGagEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		if (Utility.RandomInt(0,100) < 77)
-			If !fctOutfit.isEquippedCollarKeyword( kContainer,  "_SD_DeviousSanguine"  )
+			If fctOutfit.isCollarEquipped( kContainer ) && !fctOutfit.isCollarEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
 				Debug.Messagebox("Your Master's Key helps you break free of your chains.")
 			EndIf
@@ -49,7 +46,15 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 		EndIf
 
+		If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
+			SendModEvent("PCSubFree")			
+		EndIf
+
 		_SDSP_freedom.RemoteCast( akNewContainer, kContainer, kContainer )
-		Game.GetPlayer().RemoveItem(Self, Game.GetPlayer().GetItemCount( Self ))
+
+		If (Self)
+			Int keyCount = Game.GetPlayer().GetItemCount( Self )
+			Game.GetPlayer().RemoveItem(Self, keyCount)
+		EndIf
 	EndIf	
 EndEvent

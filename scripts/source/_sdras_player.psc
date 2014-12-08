@@ -389,7 +389,7 @@ EndEvent
 
 Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_slave] Receiving 'free slave' event")
-	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+	; _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 	_SDQP_enslavement.Stop()
 	Wait( fRFSU * 5.0 )

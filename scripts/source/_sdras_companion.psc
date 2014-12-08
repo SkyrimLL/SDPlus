@@ -94,7 +94,7 @@ State monitor
 EndState
 
 Function enslaveCompanion( Actor kActor)
-	Debug.Notification("[_sdras_companion] Your follower has been enslaved.")
+	Debug.Notification("Your follower has been enslaved!")
 		bEnslaved = True
 
 		kActor.RemoveFromFaction( _SDFP_slaverResistance )

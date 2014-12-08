@@ -8,6 +8,7 @@ _SDQS_functions Property funct  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 _SDQS_fcts_slavery Property fctSlavery  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
+_SDQS_fcts_factions Property fctFactions  Auto
 
 MiscObject Property _SDMOP_lockpick  Auto  
 
@@ -456,7 +457,7 @@ State monitor
 				; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
 				_SD_dreamQuest.SetStage(10)
 
-			ElseIf (fBuyout < 0) && kSlaverDest
+			ElseIf kSlaverDest && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor))
 				; Master made profit - slave can be sold
 				if (iPlayerGender==0)
 					_SDSMP_choke_m.Play( Game.GetPlayer() )
@@ -480,7 +481,7 @@ State monitor
 
 
 
-			ElseIf (fBuyout >= 0) && kSlaverDest
+			ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor))
 				; Master lost money - get rid of slave
 				if (iPlayerGender==0)
 					_SDSMP_choke_m.Play( Game.GetPlayer() )
@@ -862,7 +863,7 @@ State escape
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
 
 		freedomTimer ( _SDGVP_escape_timer.GetValue() )
-		fEscapeTime = GetCurrentRealTime() + _SDGVP_escape_timer.GetValue()
+		fEscapeTime = GetCurrentRealTime() + funct.intMin( StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer") as Int, _SDGVP_escape_timer.GetValue() as Int)
 		fEscapeUpdateTime = GetCurrentRealTime() + 60
  
 	EndEvent
