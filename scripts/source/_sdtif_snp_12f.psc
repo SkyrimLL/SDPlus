@@ -13,12 +13,16 @@ randomVar = Utility.RandomInt( 0, 10 )
 
 If (randomVar == 9 )
 	slave.AddItem( Skooma, 1, True )
+	slave.EquipItem( Skooma, True, True )
 ElseIf (randomVar == 8 )
-	slave.AddItem( FoodSolitudeSpicedWine, 2, True )
+	slave.AddItem( FoodSolitudeSpicedWine, 1, True )
+	slave.EquipItem( FoodSolitudeSpicedWine, True, True )
 ElseIf (randomVar == 7 )
-	slave.AddItem( Ale, 5, True )
+	slave.AddItem( Ale, 1, True )
+	slave.EquipItem( Ale, True, True )
 Else 
-	slave.AddItem( _SDPP_water, 10, True )
+	slave.AddItem( _SDPP_water, 1, True )
+	slave.EquipItem( _SDPP_water, True, True )
        _SDS_FalmerGlow.Cast(slave, slave)
 EndIf
 

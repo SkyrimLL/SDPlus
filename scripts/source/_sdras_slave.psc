@@ -745,23 +745,7 @@ State monitor
 
 			Debug.Trace("[_sdras_slave] Master key stolen - Stop enslavement")
 
-			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
-			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		
-			if (Utility.RandomInt(0,100) < 60)
-				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-				Debug.Messagebox("Your Master's Key helps you break free of your chains.")
-			Else
-				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
-			EndIf
-			
-			; Self.GetOwningQuest().Stop()
-			kSlave.RemoveItem(akItemReference, aiItemCount)
-			_SDKP_trust_hands.SetValue(1) 
-			_SDKP_trust_feet.SetValue(1) 
-
-			SendModEvent("PCSubFree")
+			; This should be redundant - already handled by _sdks_bindings_key
 
 			Return
 

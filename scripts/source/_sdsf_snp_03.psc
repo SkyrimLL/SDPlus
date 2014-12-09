@@ -2,6 +2,28 @@
 ;NEXT FRAGMENT INDEX 87
 Scriptname _sdsf_snp_03 Extends Scene Hidden
 
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18(ReferenceAlias akAlias)
+;BEGIN CODE
+Game.FadeOutGame(True, True, 3.0, 2.0)
+Utility.Wait(2)
+Actor female = _SDRAP_female.GetReference() as Actor
+Debug.SendAnimationEvent(female, "IdleForceDefaultState")
+;female.PushActorAway(female, 0.1)
+Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_68
+Function Fragment_68()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
@@ -11,7 +33,7 @@ _SDGVP_snp_busy.SetValue(3)
 
 
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-Debug.Notification("This is going to hurt!")
+Debug.Notification("You brace for the coming punishment.")
 
 Actor female = _SDRAP_female.GetReference() as Actor
 Actor male = _SDRAP_male.GetReference() as Actor
@@ -38,22 +60,13 @@ Game.FadeOutGame(False, True, 15.0, 5.0)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_68
-Function Fragment_68()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_32
 Function Fragment_32()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
 
-Debug.Notification("Now get out of my sight slave.")
+Debug.Notification("The worst is over now..")
 Actor female = _SDRAP_female.GetReference() as Actor
 
 _SDGVP_trust_hands.SetValue(0)
@@ -140,19 +153,6 @@ EndFunction
 Function Fragment_79()
 ;BEGIN CODE
 Game.SetPlayerAIDriven()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18(ReferenceAlias akAlias)
-;BEGIN CODE
-Game.FadeOutGame(True, True, 3.0, 2.0)
-Utility.Wait(2)
-Actor female = _SDRAP_female.GetReference() as Actor
-Debug.SendAnimationEvent(female, "IdleForceDefaultState")
-;female.PushActorAway(female, 0.1)
-Game.FadeOutGame(False, True, 15.0, 5.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT

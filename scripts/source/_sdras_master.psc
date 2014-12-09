@@ -111,6 +111,7 @@ Event OnDeath(Actor akKiller)
 	; It may be better to directly stop the quest here instead of relying on Mod Events
 
 	If (akKiller)
+		Debug.Trace("[_sdras_master] Master killed by: " + akKiller)
 
 		If (GetState() != "search") && (akKiller != kSlave) &&  fctFactions.checkIfSlaver (  akKiller ) &&  !fctFactions.checkIfFollower (  akKiller ) 
 			; Followers are not allowed to forcefully take the player as a slave to prevent friendly fire or rescue
@@ -119,35 +120,17 @@ Event OnDeath(Actor akKiller)
 			; Send all items back to Dreamworld storage
 			kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
+			Debug.Trace("[_sdras_master] Waiting to stop enslavement")
 			Self.GetOwningQuest().Stop()
 			; new master
 			While ( Self.GetOwningQuest().IsStopping() )
 			EndWhile
 			
 
+			Debug.Notification( "You are mine!" )
+			Debug.Trace("[_sdras_master] Start enslavement with:"  + akKiller)
 			; New enslavement - changing ownership
 			_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
-			
-				;kMaster = _SDRAP_master.GetReference() as Actor
-				;kSlave = _SDRAP_slave.GetReference() as Actor
-			Wait(7.0)
-
-			; Welcome scene after changing ownership 
-			Int iRandomNum = RandomInt(0,100)
-			Debug.Notification( "You are mine!" )
-			Wait(3.0) 
-			If (iRandomNum > 75)
-				; Punishment
-				_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-			ElseIf (iRandomNum > 50)
-				; Whipping
-				_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 5 )
-			ElseIf (iRandomNum > 25)
-				enslavement.PunishSlave(akKiller,kSlave)
-			Else
-				; Sex
-				_SDKP_sex.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
-			EndIf
 			
 		EndIf
 	EndIf
@@ -579,14 +562,19 @@ State monitor
 			; Disabled for now - seems to conflict with other mods (cloak effect?)
 			; Handle attacks by slave differently
 
-			; bAttackedBySlave = True
-			; kMaster.SetLookAt( kSlave )
-			; kMaster.StartCombat( kSlave )
-			; Debug.Trace("[_sdras_master] Master hit by slave - Stop enslavement")
+			Return
 
-			; Self.GetOwningQuest().Stop()
-			; Debug.Notification("Watch what you are doing!!")
-			; _SDSP_SelfShockEffect.Cast(kSlave as Actor)
+			If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))
+				Debug.Notification( "There you are Slave... get your punishment, over here!" )
+				; add punishment
+				If ( _SDGVP_demerits.GetValueInt() > 20 )
+					; Whipping
+				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+				Else
+					; Punishment
+				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+				EndIf
+			EndIf
 
 		EndIf
 	EndEvent

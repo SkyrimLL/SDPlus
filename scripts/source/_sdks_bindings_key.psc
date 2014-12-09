@@ -37,24 +37,31 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		if (Utility.RandomInt(0,100) < 77)
-			If fctOutfit.isCollarEquipped( kContainer ) && !fctOutfit.isCollarEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
-				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-				Debug.Messagebox("Your Master's Key helps you break free of your chains.")
+		If fctOutfit.isCollarEquippedKeyword( kContainer,  "_SD_DeviousEnslaved"  )
+			if (Utility.RandomInt(0,100) < 77)
+				If fctOutfit.isCollarEquipped( kContainer ) && !fctOutfit.isCollarEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+					fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+					Debug.Messagebox("Your Master's Key helps you break free of your chains and immediately crumbles into dust.")
+				EndIf
+			Else
+				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 			EndIf
+
+			If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
+				SendModEvent("PCSubFree")			
+			EndIf
+
+			_SDSP_freedom.RemoteCast( akNewContainer, kContainer, kContainer )
+
+			Int keyCount = Game.GetPlayer().GetItemCount( _SD_MasterKey as Form )
+			Game.GetPlayer().RemoveItem(_SD_MasterKey, keyCount)
+
 		Else
-			Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
+			Debug.MessageBox("The key works on bindings but without an enchanted enslavement collar bound to a master, it is useless on your collar.")
 		EndIf
 
-		If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
-			SendModEvent("PCSubFree")			
-		EndIf
 
-		_SDSP_freedom.RemoteCast( akNewContainer, kContainer, kContainer )
-
-		If (Self)
-			Int keyCount = Game.GetPlayer().GetItemCount( Self )
-			Game.GetPlayer().RemoveItem(Self, keyCount)
-		EndIf
 	EndIf	
 EndEvent
+
+Key Property _SD_MasterKey  Auto  
