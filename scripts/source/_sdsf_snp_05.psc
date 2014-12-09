@@ -2,32 +2,11 @@
 ;NEXT FRAGMENT INDEX 51
 Scriptname _sdsf_snp_05 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_27
-Function Fragment_27()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[whipping] phase =" + snp._SDUIP_phase)
-
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-; Debug.SendAnimationEvent(slaveREF , "ZazAPC055")
-; utility.wait(55)
-
-ObjectReference female = _SDRAP_female.GetReference() as ObjectReference
-ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
-
-;marker.MoveTo( female, 64 * Math.Sin( female.GetAngleZ() ), 64 * Math.Cos( female.GetAngleZ() ), female.GetHeight() );Inte
-slaveREF.PlayAnimation("ZazAPC055");Inte
-
-utility.wait(7);Inte
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
-Debug.Notification("Good, you've had enough ... ")
+Debug.Notification("The whip leaves your skin on fire.")
 
 ; Game.EnablePlayerControls( abMovement = True )
 ; Game.SetPlayerAIDriven( False )
@@ -48,7 +27,7 @@ Function Fragment_2()
 snp._SDUIP_phase = 0
 _SDGVP_snp_busy.SetValue(5)
 
-Debug.Notification("You will regret that! ")
+Debug.Notification("You wince as the sight of the whip.")
 
 Actor female = _SDRAP_female.GetReference() as Actor
 ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
@@ -60,6 +39,27 @@ If (StorageUtil.GetIntValue(female, "_SD_iDisablePlayerMovementWhipping") == 1)
 	Game.DisablePlayerControls( abMovement = true )
 EndIf
 ; Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_27
+Function Fragment_27()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[whipping] phase =" + snp._SDUIP_phase)
+
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+; Debug.SendAnimationEvent(slaveREF , "ZazAPC055")
+; utility.wait(55)
+
+ObjectReference female = _SDRAP_female.GetReference() as ObjectReference
+ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
+
+;marker.MoveTo( female, 64 * Math.Sin( female.GetAngleZ() ), 64 * Math.Cos( female.GetAngleZ() ), female.GetHeight() );Inte
+slaveREF.PlayAnimation("ZazAPC055");Inte
+
+utility.wait(7);Inte
 ;END CODE
 EndFunction
 ;END FRAGMENT
