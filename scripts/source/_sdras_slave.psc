@@ -221,9 +221,9 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 		;	Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
 		;EndIf
 
-		kSlave.RemoveItem(akItemReference, aiItemCount)
+		; kSlave.RemoveItem(akItemReference, aiItemCount)
 
- 		SendModEvent("PCSubFree")
+ 		; SendModEvent("PCSubFree")
 		; Self.GetOwningQuest().Stop()
 		; Utility.Wait(2.0)
 		Return

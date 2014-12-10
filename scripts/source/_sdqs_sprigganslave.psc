@@ -242,10 +242,10 @@ Event OnUpdateGameTime()
 
 	; Add housekeeping for parts of the armor
 	If fctOutfit.isBeltEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
-			Debug.Notification( "[SD] Adding player to: " + SprigganFaction )
-			Debug.Trace( "[SD] Adding player to: " + SprigganFaction )
-			kPlayer.AddToFaction(SprigganFaction)
-			kPlayer.AddToFaction(GiantFaction)
+	;		Debug.Notification( "[SD] Adding player to: " + SprigganFaction )
+	;		Debug.Trace( "[SD] Adding player to: " + SprigganFaction )
+	;		kPlayer.AddToFaction(SprigganFaction)
+	;		kPlayer.AddToFaction(GiantFaction)
 			; GiantFaction.SetReaction(PlayerFaction, 3)
 			; SprigganFaction.SetReaction(PlayerFaction, 3)
 	EndIf
@@ -275,8 +275,8 @@ Event OnUpdateGameTime()
 		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isBeltEquipped (  kSlave as Actor ))
 			fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
 
-			kPlayer.AddToFaction(SprigganFaction)
-			kPlayer.AddToFaction(GiantFaction)
+			; kPlayer.AddToFaction(SprigganFaction)
+			; kPlayer.AddToFaction(GiantFaction)
 			; GiantFaction.SetReaction(PlayerFaction, 3)
 			; SprigganFaction.SetReaction(PlayerFaction, 3)
 
