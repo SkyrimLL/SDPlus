@@ -201,6 +201,28 @@ Bool Function isBindingEquipped (  Actor akActor )
 
 EndFunction
 
+Bool Function isArmsEquipped (  Actor akActor )
+
+
+	if akActor.WornHasKeyword(libs.zad_DeviousArmbinder) || akActor.WornHasKeyword(libs.zad_DeviousArmCuffs)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
+Bool Function isLegsEquipped (  Actor akActor )
+
+
+	if akActor.WornHasKeyword(libs.zad_DeviousLegCuffs)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
 Bool Function isArmbinderEquipped (  Actor akActor )
 
 	if akActor.WornHasKeyword(libs.zad_DeviousArmbinder)
@@ -214,30 +236,12 @@ EndFunction
 
 Bool Function isCuffsEquipped (  Actor akActor )
 
-	Int[] uiSlotMask = New Int[2]
-	uiSlotMask[0]  = 0x00000008 ;33  Bindings / DD Armbinders 
-	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+	if akActor.WornHasKeyword(libs.zad_DeviousArmCuffs)
+	  	return True 
+	Else
+		Return False
+	endIf
 
-	Int iFormIndex = uiSlotMask.Length
-	Bool bDeviousDeviceEquipped = False
-
-	While ( iFormIndex > 0 )
-		iFormIndex -= 1
-		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
-		If (kForm != None)
-			Armor kArmor = kForm  as Armor
-			bDeviousDeviceEquipped = ( akActor.isEquipped(kForm) && (kForm.hasKeywordString("zad_DeviousArmbinder")  || kForm.hasKeywordString("zbfWornWrist")) )
-		Else
-			bDeviousDeviceEquipped = False
-		EndIf
-
-		If bDeviousDeviceEquipped
-			return True 
-		EndIf
-
-	EndWhile
-
-	Return False
 EndFunction
 
 Bool Function isShacklesEquipped (  Actor akActor )
@@ -282,6 +286,26 @@ Bool Function isPlugEquipped (  Actor akActor )
 
 EndFunction
 
+Bool Function isPlugAnalEquipped (  Actor akActor )
+
+	if akActor.WornHasKeyword(libs.zad_DeviousPlugAnal) 
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
+Bool Function isPlugVaginalEquipped (  Actor akActor )
+
+	if akActor.WornHasKeyword(libs.zad_DeviousPlugVaginal)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
 Bool Function isBeltEquipped (  Actor akActor )
 
 	if akActor.WornHasKeyword(libs.zad_DeviousBelt)
@@ -290,6 +314,31 @@ Bool Function isBeltEquipped (  Actor akActor )
 		Return False
 	endIf
 
+EndFunction
+
+
+Bool Function isActorNaked( Actor akActor )
+	if akActor.WornHasKeyword(ArmorCuirass) || akActor.WornHasKeyword(ClothingBody)
+	  	return True 
+	Else
+		Return False
+	endIf
+EndFunction
+
+Bool Function isArmorCuirassEquipped( Actor akActor )
+	if akActor.WornHasKeyword(ArmorCuirass) 
+	  	return True 
+	Else
+		Return False
+	endIf
+EndFunction
+
+Bool Function isClothingBodyEquipped( Actor akActor )
+	if  akActor.WornHasKeyword(ClothingBody)
+	  	return True 
+	Else
+		Return False
+	endIf
 EndFunction
 
 
@@ -486,12 +535,12 @@ Bool Function isCollarEquippedKeyword( Actor akActor,  String sKeyword  )
 EndFunction
 
 ; 1 - Arms
-Bool Function isCuffsEquippedKeyword( Actor akActor,  String sKeyword  )
+Bool Function isArmsEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 1, sKeyword )
 EndFunction
 
 ; 2 - Legs
-Bool Function isShacklesEquippedKeyword( Actor akActor,  String sKeyword  )
+Bool Function isLegsEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 2, sKeyword )
 EndFunction
 
@@ -597,158 +646,52 @@ Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword 
 EndFunction
 
 Function setDeviousOutfitCollar ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 0)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isCollarEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isCollarEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 0, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 0, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
 Function setDeviousOutfitArms ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 1)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isArmsEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isArmsEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 1, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 1, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
 Function setDeviousOutfitLegs ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 2)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isLegsEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isLegsEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 2, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 2, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
 Function setDeviousOutfitGag ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 3)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isGagEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isGagEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 3, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 3, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
 Function setDeviousOutfitBlindfold ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 4)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isBlindfoldEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isBlindfoldEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 4, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-	
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 4, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
 Function setDeviousOutfitBelt ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 5)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isBeltEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isBeltEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 5, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-	
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 5, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
 Function setDeviousOutfitPlugAnal ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 6)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+	if ((!isPlugAnalEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isPlugAnalEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 6, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-	
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 6, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
 
-Function setDeviousOutfitPlugVaginal ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 7)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
+Function setDeviousOutfitPlugVaginal ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")	
+	if ((!isPlugVaginalEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isPlugVaginalEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 7, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
-	
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = 7, bEquip = bDevEquip, sMessage = sDevMessage)
 EndFunction
-
-Function clearDeviousOutfit ( Int iDevOutfit =-1, String sDevMessage = "")
-	int iOutfitID 
-
-	if (iDevOutfit== -1)
-		iOutfitID =  -1 ; StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8)
-
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iDevOutfit
-	EndIf
-
-	If (sDevMessage != "")
-		Debug.MessageBox(sDevMessage)
-	EndIf
-
-	int index = 0
-	While index <= 9
-		setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = index, bEquip = False, sMessage = "")
-	
-		index += 1
-	EndWhile
-EndFunction
-
 
 Function setDeviousOutfitID ( Int iOutfit, String sMessage = "")
 	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iOutfit", iOutfit)
@@ -771,22 +714,27 @@ Function registerDeviousOutfits ( )
 
 EndFunction
 
-Function registerDeviousOutfitsKeywords ( Actor kMaster )
+Function registerDeviousOutfitsKeywords ( Actor kActor )
 	Debug.Trace("[SD] Register devious keywords")
 
+	if (StorageUtil.StringListCount( kActor, "_SD_lDevicesKeyword") != 0)
+		Debug.Trace("[SD] Register devious keywords - aborting - list already set")
+		Return
+	EndIf	
+
 	; Register list of reference keywords for each device in list
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousCollar) ; 0 - Collar - Unused
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousArmbinder) ; 1 - Arms cuffs
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousLegCuffs ) ; 2 - Legs cuffs
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousGag ) ; 3 - Gag
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousBlindfold ) ; 4 - Blindfold
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousBelt ) ; 5 - Belt
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousPlugAnal) ; 6 - Plug Anal
-	StorageUtil.FormListAdd( kMaster, "_SD_lDevicesKeyword", libs.zad_DeviousPlugVaginal) ; 7 - Plug Vaginal
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousCollar) ; 0 - Collar - Unused
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousArmbinder) ; 1 - Arms cuffs
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousLegCuffs ) ; 2 - Legs cuffs
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousGag ) ; 3 - Gag
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBlindfold ) ; 4 - Blindfold
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBelt ) ; 5 - Belt
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugAnal) ; 6 - Plug Anal
+	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugVaginal) ; 7 - Plug Vaginal
 
 EndFunction
 
-Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "")
+Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "")
 	; iOutfitPart = -1 means 'equip all items in outfit'
 	; bEquip = True means 'equip item' (False means remove item)
 
@@ -799,21 +747,21 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 	Keyword ddArmorKeyword
 	Bool bDestroy = False
 
-	Debug.Trace("[SD] Slave set - Outfit: " + iOutfit + " - Part: " + iOutfitPart + " - Equip: " + bEquip )
+	Debug.Trace("[SD] Slave set - Outfit: " + iOutfitID + " - Part: " + iOutfitPart + " - Equip: " + bEquip )
 
 	; List initialization if it hasn't been set yet
-	int valueCount = StorageUtil.IntListCount(Game.GetPlayer(), "_SD_lSlaveOutfitList")
-	if (valueCount == 0)
-		valueCount = 10
-		while(valueCount > 0)
-			valueCount -= 1
-			StorageUtil.IntListAdd(Game.GetPlayer(), "_SD_lSlaveOutfitList", -1)
+	; int valueCount = StorageUtil.IntListCount(Game.GetPlayer(), "_SD_lSlaveOutfitList")
+	; if (valueCount == 0)
+	;	valueCount = 10
+	;	while(valueCount > 0)
+	;		valueCount -= 1
+	;		StorageUtil.IntListAdd(Game.GetPlayer(), "_SD_lSlaveOutfitList", -1)
 			; Debug.Notification("List[" + valueCount + "] = " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", valueCount))
-		endwhile
-	EndIf
+	;	endwhile
+	; EndIf
 
 	; --------------------------------------------------------------------------------------------
-	If (iOutfit == 0) ; Default outfit - Zaz slave items
+	If (iOutfitID == 0) ; Default outfit - Zaz slave items
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - Zaz Iron Collar
@@ -821,15 +769,15 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazIronCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		Else
-			setDeviousOutfitByTags ( iOutfit, iOutfitPart, bEquip, sMessage, True  )
+			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
 
 		EndIf
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 1) ; Wealthy outfit - Devious slave items - Leather + Iron cuffs
+	ElseIf (iOutfitID == 1) ; Wealthy outfit - Devious slave items - Leather + Iron cuffs
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - DD Posture Leather Collar
@@ -837,13 +785,13 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = DDiCuffLeatherCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		Else
-			setDeviousOutfitByTags ( iOutfit, iOutfitPart, bEquip, sMessage, True )
+			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True )
 		EndIf
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 2) ; Very Wealthy outfit  - Devious slave items - Steel + Armbinders
+	ElseIf (iOutfitID == 2) ; Very Wealthy outfit  - Devious slave items - Steel + Armbinders
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - DD Posture Steel Collar
@@ -851,22 +799,22 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = DDiPostureSteelCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		Else
-			setDeviousOutfitByTags ( iOutfit, iOutfitPart, bEquip, sMessage, True  )
+			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
 
 		EndIf
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 3) ; Primitive outfit - Ropes only (Forsworn, Giants, Hagravens)
+	ElseIf (iOutfitID == 3) ; Primitive outfit - Ropes only (Forsworn, Giants, Hagravens)
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - Zaz Iron Collar
 			ddArmorRendered = zazIronCollarRendered 
 			ddArmorInventory = zazIronCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
 			; 1 - Arms - Zaz Iron Cuffs
@@ -874,24 +822,24 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazIronCuffs
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 4) ; Spider outfit - Zaz spider web
+	ElseIf (iOutfitID == 4) ; Spider outfit - Zaz spider web
 
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 5) ; Falmer outfit - Chaurus textured Zaz spider web
+	ElseIf (iOutfitID == 5) ; Falmer outfit - Chaurus textured Zaz spider web
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - Zaz Iron Collar
 			ddArmorRendered = zazIronCollarRendered 
 			ddArmorInventory = zazIronCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
 			; 1 - Arms - Zaz Iron Cuffs
@@ -899,17 +847,17 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazIronCuffs
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		EndIf
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 6) ; Animal outfit - Dirt and scratches textures Zaz spider web
+	ElseIf (iOutfitID == 6) ; Animal outfit - Dirt and scratches textures Zaz spider web
 
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 7) ; Spriggan Host outfit - Vegetal armor
+	ElseIf (iOutfitID == 7) ; Spriggan Host outfit - Vegetal armor
 		if (!bEquip)
 			bDestroy = True
 		EndIf
@@ -920,7 +868,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSprigganHands
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
 			; 2 - Legs - Spriggan host feet
@@ -928,7 +876,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSprigganFeet
 			ddArmorKeyword = libs.zad_DeviousLegCuffs 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 
 		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
@@ -937,7 +885,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSprigganMask
 			ddArmorKeyword = libs.zad_DeviousBlindfold 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
@@ -946,23 +894,23 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSprigganBody
 			ddArmorKeyword = libs.zad_DeviousBelt 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 8) ; Tentacle outfit -  Biological armor
+	ElseIf (iOutfitID == 8) ; Tentacle outfit -  Biological armor
 
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 9) ; Queen of Chaurus outfit - Based on Brood Mother
+	ElseIf (iOutfitID == 9) ; Queen of Chaurus outfit - Based on Brood Mother
 
 
 
 	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfit == 10) ; Sanguine Artefacts - Spectral bondage devices
+	ElseIf (iOutfitID == 10) ; Sanguine Artefacts - Spectral bondage devices
 		if (!bEquip)
 			bDestroy = True
 		EndIf
@@ -973,7 +921,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSanguineCollar
 			ddArmorKeyword = libs.zad_DeviousCollar 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
 			; 1 - Arms - Sanguine Bound FX 
@@ -981,7 +929,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSanguineCuffs
 			ddArmorKeyword = libs.zad_DeviousArmbinder 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
 			; 2 - Legs - Sanguine Bound FX 
@@ -989,7 +937,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSanguineShackles
 			ddArmorKeyword = libs.zad_DeviousLegCuffs 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==3) || (iOutfitPart==-1) )
 			; 3 - Gag - Sanguine Bound FX 
@@ -997,7 +945,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSanguineWoodenBit
 			ddArmorKeyword = libs.zad_DeviousGag 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
 			; 4 - Blindfold
@@ -1005,7 +953,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSanguineBlinds
 			ddArmorKeyword = libs.zad_DeviousBlindfold 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
 			; 5 - Belt - DDBelt Iron
@@ -1013,7 +961,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.beltIron
 			ddArmorKeyword = libs.zad_DeviousBelt 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
 			; 6 - Plug Anal - DD Soul Gem Plug Anal
@@ -1021,7 +969,7 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = libs.plugSoulgemAn
 			ddArmorKeyword = libs.zad_DeviousPlugAnal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf
 		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
 			; 7 - Plug Vaginal - Sanguine's Artifact
@@ -1029,7 +977,26 @@ Function setDeviousOutfit ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = Tru
 			ddArmorInventory = zazSanguineArtifact
 			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
 
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		EndIf
+
+	; --------------------------------------------------------------------------------------------
+	ElseIf (iOutfitID == -1) ; No special outfit ID provided... fall back on generic item add/removal
+		if (!bEquip)
+			bDestroy = True
+		EndIf
+
+		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
+			; 0 - Collar - Zaz Iron Collar
+		;	ddArmorRendered = zazIronCollarRendered 
+		;	ddArmorInventory = zazIronCollar
+		;	ddArmorKeyword = libs.zad_DeviousCollar 
+
+		;	setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
+			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
+		Else
+			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
+
 		EndIf
 
 	EndIf
@@ -1052,127 +1019,149 @@ Function setDeviousOutfitByTags ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip
 	Actor kSlave = Game.GetPlayer() as Actor
 	String sDeviceTags
 
-	Armor ddArmorInventory
-	Armor ddArmorRendered
+	Armor ddArmorInventory = None
+	Armor ddArmorRendered = None
 	Keyword ddArmorKeyword
 
 	If (iOutfitPart!=-1) 
-		ddArmorKeyword = StorageUtil.FormListGet( kMaster, "_SD_lDevicesKeyword", iOutfitPart) as Keyword ; libs.zad_DeviousArmbinder 
-		sDeviceTags = StorageUtil.StringListGet(kMaster, "_SD_lDevices", iOutfitPart)  
+		Debug.Trace("[SD] Set device by tags" )
+
+		If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslaved"))
+			ddArmorKeyword = StorageUtil.FormListGet( kMaster, "_SD_lDevicesKeyword", iOutfitPart) as Keyword 
+		Else
+			ddArmorKeyword = StorageUtil.FormListGet( kSlave, "_SD_lDevicesKeyword", iOutfitPart) as Keyword 
+		EndIf
+		Debug.Trace("[SD] Device keyword: " + ddArmorKeyword )
+
 		If (bEquip)
+			sDeviceTags = StorageUtil.StringListGet(kMaster, "_SD_lDevices", iOutfitPart)  
+
+			Debug.Trace("[SD] Device tags: " + sDeviceTags )
+
 			ddArmorInventory = libs.GetDeviceByTags(ddArmorKeyword, sDeviceTags)
 		Else
 			ddArmorInventory = libs.GetWornDevice(libs.PlayerRef, ddArmorKeyword)
 		EndIf
 
-		ddArmorRendered = libs.GetRenderedDevice(ddArmorInventory)
+		Debug.Trace("[SD] Equip: " + bEquip + " - Device inventory: "  + ddArmorInventory  )
 
-		Debug.Trace("[SD] Device tags: " + sDeviceTags + " - Device keyword: " + ddArmorKeyword + " - Device inventory: "  + ddArmorInventory + " - Device rendered: " + ddArmorRendered  )
+		If (ddArmorInventory!=None)
+			ddArmorRendered = libs.GetRenderedDevice(ddArmorInventory)
+		EndIf
 
-		setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		Debug.Trace("[SD] Device rendered: " + ddArmorRendered  )
+
+		If (ddArmorInventory!=None) && (ddArmorRendered!=None)
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		Else
+			Debug.Trace("[SD] Aborting device update - no device found"  )
+		EndIf
 
 	EndIf
 
 EndFunction
 
-Function setDeviousOutfitPart ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
-	int iOutfitID 
+Function setDeviousOutfitByKeyword ( Int iOutfit, Int iOutfitPart = -1, Keyword ddArmorKeyword, Bool bEquip = True, String sMessage = "" , Bool bDestroy = False)
+	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Actor kSlave = Game.GetPlayer() as Actor
+	String sDeviceTags
 
-	if (iOutfit== -1) && (iOutfitPart!=-1)
-		iOutfitID =  StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart)
+	Armor ddArmorInventory = None
+	Armor ddArmorRendered = None
 
-		if (iOutfitID == -1)
-			iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-		endif
-	Else
-		iOutfitID =  iOutfit
+	If (iOutfitPart!=-1) 
+
+		Debug.Trace("[SD] Set device by keyword: " + ddArmorKeyword )
+
+		If (bEquip)
+			sDeviceTags = StorageUtil.StringListGet(kMaster, "_SD_lDevices", iOutfitPart)  
+
+			Debug.Trace("[SD] Device tags: " + sDeviceTags )
+
+			ddArmorInventory = libs.GetDeviceByTags(ddArmorKeyword, sDeviceTags)
+		Else
+			ddArmorInventory = libs.GetWornDevice(libs.PlayerRef, ddArmorKeyword)
+		EndIf
+
+		Debug.Trace("[SD] Equip: " + bEquip + " - Device inventory: "  + ddArmorInventory  )
+
+		If (ddArmorInventory!=None)
+			ddArmorRendered = libs.GetRenderedDevice(ddArmorInventory)
+		EndIf
+
+		Debug.Trace("[SD] Device rendered: " + ddArmorRendered  )
+
+		If (ddArmorInventory!=None) && (ddArmorRendered!=None)
+
+			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		Else
+			Debug.Trace("[SD] Aborting device update - no device found"  )
+		EndIf
+
 	EndIf
 
-	; List initialization if it hasn't been set yet
-	int valueCount = StorageUtil.IntListCount(Game.GetPlayer(), "_SD_lSlaveOutfitList")
-	while(valueCount > 0)
-		valueCount -= 1
-		Debug.Trace("[SD] Outfit List[" + valueCount + "] = " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", valueCount))
-	endwhile
+EndFunction
 
+Function setDeviousOutfitPart ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = True, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
 
-	; If (bDevEquip) || ( !(bDevEquip) && (iDevOutfit == StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", 8) ))
-	; isDeviousOutfitPartEquipped ( libs.PlayerRef, iOutfitPart )
-	if (iOutfitPart>=0)
-		libs.Log("[SD] SetOutfit: " + iOutfit + " - P: "  + iOutfitPart + " - "  + bEquip + " ("  + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart ) + ")" )
+	if (iOutfitPart!=-1) 
+		libs.Log("[SD] SetOutfit: ID:" + iOutfitID + " - Part: "  + iOutfitPart + " - Equip: "  + bEquip )
 
 		if (bEquip) 
 			
 			if (!isDeviousOutfitPartEquipped ( libs.PlayerRef, iOutfitPart ))
-				StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, iOutfit)
 
-				libs.Log("[SD] SetOutfit: equip - " + iOutfit + " [ " + iOutfitPart + "]")
+				libs.Log("[SD] SetOutfit: equip - " + iOutfitID + " [ " + iOutfitPart + "]")
 				libs.EquipDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
 			Else
-				libs.Log("[SD] SetOutfit: equip - " + iOutfit + "skipped - device already equipped " )
-				StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
+				libs.Log("[SD] SetOutfit: equip - " + iOutfitID + "skipped - device already equipped " )
 			EndIf
 
 		Else
-			; If outfitid is set, remove part if outfitid matches current value equiped for that part
-			; If outfitid == -1, force remove part anyway
 
-			; If ( (iOutfit != -1) && ( StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) == iOutfit) ) || (iOutfit == -1)
-				If (bDestroy)
-					libs.Log("[SD] SetOutfit: destroy - " + iOutfit + " [ " + iOutfitPart + "] " )
-					StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
-					if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
-		 				libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
-		 			Else
-		 			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
-					EndIf
-		 			
-		 			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, True, False)
-				Else
-					libs.Log("[SD] SetOutfit: remove - " + iOutfit + " [ " + iOutfitPart + "] " )
-					StorageUtil.IntListSet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart, -1)
-					if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
-		 				libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
-		 			Else
-		 			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
-					EndIf
+			If (bDestroy)
+				libs.Log("[SD] SetOutfit: destroy - " + iOutfitID + " [ " + iOutfitPart + "] " )
 
-		 			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, False, False)
+				if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
+	 				libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
+	 			Else
+	 			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
 				EndIf
-			; Else
-			; 	libs.Log("[SD] SetOutfit: conflict detected - not removed - " + iOutfit + " [ " + iOutfitPart + "] - " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", iOutfitPart) )		
-			; EndIf
+	 			
+	 			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, True, False)
+			Else
+				libs.Log("[SD] SetOutfit: remove - " + iOutfitID + " [ " + iOutfitPart + "] " )
+
+				if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
+	 				libs.RemoveDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
+	 			Else
+	 			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+				EndIf
+
+	 			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, False, False)
+			EndIf
+
 		EndIf
 	EndIf
 
 EndFunction
+ 
+Function clearDevicesForEnslavement()
 
-; Returns 0 if the actor is not wearing a device of this type, 1 if she is wearing
-; that specific device, or 2 if she's wearing another device of the same type.
-; int Function IsWearingDevice(actor akActor, armor deviceRendered, keyword zad_DeviousDevice)
+	If !isCollarEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine"  ) && !isCollarEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved"  )
+		setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = 0, ddArmorKeyword = libs.zad_DeviousCollar, bEquip = False, sMessage = "" , bDestroy = True)
+	EndIf
 
-Function equipDeviousOutfitPart ( Int iDevOutfitPart = -1, String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
+	If !isArmsEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine"  ) && !isArmsEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan"  ) && !isArmsEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved"  )
+		setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = 1, ddArmorKeyword = libs.zad_DeviousArmCuffs, bEquip = False, sMessage = "" , bDestroy = True)
+	EndIf
 
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = True, sMessage = sDevMessage )
+	If !isLegsEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine"  ) && !isLegsEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan"  ) && !isLegsEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved"  )
+		setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = 2, ddArmorKeyword = libs.zad_DeviousLegCuffs, bEquip = False, sMessage = "" , bDestroy = True)
+	EndIf
+
 EndFunction
-
-Function removeDeviousOutfitPart ( Int iDevOutfitPart = -1, String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = False, sMessage = sDevMessage)
-EndFunction
-
-Function switchDeviousOutfitPart ( Int iDevOutfitPart = -1, Bool bDevEquip = True, String sDevMessage = "")
-	int iOutfitID = StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iOutfit")
-
-	setDeviousOutfit ( iOutfit= iOutfitID, iOutfitPart = iDevOutfitPart, bEquip = bDevEquip, sMessage = sDevMessage)
-EndFunction
-
-; If Armbinders equipped, prevent use of Master Key (pick up is ok) or release from picking up weapon (drop immediately)
-; Set up Spriggan Host as Devious Device
-; Test Spriggan Host quest and Falmer enslavement
-
 
 Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 
@@ -1266,9 +1255,12 @@ Function DDSetAnimating( Actor akActor, Bool isAnimating )
 	libs.SetAnimating( akActor, isAnimating )
 EndFunction
 
+
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
+Keyword Property ArmorCuirass  Auto  
+Keyword Property ClothingBody  Auto  
 
 zadLibs Property libs Auto
 

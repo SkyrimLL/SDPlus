@@ -136,7 +136,9 @@ Bool Function checkIfSpriggan ( Actor akActor )
 		Int index = 0
 		Int size = _SDFLP_spriggan_factions.GetSize()
 		While ( !bIsSpriggan && index < size )
-			bIsSpriggan = (akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")) || (akActor.GetRace() == SprigganRace) || ( (_SD_Race_SprigganEarthMother!=None) && (akActor.GetRace() == _SD_Race_SprigganEarthMother)) || ( (_SD_Race_SprigganBurnt!=None) && (akActor.GetRace() == _SD_Race_SprigganBurnt))
+			bIsSpriggan = (akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")) || (akActor.GetRace() == SprigganRace) || ( (_SD_Race_SprigganEarthMother!=None) && (akActor.GetRace() == _SD_Race_SprigganEarthMother)) || ( (_SD_Race_SprigganBurnt!=None) && (akActor.GetRace() == _SD_Race_SprigganBurnt))  && !actorFactionInList( akActor, _SDFLP_banned_factions )
+
+
 			index += 1
 		EndWhile
 	EndIf
@@ -152,7 +154,9 @@ Bool Function checkIfFalmer ( Actor akActor )
 		Int index = 0
 		Int size = _SDFLP_falmer_factions.GetSize()
 		While ( !bIsFalmer && index < size )
-			bIsFalmer = akActor.IsInFaction( _SDFLP_falmer_factions.GetAt(index) as Faction ) || akActor.GetRace() == FalmerRace  || ( (_SD_Race_FalmerFrozen!=None) && (akActor.GetRace() == _SD_Race_FalmerFrozen))
+			bIsFalmer = akActor.IsInFaction( _SDFLP_falmer_factions.GetAt(index) as Faction ) || akActor.GetRace() == FalmerRace  || ( (_SD_Race_FalmerFrozen!=None) && (akActor.GetRace() == _SD_Race_FalmerFrozen)) && !actorFactionInList( akActor, _SDFLP_banned_factions )
+
+
 			index += 1
 		EndWhile
 	EndIf

@@ -35,13 +35,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		Debug.Trace("[SD] Skipping sanguine collar - slot in use")
 	EndIf
 
-	if (!fctOutfit.isCuffsEquipped (  akTarget ))
+	if (!fctOutfit.isArmsEquipped (  akTarget ))
 		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
 	EndIf
 
-	if (!fctOutfit.isShacklesEquipped (  akTarget ))
+	if (!fctOutfit.isLegsEquipped (  akTarget ))
 		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 	Else
 		Debug.Trace("[SD] Skipping sanguine shackles - slot in use")
