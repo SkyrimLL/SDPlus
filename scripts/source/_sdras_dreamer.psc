@@ -105,7 +105,6 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 						kConfig._SDQP_quests_primary[2].Start()
 					EndIf
 
-
 					_SD_dreamQuest.SetStage(10)
 				Else
 					_SD_dreamQuest.SetStage(15)

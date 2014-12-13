@@ -21,11 +21,11 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		Debug.Trace("[_sdks_bindings_key] Master key - Stop enslavement")
 
 
-		If fctOutfit.isCuffsEquipped( kContainer ) && !fctOutfit.isCuffsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isCuffsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isArmsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isArmsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If fctOutfit.isShacklesEquipped( kContainer ) && !fctOutfit.isShacklesEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isShacklesEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isLegsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isLegsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
 			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
 		EndIf
 

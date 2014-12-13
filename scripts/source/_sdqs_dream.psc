@@ -9,21 +9,32 @@ ReferenceAlias Property _SDRAP_leave  Auto
 ReferenceAlias Property _SDRAP_naamah  Auto  
 ReferenceAlias Property _SDRAP_meridiana  Auto  
 ReferenceAlias Property _SDRAP_sanguine  Auto  
+ReferenceAlias Property _SDRAP_sanguine_sam  Auto  
+ReferenceAlias Property _SDRAP_sanguine_haelga  Auto  
+ReferenceAlias Property _SDRAP_sanguine_m  Auto  
+ReferenceAlias Property _SDRAP_sanguine_f Auto  
 ReferenceAlias Property _SDRAP_nord_girl  Auto  
 ReferenceAlias Property _SDRAP_imperial_man  Auto    
 ReferenceAlias Property _SDRAP_eisheth  Auto  
 ReferenceAlias Property _SDLA_safeHarbor  Auto  
 
 Quest Property _SD_dream_destinations  Auto  
+Quest Property SamQuest  Auto  
+Quest Property HaelgaQuest  Auto  
 _sdqs_dream_destinations property dreamDest Auto
 SexLabFrameWork Property SexLab Auto
 
+Int    iPlayerGender
 Actor kDreamer
 ObjectReference kSafeHarbor 
 ObjectReference kEnter
 ObjectReference kLeave
 Actor kNaamah
 Actor kSanguine
+Actor kSanguine_sam
+Actor kSanguine_haelga
+Actor kSanguine_m
+Actor kSanguine_f
 Actor kMeridiana
 Actor kNordGirl
 Actor kRedguardGirl
@@ -103,22 +114,93 @@ Event OnInit()
 EndEvent
 
 Function positionVictims( Int aiStage )
+	Int    iGenderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+
 	kDreamer = Game.GetPlayer() as Actor
 	kEnter = _SDRAP_enter.GetReference() as ObjectReference
 	kLeave = _SDRAP_leave.GetReference() as ObjectReference
-	kSanguine = _SDRAP_sanguine.GetReference() as Actor
 	kNaamah = _SDRAP_naamah.GetReference() as Actor
 	kMeridiana = _SDRAP_meridiana.GetReference() as Actor
 	kNordGirl = _SDRAP_nord_girl.GetReference() as Actor
 	kRedguardGirl = _SDRAP_redguard_girl.GetReference() as Actor
 	kImperialMan = _SDRAP_imperial_man.GetReference() as Actor
 	kEisheth = _SDRAP_eisheth.GetReference() as Actor
+	kSanguine_m = _SDRAP_sanguine_m.GetReference() as Actor
+	kSanguine_f = _SDRAP_sanguine_f.GetReference() as Actor
+	kSanguine_sam = _SDRAP_sanguine_sam.GetReference() as Actor
+	kSanguine_haelga = _SDRAP_sanguine_haelga.GetReference() as Actor
+
+	If !(kSanguine_m as ObjectReference).IsDisabled()
+		(kSanguine_m as ObjectReference).Disable()
+	EndIf
+	If !(kSanguine_f as ObjectReference).IsDisabled()
+		(kSanguine_f as ObjectReference).Disable()
+	EndIf
+	If !(kSanguine_sam as ObjectReference).IsDisabled()
+		(kSanguine_sam as ObjectReference).Disable()
+	EndIf
+	If !(kSanguine_haelga as ObjectReference).IsDisabled()
+		(kSanguine_haelga as ObjectReference).Disable()
+	EndIf
+
+	iPlayerGender  = kDreamer.GetLeveledActorBase().GetSex() as Int
+
+	If (Utility.RandomInt(0,100)>50)
+		If (Utility.RandomInt(0,100)>70) && SamQuest.IsCompleted()
+			kSanguine = _SDRAP_sanguine_sam.GetReference() as Actor
+		Else
+			kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+		EndIf
+	Else
+		If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
+			kSanguine = _SDRAP_sanguine_haelga.GetReference() as Actor
+		Else
+			kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
+		EndIf
+	EndIf
+ 
+	If (iPlayerGender  == 0)
+		; iPlayerGender = 0 - male
+		if (iGenderRestrictions == 1) 
+			If (Utility.RandomInt(0,100)>70) && SamQuest.IsCompleted()
+				kSanguine = _SDRAP_sanguine_sam.GetReference() as Actor
+			Else
+				kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+			EndIf
+		elseif (iGenderRestrictions == 2)
+			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
+				kSanguine = _SDRAP_sanguine_haelga.GetReference() as Actor
+			Else
+				kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
+			EndIf
+		endif
+			
+	Else
+		; iPlayerGender = 1 - female
+		if (iGenderRestrictions == 1)
+			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
+				kSanguine = _SDRAP_sanguine_haelga.GetReference() as Actor
+			Else
+				kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
+			EndIf
+		
+		elseif (iGenderRestrictions == 2)
+			If (Utility.RandomInt(0,100)>70) && SamQuest.IsCompleted()
+				kSanguine = _SDRAP_sanguine_sam.GetReference() as Actor
+			Else
+				kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+			EndIf
+		
+		endif
+		
+	EndIf
+
+	_SDRAP_sanguine.ForceRefTo( kSanguine as ObjectReference )
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
 	SendModEvent("SDDreamworldStart") 
 
-	kSanguine.Disable()
 
 	kNaamah.EvaluatePackage()
 	kMeridiana.EvaluatePackage()
@@ -175,7 +257,7 @@ Function positionVictims( Int aiStage )
 
 	; _SDSP_spent.Cast( kDreamer, kDreamer)
 
-	kSanguine.Enable()
+	(kSanguine as ObjectReference).Enable()
 	StorageUtil.StringListAdd(kSanguine, "_DDR_DialogExclude", "SD+:Sanguine")
 	StorageUtil.StringListAdd(kNordGirl, "_DDR_DialogExclude", "SD+:Sanguine")
 	StorageUtil.StringListAdd(kRedguardGirl, "_DDR_DialogExclude", "SD+:Sanguine")
@@ -274,7 +356,7 @@ Faction Property _SDP_BunkhouseFaction  Auto
 
 GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_enslavedSpriggan Auto
-
+GlobalVariable Property _SDGVP_gender_restrictions Auto
 ObjectReference Property _SD_DremoraChallenger  Auto  
 
 ReferenceAlias Property _SDRAP_redguard_girl  Auto  

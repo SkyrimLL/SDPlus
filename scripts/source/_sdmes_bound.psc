@@ -19,9 +19,9 @@ Actor kTarget
 Actor kPlayer
 ObjectReference kMaster
 
-Int trust  
-Int disposition 
-Float kneelingDistance 
+Int iTrust  
+Int iDisposition 
+Float fKneelingDistance 
 
 Float fRFSU = 0.1
 int throttle = 0 
@@ -64,11 +64,11 @@ Event OnUpdate()
 
 
 
-			trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
-			disposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
-			kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
+			iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+			iDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
+			fKneelingDistance = funct.floatWithinRange( 500.0 - ((iTrust as Float) * 5.0), 100.0, 2000.0 )
 
-			If ( kTarget.GetDistance( kMaster ) < kneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
+			If ( kTarget.GetDistance( kMaster ) < fKneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
 
 				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )
@@ -78,7 +78,7 @@ Event OnUpdate()
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
 						; fctConstraints.SetAnimating(false)
 
-					ElseIf ( trust < 0 ) && (disposition < 0)
+					ElseIf ( iTrust < 0 ) && (iDisposition < 0)
 						; fctConstraints.SetAnimating(true)
 
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
@@ -87,7 +87,7 @@ Event OnUpdate()
 							PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
 						EndIf
 
-					ElseIf ( trust >= 0 ) && (disposition < 0)
+					ElseIf ( iTrust >= 0 ) && (iDisposition < 0)
 						; fctConstraints.SetAnimating(true)
 
 						If  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")

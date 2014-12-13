@@ -172,7 +172,48 @@ Bool Function setRandomActorExpression( Actor akActor = None, Int baseIntensity 
 	Return akActor.SetExpressionOverride( expressionType[ RandomInt(0, expressionType.Length - 1) ] ,RandomInt( min, max ) ) as Bool
 EndFunction
 
+Bool Function _hasPlayer(Actor[] _actors)
+	ObjectReference PlayerREF= SexLab.PlayerRef
 
+	int idx = 0
+	while idx < _actors.Length
+		if _actors[idx] == PlayerRef
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool Function _hasActor(Actor[] _actors, Actor thisActor)
+
+	int idx = 0
+	while idx < _actors.Length
+		if _actors[idx] == thisActor as ObjectReference
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool Function _hasRace(Actor[] _actors, Race thisRace)
+	ActorBase aBase 
+	Race aRace 
+
+	int idx = 0
+	while idx < _actors.Length
+		if (_actors[idx])
+			aBase = _actors[idx].GetBaseObject() as ActorBase
+			aRace = aBase.GetRace()
+			if aRace == thisRace
+				return True
+			endif
+		EndIf
+		idx += 1
+	endwhile
+	Return False
+EndFunction
 
 
 ;; UTILITY FUNCTIONS

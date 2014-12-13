@@ -137,10 +137,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Utility.Wait(1.0)
 		; fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
 			
-		if (!fctOutfit.isCuffsEquipped(kSlave as Actor))
+		if (!fctOutfit.isArmsEquipped(kSlave as Actor))
 			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "Roots swarm around you.")	
 		EndIf
-		if (!fctOutfit.isShacklesEquipped(kSlave as Actor))
+		if (!fctOutfit.isLegsEquipped(kSlave as Actor))
 			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
 		EndIf	
 		; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	

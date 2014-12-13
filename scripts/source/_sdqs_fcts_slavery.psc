@@ -112,10 +112,10 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 1) 
 	EndIf
 
-	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryLevel")) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") == 0)
+	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryLevel")) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") <= 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 1)
 	EndIf
-	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryExposure")) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") == 0)
+	If (!StorageUtil.HasIntValue(kSlave, "_SD_iSlaveryExposure")) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") <= 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryExposure", 1)
 	EndIf
 	
@@ -180,18 +180,18 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kMaster, "_SD_iTrustRange", Utility.RandomInt(5,15)   )
 	EndIf
 
-	StorageUtil.SetIntValue(kMaster, "_SD_iGoalFood", Utility.RandomInt(5,10))
-	StorageUtil.SetIntValue(kMaster, "_SD_iGoalSex",  Utility.RandomInt(5,10))
-	StorageUtil.SetIntValue(kMaster, "_SD_iGoalPunishment",  Utility.RandomInt(5,10))
-	StorageUtil.SetIntValue(kMaster, "_SD_iGoalGold",  Utility.RandomInt(15,50))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalSex",  Utility.RandomInt(2,5))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalPunishment",  Utility.RandomInt(1,5))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalFood", Utility.RandomInt(1,2))
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoalGold",  Utility.RandomInt(1,50))
 	; Special needs based on faction
 	; Special items (firewood, ingredients)
 	; Blood feedings (Vampire)
 
 	; Slave daily progress
-	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iGoalSex", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iGoalPunishment", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iGoalGold", 0)
 
 	; Master trust - number of merit points necessary for master to trust slave
@@ -272,10 +272,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
 
-	if (StorageUtil.StringListCount( kMaster, "_SD_lDevices") == 0)
-		InitMasterDevices( kMaster, outfitID)
-
-	EndIf
+	InitMasterDevices( kMaster, outfitID)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
@@ -290,6 +287,12 @@ EndFunction
 function InitMasterDevices( Actor kMaster, Int iOutfit)
 
 	Debug.Trace("[SD] Init master devices - outfitID: " + iOutfit)
+
+
+	if (StorageUtil.StringListCount( kMaster, "_SD_lDevices") != 0)
+		Debug.Trace("[SD] Init master devices - aborting - list already set")
+		Return
+	EndIf	
 
 	fctOutfit.registerDeviousOutfitsKeywords (  kMaster )
 
@@ -336,7 +339,6 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
 	EndIf
 EndFunction
-
 
 function StopSlavery( Actor kMaster, Actor kSlave)
 
@@ -560,17 +562,17 @@ Function UpdateSlaveryLevel(Actor kSlave)
 	; Update exposure level
 	If (exposure == 0) ; level 0 - free
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 0)
-	ElseIf (exposure >= 1) && (exposure <20) ; level 1 - rebelious
+	ElseIf (exposure >= 1) && (exposure <10) ; level 1 - rebelious
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 1)
-	ElseIf (exposure >= 20) && (exposure <60) ; level 2 - reluctant
+	ElseIf (exposure >= 10) && (exposure <20) ; level 2 - reluctant
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 2)
-	ElseIf (exposure >= 60) && (exposure <120) ; level 3 - accepting
+	ElseIf (exposure >= 20) && (exposure <40) ; level 3 - accepting
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 3)
-	ElseIf (exposure >= 120) && (exposure < 200) ; level 4 - not so bad 
+	ElseIf (exposure >= 40) && (exposure < 60) ; level 4 - not so bad 
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 4)
-	ElseIf (exposure >= 200) && (exposure < 300) ; level 5 - getting to like it
+	ElseIf (exposure >= 60) && (exposure < 100) ; level 5 - getting to like it
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 5)
-	ElseIf (exposure >= 300)  ; level 6 - begging for it
+	ElseIf (exposure >= 100)  ; level 6 - begging for it
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 6)
 	EndIf
 
@@ -592,17 +594,17 @@ Function UpdateSlaveryRelationshipType(Actor kMaster, Actor kSlave)
 	; Update exposure level
 	If (exposure == 0) ; level 0 - free
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -5 )
-	ElseIf (exposure >= 1) && (exposure <20) ; level 1 - rebelious
+	ElseIf (exposure >= 1) && (exposure <10) ; level 1 - rebelious
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -5 ) 
-	ElseIf (exposure >= 20) && (exposure <60) ; level 2 - reluctant
+	ElseIf (exposure >= 10) && (exposure <20) ; level 2 - reluctant
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -6 ) 
-	ElseIf (exposure >= 60) && (exposure <120) ; level 3 - accepting
+	ElseIf (exposure >= 20) && (exposure <40) ; level 3 - accepting
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -6 ) 
-	ElseIf (exposure >= 120) && (exposure < 200) ; level 4 - not so bad 
+	ElseIf (exposure >= 40) && (exposure < 60) ; level 4 - not so bad 
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -6 ) 
-	ElseIf (exposure >= 200) && (exposure < 300) ; level 5 - getting to like it
+	ElseIf (exposure >= 60) && (exposure < 100) ; level 5 - getting to like it
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -7 ) 
-	ElseIf (exposure >= 300)  ; level 6 - begging for it
+	ElseIf (exposure >= 100)  ; level 6 - begging for it
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -7 ) 
 	EndIf
 EndFunction
@@ -621,7 +623,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Int overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
 	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
 	Int masterSexNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex")
-	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunish")
+	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunishment")
 	Int masterFoodNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood")
 	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
 	int masterNeedRange =  StorageUtil.GetIntValue(kMaster, "_SD_iNeedRange")
@@ -652,54 +654,57 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	; :: Compare slave counts against master needs (sex, punish, gold, food)
 	; :: If counts lower than master personality type, master mood -2
 	; Do not count negative disposition for missing food and gold targets at early slavery stages
-	If (masterSexNeed < (-1 * masterNeedRange))
+	If (masterSexNeed < 0)
 		masterDisposition -= 1
 	EndIf
-	If (masterPunishNeed <  (-1 * masterNeedRange))
+	If (masterPunishNeed <  0)
 		masterDisposition -= 1
 	EndIf
-	If (masterGoldNeed <  (-5 * masterNeedRange)) && (slaveryLevel >= 1)
+	If (masterFoodNeed <  0) && (slaveryLevel >= 1)
 		masterDisposition -= 1
 	EndIf
-	If (masterFoodNeed <  (-1 * masterNeedRange)) && (slaveryLevel >= 2)
+	If (masterGoldNeed <  0) && (slaveryLevel >= 2)
 		masterDisposition -= 1
 	EndIf
 
+
 	; :: If counts match master personality type, master mood +1
-	If (masterSexNeed >= (-1 * masterNeedRange)) && (masterSexNeed <= masterNeedRange)
-		masterDisposition += 2
-		iSexComplete += 1
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") > 0) && (masterSexNeed >= (-1 * masterNeedRange) ) && (masterSexNeed <= masterNeedRange)
+	 	masterDisposition += 1
+	 	iSexComplete += 1
 	EndIf
-	If (masterPunishNeed >= (-1 * masterNeedRange)) && (masterPunishNeed <= masterNeedRange)
-		masterDisposition += 2
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") > 0) && (masterPunishNeed >= (-1 * masterNeedRange) )  && (masterPunishNeed <= masterNeedRange)
+	 	masterDisposition += 1
 		iPunishComplete += 1
 	EndIf
-	If (masterGoldNeed >= (-5 * masterNeedRange)) && (masterGoldNeed <= (masterNeedRange * 5)) 
-		masterDisposition += 2
-		iFoodComplete += 1
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") > 0) && (masterFoodNeed >= (-1 * masterNeedRange) )  && (masterFoodNeed <= masterNeedRange) 
+	 	masterDisposition += 1
+	 	iFoodComplete += 1
 	EndIf
-	If (masterFoodNeed >= (-1 * masterNeedRange)) && (masterFoodNeed <= masterNeedRange) 
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") > 0) && (masterSexNeed >= (-5 * masterNeedRange) )  && (masterGoldNeed <= (masterNeedRange * 5)) 
+	 	masterDisposition += 1
+	 	iGoldComplete += 1
+	EndIf
+
+
+	; :: If counts exceed master personality, master mood +2
+	If (masterSexNeed > masterNeedRange)
+		masterDisposition += 2
+		iSexComplete += 1 
+	EndIf
+	If (masterPunishNeed > masterNeedRange)
+		masterDisposition += 2
+		iPunishComplete += 1 
+	EndIf
+	If (masterFoodNeed > masterNeedRange) 
+		masterDisposition += 2
+		iFoodComplete += 1 
+	EndIf
+	If (masterGoldNeed > (masterNeedRange * 5)) 
 		masterDisposition += 2
 		iGoldComplete += 1
 	EndIf
 
-	; :: If counts exceed master personality, master mood +2
-	If (masterSexNeed > masterNeedRange)
-		masterDisposition += 4
-		iSexComplete += 2 
-	EndIf
-	If (masterPunishNeed > masterNeedRange)
-		masterDisposition += 4
-		iPunishComplete += 2 
-	EndIf
-	If (masterGoldNeed > (masterNeedRange * 5)) 
-		masterDisposition += 4
-		iFoodComplete += 2
-	EndIf
-	If (masterFoodNeed > masterNeedRange) 
-		masterDisposition += 4
-		iGoldComplete += 2 
-	EndIf
 
 	; - Master personality profile
 	; If (masterPersonalityType == 0) ; 0 - Simple profile. No additional constraints
@@ -720,11 +725,11 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 			masterDisposition += 3
 		EndIf
 	ElseIf (masterPersonalityType == 5) ; 5 - Caring - Seeks full compliance for one goal at least
-		if (iFoodComplete == 1) || (iGoldComplete == 1) || (iPunishComplete == 1) || (iGoldComplete == 1)
+		if (iFoodComplete >= 1) || (iGoldComplete >= 1) || (iPunishComplete >= 1) || (iSexComplete >= 1)
 			masterDisposition += 3
 		EndIf
 	ElseIf (masterPersonalityType == 6) ; 6 - Perfectionist - Seeks full compliance for all goals
-		if (iFoodComplete == 1) && (iGoldComplete == 1) && (iPunishComplete == 1) && (iGoldComplete == 1)
+		if (iFoodComplete >= 1) && (iGoldComplete >= 1) && (iPunishComplete >= 1) && (iSexComplete >= 1)
 			masterDisposition += 3
 		EndIf
 	EndIf
@@ -756,20 +761,12 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 100 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
 	EndIf
 
-	; Reset daily counts for slave
-	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iPunishmentCountToday", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iSubmissiveCountToday", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iAngerCountToday", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iGoalSex", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iGoalPunishment", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
-	StorageUtil.SetIntValue(kSlave, "_SD_iGoalGold", 0)
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
-	If ( (iSexComplete + iPunishComplete + iFoodComplete + iGoldComplete) >=2 ) ; (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0)
+	Int iGoalsComplete = iSexComplete + iPunishComplete + iFoodComplete + iGoldComplete
+	If ( iGoalsComplete >=2 ) &&  ( iGoalsComplete <=4 )  
 		overallMasterDisposition += 1
-	Else
+	ElseIf ( iGoalsComplete <= 1 ) 
 		overallMasterDisposition -= 1
 	EndIf
 	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
@@ -811,15 +808,26 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 
 	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
+
 	Debug.Trace("[SD] --- Slavery update" )
 	Debug.Trace("[SD] " + statusMessage)
-	Debug.Trace("[SD] iSexComplete: " + iSexComplete + " SexNeed: " + masterSexNeed + " +/- " + masterNeedRange)
-	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete + " PunishNeed: " + masterPunishNeed + " +/- " + masterNeedRange )
-	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete + " FoodNeed: " + masterFoodNeed + " +/- " + masterNeedRange  )
-	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete + " GoldNeed: " + masterGoldNeed + " +/- " + masterNeedRange * 5 )
+	Debug.Trace("[SD] iSexComplete: " + iSexComplete + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex") + " - Need: " + masterSexNeed + " +/- " + masterNeedRange)
+	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunishment") + " - Need: " + masterPunishNeed + " +/- " + masterNeedRange)
+	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood") + " - Need: " + masterFoodNeed + " +/- " + masterNeedRange)
+	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+
+	; Reset daily counts for slave
+	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iPunishmentCountToday", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iSubmissiveCountToday", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iAngerCountToday", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalSex", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalPunishment", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalFood", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iGoalGold", 0)
 
 EndFunction
 

@@ -252,6 +252,11 @@ Function _Maintenance()
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
 
+	Debug.Trace("SexLab Dialogues: Reset SexLab events")
+	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+
 	; Check for DLC Races
 	Race SprigganEarthMotherRace = Game.GetFormFromFile(0x00013B77, "Dawnguard.esm") As Race
 	Race DLC2SprigganBurntRace = Game.GetFormFromFile(0x0001B644, "Dragonborn.esm") As Race
@@ -268,11 +273,76 @@ Function _Maintenance()
 		SendModEvent("dhlp-Suspend")
 	EndIf
 
-
-
+	; Registering default outfit keywords for slave if not defined yet 
+	fctOutfit.registerDeviousOutfitsKeywords (  Game.getPlayer() )
 
 EndFunction
 
+Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
+	ObjectReference PlayerREF= SexLab.PlayerRef
+	Actor PlayerActor= PlayerREF as Actor
+	ActorBase pActorBase = PlayerActor.GetActorBase()
+    sslBaseAnimation animation = SexLab.HookAnimation(_args)
+
+	if !Self || !SexLab 
+		Debug.Trace("[SD]: Critical error on SexLab End")
+		Return
+	EndIf
+
+
+	Actor[] actors  = SexLab.HookActors(_args)
+	Actor   victim  = SexLab.HookVictim(_args)
+	Actor[] victims = new Actor[1]
+	victims[0] = victim
+	Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+	
+	; if config.bDebugMsg
+	; 	_listActors("End: ", actors)
+	; EndIf
+
+	If (funct._hasPlayer(actors))
+		;
+	EndIf
+
+	If (kCurrentMaster != None)
+
+		If (funct._hasActor(actors,kCurrentMaster))
+			Debug.Trace("[SD]: Sex with your master")
+
+			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountToday", modValue = 1)
+			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountTotal", modValue = 1)
+			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iGoalSex", modValue = 1)
+			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
+
+			; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
+
+		EndIf
+
+	EndIf
+
+EndEvent 
+
+Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
+	ObjectReference PlayerREF= SexLab.PlayerRef
+	Actor PlayerActor= PlayerREF as Actor
+ 
+
+	if !Self || !SexLab 
+		Debug.Trace("[SD]: Critical error on SexLab Orgasm")
+		Return
+	EndIf
+
+	Actor[] actors  = SexLab.HookActors(_args)
+	Actor   victim  = SexLab.HookVictim(_args)
+	Actor[] victims = new Actor[1]
+	victims[0] = victim
+
+	If (funct._hasPlayer(actors))
+		Debug.Trace("[SD]: Orgasm!")
+
+	EndIf
+	
+EndEvent
 
 
 Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)

@@ -41,19 +41,22 @@ Function Maintenance()
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 
-	If fVersion < 3.03 ; <--- Edit this value when updating
-		fVersion = 3.03; and this
+	if (libs.GetVersion() < 2.83)
+	    Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
+	EndIf
+
+	If fVersion < 3.20141212 ; <--- Edit this value when updating
+		fVersion = 3.20141212; and this
 		Debug.Notification("Updating to SD+ version: " + fVersion)
 		; Update Code
-
 
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
 		_SDGVP_naked_rape_delay.SetValue( fNext )
 		_SDGVP_naked_rape_chance.SetValue(25.0)
 
 		If ( _SD_controller.IsRunning() )
-			_SD_controller.Reset()
-
+		;	_SD_controller.Stop()
+		;	Debug.Messagebox("Stopping main SD quest for maintenance.\n Open the SD menu and select BEGIN again." )
 		EndIf
 
 		If ( _SD_dream_destinations.IsRunning() )
@@ -83,16 +86,17 @@ Function Maintenance()
 			_SD_enslavement.Stop()
 		EndIf
 
-		If ( _SD_dream.GetStage() > 0 )
-			; Debug.Notification("Restarting Dream  Quest" )
+		If ( _SD_dream.IsRunning() )
+			Debug.Messagebox("Stopping dream quest for maintenance.\n Run 'startquest _sd_dream' in the console if you do not see 'Sanguine is watching' after this message." )
 
 			; Disabled for now
 			; - Instantly brings player to dreamworld
 			; - NPCs victims are messed up (two idle overlap)
 
 			; _SD_dream.SetStage(999)
+			_SD_dream.Stop()
 			Utility.Wait(2.0)
-			;_SD_dream.Stop()
+			_SD_dream.Start()
 		EndIf
 
 		; Init slavery API
@@ -126,3 +130,4 @@ EndEvent
 
 
 GlobalVariable Property _SDGVP_naked_rape_chance  Auto  
+zadLibs Property libs Auto

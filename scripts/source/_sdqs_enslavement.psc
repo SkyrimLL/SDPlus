@@ -252,6 +252,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "")
 
+		if (fctOutfit.isCollarEquipped(kSlave)) || (fctOutfit.isCuffsEquipped(kSlave))
+			fctOutfit.clearDevicesForEnslavement()
+		EndIf
+
 		if (!fctOutfit.isCollarEquipped(kSlave))
 			; if (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
 
@@ -264,7 +268,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			; EndIf
 		EndIf
 
-		if (!fctOutfit.isCuffsEquipped(kSlave))
+		if (!fctOutfit.isArmbinderEquipped(kSlave))
 			fctOutfit.setDeviousOutfitArms ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave))
@@ -376,7 +380,7 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 			If ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength")) &&  (fctOutfit.IsPunishmentEquipped(akSlave))
 
 				If (!RewardSlave(  akMaster,   akSlave))
-					Debug.Notification("[SD] Clear punishment duration")
+					Debug.Trace("[SD] Clear punishment duration")
 					StorageUtil.SetFloatValue(akSlave, "_SD_fPunishmentDuration",0.0)
 				EndIf
 
@@ -473,7 +477,7 @@ Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = 
 
 		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBlindfold as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int)
 		
-		Debug.Notification("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
+		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
 
 		_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
 

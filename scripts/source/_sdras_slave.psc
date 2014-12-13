@@ -308,6 +308,8 @@ State monitor
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
 
+		; Debug.Notification("[SD] Slave: Monitor")
+
 		; Update slave status if needed 
 	 	daysPassed = Game.QueryStat("Days Passed")
 
@@ -415,7 +417,7 @@ State monitor
 
 			GoToState("waiting")
 
-		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene()
+		ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene() && (Utility.RandomInt(0,100)>60)
 			; Slavery negative 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
 
 			; Debug.Notification("[SD] Endgame: " + kSlaver )
@@ -447,7 +449,7 @@ State monitor
 
 			; Debug.MessageBox("[SD] PlayerGender: " + iPlayerGender + "\n Restrictions: " + genderRestrictions)
 
-			If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest)  )
+			If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest) || (kMaster == kSlaverDest) )
 				; Player saved by Sanguine
 				Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
 				_SD_dreamQuest.SetStage(20)
@@ -457,7 +459,7 @@ State monitor
 				; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
 				_SD_dreamQuest.SetStage(10)
 
-			ElseIf kSlaverDest && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor))
+			ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor))
 				; Master made profit - slave can be sold
 				if (iPlayerGender==0)
 					_SDSMP_choke_m.Play( Game.GetPlayer() )
@@ -481,7 +483,7 @@ State monitor
 
 
 
-			ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor))
+			ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
 				; Master lost money - get rid of slave
 				if (iPlayerGender==0)
 					_SDSMP_choke_m.Play( Game.GetPlayer() )
@@ -508,7 +510,7 @@ State monitor
 
 			EndIf
  
-		ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") >  (_SDGVP_config_disposition_threshold.GetValue() as Int)) || (fBuyout >= 0)  ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() )
+		ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") >  (_SDGVP_config_disposition_threshold.GetValue() as Int)) || (fBuyout >= 0)  ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (_SDGVP_can_join.GetValue() == 0)
 			; Slavery positive 'endgame' - player can join master or be cast away
 
 	 		_SDGVP_can_join.SetValue(1) 
@@ -559,13 +561,18 @@ State monitor
 
 
 
-		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  
+		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  
 			; Special handling of interior cells (for large caves with connecting rooms)
 			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep or if master is following (prevent collar teleport when changing cells )
 
 			; If (RandomInt( 0, 100 ) > 95 )
 			; 	Debug.Notification( "Your collar weighs around your neck..." )
 			; EndIf
+
+			GoToState("escape")	
+
+		ElseIf  (kMaster.GetParentCell().IsInterior()) && (!kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 ) || ( kMaster.HasLOS( kSlave ))) && (kSlave.GetParentCell() != kMaster.GetParentCell()) && (Utility.RandomInt(0,100) > 70)  
+			; Special handling of of escape from master's cell while master is asleep or not paying attention
 
 			GoToState("escape")	
 
@@ -667,6 +674,8 @@ State monitor
 
 		Else
 
+			; Debug.Notification("[SD] Slave: Master actions")
+
 			; Clean up chocking effect if leash is on
 			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave") == 0)
 				_SD_CollarStrangleImod.Remove()
@@ -690,12 +699,51 @@ State monitor
 			; Not sure where else fOutOfCellTime is used - leaving it here for now
 			fOutOfCellTime = GetCurrentRealTime()
 
-			If ( kMaster.GetSleepState() == 0 ) 
+			; Debug.Notification("[SD] Slave: Master LOS: " + kMaster.HasLOS( kSlave ))
+			; Debug.Notification("[SD] Slave: Master dist: " + fMasterDistance )
+			; Debug.Notification("[SD] Slave: Master leash: " + _SDGV_leash_length.GetValue())
+			; Debug.Notification("[SD] Slave: Master asleep: " + kMaster.GetSleepState())
+
+			; 0 - Not sleeping
+			; 2 - Not sleeping, wants to sleep
+			; 3 - Sleeping
+			; 4 - Sleeping, wants to wake
+			If ( kMaster.GetSleepState() != 0 ) 
 				; Master is asleep
 
-			ElseIf ( kMaster.HasLOS( kSlave )) && (fMasterDistance < 200)
+			ElseIf ( kMaster.HasLOS( kSlave )) && (fMasterDistance < (_SDGV_leash_length.GetValue() as Float))
 				; Master is watching slave nearby
 
+				Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")   
+				Float fKneelingDistance = funct.floatWithinRange( 500.0 - ((iTrust as Float) * 5.0), 100.0, 2000.0 )
+
+				; Debug.Notification("Master is watching. " )
+
+				; Debug.Notification("[SD] Slave: Master LOS")
+				; Debug.Notification("[SD] Slave: Master dist: " + fMasterDistance )
+				; Debug.Notification("[SD] Slave: Kneeling dist: " + fKneelingDistance )
+
+
+				If (fMasterDistance < fKneelingDistance)  && ( (fctOutfit.isArmorCuirassEquipped(kSlave) &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip")) ) || ( fctOutfit.isClothingBodyEquipped(kSlave) && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip")) )   
+
+					Debug.MessageBox("You are not allowed to wear clothing. Your owner rips it away from you.")
+					SexLab.ActorLib.StripActor(kSlave, DoAnimate= false)
+
+					; Welcome scene to replace rape after defeat
+					Int iRandomNum = Utility.RandomInt(0,100)
+
+					if (iRandomNum > 95)
+						; Punishment
+						enslavement.PunishSlave(kMaster,kSlave)
+						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+					ElseIf (iRandomNum > 90)
+						; Whipping
+						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+					ElseIf (iRandomNum > 70)
+						; Sex
+						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+					EndIf
+				EndIf
 
 			ElseIf ( GetCurrentRealTime() - fOutOfCellTime > fCalcOOCLimit )
 
@@ -714,8 +762,11 @@ State monitor
 	EndEvent
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, Bool abPowerAttack, Bool abSneakAttack, Bool abBashAttack, Bool abHitBlocked)
-
-		If ( akAggressor != kMaster && Self.GetOwningQuest().GetStage() < 90)
+		If (!kMaster)
+			Return
+		EndIf
+		
+		If ( akAggressor != kMaster ) && (Self.GetOwningQuest().GetStage() < 90)
 			; Start combat between master and NPC when the slave is hit by someone other than Master
 
 			kSlave.StopCombatAlarm()
@@ -826,9 +877,9 @@ State monitor
 			ElseIf ( iuType == 26 )  &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip") && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip"))  &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals")
 				; Armor
  
-					Debug.MessageBox( "You are not allowed to wear clothing. Your collar compels you to remove it." )
+					; Debug.MessageBox( "You are not allowed to wear clothing. Your Master won't behappy about that." )
 
-					kSlave.UnequipItem( akBaseItem, aiItemCount )
+					; kSlave.UnequipItem( akBaseItem, aiItemCount )
 
 			ElseIf ( kMaster.GetSleepState() != 0 && kMaster.HasLOS( kSlave ) ) &&  !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableInventory") && ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
 
