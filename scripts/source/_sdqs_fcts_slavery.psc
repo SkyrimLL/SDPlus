@@ -568,9 +568,9 @@ Function UpdateSlaveryLevel(Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 2)
 	ElseIf (exposure >= 20) && (exposure <40) ; level 3 - accepting
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 3)
-	ElseIf (exposure >= 40) && (exposure < 60) ; level 4 - not so bad 
+	ElseIf (exposure >= 40) && (exposure < 80) ; level 4 - not so bad 
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 4)
-	ElseIf (exposure >= 60) && (exposure < 100) ; level 5 - getting to like it
+	ElseIf (exposure >= 80) && (exposure < 100) ; level 5 - getting to like it
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 5)
 	ElseIf (exposure >= 100)  ; level 6 - begging for it
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 6)
@@ -600,9 +600,9 @@ Function UpdateSlaveryRelationshipType(Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -6 ) 
 	ElseIf (exposure >= 20) && (exposure <40) ; level 3 - accepting
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -6 ) 
-	ElseIf (exposure >= 40) && (exposure < 60) ; level 4 - not so bad 
+	ElseIf (exposure >= 40) && (exposure < 80) ; level 4 - not so bad 
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -6 ) 
-	ElseIf (exposure >= 60) && (exposure < 100) ; level 5 - getting to like it
+	ElseIf (exposure >= 80) && (exposure < 100) ; level 5 - getting to like it
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -7 ) 
 	ElseIf (exposure >= 100)  ; level 6 - begging for it
 		StorageUtil.SetIntValue(kMaster, "_SD_iRelationshipType", -7 ) 
@@ -734,6 +734,13 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		EndIf
 	EndIf
 
+	; Note for later - turn '10' limit into a Difficulty parameter
+	if (masterDisposition>10)
+		masterDisposition = 10
+	elseif (masterDisposition<-10)
+		masterDisposition = -10
+	EndIf
+
 	; :: If master mood between -5 and +5, trust +1
 	if (masterDisposition >= (-1 * masterTrustRange) ) && (masterDisposition <= masterTrustRange)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 1 )
@@ -763,12 +770,14 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
+
 	Int iGoalsComplete = iSexComplete + iPunishComplete + iFoodComplete + iGoldComplete
-	If ( iGoalsComplete >=2 ) &&  ( iGoalsComplete <=4 )  
+	If (( iGoalsComplete >=2 ) &&  ( iGoalsComplete <=4 )) || (masterDisposition > 0)
 		overallMasterDisposition += 1
-	ElseIf ( iGoalsComplete <= 1 ) 
+	ElseIf ( iGoalsComplete <= 1 )  || (masterDisposition < 0)
 		overallMasterDisposition -= 1
 	EndIf
+
 	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
 
  	SlaveryRefreshGlobalValues( kMaster, kSlave)

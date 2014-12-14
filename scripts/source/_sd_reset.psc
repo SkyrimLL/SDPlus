@@ -45,8 +45,8 @@ Function Maintenance()
 	    Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
 	EndIf
 
-	If fVersion < 3.20141212 ; <--- Edit this value when updating
-		fVersion = 3.20141212; and this
+	If fVersion < 3.20141213 ; <--- Edit this value when updating
+		fVersion = 3.20141213; and this
 		Debug.Notification("Updating to SD+ version: " + fVersion)
 		; Update Code
 
@@ -87,16 +87,16 @@ Function Maintenance()
 		EndIf
 
 		If ( _SD_dream.IsRunning() )
-			Debug.Messagebox("Stopping dream quest for maintenance.\n Run 'startquest _sd_dream' in the console if you do not see 'Sanguine is watching' after this message." )
+			; Debug.Messagebox("Stopping dream quest for maintenance.\n Run 'startquest _sd_dream' in the console if you do not see 'Sanguine is watching' after this message." )
 
 			; Disabled for now
 			; - Instantly brings player to dreamworld
 			; - NPCs victims are messed up (two idle overlap)
 
 			; _SD_dream.SetStage(999)
-			_SD_dream.Stop()
-			Utility.Wait(2.0)
-			_SD_dream.Start()
+			; _SD_dream.Stop()
+			; Utility.Wait(2.0)
+			; _SD_dream.Start()
 		EndIf
 
 		; Init slavery API
