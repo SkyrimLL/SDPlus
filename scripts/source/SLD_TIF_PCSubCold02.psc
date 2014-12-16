@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLD_TIF_PCSubThirsty01 Extends TopicInfo Hidden
+Scriptname SLD_TIF_PCSubCold02 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -39,7 +39,7 @@ Actor kSlave = game.GetPlayer()
  			SendModEvent("PCSubEntertain") ; Dance
  		EndIf
 
-	Else
+	ElseIf (randomVar >= 2  )
 		SendModEvent("PCSubSex") ; Sex
 
 	EndIf
