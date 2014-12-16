@@ -522,16 +522,16 @@ State monitor
 
 		If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
 			; Master receives Food
+			fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
 
-			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 3 )
+			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 				Debug.Notification("Mmm.. that should hit the spot.")
-				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
 			Else
 				Debug.Notification("Well? What are you waiting for?.")
 				Debug.Notification("Get back to work slave!")
 			EndIf
 
-		ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
+		; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
 			; Weapon
 		
 		Else 
@@ -544,9 +544,17 @@ State monitor
 				fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
 			EndIf
 
+			Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
+			kSlave.RemoveItem(Gold, fGoldCoins as Int)
+
+			fGoldEarned = fGoldEarned + fGoldCoins
+
+			fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
+			StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
+
 			If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 				Debug.Notification("Good slave... keep it coming.")
-				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
+
 			ElseIf (fGoldEarned > 0)
 				Debug.Notification("That's right.")
 				Debug.Notification("You don't have a use for gold anymore.")
@@ -690,3 +698,5 @@ State caged
 	EndEvent
 EndState
 
+
+MiscObject Property Gold  Auto  

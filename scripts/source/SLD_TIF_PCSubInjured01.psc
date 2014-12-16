@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLD_TIF_PCSubThirsty01 Extends TopicInfo Hidden
+Scriptname SLD_TIF_PCSubInjured01 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -26,18 +26,9 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	ElseIf (randomVar >= 2  )
-		Debug.Notification( "..some Ale!" )
+		Debug.Notification( "..some potion!" )
 		kSlave.AddItem( Ale, 1, True )
 		kSlave.EquipItem( Ale, True, True )
-
-		Utility.Wait(3.0)
-	 	DrunkEffect.Cast( kSlave, kSlave)
-
-		If (Utility.RandomInt( 0, 100 ) > 70)
-			Debug.Notification( "In a stupor you start dancing for no reason..." )
-			StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
- 			SendModEvent("PCSubEntertain") ; Dance
- 		EndIf
 
 	Else
 		SendModEvent("PCSubSex") ; Sex

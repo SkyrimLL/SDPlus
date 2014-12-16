@@ -1,6 +1,7 @@
 Scriptname SLD_QST_Main extends Quest  
 
 Function SetNPCDialogueState ( Actor akSpeaker )
+	ObjectReference akSpeakerRef = akSpeaker as objectReference
 	Form kSpeakerForm = akSpeaker as Form
 	Bool isSpeakerHuman = kSpeakerForm.HasKeywordString("ActorTypeNPC")
 
@@ -9,7 +10,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		_SLD_TestDialogues.SetValue(0)
 	EndIf
 
-	_SLD_speakerAlias.ForceRefTo(akSpeaker )
+	_SLD_speakerAlias.ForceRefTo(akSpeakerRef )
 
 	if ( (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable") == 1)
 		; Debug.Notification("NPC drunk state: " + (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable"))
@@ -32,24 +33,24 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	EndIf
 
 	If (_SLD_NPCRelationshipType.GetValue() < -4)
-		If (isSpeakerHuman)
-			_SLD_humanMasterAlias.ForceRefTo(akSpeaker )
-		Else
-			_SLD_beastMasterAlias.ForceRefTo(akSpeaker )
+		If (isSpeakerHuman) && (_SLD_humanMasterAlias.GetReference() != akSpeakerRef)
+			_SLD_humanMasterAlias.ForceRefTo(akSpeakerRef )
+		ElseIf (!isSpeakerHuman) && (_SLD_beastMasterAlias.GetReference() != akSpeakerRef)
+			_SLD_beastMasterAlias.ForceRefTo(akSpeakerRef )
 		EndIf
 
 	ElseIf (_SLD_NPCRelationshipType.GetValue() > 4)
-		If (isSpeakerHuman)
-			_SLD_humanSlaveAlias.ForceRefTo(akSpeaker )
-		Else
-			_SLD_beastSlaveAlias.ForceRefTo(akSpeaker )
+		If (isSpeakerHuman) && (_SLD_humanSlaveAlias.GetReference() != akSpeakerRef)
+			_SLD_humanSlaveAlias.ForceRefTo(akSpeakerRef )
+		ElseIf (!isSpeakerHuman) &&  (_SLD_beastSlaveAlias.GetReference() != akSpeakerRef)
+			_SLD_beastSlaveAlias.ForceRefTo(akSpeakerRef )
 		EndIf
 
 	ElseIf (_SLD_NPCRelationshipType.GetValue() > 2 )
-		If (isSpeakerHuman)
-			_SLD_humanLoverAlias.ForceRefTo(akSpeaker )
-		Else
-			_SLD_beastLoverAlias.ForceRefTo(akSpeaker )
+		If (isSpeakerHuman) && (_SLD_humanLoverAlias.GetReference() != akSpeakerRef)
+			_SLD_humanLoverAlias.ForceRefTo(akSpeakerRef )
+		ElseIf (!isSpeakerHuman) &&  (_SLD_beastLoverAlias.GetReference() != akSpeakerRef)
+			_SLD_beastLoverAlias.ForceRefTo(akSpeakerRef )
 		EndIf
 
 	EndIf
@@ -122,7 +123,17 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 
 	Endif
 
+	; Debug.Notification("[SLD] _SLD_humanMasterAlias: " + _SLD_humanMasterAlias.GetReference() as Actor)
+
 	Debug.Trace("[SLD] " + akSpeaker + " sex: " + _SLD_NPCSexCount.GetValue( ) + " - Rel: " +  _SLD_NPCRelationshipType.GetValue() + " - Slavery: " +  _SLD_PCSubSlaveryLevel.GetValue() )
+	Debug.Trace("[SLD] Human speaker: " + isSpeakerHuman )
+	Debug.Trace("[SLD] _SLD_speakerAlias: " + _SLD_speakerAlias.GetReference() as Actor)
+	Debug.Trace("[SLD] _SLD_humanLoverAlias: " + _SLD_humanLoverAlias.GetReference() as Actor) 
+	Debug.Trace("[SLD] _SLD_beastLoverAlias: " + _SLD_beastLoverAlias.GetReference() as Actor)  
+	Debug.Trace("[SLD] _SLD_humanMasterAlias: " + _SLD_humanMasterAlias.GetReference() as Actor)
+	Debug.Trace("[SLD] _SLD_humanSlaveAlias: " + _SLD_humanSlaveAlias.GetReference() as Actor)
+	Debug.Trace("[SLD] _SLD_beastMasterAlias: " + _SLD_beastMasterAlias.GetReference() as Actor)
+	Debug.Trace("[SLD] _SLD_beastSlaveAlias: " + _SLD_beastSlaveAlias.GetReference() as Actor)
 	; Debug.Notification("[SLD] sex: " + _SLD_NPCSexCount.GetValue( ) as Int + " - Rel: " +  _SLD_NPCRelationshipType.GetValue() as Int  + " - Slavery: " +  _SLD_PCSubSlaveryLevel.GetValue() as Int  )
 	Debug.Trace("[SLD] Disposition: " + _SLD_NPCdisposition.GetValue( ) as Int + " Seduction: " + _SLD_NPCseduction.GetValue( ) as Int + " Corruption: " + _SLD_NPCcorruption.GetValue( ) as Int)
 
