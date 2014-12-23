@@ -6,13 +6,16 @@ Scriptname _SDAPPF_master_release_01 Extends Package Hidden
 Function Fragment_0(Actor akActor)
 ;BEGIN CODE
 ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
+ 
+If (StorageUtil.GetIntValue( cage, "_SD_iCageBroken"  ) != 1)
 
-If ( cage.IsLocked() )
-	cage.Lock( False )
+	If ( cage.IsLocked() )
+		cage.Lock( False )
+	EndIf
+	cage.SetOpen( )
+
+	akActor.EvaluatePackage()
 EndIf
-cage.SetOpen( )
-
-akActor.EvaluatePackage()
 ;END CODE
 EndFunction
 ;END FRAGMENT

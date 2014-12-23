@@ -522,23 +522,24 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 				EndIf
 
 				; Force follower to kneel down
-				trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
-				kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
+				If (StorageUtil.GetIntValue(kSlave, "_SD_iDisableFollowerAutoKneeling") == 0)
+					trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+					kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
 
-				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) 
+					If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") == "Standing") 
 
-					Debug.SendAnimationEvent(nthActor, "ZazAPC018")
+						Debug.SendAnimationEvent(nthActor, "ZazAPC018")
 
-				Else
+					Else
 
-					Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
+						Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
 
+					EndIf
 				EndIf
 
 			EndIf
 			idx += 1
 		EndWhile
-
 
 EndFunction
 

@@ -8,15 +8,19 @@ Function Fragment_2(Actor akActor)
 ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
 ObjectReference mark = _SDRAP_cage_marker.GetReference() as ObjectReference
 
-mark.MoveTo(cage, 32.0 * Math.Sin(cage.GetAngleZ()), 32.0 * Math.Cos(cage.GetAngleZ()), 0.0)
+If (StorageUtil.GetIntValue( cage, "_SD_iCageBroken"  ) != 1)
 
-If ( cage.IsLocked() )
-	cage.Lock( False )
+	mark.MoveTo(cage, 32.0 * Math.Sin(cage.GetAngleZ()), 32.0 * Math.Cos(cage.GetAngleZ()), 0.0)
+
+	If ( cage.IsLocked() )
+		cage.Lock( False )
+	EndIf
+
+	If (cage.GetOpenState() == 1)
+		cage.SetOpen(0)
+	EndIf
 EndIf
 
-If (cage.GetOpenState() == 1)
-	cage.SetOpen(0)
-EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -25,7 +29,12 @@ EndFunction
 Function Fragment_0(Actor akActor)
 ;BEGIN CODE
 ; Cage scene - Play Testing Required
-_SDSP_caged.ForceStart()
+ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
+ 
+If (StorageUtil.GetIntValue( cage, "_SD_iCageBroken"  ) != 1)
+
+	_SDSP_caged.ForceStart()
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

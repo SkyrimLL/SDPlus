@@ -34,6 +34,7 @@ function InitSlaveryState( Actor kSlave )
 	StorageUtil.SetIntValue(kSlave, "_SD_iDisablePlayerMovementWhipping", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iDisablePlayerMovementPunishment", 1)
 	StorageUtil.SetIntValue(kSlave, "_SD_iDisablePlayerAutoKneeling", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iDisableFollowerAutoKneeling", 0)
  	StorageUtil.SetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
  
 EndFunction
@@ -57,6 +58,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetFormValue(kSlave, "_SD_LeashCenter", kMaster)
 	StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 200)
 	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Kneeling")
+	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStanceFollower", "Kneeling" )
 
 	StorageUtil.SetFloatValue(kSlave, "_SD_fLastEnslavedGameTime", StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavedGameTime"))
 	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavedGameTime", _SDGVP_gametime.GetValue())
@@ -660,12 +662,14 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	If (masterPunishNeed <  0)
 		masterDisposition -= 1
 	EndIf
-	If (masterFoodNeed <  0) && (slaveryLevel >= 1)
-		masterDisposition -= 1
-	EndIf
-	If (masterGoldNeed <  0) && (slaveryLevel >= 2)
-		masterDisposition -= 1
-	EndIf
+	; Change of rules - food and gold goals are now optional
+	; Masters will not be mad if you miss targets but they will be happy if you complete them
+	; If (masterFoodNeed <  0) && (slaveryLevel >= 1)
+	;	masterDisposition -= 1
+	; EndIf
+	; If (masterGoldNeed <  0) && (slaveryLevel >= 2)
+	;	masterDisposition -= 1
+	; EndIf
 
 
 	; :: If counts match master personality type, master mood +1
@@ -681,7 +685,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	 	masterDisposition += 1
 	 	iFoodComplete += 1
 	EndIf
-	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") > 0) && (masterSexNeed >= (-5 * masterNeedRange) )  && (masterGoldNeed <= (masterNeedRange * 5)) 
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") > 0) && (masterGoldNeed >= (-5 * masterNeedRange) )  && (masterGoldNeed <= (masterNeedRange * 5)) 
 	 	masterDisposition += 1
 	 	iGoldComplete += 1
 	EndIf
@@ -743,10 +747,17 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 
 	; :: If master mood between -5 and +5, trust +1
 	if (masterDisposition >= (-1 * masterTrustRange) ) && (masterDisposition <= masterTrustRange)
-		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 1 )
+		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 1 + (slaveryLevel / 2))
 	EndIf
 
 	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
+
+	; Note for later - turn '10' limit into a Difficulty parameter
+	if (masterTrust>10)
+		masterTrust = 10
+	elseif (masterTrust<-10)
+		masterTrust = -10
+	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)

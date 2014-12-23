@@ -68,21 +68,24 @@ EndFunction
 Function Fragment_0()
 ;BEGIN CODE
 ; Debug.Notification("[cage] phase = 0" )
-
-Game.DisablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven()
-
-Debug.MessageBox("Go to your cage.. right now!")
-
 ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
 ObjectReference mark = _SDRAP_cage_marker.GetReference() as ObjectReference
-mark.MoveTo(cage, -64.0 * Math.Sin(cage.GetAngleZ()), -64.0 * Math.Cos(cage.GetAngleZ()), 0.0)
 
-If ( cage.IsLocked() )
-	cage.Lock( False )
+If (StorageUtil.GetIntValue( cage, "_SD_iCageBroken"  ) != 1)
+
+	Game.DisablePlayerControls( abMovement = true )
+	Game.SetPlayerAIDriven()
+
+	Debug.MessageBox("Go to your cage.. right now!")
+
+	mark.MoveTo(cage, -64.0 * Math.Sin(cage.GetAngleZ()), -64.0 * Math.Cos(cage.GetAngleZ()), 0.0)
+
+	If ( cage.IsLocked() )
+		cage.Lock( False )
+	EndIf
+
+	cage.SetOpen()
 EndIf
-
-cage.SetOpen()
 ;END CODE
 EndFunction
 ;END FRAGMENT
