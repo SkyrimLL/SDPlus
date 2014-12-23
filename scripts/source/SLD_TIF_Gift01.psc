@@ -14,7 +14,7 @@ If (Utility.RandomInt(0,100)>80)
 	StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue(akSpeaker, "_SD_iDisposition") + randomNum )
 EndIf
 
-akSpeaker.ShowGiftMenu( True )
+akSpeaker.ShowGiftMenu( True, _SLD_GiftFilter )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -22,3 +22,5 @@ EndFunction
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 SPELL Property CharitySpell  Auto  
+
+FormList Property _SLD_GiftFilter  Auto  

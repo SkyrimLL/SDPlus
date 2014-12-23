@@ -513,6 +513,7 @@ State monitor
 	EndEvent	
 	
 	Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
+		Actor kSourceContainer = akSourceContainer as Actor
 		iuType = akBaseItem.GetType()
 		fGoldEarned = 0.0
 
@@ -520,47 +521,56 @@ State monitor
 			Return
 		EndIf
 
-		If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
-			; Master receives Food
-			fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
+		If (kSourceContainer == kSlave )
+			Debug.Trace( "[SD] Master receives an item from player" )
+			Debug.Notification( "Good slave." )
 
-			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-				Debug.Notification("Mmm.. that should hit the spot.")
-			Else
-				Debug.Notification("Well? What are you waiting for?.")
-				Debug.Notification("Get back to work slave!")
+			If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
+				; Master receives Food
+				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
+
+				If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
+					Debug.Notification("Mmm.. that should hit the spot.")
+				Else
+					Debug.Notification("Well? What are you waiting for?.")
+					Debug.Notification("Get back to work slave!")
+				EndIf
+
+			; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
+				; Weapon
+			
+			Else 
+				; Add code to match received items against Master's needs
+				; Update Master's mood and trust
+
+			 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
+			 		fGoldEarned = akBaseItem.GetGoldValue()
+				Else
+					fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
+				EndIf
+
+				Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
+				kSlave.RemoveItem(Gold, fGoldCoins as Int)
+
+				fGoldEarned = fGoldEarned + fGoldCoins
+
+				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
+				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
+
+				If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
+					Debug.Notification("Good slave... keep it coming.")
+
+				ElseIf (fGoldEarned > 0)
+					Debug.Notification("That's right.")
+					Debug.Notification("You don't have a use for gold anymore.")
+				EndIf
+
+				; TO DO - Master reaction if slave reaches buyout amount
+
 			EndIf
-
-		; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
-			; Weapon
-		
-		Else 
-			; Add code to match received items against Master's needs
-			; Update Master's mood and trust
-
-		 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
-		 		fGoldEarned = akBaseItem.GetGoldValue()
-			Else
-				fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
-			EndIf
-
-			Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
-			kSlave.RemoveItem(Gold, fGoldCoins as Int)
-
-			fGoldEarned = fGoldEarned + fGoldCoins
-
-			fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
-			StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
-
-			If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-				Debug.Notification("Good slave... keep it coming.")
-
-			ElseIf (fGoldEarned > 0)
-				Debug.Notification("That's right.")
-				Debug.Notification("You don't have a use for gold anymore.")
-			EndIf
-
-			; TO DO - Master reaction if slave reaches buyout amount
+		Else
+			; Debug.Notification( "New item for owner" )
+			Debug.Trace( "[SD] Master receives an item from " + kSourceContainer + " / " + kSlave )
 
 		EndIf
 	EndEvent

@@ -14,6 +14,7 @@ GlobalVariable Property _SDGVP_config_work_start  Auto
 GlobalVariable Property _SDGVP_config_join_days  Auto
 GlobalVariable Property _SDGVP_config_safeword  Auto
 GlobalVariable Property _SDGVP_config_lust  Auto
+GlobalVariable Property _SDGVP_config_auto_start  Auto
 GlobalVariable Property _SDGVP_config_cbbe  Auto
 GlobalVariable Property _SDGVP_config_custom_cloths  Auto
 GlobalVariable Property _SDGVP_config_itemRemovalType  Auto
@@ -92,6 +93,7 @@ Int _SDOID_config_B10
 Int _SDOID_config_B11
 Int _SDOID_config_B12
 Int _SDOID_config_B13
+Int _SDOID_config_B14
 
 Int _SDOID_config_S1
 Float _SDOID_config_S1_min = 0.0
@@ -520,6 +522,7 @@ event OnPageReset(string a_page)
 			AddToggleOption("$SD_TOGGLE_P1_IS_PLAYER_ENSLAVED", _SDGVP_enslaved.GetValue() as Bool, OPTION_FLAG_DISABLED)
 			; _SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
 			_SDOID_config_B2 = AddToggleOption("Start after A Night to remember", _SDGVP_config_lust.GetValue() as Bool )
+			_SDOID_config_B14 = AddToggleOption("Start after first escape", _SDGVP_config_auto_start.GetValue() as Bool )
 			If (_SDGVP_enslaved.GetValue() as Bool)
 				_SDOID_config_B21 = AddToggleOption("SAFE WORD", False )
 			Else
@@ -648,6 +651,8 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_B2 )
 		; SetInfoText("$_SDOID_config_B2")
 		SetInfoText("Check if you want to delay visits to Dreamworld until after 'A Night to Remember' (Level 14).")
+	ElseIf ( a_option == _SDOID_config_B14)
+		SetInfoText("Uncheck if you want to delay visits to Dreamworld indefinitely. If this is unchecked, the previous option will be ignored and you will have to sleep in front of Sanguine's shrine to start the Dreamworld aspect of the mod.")
 	ElseIf ( a_option == _SDOID_config_B21 )
 		SetInfoText("Emergency release from your current master - useful in case of friendly fire or static NPC.")
 	ElseIf ( a_option == _SDOID_config_B3 )
@@ -736,6 +741,9 @@ event OnOptionSelect(int a_option)
 	ElseIf ( a_option == _SDOID_config_B2 )
 		_SDGVP_config_lust.SetValue( Math.LogicalXor( 1, _SDGVP_config_lust.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_lust.GetValue() as Bool )
+	ElseIf ( a_option == _SDOID_config_B14 )
+		_SDGVP_config_auto_start.SetValue( Math.LogicalXor( 1, _SDGVP_config_auto_start.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_auto_start.GetValue() as Bool )
 	ElseIf ( a_option == _SDOID_config_B21 )
 		_SDGVP_config_safeword.SetValue(1) 
 		Debug.MessageBox("Quit this menu to cancel your enslavement.")
@@ -808,6 +816,9 @@ event OnOptionDefault(int a_option)
 	ElseIf ( a_option == _SDOID_config_B2 )
 		_SDGVP_config_lust.SetValue( 1 )
 		SetToggleOptionValue(a_option, _SDGVP_config_lust.GetValue() as Bool )
+	ElseIf ( a_option == _SDOID_config_B14 )
+		_SDGVP_config_auto_start.SetValue( 1 )
+		SetToggleOptionValue(a_option, _SDGVP_config_auto_start.GetValue() as Bool )
 	ElseIf ( a_option == _SDOID_config_B3 )
 		_SDGVP_config_itemRemovalType.SetValue( 0 )
 		SetToggleOptionValue(a_option, _SDGVP_config_itemRemovalType.GetValue() as Bool )

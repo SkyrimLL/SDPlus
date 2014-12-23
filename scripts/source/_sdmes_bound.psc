@@ -68,6 +68,14 @@ Event OnUpdate()
 			iDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
 			fKneelingDistance = funct.floatWithinRange( 500.0 - ((iTrust as Float) * 5.0), 100.0, 2000.0 )
 
+			If (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing") && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStanceFollower") != "Standing")
+				StorageUtil.SetStringValue(kTarget, "_SD_sDefaultStanceFollower", "Standing" ) 
+
+			ElseIf (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") != "Standing") && (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStanceFollower") == "Standing")
+				StorageUtil.SetStringValue(kTarget, "_SD_sDefaultStanceFollower", "Kneeling" ) 
+				
+			EndIf
+
 			If ( kTarget.GetDistance( kMaster ) < fKneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
 
 				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
