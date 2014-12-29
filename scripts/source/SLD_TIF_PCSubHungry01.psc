@@ -25,7 +25,7 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	Else 
-		Debug.Notification( "..a filthy piece of bread!" )
+		Debug.Notification( "..a cold bowl of soup." )
 		kSlave.AddItem( Potato, 1, True )
 
 	EndIf

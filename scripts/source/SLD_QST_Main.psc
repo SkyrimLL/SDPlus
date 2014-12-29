@@ -4,6 +4,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	ObjectReference akSpeakerRef = akSpeaker as objectReference
 	Form kSpeakerForm = akSpeaker as Form
 	Bool isSpeakerHuman = kSpeakerForm.HasKeywordString("ActorTypeNPC")
+	Int iDominance = StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iDom") - StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iSub")
 
 	; Force disable test dialogues
 	If (_SLD_TestDialogues.GetValue() != 0)
@@ -98,6 +99,43 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Else
 		_SLD_NPCcorruption.SetValue( 0 )
 	EndIf
+
+	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iFollowSlave"))
+		_SLD_PCSubFollowSlave.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iFollowSlave") )
+	Else
+		_SLD_PCSubFollowSlave.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_sDefaultStance"))
+		If (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Crawling")
+			_SLD_PCSubDefaultStance.SetValue(  2 )
+		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Kneeling")
+			_SLD_PCSubDefaultStance.SetValue(  1 )
+		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Standing")
+			_SLD_PCSubDefaultStance.SetValue(  0 )
+		EndIf
+	Else
+		_SLD_PCSubDefaultStance.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableStand"))
+		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableStand") )
+	Else
+		_SLD_PCSubEnableStand.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableLeash"))
+		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableLeash") )
+	Else
+		_SLD_PCSubEnableLeash.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iHandsFree"))
+		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iHandsFree") )
+	Else
+		_SLD_PCSubHandsFree.SetValue( 0 )
+	EndIf
+
 
 	; - Feedom status ( bought by player, sold to NPC, whoring, free )
 	; - Bound location  ( editor location, set to nearby map marker )
@@ -238,14 +276,23 @@ ReferenceAlias Property _SLD_beastSlaveAlias  Auto
 GlobalVariable Property _SLD_NPCSexCount  Auto  
 GlobalVariable Property _SLD_NPCDrunk  Auto  
 GlobalVariable Property _SLD_NPCDrugged  Auto  
+
 GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
 GlobalVariable Property _SLD_PCSubEnslaved Auto
 GlobalVariable Property _SLD_PCSubForcedSlavery Auto
+
+GlobalVariable Property _SLD_PCSubFollowSlave Auto
+GlobalVariable Property _SLD_PCSubDefaultStance Auto
+GlobalVariable Property _SLD_PCSubEnableStand Auto
+GlobalVariable Property _SLD_PCSubEnableLeash Auto
+GlobalVariable Property _SLD_PCSubHandsFree Auto
+
 GlobalVariable Property _SLD_NPCRelationshipType Auto
 GlobalVariable Property _SLD_NPCdisposition Auto
 GlobalVariable Property _SLD_NPCtrust Auto
 GlobalVariable Property _SLD_NPCcorruption Auto
 GlobalVariable Property _SLD_NPCseduction Auto
+
 
 GlobalVariable Property _SLD_TestDialogues Auto
 

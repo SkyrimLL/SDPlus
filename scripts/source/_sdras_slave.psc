@@ -337,9 +337,13 @@ State monitor
 			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays", 0) + 1)
 
 			; Cooldown at end of day
-			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kSlave, "_SD_iDisposition") * 8 / 10 )
-			StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kSlave, "_SD_iTrust") * 8 / 10 )
+			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 8 / 10 )
+			StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kMaster, "_SD_iTrust") * 8 / 10 )
 			StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 8 / 10 )
+
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
+				enslavement.PunishSlave( kMaster,  kSlave)
+			EndIf
 
 		EndIf
 
@@ -347,7 +351,7 @@ State monitor
 		enslavement.UpdateSlaveFollowerState(kSlave)
 
 		; Update GlobalVariables based on storageUtil values
-		if (( kMaster.GetSleepState() != 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iDisposition") < 0))
+		if (( kMaster.GetSleepState() != 0 ) && (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0))
 			; Reduce leash length and escape time buffer by half if master is awake and angry
 			fEscapeLeashLength = funct.floatMin( _SDGV_leash_length.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2) as Float )
 			fEscapeLeashLength = funct.floatMin( _SDGVP_escape_timer.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer" ) / 2) as Float )
@@ -376,7 +380,7 @@ State monitor
 		; Debug.Notification("[_sdras_slave] Distance:" + fDistance + " > " + _SDGVP_escape_radius.GetValue())
 		; Debug.Notification("[_sdras_slave] DefaultStance:" + StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStance"))
 		; Debug.Notification("[_sdras_slave] EnableLeash:" + fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash"))
-		; Debug.Notification("[_sdras_slave] MasterFollow:" + StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave"))
+		; Debug.Notification("[_sdras_slave] MasterFollow:" + StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave"))
 		; Debug.Notification("[_sdras_slave] AutoKneelingOFF:" + StorageUtil.GetIntValue(kSlave, "_SD_iDisablePlayerAutoKneeling"))
 
 		; These constraints are not enforced yet. I need to turn them on one by one and evaluate their impact
@@ -561,7 +565,7 @@ State monitor
 
 
 
-		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  
+		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  
 			; Special handling of interior cells (for large caves with connecting rooms)
 			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep or if master is following (prevent collar teleport when changing cells )
 
@@ -580,7 +584,7 @@ State monitor
 			; Distance based leash - decrease field of view for the slave as distance increases until blackout and teleport back to master
 			; Enabled if Leash is On and master is not following slave
 
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave") == 0)
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0)
 
 				fBlackoutRatio = ( funct.floatMin( fDistance, _SDGVP_escape_radius.GetValue() * 2.0 ) - _SDGVP_escape_radius.GetValue() ) / _SDGVP_escape_radius.GetValue()
 
@@ -665,7 +669,7 @@ State monitor
 		ElseIf ( fDistance > (_SDGVP_escape_radius.GetValue() * 0.7) ) && ( fDistance < _SDGVP_escape_radius.GetValue() )
 			; Display warning when slave is close to escape radius
 
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave") == 0)
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0)
 				Debug.Notification( "You are too far from your master..." )
 
 				; Reset blackout effect if needed
@@ -677,7 +681,7 @@ State monitor
 			; Debug.Notification("[SD] Slave: Master actions")
 
 			; Clean up chocking effect if leash is on
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kSlave, "_SD_iFollowSlave") == 0)
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0)
 				_SD_CollarStrangleImod.Remove()
 			EndIf
 
@@ -743,6 +747,17 @@ State monitor
 						; Sex
 						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 					EndIf
+				EndIf
+
+
+
+				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
+					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
+
+					Debug.Trace("[SD] _SD_iHandsFreeSex: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex"))
+					Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
+					Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
 				EndIf
 
 			ElseIf ( GetCurrentRealTime() - fOutOfCellTime > fCalcOOCLimit )
@@ -953,7 +968,7 @@ State escape
 			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 
-		ElseIf  (kSlave.GetParentCell() == kMaster.GetParentCell()) ; && (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) )   
+		ElseIf  (kSlave.GetParentCell() == kMaster.GetParentCell()) ; && (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) )   
 			; Slave back in same cell as master, turn off escape mode
 			; If (RandomInt( 0, 100 ) > 70 )
 			;	Debug.Notification( "Your captors are watching. Don't stray too far...")

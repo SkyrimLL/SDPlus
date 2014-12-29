@@ -206,6 +206,8 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; Slave privileges
 	StorageUtil.SetIntValue(kSlave, "_SD_iMeritPoints", 0)  ; Trust earned by slave
 
+	StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
+
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableLeash", 1)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", True)
 
@@ -447,6 +449,7 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
 			enableAct = modValue
 			fctConstraints.togglePlayerControlsOn(abMove = enableMove, abAct = enableAct, abFight = enableFight)
+			StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", enableAct as Int)
 	EndIf
 
 	If (modVariable == "_SD_iEnableFight")
@@ -630,6 +633,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
 	int masterNeedRange =  StorageUtil.GetIntValue(kMaster, "_SD_iNeedRange")
 	int masterTrustRange =  StorageUtil.GetIntValue(kMaster, "_SD_iTrustRange")
+	Int iDominance = StorageUtil.GetIntValue( kSlave , "_SD_iDom") - StorageUtil.GetIntValue( kSlave , "_SD_iSub")
 
 	int iSexComplete = 0
 	int iPunishComplete = 0
@@ -746,7 +750,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	EndIf
 
 	; :: If master mood between -5 and +5, trust +1
-	if (masterDisposition >= (-1 * masterTrustRange) ) && (masterDisposition <= masterTrustRange)
+	if (masterDisposition >= 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 1 + (slaveryLevel / 2))
 	EndIf
 
@@ -824,7 +828,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Endif
 
 	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust 
-	Debug.Messagebox(statusMessage + "OverallDisposition: " + overallMasterDisposition)
+	Debug.Messagebox(statusMessage + "OverallDisposition: " + masterTrust  + "\nTrust: " + masterTrust)
 
 	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
@@ -837,7 +841,9 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition )
+	Debug.Trace("[SD] Master: Slate trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+
 
 	; Reset daily counts for slave
 	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)

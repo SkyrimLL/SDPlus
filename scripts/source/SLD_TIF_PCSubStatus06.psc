@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 SendModEvent("PCSubStatus")
 
-Debug.MessageBox("You are a slut slave, a sex toy for your owner and anyone who wants you.")
+; Debug.MessageBox("You are a slut slave, a sex toy for your owner and anyone who wants you.")
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -60,7 +60,7 @@ Event OnUpdate()
 
 		; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
 
-		if (kMaster)
+		if (kMaster) && (StorageUtil.GetIntValue(kTarget, "_SD_iHandsFree") == 0)
 
 
 
@@ -78,7 +78,7 @@ Event OnUpdate()
 
 			If ( kTarget.GetDistance( kMaster ) < fKneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
 
-				If ( (Utility.RandomInt( 0, 100 ) == 99 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
+				If ( (Utility.RandomInt( 0, 200 ) == 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )
 				EndIf
 

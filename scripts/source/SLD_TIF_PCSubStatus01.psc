@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 SendModEvent("PCSubStatus")
 
-Debug.MessageBox("You need to learn your new place as a slave.")
+; Debug.Notification("You need to learn your new place as a slave.")
 ;END CODE
 EndFunction
 ;END FRAGMENT

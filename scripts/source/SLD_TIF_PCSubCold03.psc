@@ -19,7 +19,7 @@ Actor kSlave = game.GetPlayer()
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
 
-		If (Utility.RandomInt( 0, 100 ) > 30)
+		If (Utility.RandomInt( 0, 100 ) > 80)
 			Debug.Notification( "In a stupor you start dancing for no reason..." )
 			StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
  			SendModEvent("PCSubEntertain") ; Dance
@@ -33,14 +33,9 @@ Actor kSlave = game.GetPlayer()
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
 
-		If (Utility.RandomInt( 0, 100 ) > 30)
-			Debug.Notification( "In a stupor you start dancing for no reason..." )
-			StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
- 			SendModEvent("PCSubEntertain") ; Dance
- 		EndIf
-
 	ElseIf (randomVar >= 2  )
 		Debug.Notification( "..something to wear" )
+		StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableClothingEquip", 1)
 		kSlave.AddItem( _SD_SlaveRags, 1, True )
 		kSlave.EquipItem( _SD_SlaveRags, True, True )
 

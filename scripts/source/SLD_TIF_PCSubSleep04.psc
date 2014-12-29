@@ -1,16 +1,17 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLD_TIF_PCSubStatus04 Extends TopicInfo Hidden
+Scriptname SLD_TIF_PCSubSleep04 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-SendModEvent("PCSubStatus")
-
-; Debug.MessageBox("Face it, you are born to be a slave.")
+StorageUtil.SetIntValue( Game.getPlayer() , "_SD_iSleepType",3)
+RestSpell.Cast( Game.getPlayer() )
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+SPELL Property RestSpell  Auto  
