@@ -15,6 +15,7 @@ _SDQS_enslavement Property enslavement  Auto
 _SDQS_ennslavement_tasks Property tasks  Auto
 
 Quest Property _SDQP_enslavement_tasks  Auto
+Quest Property _SDQP_enslavement Auto
 Cell[] Property _SDCP_sanguines_realms  Auto  
 
 GlobalVariable Property _SDGV_leash_length  Auto
@@ -326,7 +327,7 @@ State monitor
 			; Park Master in Waiting mode while Enslavement quest is shutting down
 			GoToState("waiting")
 
-		ElseIf (kSlave.GetParentCell() == kMaster.GetParentCell())  &&  (kMaster.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") > 0) )  
+		ElseIf (kSlave.GetParentCell() == kMaster.GetParentCell())  &&  (kMaster.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0) )  
 			; If master and slave are in the same interior cell
 			If (RandomInt( 0, 100 ) > 95 )
 				Debug.Notification( "Your captors are watching...")
@@ -444,7 +445,7 @@ State monitor
 				EndIf
 			EndIf
 
-		ElseIf ((kSlave.GetParentCell() != kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior()) && (!_SDGVP_state_caged.GetValueInt())) && (StorageUtil.GetIntValue(kSlave, "_SD_iTrust") < 0)
+		ElseIf ((kSlave.GetParentCell() != kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior()) && (!_SDGVP_state_caged.GetValueInt())) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			; Master is looking for slave (if not trusted)
 			; TO DO - Check if this really works with new collar / leash system
 
@@ -556,6 +557,8 @@ State monitor
 
 				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
 				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
+
+				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
 
 				If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 					Debug.Notification("Good slave... keep it coming.")

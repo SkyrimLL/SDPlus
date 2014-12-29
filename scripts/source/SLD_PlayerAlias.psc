@@ -3,6 +3,10 @@ Scriptname SLD_PlayerAlias extends ReferenceAlias
 ReferenceAlias Property PlayerAlias  Auto  
 SexLabFramework     property SexLab Auto
 
+Bool isPlayerEnslaved = False
+Bool isPlayerPregnant = False
+Bool isPlayerSuccubus = False
+
 Event OnPlayerLoadGame()
 	_maintenance()
 
@@ -15,6 +19,14 @@ Function _Maintenance()
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
+
+	isPlayerEnslaved = StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved") as Bool
+	isPlayerPregnant = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isPregnant") as Bool
+	isPlayerSuccubus = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isSuccubus") as Bool
+
+	_SLD_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
+	_SLD_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
+	_SLD_isPlayerEnslaved.SetValue(isPlayerEnslaved as Int)
 EndFunction
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
@@ -140,3 +152,8 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	endwhile
 	Return False
 EndFunction
+
+GlobalVariable Property _SLD_isPlayerPregnant auto
+GlobalVariable Property _SLD_isPlayerSuccubus auto
+GlobalVariable Property _SLD_isPlayerEnslaved auto
+

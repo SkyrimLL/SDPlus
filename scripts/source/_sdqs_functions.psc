@@ -425,6 +425,7 @@ EndFunction
 
 Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker = True, Bool includeTarget = False)
 	actor kPervert = None
+
 	Int idx = 0
 	Int iCount = 0
 
@@ -511,3 +512,4 @@ Keyword Property _SDKP_gagged Auto
 
 ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
 _SDQS_whore Property whore  Auto  
+ 

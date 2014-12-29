@@ -103,9 +103,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	kSlave = akRef2 as Actor
 	kCrimeFaction = kMaster.GetCrimeFaction()
 
-	; Debug.Trace("[SD] Receiving enslavement story.")
+	Debug.Trace("[SD] Receiving enslavement story.")
 	
-; 	Debug.Notification("_SDQS_enslavement:: bQuestActive == " + bQuestActive)
+ 	Debug.Notification("_SDQS_enslavement:: bQuestActive == " + bQuestActive)
 	If ( !bQuestActive )
 		; Debug.Trace("[SD] Starting enslavement story.")
 		bQuestActive = True
@@ -304,6 +304,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		EndIf
 	ElseIf ( _SDGVP_config[0].GetValue() )
 ;		kSlave.GetActorBase().SetEssential( False )
+		Debug.Trace("[SD] Aborting enslavement story - already active.")
 	EndIf
 
 EndEvent

@@ -102,6 +102,9 @@ Int raped = 0
 Int rapeAttempts = 0
 Float fRFSU = 0.5
  
+Bool isPlayerEnslaved = False
+Bool isPlayerPregnant = False
+Bool isPlayerSuccubus = False
 
 
 
@@ -253,7 +256,7 @@ Function _Maintenance()
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
-	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
+	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 
@@ -276,7 +279,43 @@ Function _Maintenance()
 	; Registering default outfit keywords for slave if not defined yet 
 	fctOutfit.registerDeviousOutfitsKeywords (  Game.getPlayer() )
 
+
+	isPlayerEnslaved = StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved") as Bool
+	isPlayerPregnant = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isPregnant") as Bool
+	isPlayerSuccubus = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isSuccubus") as Bool
+
+	_SDGVP_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
+	_SDGVP_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
+	_SDGVP_isPlayerEnslaved.SetValue(isPlayerEnslaved as Int)
 EndFunction
+
+Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
+	ObjectReference PlayerREF= SexLab.PlayerRef
+	Actor PlayerActor= PlayerREF as Actor
+	ActorBase pActorBase = PlayerActor.GetActorBase()
+    sslBaseAnimation animation = SexLab.HookAnimation(_args)
+
+	if !Self || !SexLab 
+		Debug.Trace("[SD]: Critical error on SexLab End")
+		Return
+	EndIf
+
+	Actor[] actors  = SexLab.HookActors(_args)
+	Actor   victim  = SexLab.HookVictim(_args)
+	Actor[] victims = new Actor[1]
+	victims[0] = victim
+	Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+	
+	If (funct._hasPlayer(actors))
+		; Player hands are freed temporarily for sex
+
+		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (Utility.RandomInt(0,100) > 30)
+			fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+			StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
+		EndIf
+	EndIf
+
+EndEvent
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= SexLab.PlayerRef
@@ -315,8 +354,17 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
 
 			; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
+		Else
+			If (Utility.RandomInt(0,100) > 90)
+			; Chance player will keep armbinders after sex
+			ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+				fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
+			EndIf
 
 		EndIf
+
+		StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 0)
 
 	EndIf
 
@@ -501,6 +549,11 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 	Else
 		Return
 	EndIf
+
+	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
+	EndIf
  
 	if  (_args == "Gangbang")
 
@@ -531,6 +584,11 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
 	Else
 		Return
+	EndIf
+
+	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
 
 	if  (_args == "Gangbang")
@@ -1001,3 +1059,8 @@ GlobalVariable Property _SDGVP_sanguine_blessing auto
 ObjectReference Property _SD_SprigganSwarm Auto
 
 GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+
+GlobalVariable Property _SDGVP_isPlayerPregnant auto
+GlobalVariable Property _SDGVP_isPlayerSuccubus auto
+GlobalVariable Property _SDGVP_isPlayerEnslaved auto
+
