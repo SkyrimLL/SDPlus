@@ -1166,14 +1166,14 @@ EndFunction
 Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 
 	If (bDevPlugAnal)
-		Debug.Notification("An anal plug is viciously forced inside you." )
+		Debug.MessageBox("An anal plug is viciously forced inside you." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
 			
 		setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	If (bDevPlugVaginal)
-		Debug.Notification("A plug fills you with harsh, cold metal." )
+		Debug.MessageBox("A plug fills you with harsh, cold metal." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 			
 		setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
@@ -1181,7 +1181,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 
 	; Belt
 	If (bDevBelt)
-		Debug.Notification("A dreadful chastity belt locks around your waist." )
+		Debug.MessageBox("A dreadful chastity belt locks around your waist." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
 		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
@@ -1189,7 +1189,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 
 	; Blinds
 	If (bDevBlindfold)
-		Debug.Notification("A blindfold covers your eyes, leaving you helpless." )
+		Debug.MessageBox("A blindfold covers your eyes, leaving you helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
 		setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
@@ -1198,7 +1198,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	; Gag
 
 	If (bDevGag)
-		Debug.Notification("A gag fills your mouth and muffles your screams." )
+		Debug.MessageBox("A gag fills your mouth and muffles your screams." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
 		setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
@@ -1210,14 +1210,14 @@ EndFunction
 Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 
 	If (bDevPlugAnal)
-		Debug.Notification("The anal plug is removed, making you feel sore and empty." )
+		Debug.MessageBox("The anal plug is removed, making you feel sore and empty." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
 			
 		setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
 	EndIf
 
 	If (bDevPlugVaginal)
-		Debug.Notification("The vaginal plug is drenched as it is removed." )
+		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
 		setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
@@ -1225,7 +1225,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 
 	; Belt
 	If (bDevBelt)
-		Debug.Notification("The belt finally lets go of its grasp around your hips." )
+		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
 			
 		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
@@ -1233,7 +1233,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 
 	; Blinds
 	If (bDevBlindfold)
-		Debug.Notification("A flood of painful light makes you squint as the blindfold is removed." )
+		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
 			
 		setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
@@ -1242,7 +1242,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 	; Gag
 
 	If (bDevGag)
-		Debug.Notification("The gag is finally removed, leaving a screaming pain in your jaw." )
+		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
 
 		setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")

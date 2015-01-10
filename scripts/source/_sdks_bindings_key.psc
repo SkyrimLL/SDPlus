@@ -42,20 +42,20 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
 				Debug.Messagebox("Your Master's Key helps you break free of your chains and immediately crumbles into dust.")
 			Else
-				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
+				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key crumbles into dust before you can try to force your collar open.")
 			EndIf
 
 		Else
-			Debug.MessageBox("The key works on bindings but without an enchanted enslavement collar bound to a master, it is useless on your collar.")
+			Debug.MessageBox("The key works on bindings but without an enchanted enslavement collar bound to a master, it is useless on your collar and immediately crumbles into dust.")
 		EndIf
+
+		Int keyCount = Game.GetPlayer().GetItemCount( _SD_MasterKey as Form )
+		Game.GetPlayer().RemoveItem(_SD_MasterKey, keyCount)
 
 		If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
 			SendModEvent("PCSubFree")		
 
 			_SDSP_freedom.RemoteCast( akNewContainer, kContainer, kContainer )
-
-			Int keyCount = Game.GetPlayer().GetItemCount( _SD_MasterKey as Form )
-			Game.GetPlayer().RemoveItem(_SD_MasterKey, keyCount)
 		EndIf
 
 

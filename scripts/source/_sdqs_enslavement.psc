@@ -67,6 +67,7 @@ Bool Property bQuestActive = False Auto Conditional
 Bool Property bOriginallyEnemies = False Auto Conditional
 Float Property fTimeEnslaved = 0.0 Auto Conditional
 Int Property uiPunishmentsEarned = 0 Auto Conditional
+Float fPunishmentsLength = 0.0  
 Int Property uiLastDemerits = 0 Auto Conditional
 Int Property uiHighestDemerits = 0 Auto Conditional
 Int Property uiLowestDemerits = 0 Auto Conditional
@@ -105,7 +106,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 	Debug.Trace("[SD] Receiving enslavement story.")
 	
- 	Debug.Notification("_SDQS_enslavement:: bQuestActive == " + bQuestActive)
+ 	Debug.Trace("_SDQS_enslavement:: bQuestActive == " + bQuestActive)
+
 	If ( !bQuestActive )
 		; Debug.Trace("[SD] Starting enslavement story.")
 		bQuestActive = True
@@ -116,6 +118,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
 
 		; Drop current weapon 
+		if(kSlave.IsWeaponDrawn())
+			kSlave.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
 
 		Weapon krHand = kSlave.GetEquippedWeapon()
 		Weapon klHand = kSlave.GetEquippedWeapon( True )
@@ -286,7 +292,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		SetObjectiveDisplayed( 0 )
 		SetObjectiveDisplayed( 1 )
 		SetObjectiveDisplayed( 2 )
-		SetObjectiveDisplayed( 3 )
+		SetObjectiveDisplayed( 6 )
 		Utility.Wait(2.0)
 
 		; Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )
@@ -411,8 +417,16 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave)
 				AddSlavePunishment( kActor = akSlave, bGag = True)
 				punishmentAdded = True
 
-			ElseIf  (!fctOutfit.IsPlugEquipped(kSlave)) 
-				AddSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
+			ElseIf  (!fctOutfit.IsBeltEquipped(kSlave)) 
+				AddSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = False,  bPlugVaginal = False)
+				punishmentAdded = True
+
+			ElseIf  (!fctOutfit.IsPlugAnalEquipped(kSlave)) 
+				AddSlavePunishment( kActor = akSlave, bBelt = False,  bPlugAnal = True,  bPlugVaginal = False)
+				punishmentAdded = True
+
+			ElseIf  (!fctOutfit.IsPlugVaginalEquipped(kSlave)) 
+				AddSlavePunishment( kActor = akSlave, bBelt = False,  bPlugAnal = False,  bPlugVaginal = True)
 				punishmentAdded = True
 				
 			Elseif (!fctOutfit.IsBlindfoldEquipped(kSlave))
@@ -446,8 +460,16 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave)
 				RemoveSlavePunishment( kActor = akSlave, bBlindfold = True)
 				punishmentRemoved = True
 
-			Elseif  (fctOutfit.IsPlugEquipped(kSlave)) 
-				RemoveSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = True,  bPlugVaginal = False)
+			Elseif  (fctOutfit.IsPlugVaginalEquipped(kSlave)) 
+				RemoveSlavePunishment( kActor = akSlave, bBelt = False,  bPlugAnal = False,  bPlugVaginal = True)
+				punishmentRemoved = True
+
+			Elseif  (fctOutfit.IsPlugAnalEquipped(kSlave)) 
+				RemoveSlavePunishment( kActor = akSlave, bBelt = False,  bPlugAnal = True,  bPlugVaginal = False)
+				punishmentRemoved = True
+
+			Elseif  (fctOutfit.IsBeltEquipped(kSlave)) 
+				RemoveSlavePunishment( kActor = akSlave, bBelt = True,  bPlugAnal = False,  bPlugVaginal = False)
 				punishmentRemoved = True
 
 			Elseif (fctOutfit.IsGagEquipped(akSlave))
@@ -472,11 +494,12 @@ EndFunction
 Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False, Bool bArmbinder = False)
 
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
+		fPunishmentsLength = (bGag as Float) + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 5.0
+		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int) + (bBlindfold as Int)
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,5))
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * fPunishmentsLength)
 
-		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBlindfold as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int)
 		
 		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
 

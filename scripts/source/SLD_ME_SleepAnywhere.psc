@@ -6,6 +6,7 @@ ImageSpaceModifier 	Property BlackScreen 		Auto
 ImageSpaceModifier 	Property FadeIn 			Auto
 
 Message Property RestPrompt	Auto
+Message Property SelfRestPrompt	Auto
 Message	Property SleepPrompt	Auto
 
 Furniture Property Bed Auto
@@ -16,20 +17,13 @@ Actor Target
 bool returnToFirstPerson = false
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
-	Debug.Notification("[SLD] Rest anywhere cast")
+	; Debug.Notification("[SLD] Rest anywhere cast")
+	int r
 
 	Target = akTarget
 	if(Target != Game.GetPlayer() || Target.GetCombatState() != 0)
 		self.Dispel()
 		return
-	endif
-	int r = RestPrompt.Show()
-	if(r == 1)
-		self.Dispel()
-		return
-	elseif(akTarget.IsWeaponDrawn())
-		akTarget.SheatheWeapon()
-		Utility.Wait(2.0)
 	endif
 
 	; 
@@ -37,7 +31,33 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		StorageUtil.SetIntValue(akTarget, "_SD_iSleepType",1)
 	endif
 
+	StorageUtil.SetIntValue(akTarget, "_SD_iSleepAnywhereON",1)
+
 	int sleepType = StorageUtil.GetIntValue(akTarget, "_SD_iSleepType")
+
+	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+		r = RestPrompt.Show()
+		if(r == 1)
+			self.Dispel()
+			return
+		elseif(akTarget.IsWeaponDrawn())
+			akTarget.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+	else
+		r = SelfRestPrompt.Show()
+		if(r == 3)
+			self.Dispel()
+			return
+		elseif(akTarget.IsWeaponDrawn())
+			akTarget.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+
+		sleepType = r + 1
+	EndIf
+
+	; Debug.Notification("[SD] Sleep pose: " + StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
 
 	returnToFirstPerson = (Game.GetCameraState() == 0)
 	Game.ForceThirdPerson()
@@ -45,13 +65,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	self.RegisterForKey(Input.GetMappedKey("Jump"))
 	
 	if(sleepType == 1) ; Kneeling
-		Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest. \n [Press Jump to cancel]")
+		Debug.MessageBox("You sit back on your knees and take a rest. \n [Press Jump to cancel]")
 		self.GoToState("Kneeling")
 	elseif(sleepType == 2) ; Sitting	
-		Debug.MessageBox("Your owner accepts to let you sit for a while. \n [Press Jump to cancel]")
+		Debug.MessageBox("You sit back for a while. \n [Press Jump to cancel]")
 		self.GoToState("Sitting")
 	elseif(sleepType == 3) ; Sleeping sideway
-		Debug.MessageBox("You are allowed to lie down and sleep for a while. \n [Press Jump to cancel]")
+		Debug.MessageBox("You lie down on the ground and sleep for a while. \n [Press Jump to cancel]")
 		self.GoToState("EnterSleepingSideway")
 	elseif(sleepType == 4) ; Sleeping 
 		Debug.MessageBox("Your owner lets you sleep on the ground. \n [Press Jump to cancel]")
@@ -70,7 +90,8 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	Game.EnablePlayerControls(1, 1, 1, 0, 0, 0, 0, 0, 0)
-	Debug.Notification("[SLD] Rest anywhere stop")
+	; Debug.Notification("[SLD] Rest anywhere stop")
+	StorageUtil.SetIntValue(akTarget, "_SD_iSleepAnywhereON",0)
 
 	self.GoToState("")	
 endEvent
@@ -79,7 +100,11 @@ endEvent
 	
 State EnterSleeping
 	Event OnBeginState()
-		Debug.SendAnimationEvent(Target, "idleLayDownEnter")
+		If (StorageUtil.GetStringValue(Target, "_SD_sSleepPose") != "")
+			Debug.SendAnimationEvent(Target, StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
+		Else
+			Debug.SendAnimationEvent(Target, "idleLayDownEnter")
+		EndIf
 		self.RegisterForSingleUpdate(4.0)
 	endEvent
 	
@@ -145,7 +170,11 @@ endState
 
 State EnterSleepingSideway
 	Event OnBeginState()
-		Debug.SendAnimationEvent(Target, "idleBedRollRightEnterStart")
+		If (StorageUtil.GetStringValue(Target, "_SD_sSleepPose") != "")
+			Debug.SendAnimationEvent(Target, StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
+		Else
+			Debug.SendAnimationEvent(Target, "idleBedRollRightEnterStart")
+		EndIf
 		self.RegisterForSingleUpdate(6.0)
 	endEvent
 	
@@ -211,7 +240,11 @@ endState
 
 State Sitting
 	Event OnBeginState()
-		Debug.SendAnimationEvent(Target, "idleSitCrossLeggedEnter")
+		If (StorageUtil.GetStringValue(Target, "_SD_sSleepPose") != "")
+			Debug.SendAnimationEvent(Target, StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
+		Else
+			Debug.SendAnimationEvent(Target, "idleSitCrossLeggedEnter")
+		EndIf
 		self.RegisterForUpdate(0.5)
 	endEvent
 
@@ -231,7 +264,11 @@ endState
 
 State Kneeling
 	Event OnBeginState()
-		Debug.SendAnimationEvent(Target, "idleGreyBeardMeditateEnter")
+		If (StorageUtil.GetStringValue(Target, "_SD_sSleepPose") != "")
+			Debug.SendAnimationEvent(Target, StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
+		Else
+			Debug.SendAnimationEvent(Target, "idleGreyBeardMeditateEnter")
+		EndIf
 		self.RegisterForUpdate(0.5)
 	endEvent
 	

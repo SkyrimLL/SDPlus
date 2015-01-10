@@ -438,9 +438,9 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 		
 	While (iCount < 10) && (idx < 5)
 		If ( includeSpeaker ) && (kPervert != akSpeaker)
-			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 400.0, IgnoreRef1 = akTarget)  	
+			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 600.0, IgnoreRef1 = akTarget)  	
 		Else
-			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 400.0, IgnoreRef1 = akTarget, IgnoreRef2 = akSpeaker)  	
+			kPervert = SexLab.FindAvailableActor(CenterRef = SexLab.PlayerRef as ObjectReference, Radius = 600.0, IgnoreRef1 = akTarget, IgnoreRef2 = akSpeaker)  	
 		EndIf
 
 		If (kPervert!=None) 

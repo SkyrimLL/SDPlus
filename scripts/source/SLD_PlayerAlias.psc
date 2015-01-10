@@ -9,10 +9,10 @@ Bool isPlayerSuccubus = False
 
 Event OnPlayerLoadGame()
 	_maintenance()
-
+	_updateGlobals()
 EndEvent
 
-Function _Maintenance()
+Function _maintenance()
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
@@ -24,10 +24,70 @@ Function _Maintenance()
 	isPlayerPregnant = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isPregnant") as Bool
 	isPlayerSuccubus = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isSuccubus") as Bool
 
+	Game.GetPlayer().AddSpell( RestSpell )
+EndFunction
+
+Function _updateGlobals()
 	_SLD_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
 	_SLD_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
 	_SLD_isPlayerEnslaved.SetValue(isPlayerEnslaved as Int)
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer(), "_SD_iSlaveryLevel"))
+		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iSlaveryLevel") )
+	Else
+		_SLD_PCSubSlaveryLevel.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer(), "_SD_iEnslaved"))
+		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnslaved") )
+	Else
+		_SLD_PCSubEnslaved.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasStringValue( Game.GetPlayer() , "_SD_sDefaultStance"))
+		If (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Crawling")
+			_SLD_PCSubDefaultStance.SetValue(  2 )
+		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Kneeling")
+			_SLD_PCSubDefaultStance.SetValue(  1 )
+		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Standing")
+			_SLD_PCSubDefaultStance.SetValue(  0 )
+		EndIf
+	Else
+		_SLD_PCSubDefaultStance.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableStand"))
+		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableStand") )
+	Else
+		_SLD_PCSubEnableStand.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableLeash"))
+		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableLeash") )
+	Else
+		_SLD_PCSubEnableLeash.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iHandsFree"))
+		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iHandsFree") )
+	Else
+		_SLD_PCSubHandsFree.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iDominance"))
+		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iDominance") )
+	Else
+		_SLD_PCSubDominance.SetValue( 0 )
+	EndIf
+
 EndFunction
+
+Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
+	Actor akActor= Game.GetPlayer()
+
+	_updateGlobals()
+EndEvent
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= PlayerAlias.GetReference()
@@ -153,7 +213,16 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	Return False
 EndFunction
 
+SPELL Property RestSpell Auto
+
 GlobalVariable Property _SLD_isPlayerPregnant auto
 GlobalVariable Property _SLD_isPlayerSuccubus auto
 GlobalVariable Property _SLD_isPlayerEnslaved auto
 
+GlobalVariable Property _SLD_PCSubDefaultStance Auto
+GlobalVariable Property _SLD_PCSubEnableStand Auto
+GlobalVariable Property _SLD_PCSubEnableLeash Auto
+GlobalVariable Property _SLD_PCSubHandsFree Auto
+GlobalVariable Property _SLD_PCSubDominance Auto
+GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
+GlobalVariable Property _SLD_PCSubEnslaved Auto

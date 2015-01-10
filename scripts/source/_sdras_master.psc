@@ -121,18 +121,16 @@ Event OnDeath(Actor akKiller)
 			; Send all items back to Dreamworld storage
 			kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
-			Debug.Trace("[_sdras_master] Waiting to stop enslavement")
-			Self.GetOwningQuest().Stop()
-			; new master
-			While ( Self.GetOwningQuest().IsStopping() )
-			EndWhile
-			
+			If (Utility.RandomInt(0,100)>60)
+				SendModEvent("PCSubFree")
+			Else
+				Debug.Notification( "You are mine!" )
+				Debug.Trace("[_sdras_master] Start enslavement with:"  + akKiller)
+				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akKiller)
 
-			Debug.Notification( "You are mine!" )
-			Debug.Trace("[_sdras_master] Start enslavement with:"  + akKiller)
-			; New enslavement - changing ownership
-			_SDKP_enslave.SendStoryEvent(akRef1 = akKiller, akRef2 = kSlave, aiValue1 = 0)
-			
+				SendModEvent("PCSubTransfer") ; Whipping
+			EndIf
+
 		EndIf
 	EndIf
 EndEvent
@@ -367,6 +365,10 @@ State monitor
 				Debug.Notification( "Who said you could fight, Slave!")
 
 				; Drop current weapon 
+				if(kSlave.IsWeaponDrawn())
+					kSlave.SheatheWeapon()
+					Utility.Wait(2.0)
+				endif
 
 				Weapon krHand = kSlave.GetEquippedWeapon()
 				Weapon klHand = kSlave.GetEquippedWeapon( True )
@@ -482,9 +484,9 @@ State monitor
 
 					fLibido = 0.0
 	 
-					_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
-				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,100) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) 
+				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,10) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) 
 					; Master is in a good mood - chance to remove punishment
 
 					enslavement.RewardSlave(kMaster,kSlave)
