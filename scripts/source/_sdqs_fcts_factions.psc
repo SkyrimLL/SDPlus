@@ -7,10 +7,11 @@ _SDQS_functions Property funct  Auto
 
 Keyword Property _SDKP_actorTypeNPC  Auto
 FormList Property _SDFLP_banned_factions  Auto
+FormList Property _SDFLP_banned_actors  Auto
 
 Bool Function checkIfSlaver ( Actor akActor )
 	Int  playerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
-	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) && (playerGender == 1) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions )
+	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) && (playerGender == 1) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	; Debug.Trace("[SD] Actor is NPC - " + akActor.HasKeyword( _SDKP_actorTypeNPC ))
@@ -19,10 +20,24 @@ Bool Function checkIfSlaver ( Actor akActor )
 	; Debug.Trace("[SD] Actor is Ghost - " + akActor.IsGhost())
 	; Debug.Trace("[SD] Actor is Player - " + (akActor != Game.GetPlayer()))
 	; Debug.Trace("[SD] Member of banned faction - " + actorFactionInList( akActor, _SDFLP_banned_factions ))
+	; Debug.Trace("[SD] Member of banned actors - " + actorInList(_SDFLP_banned_actors , akActor))
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	; Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
 
 	return isSlaver
+EndFunction
+
+Bool Function actorInList(FormList akActorsList, Actor thisActor)
+	Actor kActor
+	int idx = 0
+	while idx < akActorsList.GetSize()
+		kActor = akActorsList.GetAt(idx) as Actor
+		if kActor == thisActor as ObjectReference
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
 EndFunction
 
 Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormList akBannedFactionList = None )

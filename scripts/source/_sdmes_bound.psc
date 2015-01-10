@@ -14,7 +14,7 @@ Idle Property _SDIAP_reset  Auto
 
 Faction Property SexLabActiveFaction  Auto  
 
-
+Int sleepType
 Actor kTarget
 Actor kPlayer
 ObjectReference kMaster
@@ -42,7 +42,78 @@ Event OnUpdate()
 	;	Debug.Notification( "Your collar weighs around your neck..." )
 	; EndIf
 
+	If (StorageUtil.GetIntValue(kTarget, "_SD_iSleepAnywhereON") == 1)
+		If (StorageUtil.HasIntValue(kTarget, "_SD_iSleepType"))
+			sleepType = StorageUtil.GetIntValue(kTarget, "_SD_iSleepType")
+		Else
+			sleepType = 1
+		EndIf
 
+		; Debug.Notification("[_sdmes_bound.psc] Stance: " +  StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
+		; Debug.Notification("[_sdmes_bound.psc] Sleep type: " +  StorageUtil.GetIntValue(kTarget, "_SD_iSleepType"))
+		; Debug.Notification("[_sdmes_bound.psc] Sleep pose: " +  StorageUtil.GetStringValue(kTarget, "_SD_sSleepPose"))
+
+		If (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
+			if(sleepType == 1) ; Kneeling
+				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC011") ; HandsBehindLieFaceDown
+
+			elseif(sleepType == 2) ; Sitting	
+				; Debug.MessageBox("Your owner accepts to let you sit for a while. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC057") ;  		FrogTieFaceDownStruggle
+
+			elseif(sleepType == 3) ; Sleeping sideway
+				; Debug.MessageBox("You are allowed to lie down and sleep for a while. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC012") ;  		HandsBehindLieSide
+
+			elseif(sleepType == 4) ; Sleeping 
+				; Debug.MessageBox("Your owner lets you sleep on the ground. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC014") ;  		HandsBehindLieSideCurlUp
+
+			endif
+			
+		ElseIf (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Kneeling")
+			if(sleepType == 1) ; Kneeling
+				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC020") ; 		HandsBehindKneelBowDown
+
+			elseif(sleepType == 2) ; Sitting	
+				; Debug.MessageBox("Your owner accepts to let you sit for a while. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC008") ;  HandsBehindSitFloorKneestoChest
+
+			elseif(sleepType == 3) ; Sleeping sideway
+				; Debug.MessageBox("You are allowed to lie down and sleep for a while. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC056") ;  		HogTieFaceDownLegsSpread
+
+			elseif(sleepType == 4) ; Sleeping 
+				; Debug.MessageBox("Your owner lets you sleep on the ground. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPC015") ;  		HandsBehindLieHogtieFaceDown
+
+			endif
+
+		ElseIf (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Standing")
+			if(sleepType == 1) ; Kneeling
+				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPCAO023") ;   AnimObjectZazAPCAO023		Vertical Pillory
+
+			elseif(sleepType == 2) ; Sitting	
+				; Debug.MessageBox("Your owner accepts to let you sit for a while. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPCAO024") ;   AnimObjectZazAPCAO024		Wooden Horse
+
+			elseif(sleepType == 3) ; Sleeping sideway
+				; Debug.MessageBox("You are allowed to lie down and sleep for a while. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPCAO009") ;    AnimObjectZazAPCAO009		PilloryIdle
+
+			elseif(sleepType == 4) ; Sleeping 
+				; Debug.MessageBox("Your owner lets you sleep on the ground. ")
+				StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPCAO025") ;   AnimObjectZazAPCAO025		X Cross
+
+			endif
+
+		Else
+			StorageUtil.SetStringValue(kTarget, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
+		EndIf
+	EndIf
 	
 	; Debug.Notification("[SD] AutoKneelingOff: " + StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
 	; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
@@ -60,9 +131,7 @@ Event OnUpdate()
 
 		; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance"))
 
-		if (kMaster) && (StorageUtil.GetIntValue(kTarget, "_SD_iHandsFree") == 0)
-
-
+		if (kMaster) && (StorageUtil.GetIntValue(kTarget, "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue(kTarget, "_SD_iSleepAnywhereON") == 0)
 
 			iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 			iDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")

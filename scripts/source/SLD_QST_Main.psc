@@ -1,5 +1,8 @@
 Scriptname SLD_QST_Main extends Quest  
 
+HeadPart playerOrigHair = None
+HeadPart playerCurrentHair
+
 Function SetNPCDialogueState ( Actor akSpeaker )
 	ObjectReference akSpeakerRef = akSpeaker as objectReference
 	Form kSpeakerForm = akSpeaker as Form
@@ -33,7 +36,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		_SLD_NPCRelationshipType.SetValue( akSpeaker.GetRelationshipRank(Game.GetPlayer()) )
 	EndIf
 
-	If (_SLD_NPCRelationshipType.GetValue() < -4)
+	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
 		If (isSpeakerHuman) && (_SLD_humanMasterAlias.GetReference() != akSpeakerRef)
 			_SLD_humanMasterAlias.ForceRefTo(akSpeakerRef )
 		ElseIf (!isSpeakerHuman) && (_SLD_beastMasterAlias.GetReference() != akSpeakerRef)
@@ -106,7 +109,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		_SLD_PCSubFollowSlave.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_sDefaultStance"))
+	If (StorageUtil.HasStringValue( Game.GetPlayer() , "_SD_sDefaultStance"))
 		If (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Crawling")
 			_SLD_PCSubDefaultStance.SetValue(  2 )
 		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Kneeling")
@@ -134,6 +137,12 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iHandsFree") )
 	Else
 		_SLD_PCSubHandsFree.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iDominance"))
+		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iDominance") )
+	Else
+		_SLD_PCSubDominance.SetValue( 0 )
 	EndIf
 
 
@@ -172,8 +181,8 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Debug.Trace("[SLD] _SLD_humanSlaveAlias: " + _SLD_humanSlaveAlias.GetReference() as Actor)
 	Debug.Trace("[SLD] _SLD_beastMasterAlias: " + _SLD_beastMasterAlias.GetReference() as Actor)
 	Debug.Trace("[SLD] _SLD_beastSlaveAlias: " + _SLD_beastSlaveAlias.GetReference() as Actor)
-	; Debug.Notification("[SLD] sex: " + _SLD_NPCSexCount.GetValue( ) as Int + " - Rel: " +  _SLD_NPCRelationshipType.GetValue() as Int  + " - Slavery: " +  _SLD_PCSubSlaveryLevel.GetValue() as Int  )
-	Debug.Trace("[SLD] Disposition: " + _SLD_NPCdisposition.GetValue( ) as Int + " Seduction: " + _SLD_NPCseduction.GetValue( ) as Int + " Corruption: " + _SLD_NPCcorruption.GetValue( ) as Int)
+	Debug.Trace("[SLD] Disposition: " + _SLD_NPCdisposition.GetValue( ) as Int + " Trust: " + _SLD_NPCtrust.GetValue( ) as Int + " Seduction: " + _SLD_NPCseduction.GetValue( ) as Int + " Corruption: " + _SLD_NPCcorruption.GetValue( ) as Int)
+	Debug.Trace("[SLD] Leash: " + _SLD_PCSubEnableLeash.GetValue( ) as Int + " Stance: " + _SLD_PCSubDefaultStance.GetValue( ) as Int )
 
 EndFunction
 
@@ -202,7 +211,7 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 	Else
 		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
 
-		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
 	EndIf
 
 EndFunction
@@ -245,7 +254,7 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 	Else
 		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
 
-		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
 	EndIf
 
 EndFunction
@@ -257,7 +266,44 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 	Int IButton = _SLD_raceMenu.Show()
 
 	If IButton == 0  ; Show the thing.
-		Game.ShowLimitedRaceMenu()
+		Actor kPlayer = Game.GetPlayer() as Actor
+
+		Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+
+		Int Hair = kPlayer.GetLeveledActorBase().GetNumHeadParts()
+		Int i = 0
+		While i < Hair
+			If kPlayer.GetLeveledActorBase().GetNthHeadPart(i).GetType() == 3
+				playerCurrentHair = kPlayer.GetLeveledActorBase().GetNthHeadPart(i)
+				i = Hair
+			EndIf
+			i += 1
+		EndWhile
+
+		If (playerOrigHair == None)
+			playerOrigHair = playerCurrentHair
+		EndIf
+
+		If (iPlayerGender==0) 
+			If (playerCurrentHair != _SLD_MaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
+				kPlayer.ChangeHeadPart(_SLD_MaleSlaveHair)
+				Debug.Notification("Your owner shaves your head.")
+			Else
+				Game.ShowLimitedRaceMenu()
+			EndIf
+
+		Else
+			If (playerCurrentHair != _SLD_FemaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
+				kPlayer.ChangeHeadPart(_SLD_FemaleSlaveHair)
+				Debug.Notification("Your owner shaves your head.")
+			Else
+				Game.ShowLimitedRaceMenu()
+			EndIf
+
+		EndIf
+
+
+			
 	EndIf
 
 	Utility.Wait(1.0)
@@ -286,6 +332,7 @@ GlobalVariable Property _SLD_PCSubDefaultStance Auto
 GlobalVariable Property _SLD_PCSubEnableStand Auto
 GlobalVariable Property _SLD_PCSubEnableLeash Auto
 GlobalVariable Property _SLD_PCSubHandsFree Auto
+GlobalVariable Property _SLD_PCSubDominance Auto
 
 GlobalVariable Property _SLD_NPCRelationshipType Auto
 GlobalVariable Property _SLD_NPCdisposition Auto
@@ -300,3 +347,10 @@ Message Property _SLD_rapeMenu  Auto
 
 Message Property _SLD_raceMenu  Auto  
 
+ 
+
+HeadPart Property _SLD_FemaleSlaveHair  Auto  
+
+HeadPart Property _SLD_MaleSlaveHair  Auto  
+
+GlobalVariable Property _SLD_PCSubShavedON  Auto  

@@ -558,7 +558,7 @@ State monitor
 				Debug.Notification( "Your master is in combat. Stay close..." )
 
 				If (fMasterDistance >  StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-					StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", 	StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") - 1)
+					StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", 	funct.intWithinRange ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") - 1, -10, 10) )
 
 				EndIf
 			EndIf
@@ -641,17 +641,27 @@ State monitor
 
 
 	                Game.FadeOutGame(true, true, 0.5, 5)
-					kSlave.MoveTo( kMaster )
+
+	                If (kSlave.GetParentCell() == kMaster.GetParentCell())
+						; Moving Slave to Master if in same cell
+						kSlave.MoveTo( kMaster )
+
+					Else
+						; Moving Master to Slave to allow the use of doors
+						kMaster.MoveTo( kSlave )
+					EndIf						
+
 					Game.FadeOutGame(false, true, 2.0, 20)
 
 					Utility.Wait( 1.0 )
 
 					Debug.MessageBox( "After being choked by the collar, you wake up next to your owner." )
 
+
 					If (!kMaster.IsDead()) && (!kMaster.IsInCombat())
+						enslavement.PunishSlave(kMaster,kSlave)
 						if (Utility.RandomInt(0,100)>50)
 							; Punishment
-							enslavement.PunishSlave(kMaster,kSlave)
 							_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 						Else
 							; Whipping

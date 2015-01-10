@@ -306,7 +306,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	victims[0] = victim
 	Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
 	
-	If (funct._hasPlayer(actors))
+	If (funct._hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 		; Player hands are freed temporarily for sex
 
 		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (Utility.RandomInt(0,100) > 30)
@@ -339,11 +339,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; 	_listActors("End: ", actors)
 	; EndIf
 
-	If (funct._hasPlayer(actors))
+	; If (funct._hasPlayer(actors))
 		;
-	EndIf
+	; EndIf
 
-	If (kCurrentMaster != None)
+	If (kCurrentMaster != None) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 
 		If (funct._hasActor(actors,kCurrentMaster))
 			Debug.Trace("[SD]: Sex with your master")
@@ -500,8 +500,8 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		; New enslavement - changing ownership
 		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
 	Else
-		Debug.Trace("[_sdras_slave] Attempted transfer to empty master " )
-		Debug.Notification("You are not worth my time...")	
+		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster + " - checkIfSlaver:" +  fctFactions.checkIfSlaver (  kNewMaster ))
+		Debug.Notification("Nevermind...")	
 	EndIf
 EndEvent
 
@@ -759,6 +759,8 @@ State monitor
 				; Debug.Notification( "[SD] Player status - slavery exposure: " + StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure"))
 			; EndIf
 		EndIf
+
+		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 		
 		If ( keys[0] != config._SDUIP_keys[1] || keys[1] != config._SDUIP_keys[6] )
 			UnregisterForKey( keys[0] )
@@ -1064,3 +1066,4 @@ GlobalVariable Property _SDGVP_isPlayerPregnant auto
 GlobalVariable Property _SDGVP_isPlayerSuccubus auto
 GlobalVariable Property _SDGVP_isPlayerEnslaved auto
 
+GlobalVariable Property _SDGVP_sanguine_blessings auto

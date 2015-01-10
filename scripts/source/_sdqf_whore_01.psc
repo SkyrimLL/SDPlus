@@ -2,9 +2,19 @@
 ;NEXT FRAGMENT INDEX 4
 Scriptname _sdqf_whore_01 Extends Quest Hidden
 
-;BEGIN ALIAS PROPERTY _SDRA_master
+;BEGIN ALIAS PROPERTY _SDRA_whore
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_master Auto
+ReferenceAlias Property Alias__SDRA_whore Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref4
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref4 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref8
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref8 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_queue_ref1
@@ -12,19 +22,49 @@ ReferenceAlias Property Alias__SDRA_master Auto
 ReferenceAlias Property Alias__SDRA_queue_ref1 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_whore
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref5
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_whore Auto
+ReferenceAlias Property Alias__SDRA_queue_ref5 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_queue_ref2
+;BEGIN ALIAS PROPERTY _SDRA_master
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_queue_ref2 Auto
+ReferenceAlias Property Alias__SDRA_master Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref10
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref10 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref7
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref7 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_queue_ref3
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_queue_ref3 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref6
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref6 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref9
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref9 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref0
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref0 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_queue_ref2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_queue_ref2 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_0

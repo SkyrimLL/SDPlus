@@ -83,6 +83,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 1)
 
 		; Drop current weapon 
+		if(akSlave.IsWeaponDrawn())
+			akSlave.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
 
 		Weapon krHand = akSlave.GetEquippedWeapon()
 		Weapon klHand = akSlave.GetEquippedWeapon( True )
@@ -251,7 +255,7 @@ Event OnUpdateGameTime()
 	EndIf
 
 	; random punishment events
-	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !kPlayer.GetCurrentScene() && !kPlayer.IsInCombat() ) ;  && !kPlayer.GetDialogueTarget() )
+	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !kPlayer.GetCurrentScene() && !kPlayer.IsInCombat()  && !kPlayer.IsOnMount() ) ;  && !kPlayer.GetDialogueTarget() )
 		; _SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
 		Game.ForceThirdPerson()
 		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")

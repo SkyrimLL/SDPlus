@@ -8,6 +8,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
  
+	Debug.Notification("You are mine now...")
+
 
 	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 1)

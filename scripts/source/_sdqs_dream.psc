@@ -200,7 +200,7 @@ Function positionVictims( Int aiStage )
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
 	SendModEvent("SDDreamworldStart") 
-
+	_SDGVP_sanguine_blessing.SetValue( _SDGVP_sanguine_blessing.GetValue() + 1)
 
 	kNaamah.EvaluatePackage()
 	kMeridiana.EvaluatePackage()
@@ -363,4 +363,5 @@ ReferenceAlias Property _SDRAP_redguard_girl  Auto
 
 SPELL Property _SDSP_SanguineBound  Auto  
 
+GlobalVariable Property _SDGVP_sanguine_blessing auto
 

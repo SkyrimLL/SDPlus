@@ -11,45 +11,38 @@ snp._SDUIP_phase = 1
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-snp._SDUIP_phase = 5
+Actor female = _SDRAP_female.GetReference() as Actor
+
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(7)
+
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("Wait while they take their turns on you.")
 
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
-;END CODE
-EndFunction
-;END FRAGMENT
+if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
+	Debug.Notification("Your owner forces you to dance...")
+Else
+	Debug.Notification("You slowly start to dance...")
+EndIf
 
-;BEGIN FRAGMENT Fragment_89
-Function Fragment_89()
-;BEGIN CODE
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-; Debug.SendAnimationEvent(slaveREF , "ZazAPC056")
-	
-; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+		Debug.SendAnimationEvent(female, "Unequip")
+		Debug.SendAnimationEvent(female, "UnequipNoAnim")
+
+		; Drop current weapon 
+		if(female.IsWeaponDrawn())
+			female.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+
+Game.ForceThirdPerson()
+; libs.SetAnimating(Game.GetPlayer(), true)
 
 
-If ( _SDRAP_male )
-	whore.addToQueue( _SDRAP_male.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_01 )
-	whore.addToQueue( _SDRAP_bystander_01.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_02)
-	whore.addToQueue( _SDRAP_bystander_02.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_03 )
-	whore.addToQueue( _SDRAP_bystander_03.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_04 )
-	whore.addToQueue( _SDRAP_bystander_04.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_05 )
-	whore.addToQueue( _SDRAP_bystander_05.GetReference() as ObjectReference )
+if (fctOutfit.isArmbinderEquipped( female ))
+	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
 EndIf
 ;END CODE
 EndFunction
@@ -88,39 +81,33 @@ _SDGVP_snp_busy.SetValue(-1)
 ; Game.EnablePlayerControls( abMovement = True )
 ; Game.SetPlayerAIDriven( False )
 
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
+if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
+
+	fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
+	fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
+	fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
+	fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 
  
-If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
-	; Keep hands free by accident
-ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
+		; Keep hands free by accident
+	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+	EndIf
 EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-Actor female = _SDRAP_female.GetReference() as Actor
-
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(7)
-
+snp._SDUIP_phase = 5
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("Your owner forces you to dance...")
-Game.ForceThirdPerson()
-; libs.SetAnimating(Game.GetPlayer(), true)
+Debug.Notification("Wait while they take their turns on you.")
 
-
-if (fctOutfit.isArmbinderEquipped( female ))
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
-	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
-EndIf
+Game.EnablePlayerControls( abMovement = True )
+Game.SetPlayerAIDriven( False )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -150,6 +137,37 @@ EndIf
 ; utility.wait(10)
 
 ; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_89
+Function Fragment_89()
+;BEGIN CODE
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+; Debug.SendAnimationEvent(slaveREF , "ZazAPC056")
+	
+; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+
+
+If ( _SDRAP_male )
+	whore.addToQueue( _SDRAP_male.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_01 )
+	whore.addToQueue( _SDRAP_bystander_01.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_02)
+	whore.addToQueue( _SDRAP_bystander_02.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_03 )
+	whore.addToQueue( _SDRAP_bystander_03.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_04 )
+	whore.addToQueue( _SDRAP_bystander_04.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_05 )
+	whore.addToQueue( _SDRAP_bystander_05.GetReference() as ObjectReference )
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

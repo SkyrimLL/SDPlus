@@ -281,6 +281,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
+	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
 
 	UpdateStatusDaily(  kMaster,  kSlave)
 
@@ -366,6 +367,8 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	; Compatibility with other mods
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
+	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset
+
 EndFunction
 
 ; I know - these two functions could be turned into one. I am keeping them separate for now in case I need to treat master and slave differently later on
@@ -633,7 +636,22 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
 	int masterNeedRange =  StorageUtil.GetIntValue(kMaster, "_SD_iNeedRange")
 	int masterTrustRange =  StorageUtil.GetIntValue(kMaster, "_SD_iTrustRange")
-	Int iDominance = StorageUtil.GetIntValue( kSlave , "_SD_iDom") - StorageUtil.GetIntValue( kSlave , "_SD_iSub")
+
+	Int iSub = StorageUtil.GetIntValue( kSlave , "_SD_iSub")
+	if (iSub>10)
+		iSub = 10
+	elseif (iSub<-10)
+		iSub = -10
+	EndIf
+
+	Int iDom = StorageUtil.GetIntValue( kSlave , "_SD_iDom") 
+	if (iDom>10)
+		iDom = 10
+	elseif (iDom<-10)
+		iDom = -10
+	EndIf
+
+	Int iDominance = iDom - iSub
 
 	int iSexComplete = 0
 	int iPunishComplete = 0
@@ -751,7 +769,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 
 	; :: If master mood between -5 and +5, trust +1
 	if (masterDisposition >= 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 1 + (slaveryLevel / 2))
+		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 2 + (slaveryLevel / 2))
 	EndIf
 
 	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
@@ -763,8 +781,15 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		masterTrust = -10
 	EndIf
 
+	if (iDominance>10)
+		iDominance = 10
+	elseif (iDominance<-10)
+		iDominance = -10
+	EndIf
+
 	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
+	StorageUtil.SetIntValue(kSlave, "_SD_iDominance", iDominance)
 
 	if (masterTrust > 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
@@ -807,6 +832,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	String statusGold = "Greedy \n"
 	String statusMood = "Angry - "
 	String statusTrust = "Suspicious \n"
+	String statusDominance = "Submissive \n"
 
 	If (iSexComplete==1)
 		statusSex = ""
@@ -826,9 +852,12 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	If (masterTrust>=0)
 		statusTrust = "Trusting \n"
 	Endif
+	If (iDominance>=0)
+		statusDominance = "Dominant \n"
+	Endif
 
-	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust 
-	Debug.Messagebox(statusMessage + "OverallDisposition: " + masterTrust  + "\nTrust: " + masterTrust)
+	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\nTrust: " + masterTrust
+	Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")")
 
 	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
@@ -841,7 +870,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition )
-	Debug.Trace("[SD] Master: Slate trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
+	Debug.Trace("[SD] Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
 

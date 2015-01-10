@@ -11,7 +11,19 @@ EndWhile
 
 ; _SDKP_sex.SendStoryEvent(akLoc = akSpeaker.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = akSpeaker.GetDialogueTarget(), aiValue1 = 5, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
-funct.SanguineRape( akSpeaker, akSpeaker.GetDialogueTarget() , "Aggressive")
+; funct.SanguineRape( akSpeaker, akSpeaker.GetDialogueTarget() , "Aggressive")
+
+Int randomNum = Utility.RandomInt(0, 100)
+StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+
+If (randomNum > 60)
+	SendModEvent("PCSubPunish") ; Punishment
+ElseIf (randomNum > 20)
+	SendModEvent("PCSubWhip") ; Whipping
+Else
+	SendModEvent("PCSubSex") ; Sex
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -118,11 +118,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			Debug.Trace("_SD:: Location " + akLocation.GetName() + " lust level: " + akLocation.GetKeywordData( _SDKP_lustAura ) )
 		EndIf
 
-		Debug.Trace("_SD:: _SDBP_sceneLockPosition = " + _SDBP_sceneLockPosition[ _SDUIP_scene ])
-		If ( kLockPos && kLockPos.Is3DLoaded() && _SDBP_sceneLockPosition[ _SDUIP_scene ] )
-			; marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
-			kLockPos.TranslateTo(kLockPos.X, kLockPos.Y, kFemale.Z,  kMale.GetAngleX(), kMale.GetAngleY(), kMale.GetAngleZ() + kMale.GetHeadingAngle( kLockPos ), 200.0 )
-			; kFemale.TranslateToRef(kLockPos, 500.0)
+		If (_SDUIP_scene != -1 )
+			Debug.Trace("_SD:: _SDBP_sceneLockPosition = " + _SDBP_sceneLockPosition[ _SDUIP_scene ])
+			If ( kLockPos && kLockPos.Is3DLoaded() && _SDBP_sceneLockPosition[ _SDUIP_scene ] )
+				; marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
+				kLockPos.TranslateTo(kLockPos.X, kLockPos.Y, kFemale.Z,  kMale.GetAngleX(), kMale.GetAngleY(), kMale.GetAngleZ() + kMale.GetHeadingAngle( kLockPos ), 200.0 )
+				; kFemale.TranslateToRef(kLockPos, 500.0)
+			EndIf
 		EndIf
 	Else
 		Debug.Notification("_SD:: _SDUIP_scene = " + _SDUIP_scene + " start fail")

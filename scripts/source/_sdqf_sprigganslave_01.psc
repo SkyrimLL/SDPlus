@@ -192,11 +192,11 @@ Game.GetPlayer().AddToFaction(SprigganFaction)
 
 	; fctOutfit.setDeviousOutfitID ( iOutfit = -1, sMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
 		
-	if fctOutfit.isEquippedBeltKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan"  )
+	if fctOutfit.isBeltEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan"  )
 		fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
 	EndIf
 
-	if fctOutfit.isEquippedBlindfoldKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan"  )
+	if fctOutfit.isBlindfoldEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan"  )
 		fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
 	Endif
 

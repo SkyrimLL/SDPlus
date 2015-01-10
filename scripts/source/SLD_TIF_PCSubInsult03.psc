@@ -12,9 +12,9 @@ Int randomNum = Utility.RandomInt(0, 100)
 StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
 
-If (randomNum > 70)
+If (randomNum > 60)
 	SendModEvent("PCSubPunish") ; Punishment
-ElseIf (randomNum > 30)
+ElseIf (randomNum > 20)
 	SendModEvent("PCSubWhip") ; Whipping
 Else
 	SendModEvent("PCSubSex") ; Sex
