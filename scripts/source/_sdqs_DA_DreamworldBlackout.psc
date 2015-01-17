@@ -20,7 +20,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	UnregisterForModEvent("da_PlayerRecovered")
 
 	
-	if (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && ( _SDGVP_Sanguine_Blessing.GetValue() >0) && ( (akAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (akAggressor.GetRace() == falmerRace)) && funct.checkGenderRestriction( akAggressor, thisPlayer ) ) && !fctFactions.actorFactionInList( akAggressor, _SDFLP_banned_factions ) 
+	if (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && ( _SDGVP_Sanguine_Blessing.GetValue() >0) ;  && ( (akAggressor.HasKeyword( _SDKP_actorTypeNPC ) || (akAggressor.GetRace() == falmerRace)) && funct.checkGenderRestriction( akAggressor, thisPlayer ) ) && !fctFactions.actorFactionInList( akAggressor, _SDFLP_banned_factions ) 
 		return true
 	else
 		return false

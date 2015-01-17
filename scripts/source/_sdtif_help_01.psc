@@ -15,16 +15,16 @@ EndWhile
 If (Utility.RandomInt(0,100) > 60)
 	Debug.Notification("You are mine now...")
 
-	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
-	SendModEvent("PCSubTransfer")
+	akSpeaker.SendModEvent("PCSubTransfer")
 Else
 	Debug.Notification("You are not worth my time...")
 
 	; Free + Sex events can conflict - keep only sex for now 
-	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
-	SendModEvent("PCSubFree")
+	; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	akSpeaker.SendModEvent("PCSubFree")
 
 	; SendModEvent("PCSubSex")
 Endif

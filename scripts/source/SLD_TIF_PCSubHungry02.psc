@@ -14,19 +14,21 @@ Actor kSlave = game.GetPlayer()
 	If (randomVar >= 8  )
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
+		kSlave.EquipItem( Skooma  )
 
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
 
 		If (Utility.RandomInt( 0, 100 ) > 30)
 			Debug.Notification( "In a stupor you start dancing for no reason..." )
-			StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
- 			SendModEvent("PCSubEntertain") ; Dance
+			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+ 			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
  		EndIf
 
 	Else 
 		Debug.Notification( "..a cold bowl of soup." )
 		kSlave.AddItem( Potato, 1, True )
+		kSlave.EquipItem( Potato  )
 
 	EndIf
 

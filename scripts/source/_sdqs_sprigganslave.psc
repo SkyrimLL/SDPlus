@@ -156,6 +156,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
 		StorageUtil.SetFloatValue(none, "_SLH_fBreast", 0.8 ) 
 		StorageUtil.SetFloatValue(none, "_SLH_fWeight", 20.0 ) 
+		StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
 		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 			
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
@@ -301,6 +302,7 @@ Event OnUpdateGameTime()
 			StorageUtil.SetFloatValue(none, "_SLH_fBreast", Utility.RandomFloat(0.8, 1.4) ) 
 			StorageUtil.SetFloatValue(none, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
 			StorageUtil.SetFloatValue(none, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
+			StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
 			StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
 		EndIf
 

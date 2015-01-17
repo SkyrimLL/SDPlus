@@ -11,8 +11,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 Debug.Messagebox("You are grabbed by the collar and forcefully enslaved.")
 ; fctDialogue.StartPlayerRape( akSpeaker, "Rough")
 
-StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
-SendModEvent("PCSubEnslave")
+; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+akSpeaker.SendModEvent("PCSubEnslave")
 ;END CODE
 EndFunction
 ;END FRAGMENT

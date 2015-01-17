@@ -232,17 +232,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDKP_trust_feet.SetValue(0)
 		
 		If ( kCrimeFaction && !kMaster.IsInFaction( _SDFP_bountyhunter ) )
-			iGold -= kCrimeFaction.GetCrimeGold()
+			iGold = kCrimeFaction.GetCrimeGold()
 			iDemerits += Math.Ceiling( Math.abs(iGold) / 100 )
 			kCrimeFaction.PlayerPayCrimeGold( True, False )
 		EndIf
 
-		; Getting an error in log when I try to set a value to these two globals here 
-		; Commenting out for now
-
 		_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  - 100 + 50 * (kMaster.GetAV("confidence") as Int) )
 		_SDGVP_demerits_join.SetValue(  - 20 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) )
-
 		; Self.ModObjectiveGlobal( iGold, _SDGVP_buyoutEarned, 2, _SDGVP_buyout.GetValue() as Float, False, True, True )
 		; Self.ModObjectiveGlobal( iDemerits, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, True )
 		Utility.Wait(1.0)
@@ -253,6 +249,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		Utility.Wait(2.0)
 
 		fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
+
+		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
 		Int outfitID =	StorageUtil.GetIntValue(kMaster, "_SD_iOutfitID")
 
@@ -494,11 +492,11 @@ EndFunction
 Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = False, Bool bBelt = False, Bool bPlugAnal = False, Bool bPlugVaginal = False, Bool bArmbinder = False)
 
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
-		fPunishmentsLength = (bGag as Float) + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 5.0
+		fPunishmentsLength = (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
 		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int) + (bBlindfold as Int)
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * fPunishmentsLength)
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.05 * fPunishmentsLength)
 
 		
 		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )

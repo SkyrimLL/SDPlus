@@ -3,6 +3,7 @@ Scriptname _SDMES_bound extends activemagiceffect
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_slavery Property fctSlavery  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 ReferenceAlias Property _SDRAP_master  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto  
@@ -145,7 +146,7 @@ Event OnUpdate()
 				
 			EndIf
 
-			If ( kTarget.GetDistance( kMaster ) < fKneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) 
+			If ( kTarget.GetDistance( kMaster ) < fKneelingDistance ) && ( kTarget.GetAnimationVariableFloat("Speed") == 0 ) && (fctOutfit.isArmsEquippedKeyword( kTarget,  "_SD_DeviousEnslaved"  ) || fctOutfit.isArmsEquippedKeyword( kTarget,  "_SD_DeviousSanguine"  ) )
 
 				If ( (Utility.RandomInt( 0, 200 ) == 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )

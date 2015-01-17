@@ -18,7 +18,7 @@ Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference ak
 		iFormIndex -= 1
 		Form kForm = slaveEquipment[iFormIndex]
 
-		bDeviousDeviceEquipped = ( Game.GetPlayer().isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
+		bDeviousDeviceEquipped = ( Game.GetPlayer().isEquipped(kForm) && (!SexLab.IsStrippable(kForm) || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
 
 		If ( kForm && akIgnored && akIgnored.HasForm( kForm ) )
 			; continue
@@ -49,7 +49,7 @@ Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference ak
 		iFormIndex -= 1
 		Form kForm = akContainer.GetNthForm(iFormIndex)
 
-		bDeviousDeviceEquipped = ( Game.GetPlayer().isEquipped(kForm) && (kForm.HasKeywordString("SexLabNoStrip") || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
+		bDeviousDeviceEquipped = ( Game.GetPlayer().isEquipped(kForm) && (!SexLab.IsStrippable(kForm) || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
 
 		If ( kForm && akIgnored && akIgnored.HasForm( kForm ) ) || (uiTypes.Find( kForm.GetType() ) == 26)
 			; continue

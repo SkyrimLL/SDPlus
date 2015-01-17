@@ -33,8 +33,8 @@ Event OnUpdate()
 
 			If IButton == 0 ; Show the thing.
 				StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", Self)
-				SendModEvent("PCSubSex")
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", Self)
+				Self.SendModEvent("PCSubSex")
 			Else
 				StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iDom", StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iDom") + 1)
 				SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)

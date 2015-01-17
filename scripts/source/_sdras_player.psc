@@ -309,7 +309,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	If (funct._hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 		; Player hands are freed temporarily for sex
 
-		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (Utility.RandomInt(0,100) > 30)
+		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (Utility.RandomInt(0,100) > 30) && (actors.Length > 1) ; Exclude masturbation
 			fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
 			StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
 		EndIf
@@ -354,9 +354,12 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
 
 			; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
-		Else
-			If (Utility.RandomInt(0,100) > 90)
+
+		Else 
+			If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
 			; Chance player will keep armbinders after sex
+				Debug.Notification("Your hands remain free.. lucky you.")
+
 			ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 				fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
 				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
@@ -394,11 +397,17 @@ EndEvent
 
 
 Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kNewMaster = StorageUtil.GetFormValue( Game.GetPlayer() , "_SD_TempAggressor") as Actor
 	ObjectReference kNewMasterRef
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kNewMaster = kActor
+	EndIf
 		
 	Debug.Trace("[_sdras_player] Receiving 'spriggan enslave' event - New master: " + kNewMaster)
-
 
 	If (kNewMaster != None)  &&  fctFactions.checkIfSpriggan (  kNewMaster )
 		; new master
@@ -418,8 +427,15 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 EndEvent
 
 Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kNewMaster = StorageUtil.GetFormValue( Game.GetPlayer() , "_SD_TempAggressor") as Actor
 	Actor kCurrentMaster
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kNewMaster = kActor
+	EndIf
 		
 	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
@@ -439,6 +455,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 				EndIf
 			EndIf
 
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
 
 			While ( _SDQP_enslavement.IsStopping() )
@@ -462,10 +479,18 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 EndEvent
 
 Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kNewMaster = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
 	Actor kCurrentMaster
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kNewMaster = kActor
+	EndIf
 		
 	Debug.Trace("[_sdras_player] Receiving 'transfer slave' event - New master: " + kNewMaster)
+
 	If (kNewMaster)
 		Debug.Trace("[_sdras_player] Faction check: " + fctFactions.checkIfSlaver (  kNewMaster ) )
 	EndIf
@@ -484,6 +509,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 				EndIf
 			EndIf
 
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
 
 			While ( _SDQP_enslavement.IsStopping() )
@@ -537,8 +563,15 @@ Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 1.0, For
 EndEvent
 
 Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
 	; int storyID = _argc as Int
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kTempAggressor = kActor
+	EndIf
 
 	Debug.Trace("[_sdras_player] Receiving sex story event [" + _args  + "] [" + _argc as Int + "]")
 
@@ -572,8 +605,15 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 EndEvent
 
 Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
 	; int storyID = _argc as Int
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kTempAggressor = kActor
+	EndIf
 
 	; Debug.Notification("[_sdras_slave] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
 	Debug.Trace("[_sdras_player] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
@@ -607,7 +647,14 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 EndEvent
 
 Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kTempAggressor = kActor
+	EndIf
 
 	Debug.Trace("[_sdras_player] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
 
@@ -615,8 +662,15 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
 EndEvent
 
 Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
  
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kTempAggressor = kActor
+	EndIf
+
 	Debug.Trace("[_sdras_player] Receiving punish story event [" + _args  + "] [" + _argc as Int + "]")
 
 	If (kTempAggressor != None)
@@ -748,16 +802,16 @@ State monitor
 			iCountSinceLastCheck = 0
 
 			; Cooldown of slavery exposure when released
-			; If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
+			If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
 				Float fNewExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float) * (_SDGVP_config_slavery_level_mult.GetValue() as Float)
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
+			EndIf
 
-				StorageUtil.SetIntValue(kPlayer, "_SD_iGenderRestrictions",  _SDGVP_config[3].GetValue() as Int )
-				fctSlavery.UpdateSlaveryLevel(kPlayer) 
+			StorageUtil.SetIntValue(kPlayer, "_SD_iGenderRestrictions",  _SDGVP_config[3].GetValue() as Int )
+			fctSlavery.UpdateSlaveryLevel(kPlayer) 
 				
-				; Debug.Notification( "[SD] Player status - slavery exposure: " + StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure"))
-			; EndIf
+			; Debug.Notification( "[SD] Player status - slavery exposure: " + StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure"))
 		EndIf
 
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
@@ -969,6 +1023,7 @@ State monitor
 
 	Event OnMagicEffectApply(ObjectReference akCaster, MagicEffect akEffect)
 		; Old trigger - disabled for compatibility with Death Alternative
+		Actor kCaster = akCaster as Actor
  
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) && (akCaster!=Game.getPlayer())
 			StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender",0) 
@@ -977,22 +1032,24 @@ State monitor
 
 				Debug.Trace("[_sdras_player] Forced surrender on magic effect - Start enslavement")
 				Debug.Notification("You surrender to your aggressor...")
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
 
-				SendModEvent("PCSubEnslave") ; Enslavement
+				kCaster.SendModEvent("PCSubEnslave") ; Enslavement
 
 			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
 
 				Debug.Trace("[_sdras_player] Forced surrender on magic effect - Start transfer")
 				Debug.Notification("You submit to your new master...")
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akCaster as Actor)
 
-				SendModEvent("PCSubTransfer") ; Enslavement
+				kCaster.SendModEvent("PCSubTransfer") ; Enslavement
 			EndIf
 		EndIf
 	EndEvent
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
+		Actor kAggressor = akAggressor as Actor
+
 		; Debug.Notification("[_sdras_player] OnHit - Aggressor:" + akAggressor)
 
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) 
@@ -1002,17 +1059,17 @@ State monitor
 
 				Debug.Trace("[_sdras_player] Forced surrender on hit - Start enslavement")
 				Debug.Notification("You surrender to your aggressor...")
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
 
-				SendModEvent("PCSubEnslave") ; Enslavement
+				kAggressor.SendModEvent("PCSubEnslave") ; Enslavement
 
 			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
 
 				Debug.Trace("[_sdras_player] Forced surrender on hit - Start transfer")
 				Debug.Notification("You submit to your new master...")
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
 
-				SendModEvent("PCSubTransfer") ; Enslavement
+				kAggressor.SendModEvent("PCSubTransfer") ; Enslavement
 			EndIf
 		EndIf
 	EndEvent

@@ -11,10 +11,10 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 	Debug.Notification("You are mine now...")
 
 
-	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 1)
 
-	SendModEvent("PCSubEnslave")
+	akSpeaker.SendModEvent("PCSubEnslave")
 ;END CODE
 EndFunction
 ;END FRAGMENT

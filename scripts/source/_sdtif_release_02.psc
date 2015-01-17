@@ -23,10 +23,10 @@ If   (Utility.RandomInt(0,100)>60)
 Else
 	Debug.Notification("You are mine now...")
 
-	StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+	; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 	StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
-	SendModEvent("PCSubEnslave")
+	akSpeaker.SendModEvent("PCSubEnslave")
 EndIf
 ;END CODE
 EndFunction

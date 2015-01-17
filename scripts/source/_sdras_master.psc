@@ -123,12 +123,12 @@ Event OnDeath(Actor akKiller)
 
 			If (Utility.RandomInt(0,100)>60)
 				SendModEvent("PCSubFree")
-			Else
+			ElseIf (akKiller != kMaster)
 				Debug.Notification( "You are mine!" )
 				Debug.Trace("[_sdras_master] Start enslavement with:"  + akKiller)
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akKiller)
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akKiller)
 
-				SendModEvent("PCSubTransfer") ; Whipping
+				akKiller.SendModEvent("PCSubTransfer") ; Whipping
 			EndIf
 
 		EndIf
@@ -166,12 +166,13 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 		
 		If ( kMaster.GetCrimeFaction() )
 			iGold = kMaster.GetCrimeFaction().GetCrimeGold()
-			iDemerits = Math.Ceiling( iGold / 100 ) as Float
-		EndIf
+			; iDemerits = Math.Ceiling( iGold / 100 ) as Float
 
-		_SDDVP_buyoutEarned.Mod( 0 - iGold )
-		Debug.Notification( iGold + " deducted from the gold earned for your freedom." )
-		kMaster.GetCrimeFaction().PlayerPayCrimeGold( True, False )
+			; _SDDVP_buyoutEarned.Mod( 0 - iGold )
+			; Debug.Notification( iGold + " deducted from the gold earned for your freedom." )
+			kMaster.GetCrimeFaction().PlayerPayCrimeGold( True, False )
+
+		EndIf
 
 		Debug.Notification( "You will regret attacking me!" )
 		_SDSP_SelfShockEffect.Cast(kSlave as Actor)
@@ -315,7 +316,7 @@ State monitor
 		bTargetAllied = ( kCombatTarget && kCombatTarget != kMaster && fctFactions.actorFactionInList(kCombatTarget, _SDFLP_forced_allied) )
 		iCheckdemerits = _SDGVP_demerits.GetValueInt()
 		
-		If ( !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			Debug.Trace("[_sdras_master] Master dead or disabled - Stop enslavement")
 
 			; Self.GetOwningQuest().Stop()
@@ -581,25 +582,63 @@ State monitor
 	EndEvent
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-		If ( akAggressor == kSlave )
-			; Disabled for now - seems to conflict with other mods (cloak effect?)
-			; Handle attacks by slave differently
 
-			Return
+		ObjectReference PlayerRef = Game.GetPlayer()
+		Bool boHitByMagic = FALSE  ; True if likely hit by Magic attack.
+		Bool boHitByMelee = FALSE  ; True if likely hit by Melee attack.
+		Bool boHitByRanged = FALSE ; True if likely his by Ranged attack.
+		 
+		Weapon krHand = kSlave.GetEquippedWeapon()
+		Weapon klHand = kSlave.GetEquippedWeapon( True )
 
-			If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))
-				Debug.Notification( "There you are Slave... get your punishment, over here!" )
-				; add punishment
-				If ( _SDGVP_demerits.GetValueInt() > 20 )
-					; Whipping
-				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-				Else
-					; Punishment
-				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-				EndIf
+
+		IF (akAggressor == PlayerRef) ; && PlayerRef.IsInCombat() && akAggressor.IsHostileToActor(PlayerRef)
+
+			IF ((kSlave.GetEquippedItemType(0) == 8) || (kSlave.GetEquippedItemType(1) == 8) \
+				|| (kSlave.GetEquippedItemType(0) == 9) || (kSlave.GetEquippedItemType(1) == 9))  && akProjectile != None
+				boHitByMagic = TRUE
+
+			ELSEIF (kSlave.GetEquippedItemType(0) != 7) && (akProjectile == None) && ((kSlave.IsWeaponDrawn())) && (krHand || klHand)
+				boHitByMelee = TRUE
+
+			ELSEIF (kSlave.GetEquippedItemType(0) == 7) && (kSlave.IsWeaponDrawn()) && (krHand || klHand)
+				boHitByRanged = TRUE
+
+			ENDIF
+		ENDIF
+
+		If  ((boHitByMelee) || (boHitByRanged)) && (!boHitByMagic) ; (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))
+			Debug.Messagebox( "I will teach you to raise a weapon at me!" )
+
+			; Drop current weapon 
+			if(kSlave.IsWeaponDrawn())
+				kSlave.SheatheWeapon()
+				Utility.Wait(2.0)
+			endif
+
+			If ( krHand )
+			;	kSlave.DropObject( krHand )
+				kSlave.UnequipItem( krHand )
+			EndIf
+			If ( klHand )
+			;	kSlave.DropObject( klHand )
+				kSlave.UnequipItem( klHand )
 			EndIf
 
+			; add punishment
+			Int iRandomNum = Utility.RandomInt(0,100)
+
+			if (iRandomNum > 70)
+				; Whipping
+				enslavement.PunishSlave(kMaster,kSlave)
+			 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			Else
+				; Punishment
+				enslavement.PunishSlave(kMaster,kSlave)
+			 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			EndIf
 		EndIf
+
 	EndEvent
 EndState
 
