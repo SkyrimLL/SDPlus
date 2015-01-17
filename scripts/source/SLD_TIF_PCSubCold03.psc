@@ -21,8 +21,8 @@ Actor kSlave = game.GetPlayer()
 
 		If (Utility.RandomInt( 0, 100 ) > 80)
 			Debug.Notification( "In a stupor you start dancing for no reason..." )
-			StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
- 			SendModEvent("PCSubEntertain") ; Dance
+			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+ 			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
  		EndIf
 
 	ElseIf (randomVar >= 8  )
@@ -40,7 +40,7 @@ Actor kSlave = game.GetPlayer()
 		kSlave.EquipItem( _SD_SlaveRags, True, True )
 
 	Else
-		SendModEvent("PCSubSex") ; Sex
+		akSpeaker.SendModEvent("PCSubSex") ; Sex
 
 	EndIf
 

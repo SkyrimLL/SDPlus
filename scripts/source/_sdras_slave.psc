@@ -43,6 +43,7 @@ GlobalVariable Property _SDGVP_join_days  Auto
 GlobalVariable Property _SDGVP_can_join  Auto  
 GlobalVariable Property _SDGVP_work_start  Auto
 GlobalVariable Property _SDGVP_buyout  Auto
+GlobalVariable Property _SDGVP_isLeashON  Auto
 GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto  
 
 
@@ -125,6 +126,7 @@ ObjectReference kShackles
 ObjectReference kCollar
 ObjectReference kGag
 int iPlayerGender
+Actor kActor
 
 Float fRFSU = 0.5
 
@@ -309,6 +311,8 @@ State monitor
 		EndWhile
 
 		; Debug.Notification("[SD] Slave: Monitor")
+		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
+		; Debug.Notification("[SD] Punishment: " + fctOutfit.isPunishmentEquipped (  kSlave ) )
 
 		; Update slave status if needed 
 	 	daysPassed = Game.QueryStat("Days Passed")
@@ -334,6 +338,8 @@ State monitor
 			iGameDateLastCheck = daysPassed
 			iCountSinceLastCheck = 0
 			fctSlavery.UpdateStatusDaily( kMaster, kSlave)
+			kMaster.SendModEvent("SLDRefreshNPCDialogues")
+
 			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays", 0) + 1)
 
 			; Cooldown at end of day
@@ -363,6 +369,7 @@ State monitor
 		fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
 		fEnslavementDuration = fctSlavery.GetEnslavementDuration( kSlave)
 		StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavementDuration", fEnslavementDuration ) 
+		_SDGVP_isLeashON.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iEnableLeash") as Int )
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -476,8 +483,9 @@ State monitor
 				StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
 				fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
 
-				StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
-				SendModEvent("PCSubTransfer")
+				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
+				kActor = kSlaverDest as Actor
+				kActor.SendModEvent("PCSubTransfer")
 
                 Game.FadeOutGame(true, true, 0.5, 5)
 				(kSlave as ObjectReference).MoveTo( kSlaverDest )
@@ -643,12 +651,29 @@ State monitor
 	                Game.FadeOutGame(true, true, 0.5, 5)
 
 	                If (kSlave.GetParentCell() == kMaster.GetParentCell())
-						; Moving Slave to Master if in same cell
+
 						kSlave.MoveTo( kMaster )
 
-					Else
-						; Moving Master to Slave to allow the use of doors
-						kMaster.MoveTo( kSlave )
+	                Else
+	                	If ( (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) ) || ( (!kMaster.GetParentCell().IsInterior()) && (!kSlave.GetParentCell().IsInterior()) )
+
+	                		kMaster.MoveTo( kSlave )
+
+	                	ElseIf ( (kMaster.GetParentCell().IsInterior()) && (!kSlave.GetParentCell().IsInterior()) ) || ( (!kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) )
+
+	                		If  ( ( !kMaster.HasLOS( kSlave )) || ( kMaster.GetSleepState() != 0 )  ) && (Utility.RandomInt(0,100)>80)
+	                			; Small chance to get away with using door while punished if master is not paying attention
+	                			kMaster.MoveTo( kSlave )
+
+	                		ElseIf ( fctOutfit.isPunishmentEquipped (  kSlave ))
+	                			kSlave.MoveTo( kMaster )
+
+	                		Else 
+						 		kMaster.MoveTo( kSlave )
+
+						 	EndIf
+						EndIf						
+
 					EndIf						
 
 					Game.FadeOutGame(false, true, 2.0, 20)
@@ -658,8 +683,8 @@ State monitor
 					Debug.MessageBox( "After being choked by the collar, you wake up next to your owner." )
 
 
+					enslavement.PunishSlave(kMaster,kSlave)
 					If (!kMaster.IsDead()) && (!kMaster.IsInCombat())
-						enslavement.PunishSlave(kMaster,kSlave)
 						if (Utility.RandomInt(0,100)>50)
 							; Punishment
 							_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
@@ -738,20 +763,21 @@ State monitor
 				; Debug.Notification("[SD] Slave: Kneeling dist: " + fKneelingDistance )
 
 
-				If (fMasterDistance < fKneelingDistance)  && ( (fctOutfit.isArmorCuirassEquipped(kSlave) &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip")) ) || ( fctOutfit.isClothingBodyEquipped(kSlave) && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip")) )   
+				If (fMasterDistance < fKneelingDistance)  && ( (fctOutfit.isArmorCuirassEquipped(kSlave) &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip")) ) || ( fctOutfit.isClothingBodyEquipped(kSlave) && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip")) )  && ( fctOutfit.countRemovable ( kSlave ) > 0)
 
 					Debug.MessageBox("You are not allowed to wear clothing. Your owner rips it away from you.")
-					SexLab.ActorLib.StripActor(kSlave, DoAnimate= false)
+					SexLab.ActorLib.StripActor(kSlave, VictimRef = kSlave, DoAnimate= false)
 
 					; Welcome scene to replace rape after defeat
 					Int iRandomNum = Utility.RandomInt(0,100)
 
-					if (iRandomNum > 95)
+					if (iRandomNum > 90)
 						; Punishment
 						enslavement.PunishSlave(kMaster,kSlave)
 						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					ElseIf (iRandomNum > 90)
+					ElseIf (iRandomNum > 80)
 						; Whipping
+						enslavement.PunishSlave(kMaster,kSlave)
 						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 					ElseIf (iRandomNum > 70)
 						; Sex
@@ -759,15 +785,53 @@ State monitor
 					EndIf
 				EndIf
 
-
-
 				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
 					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 
-					Debug.Trace("[SD] _SD_iHandsFreeSex: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex"))
-					Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
-					Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
+					Debug.Notification("Your owner binds your hands again.")
+
+					; Debug.Trace("[SD] _SD_iHandsFreeSex: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex"))
+					; Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
+					; Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
+				EndIf
+
+				Weapon krHand = kSlave.GetEquippedWeapon()
+				Weapon klHand = kSlave.GetEquippedWeapon( True )
+
+				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && ((StorageUtil.GetIntValue(kSlave, "_SD_iEnableWeaponEquip") == 0)   || (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)) && (kSlave.IsWeaponDrawn() || krHand || klHand)
+
+					; Drop current weapon 
+					if(kSlave.IsWeaponDrawn())
+						kSlave.SheatheWeapon()
+						Utility.Wait(2.0)
+					endif
+
+					If ( krHand )
+					;	kSlave.DropObject( krHand )
+						kSlave.UnequipItem( krHand )
+					EndIf
+					If ( klHand )
+					;	kSlave.DropObject( klHand )
+						kSlave.UnequipItem( klHand )
+					EndIf
+
+					Debug.MessageBox("You are not allowed to use a weapon. Your owner rips it away from you.")
+
+					; Debug.Trace("[SD] _SD_iHandsFreeSex: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex"))
+					; Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
+					; Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
+					Int iRandomNum = Utility.RandomInt(0,100)
+
+					if (iRandomNum > 70)
+						; Punishment
+						enslavement.PunishSlave(kMaster,kSlave)
+						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+					ElseIf (iRandomNum > 50)
+						; Whipping
+						enslavement.PunishSlave(kMaster,kSlave)
+						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+					EndIf
 				EndIf
 
 			ElseIf ( GetCurrentRealTime() - fOutOfCellTime > fCalcOOCLimit )

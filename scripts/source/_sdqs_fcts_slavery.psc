@@ -290,6 +290,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 EndFunction
 
 function InitMasterDevices( Actor kMaster, Int iOutfit)
+	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
 
 	Debug.Trace("[SD] Init master devices - outfitID: " + iOutfit)
 
@@ -301,38 +302,56 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 
 	fctOutfit.registerDeviousOutfitsKeywords (  kMaster )
 
-	if (iOutfit == 0) ; Iron
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
+	if (iOutfit <= 2) 
+		If (masterPersonalityType == 0)
+			; 0 - Simple, Common
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,primitive") ; 6 - Plug Anal
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,primitive") ; 7 - Plug Vaginal
+
+		ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
+			; 4 - Gambler, 5 - Caring
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,iron") ; 6 - Plug Anal
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,iron") ; 7 - Plug Vaginal
+
+		ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
+			; 3 - Sadistic, 6 - Perfectionist
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,leather") ; 1 - Arms cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather") ; 2 - Legs cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness") ; 3 - Gag
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,soulgem") ; 6 - Plug Anal
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,soulgem") ; 7 - Plug Vaginal
+
+		ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
+			; 1 - Comfortable , 2 - Horny
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,strap") ; 3 - Gag
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,inflatable") ; 6 - Plug Anal
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,inflatable") ; 7 - Plug Vaginal
+		EndIf
+
 
 		; Harness disabled for now as it overlaps with collar
 		; StorageUtil.StringListAdd(Game.GetPlayer(), "_SD_lDevices", "harness,leather,black") ; 6 - Harness
 
-	Elseif (iOutfit == 1) ; Leather
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-
-	Elseif (iOutfit == 2) ; Random
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag") ; 3 - Gag
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold") ; 4 - Blindfold
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt") ; 5 - Belt
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
 	Else ; Other
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
@@ -343,6 +362,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
 		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
 	EndIf
+
 EndFunction
 
 function StopSlavery( Actor kMaster, Actor kSlave)
@@ -626,6 +646,7 @@ EndFunction
 ; automatic refresh - updateStatusDaily() - make duration configurable in MCM 
 function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	int slaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
+	Int exposure = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure")
 	Int masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
 	Int masterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
 	Int overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
@@ -799,15 +820,22 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
+		StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnableWeaponEquip", 0)
+	EndIf
+ 
+	if (masterDisposition <= 0)
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnableClothingEquip", 0)
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
 	EndIf
 
 	If fctFactions.checkIfFalmer (  kMaster ) 
 		; Falmers follow slave by default
+		StorageUtil.SetIntValue(kSlave,"_SD_iEnableLeash", 1)
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
 		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 100 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
 	EndIf
-
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
 
@@ -853,22 +881,23 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		statusTrust = "Trusting \n"
 	Endif
 	If (iDominance>=0)
-		statusDominance = "Dominant \n"
+		statusDominance = "Defiant \n"
 	Endif
 
 	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\nTrust: " + masterTrust
-	Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")")
+	Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + " (" + exposure + ")")
 
 	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
 
 	Debug.Trace("[SD] --- Slavery update" )
 	Debug.Trace("[SD] " + statusMessage)
+	Debug.Trace("[SD] Slavery level: " + slaveryLevel  + " (Exposure: " + exposure + ")")
 	Debug.Trace("[SD] iSexComplete: " + iSexComplete + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex") + " - Need: " + masterSexNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunishment") + " - Need: " + masterPunishNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood") + " - Need: " + masterFoodNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
-	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
+	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Personality Type: " + masterPersonalityType)
 	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition )
 	Debug.Trace("[SD] Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))

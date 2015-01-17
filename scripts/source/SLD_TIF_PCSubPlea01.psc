@@ -9,13 +9,13 @@ Actor akSpeaker = akSpeakerRef as Actor
 ; Debug.Notification("SLD: Sending story event [3]")
 
 Int randomNum = Utility.RandomInt(0, 100)
-StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
 
 If (randomNum > 50)
-	SendModEvent("PCSubEntertain", "Gangbang") ; Gang Bang
+	akSpeaker.SendModEvent("PCSubEntertain", "Gangbang") ; Gang Bang
 Else
-	SendModEvent("PCSubSex") ; Sex
+	akSpeaker.SendModEvent("PCSubSex") ; Sex
 EndIf
 ;END CODE
 EndFunction

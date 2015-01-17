@@ -14,11 +14,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 					Debug.MessageBox("Glowing fluids spread from the Falmer's skin across yours like quicksilver, making your breasts grow and tingle painfully with poisonous ripples. ")
 					breastMod = 0.5
 					weightMod = 15.0
+					StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
 
 				ElseIf (randomNum>80)
 					Debug.MessageBox("The purpose of the glowing substance is clear to you now, fattening you up for breeding and turning you into an irresistible beacon for the Falmers and their pets.")
 					breastMod = 0.25
 					weightMod = 10.0
+					StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
 
 				ElseIf (randomNum>40)
 					Debug.Notification("Your skin burns under glowing droplets.")

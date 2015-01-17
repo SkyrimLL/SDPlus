@@ -204,9 +204,9 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
 
 		Int randomNum = Utility.RandomInt(0, 100)
-		StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+		; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 
-		SendModEvent("PCSubSex") ; Sex
+		akSpeaker.SendModEvent("PCSubSex") ; Sex
 
 	Else
 		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
@@ -233,20 +233,20 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
 
 		Int randomNum = Utility.RandomInt(0, 100)
-		StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+		; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 
 		If (randomNum > 70)
 			Debug.Notification("Dance for us...")
-			SendModEvent("PCSubEntertain") ; Dance
+			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
 		ElseIf (randomNum > 50)
 			Debug.Notification("Show us what you can do...")
-			SendModEvent("PCSubEntertain", "Soloshow") ; Show
+			akSpeaker.SendModEvent("PCSubEntertain", "Soloshow") ; Show
 		ElseIf (randomNum > 30)
 			Debug.Notification("Help yourselves boys!...")
-			SendModEvent("PCSubEntertain", "Gangbang") ; Gang bang
+			akSpeaker.SendModEvent("PCSubEntertain", "Gangbang") ; Gang bang
 		Else
 			Debug.Notification("Get on your knees and lift up that ass of yours...")
-			SendModEvent("PCSubSex") ; Sex
+			akSpeaker.SendModEvent("PCSubSex") ; Sex
 		EndIf
 
 

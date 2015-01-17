@@ -3,21 +3,30 @@ Scriptname SLD_PlayerAlias extends ReferenceAlias
 ReferenceAlias Property PlayerAlias  Auto  
 SexLabFramework     property SexLab Auto
 
+SLD_QST_Reset Property _SLD_Reset Auto
+SLD_QST_Main Property _SLD_Main Auto
+
 Bool isPlayerEnslaved = False
 Bool isPlayerPregnant = False
 Bool isPlayerSuccubus = False
 
 Event OnPlayerLoadGame()
+	_SLD_Reset._maintenance()
+	
 	_maintenance()
 	_updateGlobals()
 EndEvent
 
 Function _maintenance()
+
+
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+	RegisterForModEvent("SLDRefreshNPCDialogues",   "OnSLDRefreshNPCDialogues")
+
 
 
 	isPlayerEnslaved = StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved") as Bool
@@ -137,6 +146,18 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	EndIf
 	
 EndEvent
+
+Event OnSLDRefreshNPCDialogues(String _eventName, String _args, Float _argc, Form _sender)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+ 	Actor kActor = _sender as Actor
+
+ 	if (kActor != None)
+ 		_SLD_Main.SetNPCDialogueState( kActor )
+	EndIf
+EndEvent
+
+
 
 int function iMin(int a, int b)
 	if (a<=b)

@@ -88,14 +88,64 @@ Import SKSE
 ;int Property kSlotMask60 = 0x40000000 AutoReadOnly
 ;int Property kSlotMask61 = 0x80000000 AutoReadOnly
 
-Bool Function isArmorRemovable ( Armor kArmor )
-	If ( !kArmor  )
+Bool Function isArmorRemovable ( Form kForm )
+	If ( !kForm  )
+	;	Debug.Trace("[SD] Armor: " + kForm )
 		Return False
 	EndIf
 
-	Return (!kArmor.HasKeywordString("_SD_nounequip")  && !kArmor.HasKeywordString("_SD_DeviousSpriggan")  && !kArmor.HasKeywordString("SOS_Underwear")  && !kArmor.HasKeywordString("SOS_Genitals") && !kArmor.HasKeywordString("_SLMC_MCdevice") && !kArmor.HasKeywordString("SexLabNoStrip") && !kArmor.hasKeywordString("zad_Lockable") && !kArmor.hasKeywordString("zad_deviousplug") && !kArmor.hasKeywordString("zad_DeviousArmbinder") )
+	Bool isLocked = (kForm.HasKeywordString("_SD_nounequip")  || kForm.HasKeywordString("_SD_DeviousSanguine")  || kForm.HasKeywordString("_SD_DeviousSpriggan") || kForm.HasKeywordString("SOS_Underwear")  || kForm.HasKeywordString("SOS_Genitals") || kForm.HasKeywordString("_SLMC_MCdevice") || !SexLab.IsStrippable(kForm) || kForm.HasKeywordString("zad_Lockable") )
+
+	Debug.Trace("[SD] Armor: " + kForm + " - " + kForm.GetNumKeywords())
+	; Debug.Trace("[SD] _SD_nounequip: " + kForm.HasKeywordString("_SD_nounequip") )
+	; Debug.Trace("[SD] _SD_DeviousSanguine: " + kForm.HasKeywordString("_SD_DeviousSanguine") )
+	; Debug.Trace("[SD] _SD_DeviousSpriggan: " + kForm.HasKeywordString("_SD_DeviousSpriggan") )
+	; Debug.Trace("[SD] SOS_Underwear: " + kForm.HasKeywordString("SOS_Underwear") )
+	; Debug.Trace("[SD] SOS_Genitals: " + kForm.HasKeywordString("SOS_Genitals") )
+	; Debug.Trace("[SD] _SLMC_MCdevice: " + kForm.HasKeywordString("_SLMC_MCdevice") )
+	Debug.Trace("[SD] SexLabNoStrip: " + kForm.HasKeywordString("SexLabNoStrip") )
+	Debug.Trace("[SD] NoStrip: " + SexLab.IsStrippable(kForm) )
+	; Debug.Trace("[SD] zad_Lockable: " + kForm.HasKeywordString("zad_Lockable") )
+	; Debug.Trace("[SD] VendorNoSale: " + kForm.HasKeywordString("VendorNoSale") )
+	Debug.Trace("[SD] isLocked: "+ isLocked)
+
+	Return !isLocked
 
 EndFunction
+
+Int Function countRemovable ( Actor akActor )
+	If ( !akActor || akActor.IsDead() )
+		Return -1
+	EndIf
+	
+	Int[] uiSlotMask = New Int[7]
+	uiSlotMask[0]  = 0x00000004 ;32
+	uiSlotMask[1]  = 0x00000008 ;33
+	uiSlotMask[2]  = 0x00000010 ;34
+	uiSlotMask[3]  = 0x00000080 ;37
+	uiSlotMask[4]  = 0x00000100 ;38
+	uiSlotMask[5]  = 0x00000200 ;39
+	uiSlotMask[6]  = 0x00001000 ;42
+
+
+	Int iRemovable = 0
+
+	Int iFormIndex = uiSlotMask.Length
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+
+		Armor kArmor = kForm as Armor
+		If ( kArmor && isArmorRemovable( kForm ) )
+			iRemovable += 1
+			Debug.Trace("[SD] Found removable: " + kArmor + " - slot index: " + iFormIndex)
+		EndIf
+	EndWhile	
+
+	Return iRemovable
+
+EndFunction
+
 
 Bool Function isWeaponRemovable ( Weapon kWeapon )
 	If ( !kWeapon  )
@@ -142,43 +192,20 @@ EndFunction
 
 Bool Function isPunishmentEquipped (  Actor akActor )
 
-	Int[] uiSlotMask = New Int[12]
-	uiSlotMask[0] = 0x00000008 ;33  Bindings / DD Armbinders
-	uiSlotMask[1] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) / Harness
-	uiSlotMask[2] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[3] = 0x02000000 ;55  DD Blindfold
-	uiSlotMask[4] = 0x00004000 ;44  DD Gags Mouthpieces
-	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts / Harness
-	uiSlotMask[6] = 0x00800000 ;53  DD Cuffs (Legs)
-	uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
-	uiSlotMask[8] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
-	uiSlotMask[9] = 0x00000004 ;32  Spriggan host
-	uiSlotMask[10]= 0x00100000 ;50  DD Gag Straps
-	uiSlotMask[11]= 0x01000000 ;54  DD Plugs (Vaginal)
+	Bool bDeviousDeviceEquipped = isGagEquipped(akActor) || isBlindfoldEquipped(akActor) || isBeltEquipped(akActor) || isPlugEquipped(akActor)
 
+	Return bDeviousDeviceEquipped
 
-	Int iFormIndex = uiSlotMask.Length
-	Bool bDeviousDeviceEquipped = False
-
-	While ( iFormIndex > 0 )
-		iFormIndex -= 1
-		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
-		If (kForm != None)
-			Armor kArmor = kForm  as Armor
-			bDeviousDeviceEquipped = (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_DeviousSpriggan")  || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_DeviousArmbinder")) 
-		Else
-			bDeviousDeviceEquipped = False
-		EndIf
-
-		If bDeviousDeviceEquipped
-			return True 
-		EndIf
-
-	EndWhile
-
-
-	Return False
 EndFunction
+
+Bool Function isRestraintEquipped (  Actor akActor )
+
+	Bool bDeviousDeviceEquipped = isCollarEquipped(akActor) || isBindingEquipped(akActor)
+
+	Return bDeviousDeviceEquipped
+
+EndFunction
+
 
 Bool Function isCollarEquipped (  Actor akActor )
 
@@ -374,7 +401,7 @@ Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = F
 			Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
 
 			Armor kArmor = kForm as Armor
-			If ( kArmor && isArmorRemovable( kArmor ) )
+			If ( kArmor && isArmorRemovable( kForm ) )
 				If ( bDrop )
 					akActor.DropObject(kArmor as Armor, 1 )
 				Else
@@ -400,7 +427,7 @@ Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = F
 			EndIf
 		EndIf
 		Armor kShield = akActor.GetEquippedShield()
-		If ( kShield && isArmorRemovable( kShield ) )
+		If ( kShield && isArmorRemovable( kShield as Form) )
 			If ( bDrop )
 				akActor.DropObject( kShield, 1 )
 			Else
@@ -518,7 +545,7 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 		If (kForm != None)
 			Armor kArmor = kForm  as Armor
 			Debug.Trace("[SD] SetOutfit: test zad_lockable for part " +  iOutfitPart + " - " + kForm.hasKeywordString("zad_Lockable") )
-			return (kForm.HasKeywordString("SexLabNoStrip") || kForm.HasKeywordString("_SD_DeviousSpriggan")  || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_deviousGag") || kForm.hasKeywordString("zad_DeviousArmbinder")  ) 
+			return (!SexLab.IsStrippable(kForm) || kForm.HasKeywordString("_SD_DeviousSpriggan")  || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_deviousGag") || kForm.hasKeywordString("zad_DeviousArmbinder")  ) 
 		Else
 			Debug.Trace("[SD] SetOutfit: test zad_lockable - nothing equipped for part " +  iOutfitPart )
 			Return False
@@ -740,6 +767,7 @@ Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = T
 
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
 	Actor kSlave = Game.GetPlayer() as Actor
+	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
 	String sDeviceTags
 
 	Armor ddArmorInventory
@@ -761,50 +789,41 @@ Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = T
 	; EndIf
 
 	; --------------------------------------------------------------------------------------------
-	If (iOutfitID == 0) ; Default outfit - Zaz slave items
+	If (iOutfitID <= 2) ; Default outfit - Zaz or DDi slave items based on personality type
 
 		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
 			; 0 - Collar - Zaz Iron Collar
-			ddArmorRendered = zazIronCollarRendered 
-			ddArmorInventory = zazIronCollar
-			ddArmorKeyword = libs.zad_DeviousCollar 
+
+			If (masterPersonalityType == 0)
+				; 0 - Simple, Common
+				ddArmorRendered = zazIronCollarRendered 
+				ddArmorInventory = zazIronCollar
+				ddArmorKeyword = libs.zad_DeviousCollar 
+
+			ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
+				; 4 - Gambler, 5 - Caring
+				ddArmorRendered = DDiCuffLeatherCollarRendered
+				ddArmorInventory = DDiCuffLeatherCollar
+				ddArmorKeyword = libs.zad_DeviousCollar 
+
+			ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
+				; 3 - Sadistic, 6 - Perfectionist
+				ddArmorRendered = DDiPostureSteelCollarRendered
+				ddArmorInventory = DDiPostureSteelCollar
+				ddArmorKeyword = libs.zad_DeviousCollar 
+
+			ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
+				; 1 - Comfortable , 2 - Horny
+				ddArmorRendered = zazLeatherCollarRendered
+				ddArmorInventory = zazLEatherCollar
+				ddArmorKeyword = libs.zad_DeviousCollar 
+			EndIf
 
 			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
 		Else
 			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
 
 		EndIf
-
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 1) ; Wealthy outfit - Devious slave items - Leather + Iron cuffs
-
-		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
-			; 0 - Collar - DD Posture Leather Collar
-			ddArmorRendered = DDiCuffLeatherCollarRendered
-			ddArmorInventory = DDiCuffLeatherCollar
-			ddArmorKeyword = libs.zad_DeviousCollar 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		Else
-			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True )
-		EndIf
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 2) ; Very Wealthy outfit  - Devious slave items - Steel + Armbinders
-
-		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
-			; 0 - Collar - DD Posture Steel Collar
-			ddArmorRendered = DDiPostureSteelCollarRendered
-			ddArmorInventory = DDiPostureSteelCollar
-			ddArmorKeyword = libs.zad_DeviousCollar 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		Else
-			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
-
-		EndIf
-
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfitID == 3) ; Primitive outfit - Ropes only (Forsworn, Giants, Hagravens)
@@ -1164,24 +1183,30 @@ Function clearDevicesForEnslavement()
 EndFunction
 
 Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
+	Actor kPlayer = Game.getPlayer() as Actor
+	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 
-	If (bDevPlugAnal)
-		Debug.MessageBox("An anal plug is viciously forced inside you." )
+	If (bDevPlugAnal)  
+		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
 			
+		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
+		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
-	If (bDevPlugVaginal)
-		Debug.MessageBox("A plug fills you with harsh, cold metal." )
+	If (bDevPlugVaginal) && (playerGender==1)
+		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly as he shoves a cold plug into your abused womb." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
-			
+		
+		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
+		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	; Belt
-	If (bDevBelt)
-		Debug.MessageBox("A dreadful chastity belt locks around your waist." )
+	If (bDevBelt)  
+		Debug.MessageBox("'Let's watch you squirm... that will change me from your attitude.'\n Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
 		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
@@ -1189,7 +1214,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 
 	; Blinds
 	If (bDevBlindfold)
-		Debug.MessageBox("A blindfold covers your eyes, leaving you helpless." )
+		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
 		setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
@@ -1198,7 +1223,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	; Gag
 
 	If (bDevGag)
-		Debug.MessageBox("A gag fills your mouth and muffles your screams." )
+		Debug.MessageBox("'I don't want to hear one more word from you!'\n Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
 		setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
@@ -1208,19 +1233,25 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 EndFunction
 
 Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
+	Actor kPlayer = Game.getPlayer() as Actor
+	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 
 	If (bDevPlugAnal)
-		Debug.MessageBox("The anal plug is removed, making you feel sore and empty." )
+		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
 			
+		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
+		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	If (bDevPlugVaginal)
 		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
+		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
+		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 	; Belt
@@ -1263,6 +1294,7 @@ Keyword Property ArmorCuirass  Auto
 Keyword Property ClothingBody  Auto  
 
 zadLibs Property libs Auto
+SexLabFrameWork Property SexLab Auto
 
 Armor Property DDiPostureSteelCollarRendered Auto         ; Internal Device
 Armor Property DDiPostureSteelCollar Auto        	       ; Inventory Device
@@ -1270,6 +1302,8 @@ Armor Property DDiPostureSteelCollar Auto        	       ; Inventory Device
 Armor Property DDiCuffLeatherCollarRendered Auto         ; Internal Device
 Armor Property DDiCuffLeatherCollar Auto        	       ; Inventory Device
  
+Armor Property zazLeatherCollarRendered Auto         ; Internal Device
+Armor Property zazLeatherCollar Auto        	       ; Inventory Device
 Armor Property zazIronCollarRendered Auto         ; Internal Device
 Armor Property zazIronCollar Auto        	       ; Inventory Device
 Armor Property zazIronCuffsRendered Auto         ; Internal Device

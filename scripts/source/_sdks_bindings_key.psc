@@ -19,6 +19,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 ;		funct.removeItemsInList( kContainer, _SDFLP_punish_items )
 
 		Debug.Trace("[_sdks_bindings_key] Master key - Stop enslavement")
+		StorageUtil.SetIntValue(kContainer, "_SD_iHandsFree", 1)
 
 
 		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isArmsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isArmsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
@@ -49,18 +50,14 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 			Debug.MessageBox("The key works on bindings but without an enchanted enslavement collar bound to a master, it is useless on your collar and immediately crumbles into dust.")
 		EndIf
 
-		Int keyCount = Game.GetPlayer().GetItemCount( _SD_MasterKey as Form )
-		Game.GetPlayer().RemoveItem(_SD_MasterKey, keyCount)
-
 		If (StorageUtil.GetIntValue(kContainer, "_SD_iEnslaved") == 1)
 			SendModEvent("PCSubFree")		
 
 			_SDSP_freedom.RemoteCast( akNewContainer, kContainer, kContainer )
 		EndIf
 
-
-
-
+		Int keyCount = Game.GetPlayer().GetItemCount( _SD_MasterKey as Form )
+		Game.GetPlayer().RemoveItem(_SD_MasterKey, keyCount)
 
 	EndIf	
 EndEvent

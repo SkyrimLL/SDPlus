@@ -14,14 +14,14 @@ Int IButton = _SD_rapeMenu.Show()
 If IButton == 0 ; Show the thing.
 
 Int randomNum = Utility.RandomInt(0, 100)
-StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 
 If (randomNum > 70)
-	SendModEvent("PCSubPunish") ; Punishment
+	akSpeaker.SendModEvent("PCSubPunish") ; Punishment
 ElseIf (randomNum > 30)
-	SendModEvent("PCSubWhip") ; Whipping
+	akSpeaker.SendModEvent("PCSubWhip") ; Whipping
 Else
-	SendModEvent("PCSubSex") ; Sex
+	akSpeaker.SendModEvent("PCSubSex") ; Sex
 EndIf
 
 	; Just sex

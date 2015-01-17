@@ -209,6 +209,7 @@ State SleepingSideway
 
 	Event OnKeyDown(Int KeyCode)
 		; Debug.Notification("Pressed key in sleep mode")
+		self.Dispel()
 	EndEvent
 	
 	Event OnEndState()
