@@ -45,9 +45,13 @@ Function Maintenance()
 	    Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
 	EndIf
 
-	If fVersion < 3.20141213 ; <--- Edit this value when updating
-		fVersion = 3.20141213; and this
-		Debug.Notification("Updating to SD+ version: " + fVersion)
+	; 3.201412
+	; Debug.Notification("Running SD+ version: " + fVersion as Int)
+
+	If fVersion < 2015012502 ; <--- Edit this value when updating
+		fVersion = 2015012502; and this
+		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
+		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
 		; Update Code
 
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )

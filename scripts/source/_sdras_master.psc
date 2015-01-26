@@ -169,6 +169,12 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 			; iDemerits = Math.Ceiling( iGold / 100 ) as Float
 
 			; _SDDVP_buyoutEarned.Mod( 0 - iGold )
+			If (iGold > _SDDVP_buyoutEarned.GetValue() )
+				_SDDVP_buyoutEarned.SetValue(0)
+			Else
+				_SDDVP_buyoutEarned.Mod( 0 - iGold )
+			EndIf
+
 			; Debug.Notification( iGold + " deducted from the gold earned for your freedom." )
 			kMaster.GetCrimeFaction().PlayerPayCrimeGold( True, False )
 
@@ -179,10 +185,12 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 		
 		; Punishment
 		If (RandomInt(0,10)> 5)
-			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			kMaster.SendModEvent("PCSubPunish") 
 		Else
 			; Whipping
-			_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			kMaster.SendModEvent("PCSubWhip") 
 		EndIf
 		Wait(1.0)
 		enslavement.PunishSlave(kMaster,kSlave)
@@ -238,13 +246,19 @@ Event OnInit()
 	if (iRandomNum > 85)
 		; Punishment
 		enslavement.PunishSlave(kMaster,kSlave)
-		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		;;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		kMaster.SendModEvent("PCSubPunish") 
+
 	ElseIf (iRandomNum > 70)
 		; Whipping
-		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+		kMaster.SendModEvent("PCSubWhip") 
+
 	ElseIf (iRandomNum > 50)
 		; Sex
-		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+		kMaster.SendModEvent("PCSubSex") 
+
 	EndIf
 		
 	If ( Self.GetOwningQuest() )
@@ -422,8 +436,12 @@ State monitor
 				; kSlave.PlayAnimation("ZazAPC055");Inte
 				; Wait(1.0)
 				Debug.Notification( "You will regret this!" )
-				; Whipping
-					_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
+				; Punishment
+				;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
+				fctConstraints.actorCombatShutdown( kSlave )
+				fctConstraints.actorCombatShutdown( kMaster )
+				enslavement.PunishSlave(kMaster,kSlave)
+				kMaster.SendModEvent("PCSubPunish") 
 
 			ElseIf (Utility.RandomInt(0,100)>90) ; chance of attack failing and slave punished
 				fctConstraints.actorCombatShutdown( kSlave )
@@ -431,20 +449,23 @@ State monitor
 
 				If ( bSlaveDetectedByMaster )
 					; Self.GetOwningQuest().ModObjectiveGlobal( 10.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-					Wait(0.5)
-					kSlave.PlayAnimation("ZazAPC055");Inte
-					Wait(1.0)
+					; Wait(0.5)
+					; kSlave.PlayAnimation("ZazAPC055");Inte
+					; Wait(1.0)
 					Debug.Notification( "Your owner pushes you down to your knees!" )
-					; Whipping
-						_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+					; Punish
+					;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+					enslavement.PunishSlave(kMaster,kSlave)
+					kMaster.SendModEvent("PCSubPunish") 
 				EndIf
 
 				If ( bSlaveDetectedByTarget )
 					Debug.Notification( "Your owner wouldn't like that!" )
 					; Whipping
-					kSlave.PlayAnimation("ZazAPC055");Inte
-					Wait(0.5)
-					_SDKP_sex.SendStoryEvent(akRef1 = kCombatTarget, akRef2 = kSlave, aiValue1 = 5 )
+					; kSlave.PlayAnimation("ZazAPC055");Inte
+					; Wait(0.5)
+					; _SDKP_sex.SendStoryEvent(akRef1 = kCombatTarget, akRef2 = kSlave, aiValue1 = 5 )
+					kMaster.SendModEvent("PCSubWhip") 
 				EndIf
 			EndIf
 
@@ -460,10 +481,12 @@ State monitor
 				; add punishment
 				If ( _SDGVP_demerits.GetValueInt() > 20 )
 					; Whipping
-				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+				 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+				 	kMaster.SendModEvent("PCSubWhip") 
 				Else
 					; Punishment
-				 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+				 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+				 	kMaster.SendModEvent("PCSubPunish") 
 				EndIf
 			EndIf
 
@@ -561,7 +584,7 @@ State monitor
 				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
 				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
 
-				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
+				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, False, True )
 
 				If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 					Debug.Notification("Good slave... keep it coming.")
@@ -569,6 +592,8 @@ State monitor
 				ElseIf (fGoldEarned > 0)
 					Debug.Notification("That's right.")
 					Debug.Notification("You don't have a use for gold anymore.")
+				ElseIf (fGoldEarned == 0)
+					Debug.Notification("What is this junk!?.")
 				EndIf
 
 				; TO DO - Master reaction if slave reaches buyout amount
@@ -631,11 +656,13 @@ State monitor
 			if (iRandomNum > 70)
 				; Whipping
 				enslavement.PunishSlave(kMaster,kSlave)
-			 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			 	kMaster.SendModEvent("PCSubWhip") 
 			Else
 				; Punishment
 				enslavement.PunishSlave(kMaster,kSlave)
-			 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			 	kMaster.SendModEvent("PCSubPunish") 
 			EndIf
 		EndIf
 

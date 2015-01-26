@@ -24,14 +24,22 @@ If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) &&  (SexLab.ValidateActor(akS
 
 		if (randomVar > 8)
 			; Start irresistible dance
-			_SDKP_sex.SendStoryEvent(akLoc = (akRef2 as ObjectReference).GetCurrentLocation(), akRef1 = akRef1, akRef2 = akRef2, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
+			; _SDKP_sex.SendStoryEvent(akLoc = (akRef2 as ObjectReference).GetCurrentLocation(), akRef1 = akRef1, akRef2 = akRef2, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
+			akSpeaker.SendModEvent("PCSubEntertain")
+
 		ElseIf  (randomVar > 6)
 			Debug.Notification( "The roots force your legs open ..." )
-			sslThreadModel Thread = SexLab.NewThread()
-			Thread.AddActor(akRef2) ; // IsVictim = true
-			Thread.AddActor(akRef1 )
-			Thread.SetAnimations(SexLab.GetAnimationsByTags(2, "Sex"))
-			Thread.StartThread()
+			randomVar = Utility.RandomInt( 0,100 )
+			If (randomVar > 50)
+				; Debug.Notification("Show us what you can do...")
+				akSpeaker.SendModEvent("PCSubEntertain", "Soloshow") ; Show
+			ElseIf (randomVar > 30)
+				; Debug.Notification("Help yourselves boys!...")
+				akSpeaker.SendModEvent("PCSubEntertain", "Gangbang") ; Gang bang
+			Else
+				; Debug.Notification("Get on your knees and lift up that ass of yours...")
+				akSpeaker.SendModEvent("PCSubSex") ; Sex
+			EndIf
 		Else 
 			Debug.Notification( "The sweet scent is overwhelming..." )
 			sslThreadModel Thread = SexLab.NewThread()

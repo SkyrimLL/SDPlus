@@ -30,8 +30,21 @@ Actor kSlave = game.GetPlayer()
 		kSlave.AddItem( Ale, 1, True )
 		kSlave.EquipItem( Ale, True, True )
 
+		If (Utility.RandomInt(0,100)>40)
+			kSlave.AddItem( CureDiseases, 1, True )
+			kSlave.EquipItem( CureDiseases, True, True )
+		Endif
+
+		If (Utility.RandomInt(0,100)>70)
+			kSlave.AddItem( CurePoison, 1, True )
+			kSlave.EquipItem( CurePoison, True, True )
+		endif
+
 	Else
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
+
+		kSlave.AddItem( Ale, 1, True )
+		kSlave.EquipItem( Ale, True, True )
 
 	EndIf
 
@@ -49,3 +62,7 @@ SPELL Property DrunkEffect  Auto
 Potion Property Ale  Auto  
 
 Potion Property Skooma  Auto  
+
+Potion Property CureDiseases  Auto  
+
+Potion Property CurePoison  Auto  

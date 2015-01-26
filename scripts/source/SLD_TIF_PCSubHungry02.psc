@@ -26,9 +26,15 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	Else 
-		Debug.Notification( "..a cold bowl of soup." )
-		kSlave.AddItem( Potato, 1, True )
-		kSlave.EquipItem( Potato  )
+		If (StorageUtil.GetIntValue( kSlave, "_SD_iSlaveryLevel") <=3 )
+			Debug.Notification( "..a cold bowl of soup." )
+			kSlave.AddItem( Potato, 1, True )
+			kSlave.EquipItem( Potato )
+		else
+			Debug.Notification( "..a plate of greasy meat." )
+			kSlave.AddItem( Beef, 1, True )
+			kSlave.EquipItem( Beef )
+		endif
 
 	EndIf
 
@@ -46,3 +52,5 @@ SPELL Property DrunkEffect  Auto
 Potion Property Potato Auto  
 
 Potion Property Skooma  Auto  
+
+Potion Property Beef  Auto  

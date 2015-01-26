@@ -2,36 +2,21 @@
 ;NEXT FRAGMENT INDEX 52
 Scriptname _sdsf_snp_05 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(5)
-
-Debug.Notification("You wince as the sight of the whip.")
-
-Actor female = _SDRAP_female.GetReference() as Actor
-ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
-
-; marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
-
-; Game.EnablePlayerControls( abMovement = True )
-If (StorageUtil.GetIntValue(female, "_SD_iDisablePlayerMovementWhipping") == 1)
-	Game.DisablePlayerControls( abMovement = true )
-EndIf
-; Game.SetPlayerAIDriven( False )
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
 Debug.Notification("The whip leaves your skin on fire.")
 
+Actor female = _SDRAP_female.GetReference() as Actor
+
+
 ; Game.EnablePlayerControls( abMovement = True )
 ; Game.SetPlayerAIDriven( False )
+
+If (StorageUtil.GetIntValue(female, "_SD_iDisablePlayerMovementWhipping") == 1)
+	Game.EnablePlayerControls( abMovement = True )
+EndIf
 
 _SDGVP_snp_busy.SetValue(-1)
 ; Self.GetowningQuest().Stop()
@@ -50,7 +35,7 @@ snp._SDUIP_phase = 1
 ; Debug.Notification("[whipping] phase =" + snp._SDUIP_phase)
 
 ObjectReference slaveREF = _SDRAP_female.GetReference()
-Debug.SendAnimationEvent(slaveREF , "ZazAPC055")
+; Debug.SendAnimationEvent(slaveREF , "ZazAPC055")
 ; utility.wait(55)
 
 ObjectReference female = _SDRAP_female.GetReference() as ObjectReference
@@ -60,6 +45,28 @@ ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 ; slaveREF.PlayAnimation("ZazAPC055");Inte
 
 utility.wait(7);Inte
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(5)
+
+Debug.Notification("You wince as the sight of the whip.")
+
+Actor female = _SDRAP_female.GetReference() as Actor
+ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
+
+; marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
+
+; Game.EnablePlayerControls( abMovement = True )
+If (StorageUtil.GetIntValue(female, "_SD_iDisablePlayerMovementWhipping") == 1)
+	Game.DisablePlayerControls( abMovement = true )
+EndIf
+; Game.SetPlayerAIDriven( False )
 ;END CODE
 EndFunction
 ;END FRAGMENT

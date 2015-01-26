@@ -11,10 +11,10 @@ Event OnPlayerLoadGame()
 	;	_SD_Enslavement._Maintenance()
 	; EndIf	
 
-	; Debug.Notification("[_sdras_load] Calling local maintenance")
+	Debug.Trace("[_sdras_load] Calling _sd_player maintenance")
 	_SD_Player._Maintenance()
 
-	; Debug.Notification("[_sdras_load] Calling version check")
+	Debug.Trace("[_sdras_load] Calling version check")
 	_reset.Maintenance()
 
 EndEvent

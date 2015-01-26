@@ -17,8 +17,9 @@ akSpeaker.SetAV( "Confidence", 3)
 _SDGVP_state_joined.SetValue( 1 )
 SendModEvent("PCSubFree")
 
+
 ObjectReference kPlayerStorage = _SDRAP_playerStorage.GetReference()
-kPlayerStorage .RemoveAllItems(akTransferTo = akSpeaker, abKeepOwnership = True)
+kPlayerStorage.RemoveAllItems(akTransferTo = akSpeaker, abKeepOwnership = True)
 
 akSpeaker.ShowGiftMenu(False, None, True, False)
 ;END CODE

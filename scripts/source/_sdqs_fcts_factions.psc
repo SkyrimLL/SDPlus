@@ -11,6 +11,13 @@ FormList Property _SDFLP_banned_actors  Auto
 
 Bool Function checkIfSlaver ( Actor akActor )
 	Int  playerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
+	Actor akPlayer = Game.getPlayer() as Actor
+
+	If (akActor == akPlayer)
+		Debug.Notification("[SD] Slaver is Player!" )
+		return False
+	EndIf
+
 	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) && (playerGender == 1) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 
 	; Debug.Trace("[SD] Enslavement check - " + akActor)

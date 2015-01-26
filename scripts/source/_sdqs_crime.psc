@@ -46,24 +46,24 @@ Event OnStoryCrimeGold(ObjectReference akVictim, ObjectReference akCriminal, For
 		fctConstraints.actorCombatShutdown( kSlave )
 		
 		storyStartTime = GetCurrentRealTime()
-
-		; While ( _SDGVP_state_playerRagdoll.GetValueInt() == 1 )
-		;	; pause for startup and ragdolling to end for 30 sec.
-		;	If ( GetCurrentRealTime() - storyStartTime > 30.0 )
-		;		Self.Stop()
-		;	EndIf
-		; EndWhile
 		
 		Float iDemerits = Math.Ceiling( aiGoldAmount / 10 ) as Float
-		_SDQP_enslavement.ModObjectiveGlobal( iDemerits, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
+		; _SDQP_enslavement.ModObjectiveGlobal( iDemerits, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 		If ( !kMaster.IsInFaction( _SDFP_bountyhunter ) )
-			_SDDVP_buyoutEarned.Mod( 0 - aiGoldAmount )
+			If (aiGoldAmount > _SDDVP_buyoutEarned.GetValue() )
+				_SDDVP_buyoutEarned.SetValue(0)
+			Else
+				_SDDVP_buyoutEarned.Mod( 0 - aiGoldAmount )
+			EndIf
+			
 			Debug.Notification( aiGoldAmount + " deducted from the gold earned for your freedom." )
 			( akFaction as Faction ).PlayerPayCrimeGold( True, False )
 		EndIf
 
-		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		SendModEvent("SDPunishSlave")
+		kMaster.SendModEvent("PCSubPunish")
 	EndIf
 	Stop()
 	Reset()

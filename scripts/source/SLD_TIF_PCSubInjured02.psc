@@ -33,6 +33,16 @@ Actor kSlave = game.GetPlayer()
 		Debug.Notification( "..some potion!" )
 		kSlave.AddItem( Ale, 1, True )
 		kSlave.EquipItem( Ale, True, True )
+
+		If (Utility.RandomInt(0,100)>40) 
+			kSlave.AddItem( CureDiseases, 1, True )
+			kSlave.EquipItem( CureDiseases, True, True )
+		Endif
+
+		If (Utility.RandomInt(0,100)>70)
+			kSlave.AddItem( CurePoison, 1, True )
+			kSlave.EquipItem( CurePoison, True, True )
+		endif
 	EndIf
 
 ;	While ( Utility.IsInMenuMode() )
@@ -49,3 +59,7 @@ SPELL Property DrunkEffect  Auto
 Potion Property Ale  Auto  
 
 Potion Property Skooma  Auto  
+
+Potion Property CureDiseases  Auto  
+
+Potion Property CurePoison  Auto  

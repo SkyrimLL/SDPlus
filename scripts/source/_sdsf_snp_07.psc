@@ -1,6 +1,30 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 147
+;NEXT FRAGMENT INDEX 153
 Scriptname _sdsf_snp_07 Extends Scene Hidden
+
+;BEGIN FRAGMENT Fragment_95
+Function Fragment_95()
+;BEGIN CODE
+snp._SDUIP_phase = 4
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
+; slaveREF.PlayAnimation("IdleSilentBow");Inte
+Utility.Wait(0.5)
+Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_69
+Function Fragment_69()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+;END CODE
+EndFunction
+;END FRAGMENT
 
 ;BEGIN FRAGMENT Fragment_89
 Function Fragment_89()
@@ -8,7 +32,7 @@ Function Fragment_89()
 ObjectReference slaveREF = _SDRAP_female.GetReference()
 ; Debug.SendAnimationEvent(slaveREF , "ZazAPC056")
 	
-; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
 
 
 If ( _SDRAP_male )
@@ -33,44 +57,6 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-Actor female = _SDRAP_female.GetReference() as Actor
-
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(7)
-
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-
-if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
-	Debug.Notification("Your owner forces you to dance...")
-Else
-	Debug.Notification("You slowly start to dance...")
-EndIf
-
-		Debug.SendAnimationEvent(female, "Unequip")
-		Debug.SendAnimationEvent(female, "UnequipNoAnim")
-
-		; Drop current weapon 
-		if(female.IsWeaponDrawn())
-			female.SheatheWeapon()
-			Utility.Wait(2.0)
-		endif
- 
-
-Game.ForceThirdPerson()
-; libs.SetAnimating(Game.GetPlayer(), true)
-
-
-if (fctOutfit.isArmbinderEquipped( female ))
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
-	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_71
 Function Fragment_71()
 ;BEGIN CODE
@@ -89,48 +75,27 @@ snp._SDUIP_phase = 2
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
 
 ObjectReference slaveREF = _SDRAP_female.GetReference()
-; Debug.Notification("[dance] testing idle  SDFNISc500"  ) 
- 	Debug.SendAnimationEvent(slaveREF , "SDFNISc500")
+Actor kPlayer = Game.GetPlayer()
+Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+Int iRandomNum = Utility.RandomInt(0,100)
 
-Int RandomNum = Utility.RandomInt(0,2)
-
-RandomNum = -1    ; Disabled for now.Testing if action idles are working again
-
-If (RandomNum == 0)
-	Debug.SendAnimationEvent(slaveREF , "SDFNISc500") ; 		 			
-ElseIf (RandomNum == 1)
-	Debug.SendAnimationEvent(slaveREF , " SDFNISc502") ;  		 											
-ElseIf (RandomNum == 2)
-	Debug.SendAnimationEvent(slaveREF , " SDFNISc504") ;  		 												
-EndIf
-
-; utility.wait(10)
-
-; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_95
-Function Fragment_95()
-;BEGIN CODE
-snp._SDUIP_phase = 4
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-;Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
-slaveREF.PlayAnimation("IdleSilentBow");Inte
-Utility.Wait(0.5)
-; Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_69
-Function Fragment_69()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+If (playerGender ==1)
+	if (iRandomNum >70)
+		Debug.SendAnimationEvent(slaveREF , "SD_SweetDevil")
+	elseif (iRandomNum >50)
+		Debug.SendAnimationEvent(slaveREF , "SDFNISc500")
+	elseif (iRandomNum >40)
+		Debug.SendAnimationEvent(slaveREF , "SDFNISc501")
+	elseif (iRandomNum >30)
+		Debug.SendAnimationEvent(slaveREF , "SDFNISc502")
+	elseif (iRandomNum >20)
+		Debug.SendAnimationEvent(slaveREF , "SDFNISc503")
+	else
+		Debug.SendAnimationEvent(slaveREF , "SDFNISc504")
+	endif
+else
+	Debug.SendAnimationEvent(slaveREF , "SDFNISc502")
+Endif
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -180,6 +145,44 @@ Debug.Notification("Wait while they take their turns on you.")
 
 Game.EnablePlayerControls( abMovement = True )
 Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+Actor female = _SDRAP_female.GetReference() as Actor
+
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(7)
+
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+
+if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
+	Debug.Notification("Your owner forces you to dance...")
+Else
+	Debug.Notification("You slowly start to dance...")
+EndIf
+
+		Debug.SendAnimationEvent(female, "Unequip")
+		Debug.SendAnimationEvent(female, "UnequipNoAnim")
+
+		; Drop current weapon 
+		if(female.IsWeaponDrawn())
+			female.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+ 
+
+Game.ForceThirdPerson()
+; libs.SetAnimating(Game.GetPlayer(), true)
+
+
+if (fctOutfit.isArmbinderEquipped( female ))
+	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

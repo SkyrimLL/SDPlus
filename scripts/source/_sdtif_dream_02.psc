@@ -7,7 +7,8 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification("Sanguine pulls you to him")
-_SDKP_sex.SendStoryEvent(akRef1 = akSpeaker, akRef2 = akSpeaker.GetDialogueTarget(), aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, 4 ) )
+; _SDKP_sex.SendStoryEvent(akRef1 = akSpeaker, akRef2 = akSpeaker.GetDialogueTarget(), aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, 4 ) )
+akSpeaker.SendModEvent("PCSubSex")
 ;END CODE
 EndFunction
 ;END FRAGMENT

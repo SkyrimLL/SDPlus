@@ -328,7 +328,16 @@ Function positionVictims( Int aiStage )
 	kSanguine.QueueNiNodeUpdate()
 	Utility.Wait(2.0)	
 
+	; Random welcome scene
+	Int randomNum = Utility.RandomInt(0, 100)
 
+	If (randomNum > 80)
+		kSanguine.SendModEvent("PCSubPunish") ; Punishment
+	ElseIf (randomNum > 70)
+		kSanguine.SendModEvent("PCSubEntertain", "Gangbang") ; Gang Bang
+	ElseIf (randomNum > 60)
+		kSanguine.SendModEvent("PCSubSex") ; Sex
+	EndIf
 
 EndFunction
  

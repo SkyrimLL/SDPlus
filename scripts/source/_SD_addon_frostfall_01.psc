@@ -12,7 +12,11 @@ heatsources = Game.GetFormFromFile(0x0000D019, "chesko_frostfall.esp") As FormLi
 
 mortality   = Game.GetFormFromFile(0x000BBF59, "sanguinesDebauchery.esp") As GlobalVariable
 
-Debug.Notification("SD Frostfall: adding heatsources ")
+; Debug.Notification("[SD] Frostfall Init mortality: " + mortality.GetValueInt( ))
+; Debug.Notification("[SD] Frostfall Init exposure: " + exposure.GetValueInt( ))
+
+Debug.Notification("[SD] Frostfall adding heatsources ")
+
 Int idx = 0
 While ( heatsources && idx < kArmor.Length )
 	If ( heatsources.Find( kArmor[idx] ) < 0 )
@@ -55,6 +59,8 @@ FormList heatsources
 Armor slaveArmor1
 Armor slaveArmor2
 Armor[] kArmor
+ObjectReference kPlayerStorageRef
+ObjectReference kPlayerRef
 
 Event OnInit()
 	kArmor = New Armor[6]
@@ -71,14 +77,28 @@ EndState
 
 State monitor
 	Event OnUpdate()
+		kPlayerStorageRef = Game.GetFormFromFile(0x00113D17, "sanguinesDebauchery.esp") as ObjectReference
+		kPlayerRef = Game.GetPlayer() 
+
 		_SDGVP_mirror_frostfallMortality.SetValue( mortality.GetValueInt( ) )
 		_SDGVP_mirror_frostfallExposure.SetValue( exposure.GetValueInt( ) )
 		
+		; Debug.Notification("[SD] Frostfall mortality: " + mortality.GetValueInt( ))
+		; Debug.Notification("[SD] Frostfall exposure: " + exposure.GetValue( ))
+
 		If mortality.GetValueInt( ) == 1
-			If exposure.GetValue() < 20
-				Game.GetPlayer().EndDeferredKill()
+			If (exposure.GetValue() < 20)
+			;	Game.GetPlayer().EndDeferredKill()
+				If (StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSanguineBlessings") >= 1) && (kPlayerRef.GetParentCell() != kPlayerStorageRef.GetParentCell())
+					Debug.Trace("[SD] Frostfall: Sending SD Dreamworld event " )
+					Debug.MessageBox("You collapse after nearly freezing to death and wake up back into Sanguine's lap." )
+					SendModEvent("SDDreamworldPull")
+				EndIf
+			ElseIf (exposure.GetValue() < 40) && (Utility.RandomInt(0,100)>90)
+				Debug.Notification("You are numb from the cold." )
+
 			Else
-				Game.GetPlayer().StartDeferredKill()
+			;	Game.GetPlayer().StartDeferredKill()
 			EndIf
 		EndIf
 		

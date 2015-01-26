@@ -8,6 +8,7 @@ _SDQS_fcts_outfit Property fctOutfit  Auto
 ReferenceAlias Property _SDRAP_master  Auto  
 GlobalVariable Property _SDGVP_demerits  Auto  
 GlobalVariable Property _SDGVP_demerits_join  Auto  
+GlobalVariable Property _SDGVP_ArmbinderKnee  Auto  
 
 Keyword[] Property notKeywords  Auto  
 Idle[] Property _SDIAP_bound  Auto  
@@ -124,7 +125,7 @@ Event OnUpdate()
 			fctConstraints.libs.UpdateControls()
 			throttle = 0
 		EndIf		
-	ElseIf ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling"))
+	ElseIf ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling") && !(_SDGVP_ArmbinderKnee.GetValue()==0))
 
 		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
 		;	fctConstraints.togglePlayerControlsOff()
@@ -201,7 +202,10 @@ Event OnUpdate()
 				;ElseIf  (StorageUtil.GetStringValue(kTarget, "_SD_sDefaultStance") == "Crawling")
 				;	PlayIdleWrapper(kTarget, _SDIAP_bound[5] ) ; Crawling
 				;EndIf
-				PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
+
+				If  (fctOutfit.isArmsEquippedKeyword( kTarget,  "_SD_DeviousEnslaved"  ) || fctOutfit.isArmsEquippedKeyword( kTarget,  "_SD_DeviousSanguine"  ) )
+					PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
+				Endif
 			EndIf
 
 		EndIf

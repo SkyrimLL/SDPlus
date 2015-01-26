@@ -160,6 +160,18 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		endif
 	EndIf
 
+	If (!StorageUtil.HasStringValue(kMaster, "_SD_sColorProfile"))
+		int colorChance =  Utility.RandomInt(0,100)
+
+		if (colorChance >= 60)
+			StorageUtil.SetStringValue(kMaster, "_SD_sColorProfile", ",black" ) 
+		elseif (colorChance >= 40)
+			StorageUtil.SetStringValue(kMaster, "_SD_sColorProfile", ",red" ) 
+		elseif (colorChance >= 20)
+			StorageUtil.SetStringValue(kMaster, "_SD_sColorProfile", ",white" ) 
+		endif
+	EndIf
+
 	; Master satisfaction - negative = angry / positive = happy
 	If (!StorageUtil.HasIntValue(kMaster, "_SD_iNPCDisposition"))
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
@@ -320,7 +332,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,iron") ; 6 - Plug Anal
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,iron") ; 7 - Plug Vaginal
@@ -328,10 +340,10 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 		ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
 			; 3 - Sadistic, 6 - Perfectionist
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,leather") ; 1 - Arms cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather") ; 2 - Legs cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness") ; 3 - Gag
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" ) ) ; 1 - Arms cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 2 - Legs cuffs
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 3 - Gag
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 4 - Blindfold
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,soulgem") ; 6 - Plug Anal
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,soulgem") ; 7 - Plug Vaginal
@@ -793,6 +805,35 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 2 + (slaveryLevel / 2))
 	EndIf
 
+	if (iDominance>10)
+		iDominance = 10
+	elseif (iDominance<-10)
+		iDominance = -10
+	EndIf
+
+
+	Int iTrustBonus = 0
+
+	If (iDominance < 0)
+		iTrustBonus += 1
+	Else
+		iTrustBonus -= 2
+	EndIf
+
+	If (iFoodComplete>=1)
+		iTrustBonus += 1
+	Endif
+
+	If (iGoldComplete>=1)
+		iTrustBonus += 1
+	Endif
+
+	If (iPunishComplete>=1)
+		iTrustBonus -= 1
+	Endif
+
+	StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + iTrustBonus)
+
 	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
 
 	; Note for later - turn '10' limit into a Difficulty parameter
@@ -800,12 +841,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		masterTrust = 10
 	elseif (masterTrust<-10)
 		masterTrust = -10
-	EndIf
-
-	if (iDominance>10)
-		iDominance = 10
-	elseif (iDominance<-10)
-		iDominance = -10
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
@@ -969,7 +1004,7 @@ function DisplaySlaveryLevel( Actor kMaster, Actor kSlave )
 		Debug.MessageBox("The collar locked around your neck feels strangely familiar. Freedom feels like a distant memory. An echo of your former life. You are meant to serve.. that much is clear by now. Better make the best of it.")
 			
 	ElseIf (slaveryLevel == 6) ; totally submissive, masochist and sex addict 
-		Debug.MessageBox("Serving your owner in every way possible makes you so happy. The crawings burning deep inside you are satisfied only when you feel your owner's whip marking your skin or, even better, when you are finally allowed to serve your owner sexually. ")
+		Debug.MessageBox("Serving your owner in every way possible makes you so happy. The cravings burning deep inside you are satisfied only when you feel your owner's whip marking your skin or, even better, when you are finally allowed to serve your owner sexually. ")
 			
 	EndIf
 	

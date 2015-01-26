@@ -544,10 +544,10 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 		kForm = akActor.GetWornForm( uiSlotMask[iOutfitPart] ) 
 		If (kForm != None)
 			Armor kArmor = kForm  as Armor
-			Debug.Trace("[SD] SetOutfit: test zad_lockable for part " +  iOutfitPart + " - " + kForm.hasKeywordString("zad_Lockable") )
+			; Debug.Trace("[SD] SetOutfit: test zad_lockable for part " +  iOutfitPart + " - " + kForm.hasKeywordString("zad_Lockable") )
 			return (!SexLab.IsStrippable(kForm) || kForm.HasKeywordString("_SD_DeviousSpriggan")  || kForm.hasKeywordString("zad_Lockable")  || kForm.hasKeywordString("zad_deviousPlugAnal")  || kForm.hasKeywordString("zad_deviousPlugVaginal") || kForm.hasKeywordString("zad_deviousCollar")|| kForm.hasKeywordString("zad_deviousGag") || kForm.hasKeywordString("zad_DeviousArmbinder")  ) 
 		Else
-			Debug.Trace("[SD] SetOutfit: test zad_lockable - nothing equipped for part " +  iOutfitPart )
+			; Debug.Trace("[SD] SetOutfit: test zad_lockable - nothing equipped for part " +  iOutfitPart )
 			Return False
 		EndIf
 
@@ -621,10 +621,10 @@ Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -
 		kForm = akActor.GetWornForm( uiSlotMask[iOutfitPart] ) 
 		If (kForm != None)
 			Armor kArmor = kForm  as Armor
-			Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword   )
+			; Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword   )
 			return (kForm.HasKeywordString(deviousKeyword) ) 
 		Else
-			Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword + " - nothing equipped "  )
+			; Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword + " - nothing equipped "  )
 			Return False
 		EndIf
 
@@ -926,7 +926,23 @@ Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = T
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfitID == 9) ; Queen of Chaurus outfit - Based on Brood Mother
 
+		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
+			; 6 - Plug Anal - Spider eggs cluster
+			ddArmorRendered = SDEggAnalRendered
+			ddArmorInventory = SDEggAnal
+			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
 
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		EndIf
+
+		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
+			; 7 - Plug Vaginal - Chaurus worm
+			ddArmorRendered = SDEggVaginalRendered
+			ddArmorInventory = SDEggVaginal
+			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
+
+			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
+		EndIf
 
 	; --------------------------------------------------------------------------------------------
 	ElseIf (iOutfitID == 10) ; Sanguine Artefacts - Spectral bondage devices
@@ -1196,7 +1212,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	EndIf
 
 	If (bDevPlugVaginal) && (playerGender==1)
-		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly as he shoves a cold plug into your abused womb." )
+		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly and shoves a cold plug into your abused womb." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 		
 		setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
@@ -1236,7 +1252,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 
-	If (bDevPlugAnal)
+	If (bDevPlugAnal) && !isPlugAnalEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn"  )
 		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
 			
@@ -1245,7 +1261,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
-	If (bDevPlugVaginal)
+	If (bDevPlugVaginal) && !isPlugVaginalEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag"  )
 		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
@@ -1336,3 +1352,8 @@ Armor Property zazSanguineBlindsRendered Auto         ; Internal Device
 Armor Property zazSanguineBlinds Auto        	       ; Inventory Device
 Armor Property zazSanguineArtifactRendered Auto         ; Internal Device
 Armor Property zazSanguineArtifact Auto        	       ; Inventory Device
+
+Armor Property SDEggVaginalRendered Auto         ; Internal Device
+Armor Property SDEggVaginal Auto        	       ; Inventory Device
+Armor Property SDEggAnalRendered Auto         ; Internal Device
+Armor Property SDEggAnal Auto        	       ; Inventory Device
