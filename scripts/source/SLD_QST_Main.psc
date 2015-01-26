@@ -266,6 +266,8 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 	Int IButton = _SLD_raceMenu.Show()
 
 	If IButton == 0  ; Show the thing.
+		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+
 		Actor kPlayer = Game.GetPlayer() as Actor
 
 		Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
@@ -302,12 +304,101 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 
 		EndIf
 
+	Else
+		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
 
+ 
 			
 	EndIf
 
 	Utility.Wait(1.0)
 
+EndFunction
+
+Function RobPlayer ( Actor akSpeaker  )
+	Utility.Wait(0.5)
+
+	Int IButton = _SLD_robMenu.Show()
+
+	If IButton == 0  ; Show the thing.
+
+		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+
+		Actor _bandit = akSpeaker
+		Actor _target = SexLab.PlayerRef 
+		int   itemCount
+		int   idx
+		int   stolenCnt
+		int   itemType
+		int   cnt
+		int   ii
+		int   goldVal
+		Float itemWeight
+		Form  nthItem = None
+		Bool  canSteal
+		
+		itemCount = _target.getNumItems()
+		stolenCnt = 0
+		while idx < itemCount && stolenCnt < 1
+			nthItem = _target.getNthForm(idx)
+			if !nthItem
+				; _notify("SLU: Null item")
+				Return
+			endif
+		
+			canSteal = False
+				
+			itemType = nthItem.GetType()
+			if (itemType == 45) || (itemType == 26) || \
+			   (itemType == 41) || (itemType == 30) || \
+			   (itemType == 46) || (itemType == 27) || \
+			   (itemType == 42) || (itemType == 32)
+				canSteal = True
+			EndIf
+			
+			if canSteal && _bandit != SexLab.PlayerRef  && (nthItem.HasKeywordString("VendorNoSale") || nthItem.HasKeywordString("MagicDisallowEnchanting"))
+				canSteal = False
+				; _notify("Pick: !Q " + nthItem.GetName())
+			endif
+			
+			if canSteal
+				cnt = _target.GetItemCount(nthItem)
+				goldVal = nthItem.GetGoldValue()
+				itemWeight = nthItem.GetWeight()
+				
+				if (goldVal >= 0)
+					if cnt > 1 && goldVal > 0
+						ii = Math.Floor(100 / goldVal)
+						if ii < cnt
+							cnt = ii
+						endif
+					endif
+					
+					if cnt > 0
+						; Debug.Notification("Pick: " + actorName(_bandit) + " " + actorName(_target))
+						Debug.Notification("I like this! [Takes " + cnt + "x " + nthItem.GetName() + " ]")
+						_target.RemoveItem(nthItem, cnt, true, _bandit)
+						stolenCnt += 1
+					endif
+				endif
+			endif
+			
+			idx += 1
+		endWhile
+
+		cnt = _target.GetItemCount(Gold001)
+		if ( (cnt - (cnt/2)) > 10)
+			Debug.Notification("You don't need that much money either.")
+			_target.RemoveItem(Gold001, cnt/2, true, _bandit)
+		endif
+
+	Else
+		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)			
+	EndIf
+
+	Utility.Wait(1.0)
 EndFunction
 
 SexLabFramework Property SexLab  Auto  
@@ -347,6 +438,8 @@ Message Property _SLD_rapeMenu  Auto
 
 Message Property _SLD_raceMenu  Auto  
 
+Message Property _SLD_robMenu  Auto  
+
  
 
 HeadPart Property _SLD_FemaleSlaveHair  Auto  
@@ -354,3 +447,4 @@ HeadPart Property _SLD_FemaleSlaveHair  Auto
 HeadPart Property _SLD_MaleSlaveHair  Auto  
 
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
+MiscObject Property Gold001  Auto  

@@ -13,7 +13,9 @@ Int payment = Utility.RandomInt(50, 100) + Math.Floor( whore.GetAV("Speechcraft"
 whore.AddItem(_SDMOP_egg, payment, false)
 
 
-_SDKP_sex.SendStoryEvent(akLoc = whore.GetCurrentLocation(),  akRef1 = akSpeaker, akRef2 = whore, aiValue1 = 0, aiValue2 = 0 )
+; _SDKP_sex.SendStoryEvent(akLoc = whore.GetCurrentLocation(),  akRef1 = akSpeaker, akRef2 = whore, aiValue1 = 0, aiValue2 = 0 )
+akSpeaker.SendModEvent("PCSubSex") ; Sex
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

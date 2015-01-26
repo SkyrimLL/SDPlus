@@ -308,7 +308,9 @@ Event OnUpdateGameTime()
 
 		SprigganFX.Play( kSlave, 30 )
 		_SDSMP_spriggananger.play( kSlave )
-		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 8, aiValue2 = RandomInt( 0, _SDGVP_poses.GetValueInt() ) )
+		; _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 8, aiValue2 = RandomInt( 0, _SDGVP_poses.GetValueInt() ) )
+
+		kMaster.SendModEvent("SDSprigganPunish")
 	Else
 		; Debug.Notification("[SD] Spriggan roots grow - failed") 
     EndIf

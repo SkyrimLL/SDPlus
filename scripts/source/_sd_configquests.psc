@@ -152,7 +152,7 @@ State addons
 		While idx < kConfig._SDQP_quests_addon.Length
 			If ( kConfig._SDBP_quests_addon_running[idx] )
 				kConfig._SDQP_quests_addon[idx].Start()
-			Else
+			Elseif (kConfig._SDQP_quests_addon[idx] != None)
 				kConfig._SDQP_quests_addon[idx].Stop()
 			EndIf
 			idx += 1
@@ -174,7 +174,7 @@ State optional
 		While idx < kConfig._SDQP_quests_optional.Length
 			If ( kConfig._SDBP_quests_optional_running[idx] )
 				kConfig._SDQP_quests_optional[idx].Start()
-			Else
+			ElseIf (kConfig._SDQP_quests_optional[idx]!= None)
 				kConfig._SDQP_quests_optional[idx].Stop()
 			EndIf
 			idx += 1
@@ -230,25 +230,33 @@ State stopping
 		idx = 0
 		While idx < kConfig._SDQP_quests_primary.Length
 			kConfig._SDBP_quests_primary_running[idx] = False
-			kConfig._SDQP_quests_primary[idx].Stop()
+			if (kConfig._SDQP_quests_primary[idx] != None)
+				kConfig._SDQP_quests_primary[idx].Stop()
+			Endif
 			idx += 1
 		EndWhile
 		idx = 0
 		While idx < kConfig._SDQP_quests_secondary.Length
 			kConfig._SDBP_quests_secondary_running[idx] = False
-			kConfig._SDQP_quests_secondary[idx].Stop()
+			If (kConfig._SDQP_quests_secondary[idx] != None)
+				kConfig._SDQP_quests_secondary[idx].Stop()
+			Endif
 			idx += 1
 		EndWhile
 		idx = 0
 		While idx < kConfig._SDQP_quests_support.Length
 			kConfig._SDBP_quests_support_running[idx] = False
-			kConfig._SDQP_quests_support[idx].Stop()
+			If (kConfig._SDQP_quests_support[idx] != None)
+				kConfig._SDQP_quests_support[idx].Stop()
+			Endif
 			idx += 1
 		EndWhile
 		idx = 0
 		While idx < kConfig._SDQP_quests_addon.Length
 			kConfig._SDBP_quests_addon_running[idx] = False
-			kConfig._SDQP_quests_addon[idx].Stop()
+			If (kConfig._SDQP_quests_addon[idx] != None)
+				kConfig._SDQP_quests_addon[idx].Stop()
+			Endif
 			idx += 1
 		EndWhile
 
@@ -276,7 +284,7 @@ State resetting
 			kConfig._SDQP_quests_primary[idx].Stop()
 			While ( kConfig._SDQP_quests_primary[idx].IsStopping() )
 			EndWhile
-			If ( kConfig._SDBP_quests_primary_default[idx] )
+			If ( kConfig._SDBP_quests_primary_default[idx] ) && (kConfig._SDQP_quests_primary[idx] != None)
 				kConfig._SDQP_quests_primary[idx].Start()
 			EndIf
 			idx += 1
@@ -284,10 +292,12 @@ State resetting
 		idx = 0
 		While idx < kConfig._SDQP_quests_secondary.Length
 			kConfig._SDBP_quests_secondary_running[idx] = kConfig._SDBP_quests_secondary_default[idx]
-			kConfig._SDQP_quests_secondary[idx].Stop()
-			While ( kConfig._SDQP_quests_secondary[idx].IsStopping() )
-			EndWhile
-			If ( kConfig._SDBP_quests_secondary_default[idx] )
+			If (kConfig._SDQP_quests_secondary[idx] != None)
+				kConfig._SDQP_quests_secondary[idx].Stop()
+				While ( kConfig._SDQP_quests_secondary[idx].IsStopping() )
+				EndWhile
+			Endif
+			If ( kConfig._SDBP_quests_secondary_default[idx] ) && (kConfig._SDQP_quests_secondary[idx] != None)
 				kConfig._SDQP_quests_secondary[idx].Start()
 			EndIf
 			idx += 1
@@ -295,10 +305,12 @@ State resetting
 		idx = 0
 		While idx < kConfig._SDQP_quests_support.Length
 			kConfig._SDBP_quests_support_running[idx] = kConfig._SDBP_quests_support_default[idx]
-			kConfig._SDQP_quests_support[idx].Stop()
-			While ( kConfig._SDQP_quests_support[idx].IsStopping() )
-			EndWhile
-			If ( kConfig._SDBP_quests_support_default[idx] )
+			If (kConfig._SDQP_quests_support[idx] != None)
+				kConfig._SDQP_quests_support[idx].Stop()
+				While ( kConfig._SDQP_quests_support[idx].IsStopping() )
+				EndWhile
+			Endif
+			If ( kConfig._SDBP_quests_support_default[idx] ) && (kConfig._SDQP_quests_support[idx] != None)
 				kConfig._SDQP_quests_support[idx].Start()
 			EndIf
 			idx += 1
@@ -306,7 +318,9 @@ State resetting
 		idx = 0
 		While idx < kConfig._SDQP_quests_addon.Length
 			kConfig._SDBP_quests_addon_running[idx] = False
-			kConfig._SDQP_quests_addon[idx].Stop()
+			If (kConfig._SDQP_quests_addon[idx] != None)
+				kConfig._SDQP_quests_addon[idx].Stop()
+			Endif
 			idx += 1
 		EndWhile
 		

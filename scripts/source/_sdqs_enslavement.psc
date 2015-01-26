@@ -279,6 +279,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
 		EndIf
 
+		If ( _SDGVP_config[3].GetValue() as Bool )
+			StorageUtil.GetIntValue(kSlave, "_SD_iEnableClothingEquip", 1)
+		EndIf
+
 		if  (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
 			PunishSlave( kMaster,  kSlave)
 		EndIf
@@ -496,7 +500,7 @@ Function AddSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold = 
 		uiPunishmentsEarned = uiPunishmentsEarned + (bGag as Int) + (bBelt as Int) + (bPlugAnal as Int) + (bPlugVaginal as Int) + (bBlindfold as Int)
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.05 * fPunishmentsLength)
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * fPunishmentsLength)
 
 		
 		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
@@ -516,7 +520,7 @@ Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
 		; Additional time added to remove next punishment item
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.025 * Utility.RandomInt( 1,2))
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * Utility.RandomInt( 1,2))
 
 		Debug.Trace("[_sdqs_enslavement] Removing punishment"  )
 
@@ -548,11 +552,11 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 					trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 					kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
 
-					If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") == "Standing") 
+					If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") == "Standing") && !nthActor.GetCurrentScene()
 
 						Debug.SendAnimationEvent(nthActor, "ZazAPC018")
 
-					Else
+					ElseIf !nthActor.GetCurrentScene()
 
 						Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
 

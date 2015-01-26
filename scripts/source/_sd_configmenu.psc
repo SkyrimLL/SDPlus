@@ -287,13 +287,14 @@ EndFunction
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;                 2147483647
-Int _SD_mcm_ver = 2014103001
+Int _SD_mcm_ver = 20150125
 
 int function GetVersion()
 	; patch to fix a screw up
 	If ( CurrentVersion == 2147483647 )
 		CurrentVersion = _SD_mcm_ver
 		initMod()
+
 	EndIf
 
 	return _SD_mcm_ver
@@ -412,7 +413,8 @@ endEvent
 event OnVersionUpdate(int a_version)
 	{Called when a version update of this script has been detected}
 	If ( a_version != _SD_mcm_ver || CurrentVersion != _SD_mcm_ver )
-		Debug.Trace("_SD::UPDATE Updating script to version " + _SD_mcm_ver)
+		Debug.Notification("[SD] Updating script to version " + _SD_mcm_ver)
+		Debug.Trace("[SD] Updating script to version " + _SD_mcm_ver)
 		initMod( True )
 	EndIf
 endEvent
@@ -425,7 +427,7 @@ event OnPageReset(string a_page)
 	; Load custom .swf for animated logo that's displayed when no page is selected yet.
 	if (a_page == "" || !Self.IsRunning() )
 		;SetTitleText( "$SD_CONCAT{" + CurrentVersion as String + "}VERSION" )
-		SetTitleText( "Version: " + CurrentVersion as String + "" )
+		SetTitleText( "Version: " + _SD_mcm_ver as String + "" )
 		LoadCustomContent("_SD_/sanguine_rose.dds", 171, 97)
 		return
 	else
@@ -451,7 +453,7 @@ event OnPageReset(string a_page)
 		;# SDpatch #
 		;###############################################################################################
 		AddHeaderOption("Slave Options")
-		; _SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
+		_SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
 		; _SDOID_config_B11 = AddToggleOption("Remove Armbinder During Punishments", _SDGVP_config_RemoveArmBinder.GetValue() as Bool) ;
 		; _SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
 		; _SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
@@ -782,10 +784,10 @@ event OnOptionSelect(int a_option)
 		SetToggleOptionValue(a_option, _SDGVP_config_RemoveArmBinder.GetValue() as Bool )
 	ElseIf ( a_option == _SDOID_config_B12 )
 		_SDGVP_config_RemovePunishment.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemovePunishment.GetValueInt() ) )
-		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+		SetToggleOptionValue(a_option, _SDGVP_config_RemovePunishment.GetValue() as Bool )
 	ElseIf ( a_option == _SDOID_config_B13 )
 		_SDGVP_config_GagType.SetValue( Math.LogicalXor( 1, _SDGVP_config_GagType.GetValueInt() ) )
-		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
+		SetToggleOptionValue(a_option, _SDGVP_config_GagType.GetValue() as Bool )
 
 	;#################################################################################################
 	ElseIf ( _SDOID_quests_o.Find( a_option ) >= 0 )

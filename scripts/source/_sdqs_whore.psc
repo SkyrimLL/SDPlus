@@ -48,11 +48,13 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 	Bool bRemoved = False
 	Int iIdx = 0
 	Int iThreesome = 0
+	Int iRandomNum 
 	; Debug.SendAnimationEvent(akWhore, "ZazAPC205")
 
 	While ( !bRemoved && iIdx < _SDORP_queue.Length )
 		If ( _SDORP_queue[iIdx] != None )
 			Debug.Trace("[Whore queue] Removing actor from queue: " + _SDORP_queue[iIdx])
+			StorageUtil.SetIntValue( (akWhore as actor) , "_SD_iHandsFreeSex", 1)
 
 			If ( _SDORP_queue[iIdx+1] != None ) 
 				If ( _SDORP_queue[iIdx+1].GetParentCell() == akWhore.GetParentCell() )
@@ -81,9 +83,17 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 
 					Else
-						
-						If (iThreesome==1)
-							Debug.Notification("Next!")
+						iRandomNum = Utility.RandomInt(0,100)
+
+						If (iThreesome==1) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx+1] as actor ) > 0) 
+							If (iRandomNum>80)
+								Debug.Notification("Mind if I join in?")
+							ElseIf (iRandomNum>50)
+								Debug.Notification("We are going to stuff you good.")
+							ElseIf (iRandomNum>0)
+								Debug.Notification("Look what we have here..")
+							EndIf
+
 							actor[] sexActors = new actor[3]
 							sexActors[0] = akWhore as actor
 							sexActors[1] = _SDORP_queue[iIdx]  as actor
@@ -94,8 +104,15 @@ Bool Function removeFromQueue( ObjectReference akWhore )
  
 						    SexLab.StartSex(sexActors, anims, victim=akWhore as actor  )
 
-						Else
-							Debug.Notification("Next!")
+						Else 
+							If (iRandomNum>80)
+								Debug.Notification("Next!")
+							ElseIf (iRandomNum>50)
+								Debug.Notification("Come here.. don't be shy.")
+							ElseIf (iRandomNum>0)
+								Debug.Notification("Look what we have here..")
+							EndIf
+
 							actor[] sexActors = new actor[2]
 							sexActors[0] = akWhore as actor
 							sexActors[1] = _SDORP_queue[iIdx]  as actor
@@ -118,13 +135,17 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 		Else
 			if  (_SDORP_queueAliasRef[iIdx].GetReference() != akWhore)			
 				_SDORP_queueAliasRef[iIdx].ForceRefTo( akWhore )
-				Debug.Notification( "[Whore queue] Cleaning up whore." )
+				Debug.Trace( "[Whore queue] Cleaning up whore." )
 			EndIf
 
 			iIdx += 1
 
 		EndIf
 	EndWhile
+
+	If (StorageUtil.GetIntValue( (akWhore as actor) , "_SD_iHandsFreeSex") == 1)
+		StorageUtil.SetIntValue( (akWhore as actor) , "_SD_iHandsFreeSex", 0)
+	EndIf
 
 	; Debug.SendAnimationEvent(akWhore, "IdleForceDefaultState")
 

@@ -120,7 +120,10 @@ endState
 	
 State Sleeping
 	Event OnBeginState()
+		StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
+		
 		BedRef = Target.PlaceAtMe(Bed, 1)	
+		BedRef.SetActorOwner(Game.GetPlayer().GetActorBase())
 		FadeOut.Apply()
 		Utility.Wait(2.5) ; since Fadeout lasts exactly 3.0s, we need to allow some script delay
 		FadeOut.PopTo(BlackScreen)
@@ -142,6 +145,8 @@ State Sleeping
 	EndEvent
 	
 	Event OnEndState()
+		StorageUtil.SetIntValue(none, "DN_ONOFF", 0)
+
 		Debug.SendAnimationEvent(Target, "idleLayDownEnterInstant")		
 		Utility.Wait(0.5)			
 		BlackScreen.PopTo(FadeIn)
@@ -190,7 +195,10 @@ endState
 	
 State SleepingSideway
 	Event OnBeginState()
+		StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
+
 		BedRef = Target.PlaceAtMe(Bed, 1)	
+		BedRef.SetActorOwner(Game.GetPlayer().GetActorBase())
 		FadeOut.Apply()
 		Utility.Wait(2.5) ; since Fadeout lasts exactly 3.0s, we need to allow some script delay
 		FadeOut.PopTo(BlackScreen)
@@ -213,6 +221,8 @@ State SleepingSideway
 	EndEvent
 	
 	Event OnEndState()
+		StorageUtil.SetIntValue(none, "DN_ONOFF", 0)
+
 		Debug.SendAnimationEvent(Target, "idleBedRollRightEnterInstant")		
 		Utility.Wait(0.5)			
 		BlackScreen.PopTo(FadeIn)

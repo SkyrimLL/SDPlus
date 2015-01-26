@@ -9,7 +9,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor whore = _SDRAP_whore.GetReference() as Actor
 Int payment = Utility.RandomInt(25, 50) + Math.Floor( whore.GetAV("Speechcraft") as Int / 2 )
 
-_SDKP_sex.SendStoryEvent(akLoc = whore.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = whore, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
+; _SDKP_sex.SendStoryEvent(akLoc = whore.GetCurrentLocation(), akRef1 = akSpeaker, akRef2 = whore, aiValue1 = 7, aiValue2 = 0 ) ; 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
+akSpeaker.SendModEvent("PCSubSex") ; Sex
 
 whore.AddItem(_SDMOP_gold, payment, false)
 

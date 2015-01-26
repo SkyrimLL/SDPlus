@@ -250,6 +250,9 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubFree",   "OnSDFree")
 	RegisterForModEvent("PCSubStatus",   "OnSDStatusUpdate")
 	RegisterForModEvent("SDSprigganEnslave",   "OnSDSprigganEnslave")
+	RegisterForModEvent("SDSprigganPunish",   "OnSDSprigganPunish")
+	RegisterForModEvent("SDParasiteVag",   "OnSDParasiteVag")
+	RegisterForModEvent("SDParasiteAn",   "OnSDParasiteAn")
 	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
 	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
@@ -309,7 +312,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	If (funct._hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 		; Player hands are freed temporarily for sex
 
-		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (Utility.RandomInt(0,100) > 30) && (actors.Length > 1) ; Exclude masturbation
+		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
 			fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
 			StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
 		EndIf
@@ -342,6 +345,22 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; If (funct._hasPlayer(actors))
 		;
 	; EndIf
+
+	if animation.HasTag("Chaurus") 
+		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isPlugVaginalEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag"  )
+
+			kPlayer.SendModEvent("SDParasiteVag")
+
+		EndIf
+	EndIf
+
+	if animation.HasTag("Spider")
+		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isPlugAnalEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn"  )
+
+			kPlayer.SendModEvent("SDParasiteAn")
+
+		EndIf
+	EndIf
 
 	If (kCurrentMaster != None) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 
@@ -395,6 +414,48 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	
 EndEvent
 
+Event OnSDParasiteVag(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+
+	Debug.Trace("[_sdras_player] Receiving 'parasite vaginal' event - Actor: " + kActor)
+
+	if (kActor == PlayerActor)
+
+		fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 9, bDevEquip = True, sDevMessage = "")
+
+		If !StorageUtil.HasIntValue(PlayerActor, "_SD_iParasiteVagCount")
+				StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteVagCount",  0)
+		EndIf
+
+		StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteVagCount",  StorageUtil.GetIntValue(PlayerActor, "_SD_iParasiteVagCount") + 1)
+		SendModEvent("SDCParasiteVagInfection")
+
+	EndIf
+	
+EndEvent
+
+Event OnSDParasiteAn(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+ 	Actor PlayerActor = Game.getPlayer() as Actor
+
+	Debug.Trace("[_sdras_player] Receiving 'parasite anal' event - Actor: " + kActor)
+
+	if (kActor == PlayerActor)
+
+		fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 9, bDevEquip = True, sDevMessage = "")
+
+		If !StorageUtil.HasIntValue(PlayerActor, "_SD_iParasiteAnCount")
+				StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteAnCount",  0)
+		EndIf
+
+		StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteAnCount",  StorageUtil.GetIntValue(PlayerActor, "_SD_iParasiteAnCount") + 1)
+		SendModEvent("SDCParasiteAnInfection")
+
+	EndIf
+	
+EndEvent
+
 
 Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -414,17 +475,33 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 
 		StorageUtil.SetFormValue(Game.GetPlayer(), "_SD_TempAggressor", None)
 
-		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
+		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
  
 	Else
 		Debug.Trace("[_sdras_player] Attempted spriggan enslavement to empty master " )
 		_SD_SprigganSwarm.MoveTo( Game.GetPlayer()  as ObjectReference)
 
 		; Debug.Notification("[SD] Sending spriggan story...")		
-		_SDKP_spriggan.SendStoryEvent(akRef1 = _SD_SprigganSwarm as Actor, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
+		_SDKP_spriggan.SendStoryEvent(akRef1 = _SD_SprigganSwarm as ObjectReference, akRef2 = Game.GetPlayer(), aiValue1 = 0, aiValue2 = 0)
 
 	EndIf
 EndEvent
+
+Event SDSprigganPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kTempAggressor = kActor
+	EndIf
+
+	Debug.Trace("[_sdras_player] Receiving spriggan punish event [" + _args  + "] [" + _argc as Int + "]")
+
+	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 8, aiValue2 = 0 )
+EndEvent
+
 
 Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -509,11 +586,14 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 				EndIf
 			EndIf
 
+			Debug.Trace("[_sdras_player] Slave transfer - stopping enslavement" )
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
+
+			Debug.Trace("[_sdras_player] Slave transfer - enslavement stopped" )
 
 		EndIf
 
@@ -523,8 +603,10 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
 		EndIf
 
+		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )
+
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0)
 	Else
 		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster + " - checkIfSlaver:" +  fctFactions.checkIfSlaver (  kNewMaster ))
 		Debug.Notification("Nevermind...")	
@@ -641,7 +723,7 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 		funct.SanguineGangRape( kTempAggressor, kPlayer, True, True)
 	Else 
 		; Dance
-		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 7, aiValue2 = 0 )
+		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 7, aiValue2 = 0 )
 	EndIf
 
 EndEvent
@@ -658,7 +740,7 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 	Debug.Trace("[_sdras_player] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
 
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 5, aiValue2 = 0 )
+	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
 EndEvent
 
 Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -681,7 +763,7 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 		Return
 	EndIf
  
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 EndEvent
 
 Event OnSDEmancipateSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
