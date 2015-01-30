@@ -102,7 +102,7 @@ Event OnDeath(Actor akKiller)
 
 	ObjectReference  kPlayerStorage = _SDRAP_playerStorage.GetReference()
 
-	If (kSlave.GetDistance( kMaster ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") * 2.0))
+	If (kSlave.GetDistance( kMaster ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") * 3.0))
 		; Move all items back from Sanguine Storage into Master if slave is nearby
 		kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
 		Wait(2.0)
