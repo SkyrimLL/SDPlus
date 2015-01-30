@@ -1,122 +1,12 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 109
+;NEXT FRAGMENT INDEX 112
 Scriptname _sdsf_snp_03 Extends Scene Hidden
-
-;BEGIN FRAGMENT Fragment_94
-Function Fragment_94()
-;BEGIN CODE
-snp._SDUIP_phase = 3
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_79
-Function Fragment_79()
-;BEGIN CODE
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-
-Actor kPlayer = Game.getPlayer()
-Int iRandomNum = Utility.RandomInt(0,100)
-
-If ( kPlayer.GetParentCell().IsInterior())
-	if (iRandomNum >70)
-		; hanging chains
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO301")
-	elseif (iRandomNum >50)
-		; hanging chains
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO302")
-	elseif (iRandomNum >40)
-		; hanging chains
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO303")
-	elseif (iRandomNum >30)
-		; hanging chains
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO304")
-	elseif (iRandomNum >20)
-		; hanging chains
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO305")
-	else
-		Debug.SendAnimationEvent( slaveREF , "ZazAPC019")
-	endif
-
-
-else
-	if (iRandomNum >70)
-		; standing facing post
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO004")
-	elseif (iRandomNum >50)
-		; standing facing post
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO004")
-	elseif (iRandomNum >40)
-		; standing facing post
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO201")
-	elseif (iRandomNum >30)
-		; standing facing post
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO203")
-	elseif (iRandomNum >20)
-		; standing facing post
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO201")
-	else
-		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO016")
-	endif
-
-Endif
-
-Utility.Wait(4.0)
-;END CODE
-EndFunction
-;END FRAGMENT
 
 ;BEGIN FRAGMENT Fragment_68
 Function Fragment_68()
 ;BEGIN CODE
 snp._SDUIP_phase = 1
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(3)
-; libs.SetAnimating(Game.GetPlayer(),true)
-
-Game.FadeOutGame(True, True, 3.0, 2.0)
-
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-Debug.Notification("You brace for the coming punishment...")
-
-Actor female = _SDRAP_female.GetReference() as Actor
-Actor male = _SDRAP_male.GetReference() as Actor
-ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
-
-marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
-
-if (fctOutfit.isArmbinderEquipped( female ))  
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
-	StorageUtil.SetIntValue(female , "_SD_iHandsFreeSex", 1)
-EndIf
-
-Utility.Wait(1)
-
-Game.DisablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven()
-
-Game.FadeOutGame(False, True, 15.0, 5.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18(ReferenceAlias akAlias)
-;BEGIN CODE
-; Game.FadeOutGame(True, True, 3.0, 2.0)
-; Utility.Wait(2)
-; Actor female = _SDRAP_female.GetReference() as Actor
-; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
-;female.PushActorAway(female, 0.1)
-; Game.FadeOutGame(False, True, 15.0, 5.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -135,7 +25,7 @@ Actor female = _SDRAP_female.GetReference() as Actor
 _SDGVP_trust_hands.SetValue(0)
 _SDGVP_trust_feet.SetValue(0)
 
-Game.FadeOutGame(True, True, 3.0, 2.0)
+; Game.FadeOutGame(True, True, 3.0, 2.0)
 
 ;funct.toggleActorClothing ( male, False )
 ; funct.toggleActorClothing ( female, False )
@@ -161,7 +51,7 @@ fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue 
 fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
 
 Utility.Wait(2)
-Game.FadeOutGame(False, True, 15.0, 5.0)
+; Game.FadeOutGame(False, True, 15.0, 5.0)
 
 	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
 		; Keep hands free by accident
@@ -179,23 +69,43 @@ Game.FadeOutGame(False, True, 15.0, 5.0)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_87
-Function Fragment_87()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-snp._SDUIP_phase = 2
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(3)
+; libs.SetAnimating(Game.GetPlayer(),true)
+
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+Debug.Notification("You brace for the coming punishment...")
 
+Actor female = _SDRAP_female.GetReference() as Actor
+Actor male = _SDRAP_male.GetReference() as Actor
+ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 
-; Game.DisablePlayerControls( abMovement = true )
-; Game.SetPlayerAIDriven( False )
+marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
+
+if (fctOutfit.isArmbinderEquipped( female ))  
+	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+	StorageUtil.SetIntValue(female , "_SD_iHandsFreeSex", 1)
+EndIf
+
+Utility.Wait(1)
+
+Game.DisablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven()
+
+; Game.FadeOutGame(False, True, 15.0, 5.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_95
-Function Fragment_95()
+;BEGIN FRAGMENT Fragment_94
+Function Fragment_94()
 ;BEGIN CODE
-snp._SDUIP_phase = 5
+snp._SDUIP_phase = 3
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -226,6 +136,90 @@ Endif
 
 
 Utility.Wait(1.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18(ReferenceAlias akAlias)
+;BEGIN CODE
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+; Utility.Wait(2)
+; Actor female = _SDRAP_female.GetReference() as Actor
+; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
+;female.PushActorAway(female, 0.1)
+; Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_87
+Function Fragment_87()
+;BEGIN CODE
+snp._SDUIP_phase = 2
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+
+Actor kPlayer = Game.getPlayer()
+Int iRandomNum = Utility.RandomInt(0,100)
+
+If ( kPlayer.GetParentCell().IsInterior())
+	if (iRandomNum >70)
+		; hanging chains
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO301")
+	elseif (iRandomNum >50)
+		; hanging chains
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO302")
+	elseif (iRandomNum >40)
+		; hanging chains
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO303")
+	elseif (iRandomNum >30)
+		; hanging chains
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO304")
+	elseif (iRandomNum >20)
+		; hanging chains
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO305")
+	else
+		Debug.SendAnimationEvent( slaveREF , "ZazAPC019")
+	endif
+
+
+else
+	if (iRandomNum >70)
+		; standing facing post
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO014")
+	elseif (iRandomNum >50)
+		; standing facing post
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO011")
+	elseif (iRandomNum >40)
+		; standing facing post
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO201")
+	elseif (iRandomNum >30)
+		; standing facing post
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO203")
+	elseif (iRandomNum >20)
+		; standing facing post
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO201")
+	else
+		Debug.SendAnimationEvent( slaveREF , "ZazAPCAO016")
+	endif
+
+Endif
+
+Utility.Wait(4.0)
+
+
+; Game.DisablePlayerControls( abMovement = true )
+; Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_95
+Function Fragment_95()
+;BEGIN CODE
+snp._SDUIP_phase = 5
 ;END CODE
 EndFunction
 ;END FRAGMENT

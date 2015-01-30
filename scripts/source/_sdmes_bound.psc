@@ -228,8 +228,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	EndIf
 	PlayIdleWrapper(kTarget, _SDIAP_bound[0] )
 
-	Debug.Notification("The collar snaps around your neck.")
-	Debug.Notification("You feel sluggish and unable to resist your owner's commands.")
+	; Debug.Messagebox("The collar snaps around your neck.\nYou feel sluggish and unable to resist your owner's commands.")
 
 	RegisterForSingleUpdate( fRFSU )
 EndEvent
@@ -244,8 +243,7 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	EndIf
 	kTarget.PlayIdle( _SDIAP_reset )	
 
-	Debug.Notification("The collar releases its grasp around your will, ...")
-	Debug.Notification("leaving behind a screaming headache and bruises around your neck.")
+	Debug.Messagebox("The collar releases its grasp around your will, leaving behind a screaming headache and bruises around your neck.")
 
 EndEvent
 
