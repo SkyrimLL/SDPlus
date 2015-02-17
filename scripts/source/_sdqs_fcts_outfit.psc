@@ -530,7 +530,8 @@ Bool Function isDeviousOutfitPartEquipped (  Actor akActor, Int iOutfitPart = -1
 	uiSlotMask[4] = 0x02000000 ;55  DD Blindfold
 	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
 	uiSlotMask[6] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[7]=  0x01000000 ;54  DD Plugs (Vaginal)
+	uiSlotMask[7]=  0x08000000 ;57  DD Plugs (Vaginal)
+	; uiSlotMask[8] = 0x00010000 ;46  DD Yokes
 
 	; uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
 	; uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
@@ -599,15 +600,15 @@ EndFunction
 
 Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -1, String deviousKeyword = "zad_Lockable"  )
 	Form kForm
-	Int[] uiSlotMask = New Int[9]
+	Int[] uiSlotMask = New Int[8]
 	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)
+	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms) 
 	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
 	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
 	uiSlotMask[4] = 0x02000000 ;55  DD Blindfold
 	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
 	uiSlotMask[6] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[7]=  0x01000000 ;54  DD Plugs (Vaginal)
+	uiSlotMask[7]=  0x08000000 ;57  DD Plugs (Vaginal)
 
 	; uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
 	; uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
@@ -638,13 +639,13 @@ Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword 
 	Form kForm
 	Int[] uiSlotMask = New Int[13]
 	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-	uiSlotMask[1] = 0x00000008 ;33  Bindings / DD Armbinders
+	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms) 
 	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
 	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
-	uiSlotMask[4] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[5]=  0x01000000 ;54  DD Plugs (Vaginal)
-	uiSlotMask[6] = 0x02000000 ;55  DD Blindfold
-	uiSlotMask[7] = 0x00080000 ;49  DD Chastity Belts
+	uiSlotMask[4] = 0x02000000 ;55  DD Blindfold
+	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
+	uiSlotMask[6] = 0x00040000 ;48  DD plugs (Anal)
+	uiSlotMask[7]=  0x08000000 ;57  DD Plugs (Vaginal)
 	uiSlotMask[8] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck) Harness - same as collar
 	uiSlotMask[9] = 0x04000000 ;56  DD Chastity Bra
 	uiSlotMask[10]= 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms)

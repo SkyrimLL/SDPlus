@@ -45,13 +45,19 @@ Function Maintenance()
 	    Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
 	EndIf
 
-	; 3.201412
+	if (!StorageUtil.HasIntValue( none, "_SLD_version") )
+	    Debug.Messagebox("SexLab Dialogues is outdated or missing. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery." )
+	EndIf	
+ 
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 
-	If fVersion < 2015012502 ; <--- Edit this value when updating
-		fVersion = 2015012502; and this
+	If fVersion < 2015021601 ; <--- Edit this value when updating
+		fVersion = 2015021601; and this
+		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
+		StorageUtil.SetIntValue( none, "_SD_version", fVersion as Int)
+
 		; Update Code
 
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
@@ -134,4 +140,6 @@ EndEvent
 
 
 GlobalVariable Property _SDGVP_naked_rape_chance  Auto  
+GlobalVariable Property _SDGVP_version  Auto  
+
 zadLibs Property libs Auto
