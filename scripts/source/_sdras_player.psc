@@ -1,4 +1,4 @@
-Scriptname _SDRAS_player extends ReferenceAlias
+﻿Scriptname _SDRAS_player extends ReferenceAlias
 { USED }
 Import Utility
 

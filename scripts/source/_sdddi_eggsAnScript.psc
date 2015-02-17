@@ -35,7 +35,7 @@ Function OnEquippedPre(actor akActor, bool silent=false)
 			msg = "Barely in control of control your own body, you thrust the eggs almost forcefully into your steamy opening."
 		endif
 	else
-		msg = akActor.GetLeveledActorBase().GetName() + " shudders as you push the eggs crawl deep inside her."
+		msg = akActor.GetLeveledActorBase().GetName() + " shudders as you push the eggs deep inside her."
 	EndIf
 	if !silent
 		libs.NotifyActor(msg, akActor, true)

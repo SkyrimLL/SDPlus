@@ -259,6 +259,70 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 
 EndFunction
 
+
+Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
+	Bool isVictim = True
+	Int randomNum = Utility.RandomInt(0, 100)
+
+	Game.ForceThirdPerson()
+	Debug.SendAnimationEvent( akSpeaker as ObjectReference, "bleedOutStart")
+
+	if ( (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable") == 1)
+		If ( Utility.RandomInt(0, 100) > 30 )
+			isVictim = False
+		Endif
+	else
+		If ( Utility.RandomInt(0, 100) > 80 )
+			isVictim = False
+		Endif
+	endif
+
+	Int IButton = _SLD_rapistMenu.Show()
+
+	If IButton == 0 ; Undress
+		if (isVictim)
+			SexLab.ActorLib.StripActor( akSpeaker, VictimRef = akSpeaker, DoAnimate= false)
+		else
+			SexLab.ActorLib.StripActor( akSpeaker, DoAnimate= false)
+		Endif
+
+	else
+
+		If (tags == "")
+			If IButton == 1 ; Fondle
+				tags = "Foreplay"
+			ElseIf IButton == 2 ; Oral
+				tags = "Oral"
+			ElseIf IButton == 3 ; Slow sex
+				tags = "Loving"
+			ElseIf IButton == 4 ; Rough
+				tags = "Rough"
+			ElseIf IButton == 5 ; Nothing
+				tags = ""
+			EndIf
+		Endif
+
+		If (tags != "")
+			StorageUtil.SetIntValue( akSpeaker , "_SD_iSub", StorageUtil.GetIntValue( akSpeaker, "_SD_iSub") + 1)
+
+			If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+				Debug.Notification( "[Resists weakly]" )
+				If (isVictim)
+					SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = akSpeaker , AnimationTags = tags)
+				Else
+					SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = tags)
+				Endif
+			EndIf
+		Endif
+
+;	Else
+;		Debug.MessageBox("Your victim struggles and pushes back at you.")
+;		StorageUtil.SetIntValue( akSpeaker , "_SD_iDom", StorageUtil.GetIntValue( akSpeaker, "_SD_iDom") + 1)
+
+	EndIf
+
+EndFunction
+
 Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
  
 	Utility.Wait(0.5)
@@ -435,6 +499,8 @@ GlobalVariable Property _SLD_NPCseduction Auto
 GlobalVariable Property _SLD_TestDialogues Auto
 
 Message Property _SLD_rapeMenu  Auto  
+
+Message Property _SLD_rapistMenu  Auto  
 
 Message Property _SLD_raceMenu  Auto  
 

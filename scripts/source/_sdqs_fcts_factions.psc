@@ -18,7 +18,32 @@ Bool Function checkIfSlaver ( Actor akActor )
 		return False
 	EndIf
 
-	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) ) || (   checkIfFalmer ( akActor) && (playerGender == 1) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
+	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
+
+	; Debug.Trace("[SD] Enslavement check - " + akActor)
+	; Debug.Trace("[SD] Actor is NPC - " + akActor.HasKeyword( _SDKP_actorTypeNPC ))
+	; Debug.Trace("[SD] Gender restriction check - " + funct.checkGenderRestriction( akActor, Game.GetPlayer() ))
+	; Debug.Trace("[SD] Actor is Falmer - " + checkIfFalmer ( akActor))
+	; Debug.Trace("[SD] Actor is Ghost - " + akActor.IsGhost())
+	; Debug.Trace("[SD] Actor is Player - " + (akActor != Game.GetPlayer()))
+	; Debug.Trace("[SD] Member of banned faction - " + actorFactionInList( akActor, _SDFLP_banned_factions ))
+	; Debug.Trace("[SD] Member of banned actors - " + actorInList(_SDFLP_banned_actors , akActor))
+	; Debug.Trace("[SD] Enslavement check - " + akActor)
+	; Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
+
+	return isSlaver
+EndFunction
+
+Bool Function checkIfSlaverCreature ( Actor akActor )
+	Int  playerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
+	Actor akPlayer = Game.getPlayer() as Actor
+
+	If (akActor == akPlayer)
+		Debug.Notification("[SD] Slaver is Player!" )
+		return False
+	EndIf
+
+	Bool isSlaver = ( (   checkIfFalmer ( akActor) && (playerGender == 1) )) && !checkIfSpriggan ( akActor ) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	; Debug.Trace("[SD] Actor is NPC - " + akActor.HasKeyword( _SDKP_actorTypeNPC ))

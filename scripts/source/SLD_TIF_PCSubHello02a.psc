@@ -7,6 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 ; Debug.Notification("SLD: Sending story event [3]")
+fctDialogue.SetNPCDialogueState ( akSpeaker )
  
 ; Debug.Messagebox("You are pushed down before you get a chance to say a word.")
  

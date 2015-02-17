@@ -14,6 +14,7 @@ GlobalVariable Property GameDaysPassed Auto
 GlobalVariable Property _SDGVP_spriggan_comment Auto
 GlobalVariable Property _SDGVP_spriggan_secret  Auto  
 GlobalVariable[] Property _SDGVP_config  Auto 
+GlobalVariable Property _SDGVP_config_safeword  Auto  
 
 Spell Property _SDSP_cum  Auto
 Sound Property _SDSMP_spriggananger  Auto  
@@ -203,7 +204,17 @@ Event OnUpdateGameTime()
 
     randomVar = RandomInt( 0, 100 ) 
 
-    If !kPlayer.IsInCombat() && !kPlayer.IsOnMount()
+
+	If (_SDGVP_config_safeword.GetValue() as bool)
+		; Safeword - abort enslavement
+
+		Debug.Trace("[_sdras_sprigganslave] Safeword - Stop enslavement")
+		Debug.MessageBox( "Safeword: You are released from enslavement.")
+		_SDGVP_config_safeword.SetValue(0)
+
+		Self.Setstage(70)
+
+	ElseIf !kPlayer.IsInCombat() && !kPlayer.IsOnMount()
     	; !( kSlave as Actor ).GetCurrentScene() 
     	; && !kPlayer.GetDialogueTarget()  ; always false when used on player - http://www.creationkit.com/Talk:GetDialogueTarget_-_Actor
 
@@ -262,6 +273,8 @@ Event OnUpdateGameTime()
 		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
 		Debug.Trace( "[SD] Spriggan roots growing" )
 		Debug.Notification( "The roots throb deeply in and out of you..." )
+
+		SendModEvent("SDSprigganTransform")
 
 		_SD_spriggan_punishment.Mod(1)
 		Debug.Trace( "[SD] Spriggan punishment: " + _SD_spriggan_punishment.GetValue() )

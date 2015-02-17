@@ -29,7 +29,7 @@ Function OnEquippedPost(actor akActor)
 		abq.EnableStruggling()
 		SetCustomMessage()
 	EndIf
-	libs.ApplyArmbinderAnim(akActor)
+	libs.ApplyBoundAnim(akActor)
 EndFunction
 
 
@@ -72,7 +72,7 @@ Function OnUnEquippedPost(actor akActor)
 EndFunction
 
 Function DeviceMenu(Int msgChoice = 0)
-	msgChoice = abq.ShowArmbinderMenu(msgChoice)
+	msgChoice = abq.ShowDeviceMenu(msgChoice)
 	DeviceMenuExt(msgChoice)
 	SyncInventory()
 EndFunction

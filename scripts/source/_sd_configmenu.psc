@@ -21,6 +21,7 @@ GlobalVariable Property _SDGVP_config_itemRemovalType  Auto
 GlobalVariable Property _SDGVP_config_maleflacid  Auto
 GlobalVariable Property _SDGVP_uninstall  Auto
 GlobalVariable Property _SDGVP_enslaved  Auto
+GlobalVariable Property _SDGVP_sprigganenslaved  Auto
 GlobalVariable Property _SDGVP_config_genderRestrictions  Auto
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
 GlobalVariable Property _SDGVP_state_mcm  Auto
@@ -525,7 +526,7 @@ event OnPageReset(string a_page)
 			; _SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
 			_SDOID_config_B2 = AddToggleOption("Start after A Night to remember", _SDGVP_config_lust.GetValue() as Bool )
 			_SDOID_config_B14 = AddToggleOption("Start after first escape", _SDGVP_config_auto_start.GetValue() as Bool )
-			If (_SDGVP_enslaved.GetValue() as Bool)
+			If (_SDGVP_enslaved.GetValue() as Bool) || (_SDGVP_sprigganenslaved.GetValue() as Bool)
 				_SDOID_config_B21 = AddToggleOption("SAFE WORD", False )
 			Else
 				AddToggleOption("SAFE WORD", _SDGVP_config_safeword.GetValue() as Bool, OPTION_FLAG_DISABLED )
