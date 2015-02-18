@@ -46,7 +46,7 @@ Function Maintenance()
 	EndIf
 
 	if (!StorageUtil.HasIntValue( none, "_SLD_version") )
-	    Debug.Messagebox("SexLab Dialogues is outdated or missing. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery." )
+	    Debug.Messagebox("SexLab Dialogues is updating. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery. Check your load order and mod versions if you see this message more than once." )
 	EndIf	
  
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)

@@ -401,6 +401,9 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset
 
+	StorageUtil.FormListClear(kMaster, "_SD_lEnslavedFollower")
+
+
 EndFunction
 
 ; I know - these two functions could be turned into one. I am keeping them separate for now in case I need to treat master and slave differently later on

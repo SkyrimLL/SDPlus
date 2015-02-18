@@ -324,6 +324,39 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
 	Int 	IButton = 0
 
+	; Handling of enslaved followers
+	If (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iEnslaved") ==1)
+		Actor kMaster = StorageUtil.GetFormValue(Game.getPlayer(), "_SD_CurrentOwner") as Actor 
+		Int valueCount = StorageUtil.FormListCount(kMaster, "_SD_lEnslavedFollower")
+		int i = 0
+		Actor thisActor = None
+
+		while(i < valueCount)
+			thisActor = StorageUtil.FormListGet(kMaster, "_SD_lEnslavedFollower", i) as Actor
+
+			i += 1
+		endwhile
+
+		; Debug.Notification("[SD sex] Num followers slaves: " + valueCount as Int)
+
+		if (thisActor!=None) && !thisActor.IsDead()
+			; Pick the first available follower for now
+			if (Utility.RandomInt(0,100)>70)   ; chance the owner will prefer to use a follower
+				; Debug.Notification("[SD sex] Master using follower" )
+
+				if (Utility.RandomInt(0,100)>70) && (checkGenderRestriction(thisActor, akTarget))  ; chance of player + follower
+					akSpeaker = thisActor
+					Debug.Notification("Show me what you can do with your friend here...")
+
+				elseif (checkGenderRestriction(akSpeaker, thisActor))  ; chance of master + follower
+					akTarget = thisActor
+					Debug.Notification("Let's see what your friend is capable of...")
+
+				endif
+			endif
+		endif
+	Endif
+
 	; Devious devices and punishment items restrictions
 	; Debug.Notification("[SD sex] Speaker gender: " + speakerGender + " [ " + akSpeaker + " ] ")
 	; Debug.Notification("[SD sex] Target gender: " + targetGender + " [ " + akTarget + " ] ")

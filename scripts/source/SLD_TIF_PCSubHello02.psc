@@ -13,7 +13,7 @@ fctDialogue.SetNPCDialogueState ( akSpeaker )
  
 ; fctDialogue.StartPlayerRape( akSpeaker, "Rough")
 
-SendModEvent("PCSubSex")
+akSpeaker.SendModEvent("PCSubSex")
 ;END CODE
 EndFunction
 ;END FRAGMENT

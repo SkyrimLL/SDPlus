@@ -247,14 +247,15 @@ Event OnInit()
 		; Punishment
 		enslavement.PunishSlave(kMaster,kSlave)
 		;;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-		kMaster.SendModEvent("PCSubPunish") 
+	;	kMaster.SendModEvent("PCSubPunish") 
+		kMaster.SendModEvent("PCSubSex") 
 
 	ElseIf (iRandomNum > 70)
 		; Whipping
 		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-		kMaster.SendModEvent("PCSubWhip") 
+	;	kMaster.SendModEvent("PCSubWhip") 
 
-	ElseIf (iRandomNum > 50)
+	ElseIf (iRandomNum > 20)
 		; Sex
 		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 		kMaster.SendModEvent("PCSubSex") 
@@ -584,7 +585,7 @@ State monitor
 				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
 				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
 
-				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, False, True )
+				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
 
 				If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 					Debug.Notification("Good slave... keep it coming.")
