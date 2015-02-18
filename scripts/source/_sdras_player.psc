@@ -1,4 +1,4 @@
-﻿Scriptname _SDRAS_player extends ReferenceAlias
+Scriptname _SDRAS_player extends ReferenceAlias
 { USED }
 Import Utility
 
@@ -75,6 +75,9 @@ Quest Property _SD_spriggan  Auto
 Faction Property _SDFP_humanoidCreatures  Auto
 GlobalVariable Property _SDGVP_punishments  Auto  
 GlobalVariable Property _SDGVP_can_join  Auto  
+
+Armor Property _SD_SimpleBindings Auto     
+Armor Property _SD_SimpleBindingsCosmetic Auto        	    
 
 ; local
 Actor kPlayer
@@ -307,15 +310,36 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor   victim  = SexLab.HookVictim(_args)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
-	Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
-	
-	If (funct._hasPlayer(actors)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-		; Player hands are freed temporarily for sex
 
-		if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
-			fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
-			StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
+	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+		; Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+		
+		If (funct._hasPlayer(actors)) 
+			; Player hands are freed temporarily for sex
+
+			if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
+				fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
+			EndIf
 		EndIf
+
+		int listIndex
+		int idx = 0
+		while idx < actors.Length
+			listIndex = StorageUtil.FormListFind(Game.GetPlayer(), "_SD_lEnslavedFollower", actors[idx] as Form)
+			; Debug.Notification("[SD]: Sex Master: " + kCurrentMaster)
+			; Debug.Notification("[SD]: Index: " + listIndex)
+			if  listIndex >= 0  				
+				; Debug.Notification("[SD]: Sex with slave follower on")
+				; actors[idx].UnequipItemSlot(  59 )	
+				actors[idx].UnequipItem(  _SD_SimpleBindings , True, True )	
+				actors[idx].EquipItem(  _SD_SimpleBindingsCosmetic , True, True )	
+				StorageUtil.SetIntValue(actors[idx], "_SD_iHandsFreeSex", 1)
+			endif
+			; Debug.Notification("[SD]: Hands free: " + StorageUtil.GetIntValue(actors[idx], "_SD_iHandsFreeSex") )
+			idx += 1
+		endwhile
+
 	EndIf
 
 EndEvent
@@ -336,7 +360,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	Actor   victim  = SexLab.HookVictim(_args)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
-	Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+
+
 	
 	; if config.bDebugMsg
 	; 	_listActors("End: ", actors)
@@ -362,32 +387,49 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 	EndIf
 
-	If (kCurrentMaster != None) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+		Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
 
-		If (funct._hasActor(actors,kCurrentMaster))
-			Debug.Trace("[SD]: Sex with your master")
+		If (kCurrentMaster != None)  
 
-			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountToday", modValue = 1)
-			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountTotal", modValue = 1)
-			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iGoalSex", modValue = 1)
-			fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
+			If (funct._hasActor(actors,kCurrentMaster))
+				Debug.Trace("[SD]: Sex with your master")
 
-			; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
+				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountToday", modValue = 1)
+				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountTotal", modValue = 1)
+				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iGoalSex", modValue = 1)
+				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
 
-		Else 
-			If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
-			; Chance player will keep armbinders after sex
-				Debug.Notification("Your hands remain free.. lucky you.")
+				; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
 
-			ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-				fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
-				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
+			Else 
+				If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
+				; Chance player will keep armbinders after sex
+					Debug.Notification("Your hands remain free.. lucky you.")
+
+				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
+				EndIf
+
 			EndIf
 
-		EndIf
+			int idx = 0
+			int listIndex 
+			while idx < actors.Length
+				listIndex = StorageUtil.FormListFind(Game.GetPlayer(), "_SD_lEnslavedFollower", actors[idx] as Form)
+				if  listIndex >= 0  
+					; Debug.Notification("[SD]: Sex with slave follower off")
+					actors[idx].UnequipItem(  _SD_SimpleBindingsCosmetic , True, True )	
+					actors[idx].EquipItem(  _SD_SimpleBindings , True, True )	
+					StorageUtil.SetIntValue(actors[idx], "_SD_iHandsFreeSex", 0)
+				endif
+				; Debug.Notification("[SD]: Hands free: " + StorageUtil.GetIntValue(actors[idx], "_SD_iHandsFreeSex") )
+				idx += 1
+			endwhile			
 
-		StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 0)
-
+			StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 0)
+		Endif
 	EndIf
 
 EndEvent 

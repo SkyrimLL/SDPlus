@@ -533,41 +533,81 @@ Function RemoveSlavePunishment(Actor kActor , Bool bGag = False, Bool bBlindfold
 EndFunction
 
 Function UpdateSlaveFollowerState(Actor akSlave)
-		Int idx = 0
-		Actor nthActor
+	Int idx = 0
+	Actor nthActor
 
-		; For now, follower slavery is simple: always bound, always kneeling at rest and close to master
-		; We will have to make this part more elaborate in a future version
+	; For now, follower slavery is simple: always bound, always kneeling at rest and close to master
+	; We will have to make this part more elaborate in a future version
 
-		; Housekeeping - equip cuffs
-		While idx < _SDRAP_companions.Length
-			nthActor = _SDRAP_companions[idx].GetReference() as Actor
-			If ( nthActor )
-				If (!nthActor.WornHasKeyword(_SDKP_wrists)) ; _SDKP_wrists
-					nthActor.EquipItem(  _SDA_bindings , True, True )
-				EndIf
+	; Housekeeping - equip cuffs
+	While idx < _SDRAP_companions.Length
+		nthActor = _SDRAP_companions[idx].GetReference() as Actor
+		If ( nthActor )
+			; int index = StorageUtil.FormListFind(Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
+			; if (index < 0)
+				; Debug.Notification("Not found!")
+			; 	StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
+			; endif
 
-				; Force follower to kneel down
-				If (StorageUtil.GetIntValue(kSlave, "_SD_iDisableFollowerAutoKneeling") == 0)
-					trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
-					kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
-
-					If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") == "Standing") && !nthActor.GetCurrentScene()
-
-						Debug.SendAnimationEvent(nthActor, "ZazAPC018")
-
-					ElseIf !nthActor.GetCurrentScene()
-
-						Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
-
-					EndIf
-				EndIf
-
+			If (!nthActor.WornHasKeyword(_SDKP_wrists)) && (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) && (!nthActor.IsEquipped(_SDA_bindings))
+				nthActor.EquipItem(  _SDA_bindings , True, True )
 			EndIf
-			idx += 1
-		EndWhile
+
+			; Force follower to kneel down
+			If (StorageUtil.GetIntValue(kSlave, "_SD_iDisableFollowerAutoKneeling") == 0) && (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) 
+				trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+				kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
+
+				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") != "Standing") && !nthActor.GetCurrentScene()
+
+					Debug.SendAnimationEvent(nthActor, "ZazAPC018")
+
+				ElseIf !nthActor.GetCurrentScene()
+
+					Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
+
+				EndIf
+			EndIf
+
+		EndIf
+		idx += 1
+	EndWhile
 
 EndFunction
+
+Actor Function GetNearbyEnslavedFollower(Actor akSlave)
+	Int idx = 0
+	Actor nthActor = None
+	Actor thisActor = None
+
+	; For now, follower slavery is simple: always bound, always kneeling at rest and close to master
+	; We will have to make this part more elaborate in a future version
+
+	; Housekeeping - equip cuffs
+	While idx < _SDRAP_companions.Length
+		nthActor = _SDRAP_companions[idx].GetReference() as Actor
+		If ( nthActor )
+
+			trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+			kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
+
+			If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && !nthActor.GetCurrentScene() && (Utility.RandomInt(0,100)>60)
+
+				thisActor = nthActor
+
+			EndIf
+
+		EndIf
+		idx += 1
+	EndWhile
+
+	If (thisActor == None) && (nthActor != None)
+		thisActor = nthActor
+	EndIf
+
+	Return thisActor
+EndFunction
+
 
 Faction Property _SDFP_slaverCrimeFaction  Auto 
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto

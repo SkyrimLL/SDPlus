@@ -11,7 +11,7 @@ Actor kSlave = game.GetPlayer()
 	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 	int randomVar = Utility.RandomInt( 0, 10 ) 
 	 
-	If (randomVar >= 3  )
+	If (randomVar >= 8  )
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
@@ -24,10 +24,6 @@ Actor kSlave = game.GetPlayer()
 			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
  			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
  		EndIf
-
-	ElseIf (randomVar >= 1  )
-		akSpeaker.SendModEvent("PCSubSex") ; Sex
-
 
 	Else
 		Debug.Notification( "..some potion!" )

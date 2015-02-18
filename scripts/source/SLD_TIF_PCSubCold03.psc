@@ -8,10 +8,10 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kSlave = game.GetPlayer()
 
-	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 	int randomVar = Utility.RandomInt( 0, 10 ) 
 	 
 	If (randomVar >= 9  )
+		Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
@@ -26,6 +26,7 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	ElseIf (randomVar >= 8  )
+		Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 		Debug.Notification( "..some Mead!" )
 		kSlave.AddItem( Ale, 1, True )
 		kSlave.EquipItem( Ale, True, True )
@@ -34,7 +35,7 @@ Actor kSlave = game.GetPlayer()
 	 	DruggedEffect.Cast( kSlave, kSlave)
 
 	ElseIf (randomVar >= 2  )
-		Debug.Notification( "..something to wear" )
+		Debug.Notification( "Your owner hands you something to wear" )
 		StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableClothingEquip", 1)
 		kSlave.AddItem( _SD_SlaveRags, 1, True )
 		kSlave.EquipItem( _SD_SlaveRags, True, True )

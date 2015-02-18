@@ -130,12 +130,20 @@ Function enslaveCompanion( Actor kActor)
 				fctFollowers.sendCaptiveFollowerAway(kActor)
 
 				Debug.MessageBox("Your follower is dragged away in bondage...")
+			Else
+				int index = StorageUtil.FormListFind(Game.GetPlayer(), "_SD_lEnslavedFollower", kActor)
+				if (index < 0)
+					; Debug.Notification("Not found!")
+					StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", kActor)
+				else
+					; Debug.Notification("Element 183 is at index " + index)
+				endif
 			EndIf
 
 			kActor.EvaluatePackage()
 		Else
 			; Animal / Creature followers
-			If (Utility.RandomInt(0,100)>20)
+			If (Utility.RandomInt(0,100)>0)
 				fctFollowers.sendCaptiveFollowerAway(kActor)
 
 				Debug.MessageBox("Your follower is dragged away in bondage...")

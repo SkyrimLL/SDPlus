@@ -41,10 +41,10 @@ Actor kSlave = game.GetPlayer()
 		endif
 
 	Else
-		akSpeaker.SendModEvent("PCSubSex") ; Sex
-
 		kSlave.AddItem( Ale, 1, True )
 		kSlave.EquipItem( Ale, True, True )
+
+		akSpeaker.SendModEvent("PCSubSex") ; Sex
 
 	EndIf
 

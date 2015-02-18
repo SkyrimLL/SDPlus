@@ -313,8 +313,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 				EndIf	
 
-				Debug.Notification("[SLD] sx: " + iSexCount + " rpd: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom")  + " rps: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCSub") )
-				Debug.Notification("[SLD] d: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iDisposition") + " t: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iTrust") + " s: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iSeduction") + " c: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iCorruption") + " r: " + StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") )
+;				Debug.Notification("[SLD] sx: " + iSexCount + " rpd: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom")  + " rps: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCSub") )
+;				Debug.Notification("[SLD] d: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iDisposition") + " t: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iTrust") + " s: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iSeduction") + " c: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iCorruption") + " r: " + StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") )
 
 				Debug.Trace("[SLD] isPCVictim: " + isPCVictim + " isPCRapist: " + isPCRapist  + " isAnimCorruption: " + isAnimCorruption + " isAnimSeduction: " + isAnimSeduction )
 				Debug.Trace("[SLD] sexCount: " + iSexCount + " rapePCDom: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom")  + " rapePCSub: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCSub") )

@@ -11,7 +11,7 @@ Actor kSlave = game.GetPlayer()
 	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 	int randomVar = Utility.RandomInt( 0, 10 ) 
 
-	If (randomVar >= 8  )
+	If (randomVar >= 9  )
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma  )
