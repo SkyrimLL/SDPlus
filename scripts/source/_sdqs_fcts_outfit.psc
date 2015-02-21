@@ -403,9 +403,9 @@ Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = F
 			Armor kArmor = kForm as Armor
 			If ( kArmor && isArmorRemovable( kForm ) )
 				If ( bDrop )
-					akActor.DropObject(kArmor as Armor, 1 )
+				;	akActor.DropObject(kArmor as Armor, 1 )
 				Else
-					akActor.UnequipItem(kArmor as Armor, False, True )
+				;	akActor.UnequipItem(kArmor as Armor, False, True )
 				EndIf
 			EndIf
 		EndWhile	

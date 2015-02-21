@@ -69,7 +69,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	UnregisterForModEvent("da_PlayerRecovered")
 
  	if (thisAggressor)
-		; Debug.Trace("[SD] Sending enslavement story.")
+		Debug.Trace("[SD] Sending enslavement story for actor: " + thisAggressor)
 		thisAggressor.SendModEvent("PCSubEnslave")
 	else
 		Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")

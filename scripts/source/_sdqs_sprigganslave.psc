@@ -89,18 +89,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			Utility.Wait(2.0)
 		endif
 
-		Weapon krHand = akSlave.GetEquippedWeapon()
-		Weapon klHand = akSlave.GetEquippedWeapon( True )
-		If ( krHand )
-		;	kSlave.DropObject( krHand )
-			akSlave.UnequipItem( krHand )
-		EndIf
-		If ( klHand )
-		;	kSlave.DropObject( klHand )
-			akSlave.UnequipItem( klHand )
-		EndIf
-
-
+		fctOutfit.toggleActorClothing (  akSlave,  bStrip = True,  bDrop = False )
+ 
 		If ( akSlave.IsSneaking() )
 			akSlave.StartSneaking()
 		EndIf
@@ -281,6 +271,7 @@ Event OnUpdateGameTime()
 
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped (  kSlave as Actor ))
 			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
+ 
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1 )
 			Debug.Trace("[SD] Skipping spriggan hands - slot in use")
 		EndIf
@@ -304,7 +295,7 @@ Event OnUpdateGameTime()
 		
 		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isBlindfoldEquipped (  kSlave as Actor))
 			fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
-		ElseIf (_SD_spriggan_punishment.GetValue() >= 4 )
+		ElseIf (_SD_spriggan_punishment.GetValue() >= 3 )
 			Debug.Trace("[SD] Skipping spriggan mask - slot in use")
 		EndIf
 
@@ -333,15 +324,31 @@ Event OnUpdateGameTime()
 	EndIf
 	
 	; ends the punishment period after arriving at the grove
-	If ( GetCurrentGameTime() - fDaysUpdate > fSprigganPower && GetStage() == 70 )
+	If ( (GetCurrentGameTime() - fDaysUpdate > fSprigganPower) && ( (GetStage() == 70) || (GetStage() == 75)) )
 		While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 		EndWhile
 		fDaysUpdate = GetCurrentGameTime()
+
+		If StorageUtil.HasIntValue(kSlave, "_SD_iSprigganEnslavedCount")
+			StorageUtil.SetIntValue(kSlave, "_SD_iSprigganEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") + 1)
+		Else
+			StorageUtil.SetIntValue(kSlave, "_SD_iSprigganEnslavedCount", 1)
+		EndIf
+
+		If (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") == 1)
+			Debug.Messagebox("Your experience taking a spriggan essence back to its source gives you a unique bond with Kyne herself. Once a day, you will be able to call on nearby creatures for help.")
+			(kSlave as Actor).AddSpell( CallSpriggan )
+
+		elseIf (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") == 2)
+			Debug.Messagebox("You have helped two spriggans complete their life cycle and for that, Kyne's waters grant you a gift. Once a day, you will be able to turn yourself into a spriggan.")
+			(kSlave as Actor).AddSpell( PolymorphSpriggan )
+		EndIf
+
 		SetStage( 80 )
 	EndIf
 	
 	; keep spriggans friendly for a while to let the player move away
-	If ( GetCurrentGameTime() - fDaysUpdate > 0.25 && GetStage() == 80 )
+	If ( (GetCurrentGameTime() - fDaysUpdate > 0.25) && ( GetStage() == 80) )
 		While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 		EndWhile
 		SetStage( 90 )
@@ -357,14 +364,15 @@ Event OnUpdate()
 		EndWhile
 
 		ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
-		If ( marker && kSlave.GetDistance( marker ) < 500.0 && GetStage() == 60 )
+		If ( marker && ( kSlave.GetDistance( marker ) < 500.0) && (GetStage() == 60) )
 			fDaysUpdate = GetCurrentGameTime()
 			SetObjectiveCompleted( 60 )
 			self.SetStage( 70 )
-		ElseIf ( !kMaster.GetCurrentScene() && !kSlave.GetCurrentScene() && GetStage() == 70 )
+
+		ElseIf ( !kMaster.GetCurrentScene() && !kSlave.GetCurrentScene() && ( (GetStage() == 70) || (GetStage() == 75)) )
 			While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 			EndWhile
-			Wait( 10.0 )
+			Wait( 5.0 )
 			; _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 		EndIf
 	EndIf
@@ -384,3 +392,6 @@ ReferenceAlias Property _SDRAP_grovemarker  Auto
 Faction Property GiantFaction  Auto  
 Faction Property SprigganFaction  Auto  
 Faction Property PlayerFaction  Auto  
+
+Spell Property CallSpriggan Auto
+Spell Property PolymorphSpriggan Auto

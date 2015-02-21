@@ -48,6 +48,12 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; API variables
 	StorageUtil.SetIntValue(kSlave, "_SD_iSold", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 1)
+	If StorageUtil.HasIntValue(kSlave, "_SD_iEnslavedCount")
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount") + 1)
+	Else
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedCount", 1)
+	EndIf
+
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", kMaster)
 	StorageUtil.SetFormValue(kSlave, "_SD_DesiredOwner", None)
 
@@ -289,6 +295,14 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
 
 	InitMasterDevices( kMaster, outfitID)
+
+	If fctFactions.checkIfFalmer ( kMaster)
+		If StorageUtil.HasIntValue(kSlave, "_SD_iFalmerEnslavedCount")
+			StorageUtil.SetIntValue(kSlave, "_SD_iFalmerEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iFalmerEnslavedCount") + 1)
+		Else
+			StorageUtil.SetIntValue(kSlave, "_SD_iFalmerEnslavedCount", 1)
+		EndIf
+	Endif
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
@@ -1011,6 +1025,17 @@ function DisplaySlaveryLevel( Actor kMaster, Actor kSlave )
 			
 	EndIf
 	
+EndFunction
+
+Int Function ModMasterTrust(Actor kMaster, int iModValue)
+	Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+
+	iTrust = iTrust + iModValue
+	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
+
+	Debug.Notification("[SD] Trust pool: " + iTrust)
+
+	Return iTrust
 EndFunction
 
 Float Function GetEnslavementDuration(Actor kSlave)

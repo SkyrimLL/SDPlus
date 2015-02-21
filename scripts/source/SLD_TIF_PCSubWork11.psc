@@ -11,6 +11,8 @@ StorageUtil.SetIntValue( Game.getPlayer() , "_SD_iEnableArmorEquip", 1)
 StorageUtil.SetIntValue( Game.getPlayer() , "_SD_iEnableFight", 1)
 StorageUtil.SetStringValue( Game.GetPlayer(), "_SD_sDefaultStance", "Standing")
 StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableStand", 1 )
+
+SendModEvent( "SDHandsFreeSlave" )
 ;END CODE
 EndFunction
 ;END FRAGMENT
