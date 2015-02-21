@@ -260,6 +260,8 @@ Function _Maintenance()
 	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
+	RegisterForModEvent("SDHandsFreeSlave",   "OnSDHandsFreeSlave")
+	RegisterForModEvent("SDHandsBoundSlave",   "OnSDHandsBoundSlave")
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
@@ -558,7 +560,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		
 	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)  &&  fctFactions.checkIfSlaver (  kNewMaster )
+	If (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
 
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
@@ -614,7 +616,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		Debug.Trace("[_sdras_player] Faction check: " + fctFactions.checkIfSlaver (  kNewMaster ) )
 	EndIf
 
-	If (kNewMaster != None)   &&  fctFactions.checkIfSlaver (  kNewMaster )
+	If (kNewMaster != None)   &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 			kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 
@@ -650,7 +652,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		; New enslavement - changing ownership
 		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0)
 	Else
-		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster + " - checkIfSlaver:" +  fctFactions.checkIfSlaver (  kNewMaster ))
+		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster)
 		Debug.Notification("Nevermind...")	
 	EndIf
 EndEvent
@@ -812,6 +814,22 @@ Event OnSDEmancipateSlave(String _eventName, String _args, Float _argc = 1.0, Fo
 	Debug.Trace("[_sdras_player] Receiving emancipate slave event [" + _args  + "] [" + _argc as Int + "]")
 
 	_SDGVP_can_join.SetValue(1) 
+EndEvent
+
+Event OnSDHandsFreeSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving hands free slave event [" + _args  + "] [" + _argc as Int + "]")
+
+	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+	StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 1)
+	Debug.Notification("Your owner releases your hands.")
+EndEvent
+
+Event OnSDHandsBoundSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving hands bound slave event [" + _args  + "] [" + _argc as Int + "]")
+
+	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+	StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 0)
+	Debug.Notification("Your owner binds your hands.")
 EndEvent
 
 Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)

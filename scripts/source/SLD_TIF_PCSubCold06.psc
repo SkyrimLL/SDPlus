@@ -7,6 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableArmorEquip", 1)
+StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableClothingEquip", 1)
 ;END CODE
 EndFunction
 ;END FRAGMENT

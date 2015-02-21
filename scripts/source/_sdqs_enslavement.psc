@@ -123,16 +123,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			Utility.Wait(2.0)
 		endif
 
-		Weapon krHand = kSlave.GetEquippedWeapon()
-		Weapon klHand = kSlave.GetEquippedWeapon( True )
-		If ( krHand )
-		;	kSlave.DropObject( krHand )
-			kSlave.UnequipItem( krHand )
-		EndIf
-		If ( klHand )
-		;	kSlave.DropObject( klHand )
-			kSlave.UnequipItem( klHand )
-		EndIf
+		fctOutfit.toggleActorClothing (  kSlave,  bStrip = True,  bDrop = False )
 
 		If ( kSlave.IsSneaking() )
 			kSlave.StartSneaking()

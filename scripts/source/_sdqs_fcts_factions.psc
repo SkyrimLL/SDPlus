@@ -31,6 +31,10 @@ Bool Function checkIfSlaver ( Actor akActor )
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	; Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
 
+	If (checkIfSpriggan ( Game.GetPlayer() ))
+		isSlaver = False
+	Endif
+	
 	return isSlaver
 EndFunction
 
@@ -55,6 +59,10 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	; Debug.Trace("[SD] Member of banned actors - " + actorInList(_SDFLP_banned_actors , akActor))
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	; Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
+
+	If (checkIfSpriggan ( Game.GetPlayer() ))
+		isSlaver = False
+	Endif
 
 	return isSlaver
 EndFunction

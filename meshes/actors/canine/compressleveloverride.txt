@@ -1,0 +1,4 @@
+Dog_Spice_Sit_Idle.hkx 0.001000
+Dog_Spice_Sit_Bark.hkx 0.001000
+Dog_Spice_Sit_Scratch.hkx 0.001000
+CombatIdle.hkx 0.001000
