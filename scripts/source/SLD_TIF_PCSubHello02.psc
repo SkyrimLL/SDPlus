@@ -11,9 +11,7 @@ fctDialogue.SetNPCDialogueState ( akSpeaker )
 
 ; Debug.Messagebox("You are pushed down before you get a chance to say a word.")
  
-; fctDialogue.StartPlayerRape( akSpeaker, "Rough")
-
-akSpeaker.SendModEvent("PCSubSex")
+fctDialogue.StartPlayerRape( akSpeaker, "Rough")
 ;END CODE
 EndFunction
 ;END FRAGMENT

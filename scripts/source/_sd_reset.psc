@@ -51,8 +51,8 @@ Function Maintenance()
  
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 
-	If fVersion < 2015021601 ; <--- Edit this value when updating
-		fVersion = 2015021601; and this
+	If fVersion < 2015030501 ; <--- Edit this value when updating
+		fVersion = 2015030501; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -60,6 +60,8 @@ Function Maintenance()
 
 		; Update Code
 
+		fctSlavery.InitPunishmentIdle()
+		
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
 		_SDGVP_naked_rape_delay.SetValue( fNext )
 		_SDGVP_naked_rape_chance.SetValue(25.0)

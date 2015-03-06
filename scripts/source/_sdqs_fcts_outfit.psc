@@ -343,6 +343,25 @@ Bool Function isBeltEquipped (  Actor akActor )
 
 EndFunction
 
+Bool Function isBraEquipped (  Actor akActor )
+
+	if akActor.WornHasKeyword(libs.zad_DeviousBra)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
+Bool Function isBootsEquipped (  Actor akActor )
+
+	if akActor.WornHasKeyword(libs.zad_DeviousBoots)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
 
 Bool Function isActorNaked( Actor akActor )
 	if akActor.WornHasKeyword(ArmorCuirass) || akActor.WornHasKeyword(ClothingBody)
@@ -674,8 +693,11 @@ Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword 
 EndFunction
 
 Function setDeviousOutfitCollar ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	if ((!isCollarEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isCollarEquipped(Game.GetPlayer())) && (!bDevEquip))
+	if ((!isCollarEquipped(Game.GetPlayer())) && (bDevEquip)) 
 		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 0, bEquip = bDevEquip, sMessage = sDevMessage)
+
+	ElseIf ((isCollarEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousCollar, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
 EndFunction
 
@@ -720,6 +742,21 @@ Function setDeviousOutfitPlugVaginal ( Int iDevOutfit =-1, Bool bDevEquip = True
 		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 7, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
 EndFunction
+
+Function setDeviousOutfitBra ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
+	if ((!isBraEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isBraEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousBra, bEquip = bDevEquip, sMessage = sDevMessage)
+
+	EndIf
+EndFunction
+
+Function setDeviousOutfitBoots( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
+	if ((!isBootsEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isBootsEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousBoots, bEquip = bDevEquip, sMessage = sDevMessage)
+
+	EndIf
+EndFunction
+
 
 Function setDeviousOutfitID ( Int iOutfit, String sMessage = "")
 	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iOutfit", iOutfit)
@@ -1108,7 +1145,7 @@ Function setDeviousOutfitByKeyword ( Int iOutfit, Int iOutfitPart = -1, Keyword 
 
 	If (iOutfitPart!=-1) 
 
-		Debug.Trace("[SD] Set device by keyword: " + ddArmorKeyword )
+		Debug.Trace("[SD] Set device by part"  + iOutfitPart + " and keyword: " + ddArmorKeyword )
 
 		If (bEquip)
 			sDeviceTags = StorageUtil.StringListGet(kMaster, "_SD_lDevices", iOutfitPart)  
@@ -1134,6 +1171,12 @@ Function setDeviousOutfitByKeyword ( Int iOutfit, Int iOutfitPart = -1, Keyword 
 		Else
 			Debug.Trace("[SD] Aborting device update - no device found"  )
 		EndIf
+	Else
+		; If iOutfitPart = -1, use purely generic device functions
+
+		Debug.Trace("[SD] Set device by keyword only: " + ddArmorKeyword )
+
+		libs.ManipulateGenericDeviceByKeyword(kSlave, ddArmorKeyword, bEquip, skipEvents = false, skipMutex = false)
 
 	EndIf
 
@@ -1202,8 +1245,10 @@ EndFunction
 Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
-	If (bDevPlugAnal)  
+	If (bDevPlugAnal) && (isMasterSpeaking==1)
 		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
 			
@@ -1212,7 +1257,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
-	If (bDevPlugVaginal) && (playerGender==1)
+	If (bDevPlugVaginal) && (playerGender==1) && (isMasterSpeaking==1)
 		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly and shoves a cold plug into your abused womb." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 		
@@ -1222,7 +1267,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	EndIf
 
 	; Belt
-	If (bDevBelt)  
+	If (bDevBelt)  && (isMasterSpeaking==1)
 		Debug.MessageBox("'Let's watch you squirm... that will change me from your attitude.'\n Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
@@ -1239,7 +1284,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 
 	; Gag
 
-	If (bDevGag)
+	If (bDevGag) && (isMasterSpeaking==1)
 		Debug.MessageBox("'I don't want to hear one more word from you!'\n Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
@@ -1252,8 +1297,10 @@ EndFunction
 Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
-	If (bDevPlugAnal) && !isPlugAnalEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn"  )
+	If (bDevPlugAnal) && !isPlugAnalEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn"  ) && (isMasterSpeaking==1)
 		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
 			
@@ -1262,7 +1309,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 		setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
-	If (bDevPlugVaginal) && !isPlugVaginalEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag"  )
+	If (bDevPlugVaginal) && !isPlugVaginalEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag"  ) && (isMasterSpeaking==1)
 		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
@@ -1272,7 +1319,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 	EndIf
 
 	; Belt
-	If (bDevBelt)
+	If (bDevBelt) && (isMasterSpeaking==1)
 		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
 			
@@ -1289,7 +1336,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 
 	; Gag
 
-	If (bDevGag)
+	If (bDevGag) && (isMasterSpeaking==1)
 		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
 

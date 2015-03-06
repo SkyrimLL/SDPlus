@@ -15,6 +15,7 @@ Idle[] Property _SDIAP_bound  Auto
 Idle Property _SDIAP_reset  Auto  
 
 Faction Property SexLabActiveFaction  Auto  
+SexLabFramework property SexLab auto
 
 Int sleepType
 Actor kTarget
@@ -125,7 +126,7 @@ Event OnUpdate()
 			fctConstraints.libs.UpdateControls()
 			throttle = 0
 		EndIf		
-	ElseIf ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling") && !(_SDGVP_ArmbinderKnee.GetValue()==0))
+	ElseIf ( !kTarget.GetCurrentScene() && !kTarget.IsOnMount() && !kTarget.IsInFaction(SexLabActiveFaction)  && !StorageUtil.GetIntValue(kTarget, "_SD_iDisablePlayerAutoKneeling") && !(_SDGVP_ArmbinderKnee.GetValue()==0)) && (SexLab.ValidateActor( kTarget ) > 0)
 
 		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
 		;	fctConstraints.togglePlayerControlsOff()

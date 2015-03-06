@@ -13,12 +13,12 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 Game.GetPlayer().RemoveItem(Gold, 200 )
  
-fctOutfit.setDeviousOutfitPlugAnal (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitPlugVaginal (  bDevEquip = False, sDevMessage = "")
 fctOutfit.setDeviousOutfitBelt (  bDevEquip = False, sDevMessage = "")
 
+; fctOutfit.setDeviousOutfitPlugAnal (  bDevEquip = False, sDevMessage = "")
+; fctOutfit.setDeviousOutfitPlugVaginal (  bDevEquip = False, sDevMessage = "")
 
-		funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
+funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE
 EndFunction
 ;END FRAGMENT

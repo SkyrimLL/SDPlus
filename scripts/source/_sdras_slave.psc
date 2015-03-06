@@ -502,12 +502,27 @@ State monitor
 				; If (!bMariaEden)
 				; Endif
 
-				kActor = kSlaverDest as Actor
-				kActor.SendModEvent("PCSubTransfer")
 
-                Game.FadeOutGame(true, true, 0.5, 5)
-				(kSlave as ObjectReference).MoveTo( kSlaverDest )
-				Game.FadeOutGame(false, true, 2.0, 20)
+                ; Game.FadeOutGame(true, true, 0.5, 5)
+				; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+				; Replace by code to dreamDestination
+				Bool bWolfClub = False
+
+				If (Utility.RandomInt(0,100) > 70) 
+					bWolfClub = WolfClubEnslave() 
+				EndIf
+
+				If (!bWolfClub)
+					kActor = kSlaverDest as Actor
+					kActor.SendModEvent("PCSubTransfer")
+
+	                Game.FadeOutGame(true, true, 0.5, 5)
+					(kSlave as ObjectReference).MoveTo( kSlaverDest )
+					Game.FadeOutGame(false, true, 2.0, 20)
+				Else
+					SendModEvent("PCSubFree")
+				Endif
+
 
 				Utility.Wait( 1.0 )
 

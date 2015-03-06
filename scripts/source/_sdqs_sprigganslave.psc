@@ -83,6 +83,14 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDGVP_sprigganEnslaved.SetValue(1)
 		StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 1)
 
+		If StorageUtil.HasIntValue(kSlave, "_SD_iSprigganEnslavedCount")
+			StorageUtil.SetIntValue(kSlave, "_SD_iSprigganEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") + 1)
+			_SD_sprigganEnslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount"))
+		Else
+			StorageUtil.SetIntValue(kSlave, "_SD_iSprigganEnslavedCount", 1)
+			_SD_sprigganEnslavedCount.SetValue(StorageUtil.GetIntValue(akSlave, "_SD_iSprigganEnslavedCount"))
+		EndIf
+
 		; Drop current weapon 
 		if(akSlave.IsWeaponDrawn())
 			akSlave.SheatheWeapon()
@@ -329,12 +337,6 @@ Event OnUpdateGameTime()
 		EndWhile
 		fDaysUpdate = GetCurrentGameTime()
 
-		If StorageUtil.HasIntValue(kSlave, "_SD_iSprigganEnslavedCount")
-			StorageUtil.SetIntValue(kSlave, "_SD_iSprigganEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") + 1)
-		Else
-			StorageUtil.SetIntValue(kSlave, "_SD_iSprigganEnslavedCount", 1)
-		EndIf
-
 		If (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") == 1)
 			Debug.Messagebox("Your experience taking a spriggan essence back to its source gives you a unique bond with Kyne herself. Once a day, you will be able to call on nearby creatures for help.")
 			(kSlave as Actor).AddSpell( CallSpriggan )
@@ -384,6 +386,8 @@ EndEvent
 
 GlobalVariable Property _SDGVP_sprigganEnslaved  Auto  
 GlobalVariable Property _SD_spriggan_punishment  Auto  
+GlobalVariable Property _SD_sprigganEnslavedCount  Auto  
+
 ObjectReference Property _SD_sprigganHusk  Auto  
 FormList Property _SDFLP_ignore_items  Auto
 

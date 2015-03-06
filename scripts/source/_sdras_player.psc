@@ -127,7 +127,7 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 
 
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1)  &&  fctFactions.checkIfSlaver (  akAggressor )
+	; If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1)  &&  fctFactions.checkIfSlaver (  akAggressor )
 
 		; Debug.Notification("Your aggressor accepts your surrender...")
 
@@ -137,7 +137,8 @@ Bool Function checkForEnslavement( Actor akAggressor, Actor akPlayer, Bool bVerb
 		; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
 		; _SDKP_enslave.SendStoryEvent( akLoc = akAggressor.GetCurrentLocation(), akRef1 = akAggressor as Actor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
 	
-	ElseIf (Utility.RandomInt(0,100) > 70) && (_SD_dreamQuest.GetStage() != 0) && (raped>=2)
+	; Else
+	If (Utility.RandomInt(0,100) > 70) && (_SD_dreamQuest.GetStage() != 0) && (raped>=2)
 		; Monitor.BufferDamageReceived(9999.0)  ; restore all hp		
 		; SendModEvent("da_StartRecoverSequence")
 		; Debug.SetGodMode( False )
@@ -1196,22 +1197,43 @@ State monitor
 
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iForcedSurrender") ==1) 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender",0) 
-				
-			If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") != 1)  
+			
+			If (fctFactions.checkIfSlaver (  kAggressor ) || fctFactions.checkIfSlaverCreature (  kAggressor ) )	
+				If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)  
 
-				Debug.Trace("[_sdras_player] Forced surrender on hit - Start enslavement")
-				Debug.Notification("You surrender to your aggressor...")
-				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
+					Debug.Trace("[_sdras_player] Forced surrender on hit - Start enslavement")
+					Debug.Notification("You surrender to your aggressor...")
+					; StorageUtil.SetFormValue(kPlayer , "_SD_TempAggressor", akAggressor as Actor)
 
-				kAggressor.SendModEvent("PCSubEnslave") ; Enslavement
+					kAggressor.SendModEvent("PCSubEnslave") ; Enslavement
 
-			ElseIf (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1) 
+				ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) 
 
-				Debug.Trace("[_sdras_player] Forced surrender on hit - Start transfer")
-				Debug.Notification("You submit to your new master...")
-				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akAggressor as Actor)
+					Debug.Trace("[_sdras_player] Forced surrender on hit - Start transfer")
+					Debug.Notification("You submit to your new master...")
+					; StorageUtil.SetFormValue( kPlayer , "_SD_TempAggressor", akAggressor as Actor)
 
-				kAggressor.SendModEvent("PCSubTransfer") ; Enslavement
+					kAggressor.SendModEvent("PCSubTransfer") ; Enslavement
+				EndIf
+			Else
+					Debug.Trace("[_sdras_player] Forced surrender on hit - Start rape")
+					Debug.Notification("You submit to your aggressor...")
+					; StorageUtil.SetFormValue( kPlayer , "_SD_TempAggressor", akAggressor as Actor)
+
+					Debug.SendAnimationEvent(kPlayer, "Unequip")
+					Debug.SendAnimationEvent(kPlayer, "UnequipNoAnim")
+
+					; Drop current weapon 
+					if(kPlayer.IsWeaponDrawn())
+						kPlayer.SheatheWeapon()
+						Utility.Wait(2.0)
+					endif
+
+					fctOutfit.toggleActorClothing (  kPlayer,  bStrip = True,  bDrop = False )
+					fctConstraints.actorCombatShutdown( kPlayer )
+					fctConstraints.actorCombatShutdown( kAggressor )
+
+					kAggressor.SendModEvent("PCSubSex") ; Enslavement
 			EndIf
 		EndIf
 	EndEvent
