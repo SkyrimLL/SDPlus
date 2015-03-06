@@ -70,6 +70,8 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 
  	if (thisAggressor)
 		Debug.Trace("[SD] Sending enslavement story for actor: " + thisAggressor)
+		StorageUtil.SetIntValue(thisAggressor, "_SD_iForcedSlavery", 1)
+		StorageUtil.SetIntValue(thisAggressor, "_SD_iSpeakingNPC", 0)
 		thisAggressor.SendModEvent("PCSubEnslave")
 	else
 		Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")

@@ -650,7 +650,7 @@ State monitor
 		ENDIF
 
 		If  ((boHitByMelee) || (boHitByRanged)) && (!boHitByMagic) ; (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))
-			Debug.Messagebox( "I will teach you to raise a weapon at me!" )
+			Debug.Messagebox( "Your collar compels you to dro your weapon when attacking your owner." )
 
 			; Drop current weapon 
 			if(kSlave.IsWeaponDrawn())

@@ -8,15 +8,15 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			Float breastMod = 0.05
 			Float weightMod = 2.0
 
-			If (Utility.RandomInt(0,100)>80)
+			If (Utility.RandomInt(0,100)>60)
 				Int randomNum = Utility.RandomInt(0,100)
-				If (randomNum>90)
+				If (randomNum>80)
 					Debug.MessageBox("Glowing fluids spread from the Falmer's skin across yours like quicksilver, making your breasts grow and tingle painfully with poisonous ripples. ")
 					breastMod = 0.5
 					weightMod = 15.0
 					StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
 
-				ElseIf (randomNum>80)
+				ElseIf (randomNum>60)
 					Debug.MessageBox("The purpose of the glowing substance is clear to you now, fattening you up for breeding and turning you into an irresistible beacon for the Falmers and their pets.")
 					breastMod = 0.25
 					weightMod = 10.0

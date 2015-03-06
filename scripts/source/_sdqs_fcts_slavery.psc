@@ -50,8 +50,10 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 1)
 	If StorageUtil.HasIntValue(kSlave, "_SD_iEnslavedCount")
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount") + 1)
+		_SDGVP_enslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount"))
 	Else
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedCount", 1)
+		_SDGVP_enslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount"))
 	EndIf
 
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", kMaster)
@@ -299,8 +301,10 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	If fctFactions.checkIfFalmer ( kMaster)
 		If StorageUtil.HasIntValue(kSlave, "_SD_iFalmerEnslavedCount")
 			StorageUtil.SetIntValue(kSlave, "_SD_iFalmerEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iFalmerEnslavedCount") + 1)
+			_SDGVP_falmerEnslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iFalmerEnslavedCount"))
 		Else
 			StorageUtil.SetIntValue(kSlave, "_SD_iFalmerEnslavedCount", 1)
+			_SDGVP_falmerEnslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iFalmerEnslavedCount"))
 		EndIf
 	Endif
 
@@ -320,74 +324,75 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 
 	Debug.Trace("[SD] Init master devices - outfitID: " + iOutfit)
 
-
 	if (StorageUtil.StringListCount( kMaster, "_SD_lDevices") != 0)
 		Debug.Trace("[SD] Init master devices - aborting - list already set")
 		Return
-	EndIf	
+	Else
 
-	fctOutfit.registerDeviousOutfitsKeywords (  kMaster )
+		fctOutfit.registerDeviousOutfitsKeywords (  kMaster )
 
-	if (iOutfit <= 2) 
-		If (masterPersonalityType == 0)
-			; 0 - Simple, Common
+		if (iOutfit <= 2) 
+			If (masterPersonalityType == 0)
+				; 0 - Simple, Common
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,primitive") ; 6 - Plug Anal
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,primitive") ; 7 - Plug Vaginal
+
+			ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
+				; 4 - Gambler, 5 - Caring
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,iron") ; 6 - Plug Anal
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,iron") ; 7 - Plug Vaginal
+
+			ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
+				; 3 - Sadistic, 6 - Perfectionist
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" ) ) ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 2 - Legs cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 3 - Gag
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 4 - Blindfold
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,soulgem") ; 6 - Plug Anal
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,soulgem") ; 7 - Plug Vaginal
+
+			ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
+				; 1 - Comfortable , 2 - Horny
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,strap") ; 3 - Gag
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,inflatable") ; 6 - Plug Anal
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,inflatable") ; 7 - Plug Vaginal
+			EndIf
+
+
+			; Harness disabled for now as it overlaps with collar
+			; StorageUtil.StringListAdd(Game.GetPlayer(), "_SD_lDevices", "harness,leather,black") ; 6 - Harness
+
+		Else ; Other
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
 			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,primitive") ; 6 - Plug Anal
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,primitive") ; 7 - Plug Vaginal
-
-		ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
-			; 4 - Gambler, 5 - Caring
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,iron") ; 6 - Plug Anal
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,iron") ; 7 - Plug Vaginal
-
-		ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
-			; 3 - Sadistic, 6 - Perfectionist
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" ) ) ; 1 - Arms cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 2 - Legs cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 3 - Gag
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 4 - Blindfold
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,soulgem") ; 6 - Plug Anal
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,soulgem") ; 7 - Plug Vaginal
-
-		ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
-			; 1 - Comfortable , 2 - Horny
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,strap") ; 3 - Gag
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,inflatable") ; 6 - Plug Anal
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,inflatable") ; 7 - Plug Vaginal
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
+			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
 		EndIf
 
-
-		; Harness disabled for now as it overlaps with collar
-		; StorageUtil.StringListAdd(Game.GetPlayer(), "_SD_lDevices", "harness,leather,black") ; 6 - Harness
-
-	Else ; Other
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
-		StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-	EndIf
+	EndIf	
 
 EndFunction
 
@@ -936,7 +941,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		statusDominance = "Defiant \n"
 	Endif
 
-	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\nTrust: " + masterTrust
+	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "("  + overallMasterDisposition +")"+ "\nTrust: " + masterTrust
 	Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + " (" + exposure + ")")
 
 	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
@@ -1038,6 +1043,132 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	Return iTrust
 EndFunction
 
+function InitPunishmentIdle( )
+	Actor kPlayer = Game.getPlayer()
+	ObjectReference kPlayerRef = Game.getPlayer() as ObjectReference
+	Int iRandomNum  
+
+	Debug.Trace("[SD] Init punishment idles")
+
+	if (StorageUtil.StringListCount( kPlayer, "_SD_lPunishmentsIndoors") == 0)
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO301")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO302")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO303")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO304")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO305")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC019")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO001") ;   AnimObjectZazAPCAO001		PostGibbetKneel				
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO002") ;   AnimObjectZazAPCAO002		PostGibbetSit			
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO003") ;   AnimObjectZazAPCAO003		PostGibbetStand
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO004") ;   AnimObjectZazAPCAO004		PostGibbetStandHandsBehind
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO005") ;   AnimObjectZazAPCAO005		WallGibbetKneel	
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO006") ;   AnimObjectZazAPCAO006		WallGibbetSit
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO007") ;   AnimObjectZazAPCAO007		WallGibbetStand
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO008") ;   AnimObjectZazAPCAO008		WallGibbetStandHandsBehind
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO011") ;   AnimObjectZazAPCAO011		PostRestraintStandHandBehind
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO012") ;   AnimObjectZazAPCAO012		PostRestraintKneelHandBehind
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO013") ;   AnimObjectZazAPCAO013		PostRestraintStandHandSpread
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO014") ;   AnimObjectZazAPCAO014		PostRestraintStandHandUp
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO015") ;   AnimObjectZazAPCAO015		PostRestraintUpsideDown
+ 		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO016") ;   AnimObjectZazAPCAO016		PostRestraintDisplayed
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO017") ;   AnimObjectZazAPCAO017		WallRestraintStandHandBehind
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO018") ;   AnimObjectZazAPCAO018		WallRestraintKneelHandBehind
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO019") ;   AnimObjectZazAPCAO019		WallRestraintStandHandSpread
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO020") ;   AnimObjectZazAPCAO020		WallRestraintStandHandUp
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO021") ;   AnimObjectZazAPCAO021		WallRestraintUpsideDown
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO022") ;   AnimObjectZazAPCAO022		WallRestraintDisplayed
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO023") ;   AnimObjectZazAPCAO023		Vertical Pillory
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO201") ;   AnimObjectZazAPCAO201		FacingPostStand
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO202") ;   AnimObjectZazAPCAO202		BackFacingPostStand
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO203") ;   AnimObjectZazAPCAO203		BackFacingPostHung
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO204") ;   AnimObjectZazAPCAO204		BackFacingPostKneel
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO205") ;   AnimObjectZazAPCAO205		BackFacingPostSit
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO251") ;   AnimObjectZazAPCAO251		Normal
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO252") ;   AnimObjectZazAPCAO252		KneesBent
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC006") ;  		HandsBehindSitFloor						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC007") ;  		HandsBehindSitFloorLegSpread					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC008") ;  		HandsBehindSitFloorKneestoChest					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC009") ;  		HandsBehindSitFloorKneestoChestLegSpread			
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC010") ;  		HandsBehindSitFloorSide						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC011") ;  		HandsBehindLieFaceDown						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC012") ;  		HandsBehindLieSide						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC013") ;  		HandsBehindLieFaceUp						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC014") ;  		HandsBehindLieSideCurlUp					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC015") ; 		HandsBehindLieHogtieFaceDown					
+ 		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC016") ;  		HandsBehindKneelHigh						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC017") ;  		HandsBehindKneelHighLegSpread					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC018") ;  		HandsBehindKneelLow
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC019") ;  		HandsBehindKneelLegSpread					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC020") ;  	    HandsBehindKneelBowDown
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC054") ;  		HandsBehindLieFaceUpLegsSpread-Struggle I
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC055") ;  		HandsBehindLieFaceUpLegsSpread-Struggle II
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC056") ;  		HogTieFaceDownLegsSpread
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC057") ;  		FrogTieFaceDownStruggle
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPC058") ;  		HandsBehindKneel
+ 	EndIf
+
+	if (StorageUtil.StringListCount( kPlayer, "_SD_lPunishmentsOutdoors") == 0)
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO014")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO011")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO201")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO203")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO201")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO016")
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO009") ;  AnimObjectZazAPCAO009		PilloryIdle	
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO010") ;   AnimObjectZazAPCAO010		PilloryPose
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO024") ;   AnimObjectZazAPCAO024		Wooden Horse
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO025") ;   AnimObjectZazAPCAO025		X Cross
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO261") ;   AnimObjectZazAPCAO261		NormalWheel
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO262") ;   AnimObjectZazAPCAO262		HighWheel
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPCAO263") ;   AnimObjectZazAPCAO263		Tilted Wheel	
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC006") ;  		HandsBehindSitFloor						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC007") ;  		HandsBehindSitFloorLegSpread					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC008") ;  		HandsBehindSitFloorKneestoChest					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC009") ;  		HandsBehindSitFloorKneestoChestLegSpread			
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC010") ;  		HandsBehindSitFloorSide						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC011") ;  		HandsBehindLieFaceDown						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC012") ;  		HandsBehindLieSide						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC013") ;  		HandsBehindLieFaceUp						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC014") ;  		HandsBehindLieSideCurlUp					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC015") ;  		HandsBehindLieHogtieFaceDown					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC016") ;  		HandsBehindKneelHigh						
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC017") ;  		HandsBehindKneelHighLegSpread					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC018") ;  		HandsBehindKneelLow
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC019") ;  		HandsBehindKneelLegSpread					
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC020") ;  	    HandsBehindKneelBowDown
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC054") ;  		HandsBehindLieFaceUpLegsSpread-Struggle I
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC055") ;  		HandsBehindLieFaceUpLegsSpread-Struggle II
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC056") ;  		HogTieFaceDownLegsSpread
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC057") ;  		FrogTieFaceDownStruggle
+		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsOutdoors", "ZazAPC058") ;  		HandsBehindKneel
+	EndIf
+EndFunction
+
+function PlayPunishmentIdle( string sPunishmentIdle = "" )
+	Actor kPlayer = Game.getPlayer()
+	ObjectReference kPlayerRef = Game.getPlayer() as ObjectReference
+	Int iRandomNum  
+
+	If (sPunishmentIdle != "")
+		Debug.SendAnimationEvent( kPlayerRef , sPunishmentIdle )
+	else
+		If ( kPlayer.GetParentCell().IsInterior())
+			iRandomNum = Utility.RandomInt(0, StorageUtil.StringListCount( kPlayer, "_SD_lPunishmentsIndoors") - 1 )
+			sPunishmentIdle = StorageUtil.StringListGet(kPlayer, "_SD_lPunishmentsIndoors", iRandomNum)  
+			Debug.SendAnimationEvent( kPlayerRef , sPunishmentIdle )
+
+		Else
+			iRandomNum = Utility.RandomInt(0, StorageUtil.StringListCount( kPlayer, "_SD_lPunishmentsOutdoors") - 1)
+			sPunishmentIdle = StorageUtil.StringListGet(kPlayer, "_SD_lPunishmentsOutdoors", iRandomNum)  
+			Debug.SendAnimationEvent( kPlayerRef , sPunishmentIdle )
+
+		EndIf
+	Endif
+
+	Debug.Trace("[SD] Play punishment idle: " + sPunishmentIdle)
+
+EndFunction
+
 Float Function GetEnslavementDuration(Actor kSlave)
 	Return ( _SDGVP_gametime.GetValue() -	StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavedGameTime" ) )
 EndFunction
@@ -1048,6 +1179,9 @@ GlobalVariable Property _SDGVP_gametime  Auto
 GlobalVariable Property _SDGVP_enslaved  Auto  
 GlobalVariable Property _SDGVP_can_join  Auto  
 GlobalVariable Property _SDGVP_sanguine_blessings Auto  
+GlobalVariable Property _SDGVP_enslavedCount  Auto  
+GlobalVariable Property _SDGVP_falmerEnslavedCount  Auto  
+
  
 GlobalVariable Property _SDGVP_config_min_slavery_level Auto
 GlobalVariable Property _SDGVP_config_max_slavery_level Auto

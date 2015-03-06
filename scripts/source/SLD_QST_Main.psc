@@ -163,10 +163,10 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	; - Last time sex (from sexlab)
 
 	if ( _SLD_NPCdisposition.GetValue() > 0 )
-		Debug.Notification("(smiling) Yes?")
+		Debug.Notification("(smiling)")
 
 	Elseif ( _SLD_NPCdisposition.GetValue() < 0 )
-		Debug.Notification("(frowning) What is it now?")
+		Debug.Notification("(frowning)")
 
 	Endif
 

@@ -80,6 +80,8 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 		; Debug.Trace("[SD] Sending enslavement story.")
 		; _SDKP_enslave.SendStoryEvent( akLoc = thisLocation, akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
 		; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", thisAggressor)
+		StorageUtil.SetIntValue(thisAggressor, "_SD_iForcedSlavery", 1)
+		StorageUtil.SetIntValue(thisAggressor, "_SD_iSpeakingNPC", 1)
 		thisAggressor.SendModEvent("PCSubEnslave")
 	else
 		Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")

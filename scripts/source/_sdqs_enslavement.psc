@@ -125,9 +125,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		fctOutfit.toggleActorClothing (  kSlave,  bStrip = True,  bDrop = False )
 
-		If ( kSlave.IsSneaking() )
-			kSlave.StartSneaking()
-		EndIf
+		; If ( kSlave.IsSneaking() )
+		; 	kSlave.StartSneaking()
+		; EndIf
 
 		Utility.Wait(1.0)
 
@@ -138,15 +138,22 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Testing - stop combat should happen outside of enslavement, to allow for fight between old and new master on transfer of ownership
 		; Still needed after all. Weird things happen if new master is killed before enslavement fully starts.
 		; Keeping the attempt at fighting for the atmosphere and role play for now
-		kSlave.StopCombatAlarm()
-		kSlave.StopCombat()
+		; kSlave.StopCombatAlarm()
+		; kSlave.StopCombat()
 
 		; ---
 
 		_SDGVP_stats_enslaved.Mod( 1.0 )
 		_SDGVP_enslaved.SetValue(1)
-		StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 1)
-		
+
+		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") != 1)		
+			StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 0)
+		EndIf
+
+		if (StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC") != 1)		
+			StorageUtil.SetIntValue(kMaster, "_SD_iSpeakingNPC", 0)
+		EndIf
+
 		; a new slave into a slaver faction
 		If ( aiValue2 == 0 )
 			bOriginallyEnemies = fctFactions.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )
