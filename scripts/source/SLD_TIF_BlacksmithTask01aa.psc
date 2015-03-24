@@ -13,6 +13,7 @@ Self.GetOwningQuest().SetStage(100)
 
 kPlayerRef.AddItem(AlvorKey, 1)
 kPlayer.AddToFaction( AlvorFaction)
+HomeLockList.AddForm(kPlayer as Form)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -22,3 +23,4 @@ EndFunction
 Key Property AlvorKey  Auto  
 
 Faction Property AlvorFaction  Auto  
+FormList Property HomeLockList Auto

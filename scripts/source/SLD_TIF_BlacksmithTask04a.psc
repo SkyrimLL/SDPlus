@@ -11,6 +11,7 @@ ObjectReference kPlayerRef = Game.GetPlayer()
 
 kPlayerRef.AddItem(BalimundKey  ,1)
 kPlayer.AddToFaction( BalimundFaction )
+HomeLockList.AddForm(kPlayer as Form)
 
 Self.GetOwningQuest().SetStage(310)
 ;END CODE
@@ -22,3 +23,4 @@ EndFunction
 Key Property BalimundKey  Auto  
 
 Faction Property BalimundFaction  Auto  
+FormList Property HomeLockList Auto

@@ -11,6 +11,7 @@ ObjectReference kPlayerRef = Game.GetPlayer()
 
 kPlayerRef.AddItem(OengulKey, 1)
 kPlayer.AddToFaction( OengulFaction)
+HomeLockList.AddForm(kPlayer as Form)
 
 Self.GetOwningQuest().SetStage(175)
 ;END CODE
@@ -22,3 +23,5 @@ EndFunction
 Key Property OengulKey  Auto  
 
 Faction Property OengulFaction  Auto  
+
+FormList Property HomeLockList Auto
