@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLD_TIF_Blacksmith10 Extends TopicInfo Hidden
+Scriptname SLD_TIF_Blacksmith10ghorzadead Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -15,7 +15,7 @@ sMessage = sMessage + "\nWeapons Tempered: " + Game.QueryStat("Weapons Improved"
 
 Debug.MessageBox( sMessage )
 
-Self.GetOwningQuest().SetStage(55)
+Self.GetOwningQuest().SetStage(300)
 ;END CODE
 EndFunction
 ;END FRAGMENT

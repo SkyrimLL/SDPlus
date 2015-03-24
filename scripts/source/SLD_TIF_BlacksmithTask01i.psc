@@ -11,6 +11,8 @@ ObjectReference kPlayerRef = Game.GetPlayer()
 
 kPlayerRef.AddItem(RustleifKey, 1)
 kPlayer.AddToFaction( RustleifFaction)
+HomeLockList.AddForm(kPlayer as Form)
+
 
 Self.GetOwningQuest().SetStage(165)
 ;END CODE
@@ -22,3 +24,5 @@ EndFunction
 Key Property RustleifKey  Auto  
 
 Faction Property RustleifFaction  Auto  
+
+FormList Property HomeLockList Auto
