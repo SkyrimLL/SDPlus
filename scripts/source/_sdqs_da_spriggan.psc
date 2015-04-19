@@ -68,8 +68,15 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	UnregisterForUpdate()
 	UnregisterForModEvent("da_PlayerRecovered")
 
-	_SDKP_spriggan.SendStoryEvent(akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
- 
+	; _SDKP_spriggan.SendStoryEvent(akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
+  	if (thisAggressor)
+		Debug.Trace("[SD] Sending spriggan enslavement story for actor: " + thisAggressor)
+		; StorageUtil.SetIntValue(thisAggressor, "_SD_iForcedSlavery", 1)
+		; StorageUtil.SetIntValue(thisAggressor, "_SD_iSpeakingNPC", 0)
+		thisAggressor.SendModEvent("SDSprigganEnslave")
+	else
+		Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_spriggan.")
+	EndIf
 
 endEvent 
 

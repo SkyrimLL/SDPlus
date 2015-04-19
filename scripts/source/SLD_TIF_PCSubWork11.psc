@@ -6,11 +6,16 @@ Scriptname SLD_TIF_PCSubWork11 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-StorageUtil.SetIntValue( Game.getPlayer() , "_SD_iEnableWeaponEquip", 1)
-StorageUtil.SetIntValue( Game.getPlayer() , "_SD_iEnableArmorEquip", 1)
-StorageUtil.SetIntValue( Game.getPlayer() , "_SD_iEnableFight", 1)
-StorageUtil.SetStringValue( Game.GetPlayer(), "_SD_sDefaultStance", "Standing")
-StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableStand", 1 )
+Actor kPlayer = Game.Getplayer()
+
+StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1)
+StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1)
+
+StorageUtil.SetIntValue( kPlayer , "_SD_iEnableWeaponEquip", 1)
+StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableArmorEquip", 1)
+StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableFight", 1)
+StorageUtil.SetStringValue( kPlayer , "_SD_sDefaultStance", "Standing")
+StorageUtil.SetIntValue( kPlayer , "_SD_iEnableStand", 1 )
 
 SendModEvent( "SDHandsFreeSlave" )
 ;END CODE

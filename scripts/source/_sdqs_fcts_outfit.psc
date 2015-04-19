@@ -271,6 +271,16 @@ Bool Function isCuffsEquipped (  Actor akActor )
 
 EndFunction
 
+Bool Function isYokeEquipped (  Actor akActor )
+
+	if akActor.WornHasKeyword(libs.zad_DeviousYoke)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
 Bool Function isShacklesEquipped (  Actor akActor )
 
 	if akActor.WornHasKeyword(libs.zad_DeviousLegCuffs)
@@ -362,6 +372,17 @@ Bool Function isBootsEquipped (  Actor akActor )
 	endIf
 
 EndFunction
+
+Bool Function isHarnessEquipped (  Actor akActor )
+
+	if akActor.WornHasKeyword(libs.zad_DeviousHarness)
+	  	return True 
+	Else
+		Return False
+	endIf
+
+EndFunction
+
 
 Bool Function isActorNaked( Actor akActor )
 	if akActor.WornHasKeyword(ArmorCuirass) || akActor.WornHasKeyword(ClothingBody)
@@ -616,9 +637,114 @@ Bool Function isPlugVaginalEquippedKeyword( Actor akActor,  String sKeyword  )
 	Return isDeviousOutfitPartByKeyword (  akActor, 7, sKeyword )
 EndFunction
 
+Keyword Function getDeviousKeywordFromString(String deviousKeyword = "zad_Lockable"  )
+	Keyword thisKeyword = None
+ 
+
+	if (deviousKeyword == "_SD_DeviousSanguine" )
+		thisKeyword = _SDKP_DeviousSanguine
+
+	elseif (deviousKeyword == "_SD_DeviousSpriggan" )
+		thisKeyword = _SDKP_DeviousSpriggan
+
+	elseif (deviousKeyword == "_SD_DeviousEnslaved" )
+		thisKeyword = _SDKP_DeviousEnslaved
+
+	elseif (deviousKeyword == "_SD_DeviousEnslavedCommon" )
+		thisKeyword = _SDKP_DeviousEnslavedCommon
+
+	elseif (deviousKeyword == "_SD_DeviousEnslavedMagic" )
+		thisKeyword = _SDKP_DeviousEnslavedMagic
+
+	elseif (deviousKeyword == "_SD_DeviousEnslavedPrimitive" )
+		thisKeyword = _SDKP_DeviousEnslavedPrimitive
+
+	elseif (deviousKeyword == "_SD_DeviousEnslavedWealthy" )
+		thisKeyword = _SDKP_DeviousEnslavedWealthy
+
+	elseif (deviousKeyword == "_SD_DeviousParasiteAn" )
+		thisKeyword = _SDKP_DeviousParasiteAn
+
+	elseif (deviousKeyword == "_SD_DeviousParasiteVag" )
+		thisKeyword = _SDKP_DeviousParasiteVag
+
+	elseif (deviousKeyword == "zad_DeviousPlug")
+		thisKeyword = libs.zad_DeviousPlug
+
+	elseif (deviousKeyword == "zad_DeviousBelt")
+		thisKeyword = libs.zad_DeviousBelt
+
+	elseif (deviousKeyword == "zad_DeviousBra")
+		thisKeyword = libs.zad_DeviousBra
+
+	elseif (deviousKeyword == "zad_DeviousCollar")
+		thisKeyword = libs.zad_DeviousCollar
+
+	elseif (deviousKeyword == "zad_DeviousArmCuffs")
+		thisKeyword = libs.zad_DeviousArmCuffs
+
+	elseif (deviousKeyword == "zad_DeviousLegCuffs")
+		thisKeyword = libs.zad_DeviousLegCuffs
+
+	elseif (deviousKeyword == "zad_DeviousArmbinder")
+		thisKeyword = libs.zad_DeviousArmbinder
+
+	elseif (deviousKeyword == "zad_DeviousYoke")
+		thisKeyword = libs.zad_DeviousYoke
+
+	elseif (deviousKeyword == "zad_DeviousCorset")
+		thisKeyword = libs.zad_DeviousCorset
+
+	elseif (deviousKeyword == "zad_DeviousClamps")
+		thisKeyword = libs.zad_DeviousClamps
+
+	elseif (deviousKeyword == "zad_DeviousGloves")
+		thisKeyword = libs.zad_DeviousGloves
+
+	elseif (deviousKeyword == "zad_DeviousHood")
+		thisKeyword = libs.zad_DeviousHood
+
+	elseif (deviousKeyword == "zad_DeviousSuit")
+		thisKeyword = libs.zad_DeviousSuit
+
+	elseif (deviousKeyword == "zad_DeviousGag")
+		thisKeyword = libs.zad_DeviousGag
+
+	elseif (deviousKeyword == "zad_DeviousGagPanel")
+		thisKeyword = libs.zad_DeviousGagPanel
+
+	elseif (deviousKeyword == "zad_DeviousPlugVaginal")
+		thisKeyword = libs.zad_DeviousPlugVaginal
+
+	elseif (deviousKeyword == "zad_DeviousPlugAnal")
+		thisKeyword = libs.zad_DeviousPlugAnal
+
+	elseif (deviousKeyword == "zad_DeviousHarness")
+		thisKeyword = libs.zad_DeviousHarness
+
+	elseif (deviousKeyword == "zad_DeviousBlindfold")
+		thisKeyword = libs.zad_DeviousBlindfold
+
+	elseif (deviousKeyword == "zad_DeviousBoots")
+		thisKeyword = libs.zad_DeviousBoots
+
+	elseif (deviousKeyword == "zad_DeviousPiercingsNipple")
+		thisKeyword = libs.zad_DeviousPiercingsNipple
+
+	elseif (deviousKeyword == "zad_DeviousPiercingsVaginal")
+		thisKeyword = libs.zad_DeviousPiercingsVaginal
+
+	elseif (deviousKeyword == "zad_Lockable")
+		thisKeyword = libs.zad_Lockable
+
+	endIf
+
+	return thisKeyword
+EndFunction
 
 Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -1, String deviousKeyword = "zad_Lockable"  )
 	Form kForm
+	Keyword kKeyword
 	Int[] uiSlotMask = New Int[8]
 	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
 	uiSlotMask[1] = 0x20000000 ;59  DD Armbinder / DD Cuffs (Arms) 
@@ -649,12 +775,13 @@ Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -
 		EndIf
 
 	EndIf
-
+ 
 	Return False
 EndFunction
 
 
 Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword = "zad_Lockable" )
+ 
 	Form kForm
 	Int[] uiSlotMask = New Int[13]
 	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
@@ -729,6 +856,11 @@ Function setDeviousOutfitBelt ( Int iDevOutfit =-1, Bool bDevEquip = True, Strin
 	if ((!isBeltEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isBeltEquipped(Game.GetPlayer())) && (!bDevEquip))
 		setDeviousOutfit ( iOutfitID= iDevOutfit, iOutfitPart = 5, bEquip = bDevEquip, sMessage = sDevMessage)
 	EndIf
+
+	if ((isHarnessEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousHarness, bEquip = bDevEquip, sMessage = sDevMessage)
+
+	EndIf
 EndFunction
 
 Function setDeviousOutfitPlugAnal ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
@@ -753,6 +885,20 @@ EndFunction
 Function setDeviousOutfitBoots( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
 	if ((!isBootsEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isBootsEquipped(Game.GetPlayer())) && (!bDevEquip))
 		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousBoots, bEquip = bDevEquip, sMessage = sDevMessage)
+
+	EndIf
+EndFunction
+
+Function setDeviousOutfitHarness( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
+	if ((!isHarnessEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isHarnessEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousHarness, bEquip = bDevEquip, sMessage = sDevMessage)
+
+	EndIf
+EndFunction
+
+Function setDeviousOutfitYoke( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
+	if ((!isYokeEquipped(Game.GetPlayer())) && (bDevEquip)) || ((isYokeEquipped(Game.GetPlayer())) && (!bDevEquip))
+		setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=libs.zad_DeviousYoke, bEquip = bDevEquip, sMessage = sDevMessage)
 
 	EndIf
 EndFunction
@@ -1356,6 +1502,17 @@ Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
 Keyword Property ArmorCuirass  Auto  
 Keyword Property ClothingBody  Auto  
+
+Keyword Property _SDKP_DeviousSanguine  Auto  
+Keyword Property _SDKP_DeviousEnslaved  Auto  
+Keyword Property _SDKP_DeviousEnslavedCommon  Auto  
+Keyword Property _SDKP_DeviousEnslavedMagic  Auto  
+Keyword Property _SDKP_DeviousEnslavedPrimitive  Auto  
+Keyword Property _SDKP_DeviousEnslavedWealthy  Auto  
+Keyword Property _SDKP_DeviousSpriggan  Auto  
+Keyword Property _SDKP_DeviousParasiteAn  Auto  
+Keyword Property _SDKP_DeviousParasiteVag  Auto  
+
 
 zadLibs Property libs Auto
 SexLabFrameWork Property SexLab Auto

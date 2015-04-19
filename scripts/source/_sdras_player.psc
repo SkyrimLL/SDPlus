@@ -374,7 +374,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		;
 	; EndIf
 
-	if animation.HasTag("Chaurus") 
+	if animation.HasTag("Chaurus") && (funct._hasPlayer(actors))
 		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isPlugVaginalEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag"  )
 
 			kPlayer.SendModEvent("SDParasiteVag")
@@ -382,7 +382,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 	EndIf
 
-	if animation.HasTag("Spider")
+	if animation.HasTag("Spider") && (funct._hasPlayer(actors))
 		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isPlugAnalEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn"  )
 
 			kPlayer.SendModEvent("SDParasiteAn")
@@ -405,7 +405,18 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
 
-			Else 
+				; If master is trusting slave, increased chance of hands free after sex
+				If (StorageUtil.GetIntValue(kCurrentMaster, "_SD_iTrust")>0) && (Utility.RandomInt(0,100) > 70) && (actors.Length > 1) ; Exclude masturbation
+				; Chance player will keep armbinders after sex
+					Debug.Notification("Your hands remain free.. lucky you.")
+
+				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
+				EndIf
+			Else
+
+
 				If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
@@ -414,7 +425,6 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				EndIf
-
 			EndIf
 
 			int idx = 0
@@ -679,12 +689,12 @@ Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form 
 
 EndEvent
 
-Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-
+Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 15.0, Form _sender)
+	int stageID = _argc as Int
 	; Dreamworld has to be visited at least once for this event to work
 
 	If (_SDGVP_sanguine_blessing.GetValue() > 0) 
-		_SD_dreamQuest.SetStage(15)
+		_SD_dreamQuest.SetStage(stageID)
 	EndIf
 
 EndEvent

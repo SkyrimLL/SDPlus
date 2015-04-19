@@ -9,7 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor kPlayer = Game.GetPlayer() as Actor
 ObjectReference kPlayerRef = Game.GetPlayer()
 
-Self.GetOwningQuest().SetStage(440)
+Self.GetOwningQuest().SetStage(435)
 
 kPlayerRef.RemoveItem( DragonBones, 15)
 kPlayerRef.AddItem( DragonArmor, 1)

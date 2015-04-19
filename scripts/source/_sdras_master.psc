@@ -562,6 +562,7 @@ State monitor
 		fGoldEarned = 0.0
 
 		If (kMaster.IsDead())
+			Debug.Trace( "[SD] Item added to a dead master." )
 			Return
 		EndIf
 
@@ -572,6 +573,7 @@ State monitor
 			If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
 				; Master receives Food
 				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
+				fctSlavery.ModMasterTrust( kMaster, 1)
 
 				If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 					Debug.Notification("Mmm.. that should hit the spot.")
@@ -598,17 +600,22 @@ State monitor
 
 				fGoldEarned = fGoldEarned + fGoldCoins
 
-				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
-				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
+				If (fGoldEarned > 0) 
+					fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
+					StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
 
-				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
+					_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
+					
+					fctSlavery.ModMasterTrust( kMaster, 1)
 
-				If (fGoldEarned > 0) && ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-					Debug.Notification("Good slave... keep it coming.")
+					If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
+						Debug.Notification("Good slave... keep it coming.")
 
-				ElseIf (fGoldEarned > 0)
-					Debug.Notification("That's right.")
-					Debug.Notification("You don't have a use for gold anymore.")
+					Else
+						Debug.Notification("That's right.")
+						Debug.Notification("You don't have a use for gold anymore.")
+					Endif
+
 				ElseIf (fGoldEarned == 0)
 					Debug.Notification("What is this junk!?.")
 				EndIf
@@ -650,7 +657,7 @@ State monitor
 		ENDIF
 
 		If  ((boHitByMelee) || (boHitByRanged)) && (!boHitByMagic) ; (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))
-			Debug.Messagebox( "Your collar compels you to dro your weapon when attacking your owner." )
+			Debug.Messagebox( "Your collar compels you to drop your weapon when attacking your owner." )
 
 			; Drop current weapon 
 			if(kSlave.IsWeaponDrawn())
