@@ -45,6 +45,7 @@ GlobalVariable Property _SDGVP_work_start  Auto
 GlobalVariable Property _SDGVP_buyout  Auto
 GlobalVariable Property _SDGVP_isLeashON  Auto
 GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto  
+GlobalVariable Property _SDGVP_config_limited_removal  Auto  
 
 
 ReferenceAlias Property _SDRAP_cage  Auto
@@ -390,6 +391,13 @@ State monitor
 		EndIf
 
 		fDistance = kSlave.GetDistance( kLeashCenter )
+
+		If ( kSlave.GetDistance( kMaster ) < fDistance)
+			; If master is closer than previously set center of leash... could be because of a change of cell
+			fctConstraints.setLeashCenterRef(kMaster as ObjectReference)
+			kLeashCenter = kMaster
+		EndIf
+
 		fMasterDistance = kSlave.GetDistance( kMaster )
 		kCombatTarget = kSlave.GetCombatTarget()
 
@@ -725,8 +733,8 @@ State monitor
 					Debug.MessageBox( "After being choked by the collar, you wake up next to your owner." )
 
 
-					enslavement.PunishSlave(kMaster,kSlave)
 					If (!kMaster.IsDead()) && (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+						enslavement.PunishSlave(kMaster,kSlave)
 
 						if (Utility.RandomInt(0,100)>50)
 							; Punishment
@@ -814,7 +822,7 @@ State monitor
 				Endif
 
 
-				If (fMasterDistance < fKneelingDistance)  && ( (fctOutfit.isArmorCuirassEquipped(kSlave) &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip")) ) || ( fctOutfit.isClothingBodyEquipped(kSlave) && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip")) )  && ( fctOutfit.countRemovable ( kSlave ) > 0)
+				If (fMasterDistance < fKneelingDistance)  && ( (fctOutfit.isArmorCuirassEquipped(kSlave) &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip")) ) || ( fctOutfit.isClothingBodyEquipped(kSlave) && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip")) )  && ( fctOutfit.countRemovable ( kSlave ) > 0) && (_SDGVP_config_limited_removal.GetValue() == 0)
 
 					Debug.MessageBox("You are not allowed to wear clothing. Your owner rips it away from you.")
 					SexLab.ActorLib.StripActor(kSlave, VictimRef = kSlave, DoAnimate= false)
@@ -841,7 +849,7 @@ State monitor
 					EndIf
 				EndIf
 
-				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && (SexLab.ValidateActor( kSlave ) > 0)  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
+				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (SexLab.ValidateActor( kSlave ) > 0)  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
 
 					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)

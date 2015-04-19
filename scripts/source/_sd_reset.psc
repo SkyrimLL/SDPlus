@@ -35,6 +35,7 @@ Function _doInit()
 EndFunction
 
 Function Maintenance()
+	Actor kPlayer = Game.GetPlayer()
 
 	; UnregisterForAllModEvents()
 	; Debug.Trace("Reset SexLab events")
@@ -51,8 +52,8 @@ Function Maintenance()
  
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 
-	If fVersion < 2015030501 ; <--- Edit this value when updating
-		fVersion = 2015030501; and this
+	If fVersion < 2015041802 ; <--- Edit this value when updating
+		fVersion = 2015041802; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -61,6 +62,11 @@ Function Maintenance()
 		; Update Code
 
 		fctSlavery.InitPunishmentIdle()
+
+		If ( (StorageUtil.GetIntValue( kPlayer  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kPlayer  , "_SD_iEnableAction") == 1) 
+			StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1 )
+			StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1 )			
+		Endif
 		
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
 		_SDGVP_naked_rape_delay.SetValue( fNext )

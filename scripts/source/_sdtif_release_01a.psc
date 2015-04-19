@@ -14,6 +14,7 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 Game.GetPlayer().RemoveItem(Gold, 100 )
  
 fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
+fctOutfit.setDeviousOutfitYoke (  bDevEquip = False, sDevMessage = "")
 fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
 fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
 fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")

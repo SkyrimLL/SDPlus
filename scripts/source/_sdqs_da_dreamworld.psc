@@ -65,7 +65,8 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	UnregisterForUpdate()
 	; UnregisterForModEvent("da_PlayerRecovered")
 
-	_SD_dreamQuest.SetStage(100)
+	; _SD_dreamQuest.SetStage(100)
+	SendModEvent("SDDreamworldPull", 100) 
 
 endEvent
 

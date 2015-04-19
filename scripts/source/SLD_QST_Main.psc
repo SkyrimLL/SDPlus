@@ -354,16 +354,24 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 			If (playerCurrentHair != _SLD_MaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
 				kPlayer.ChangeHeadPart(_SLD_MaleSlaveHair)
 				Debug.Notification("Your owner shaves your head.")
+
+				SendModEvent("PCSubChangeLook")
 			Else
 				Game.ShowLimitedRaceMenu()
+
+				SendModEvent("PCSubChangeLook")
 			EndIf
 
 		Else
 			If (playerCurrentHair != _SLD_FemaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
 				kPlayer.ChangeHeadPart(_SLD_FemaleSlaveHair)
 				Debug.Notification("Your owner shaves your head.")
+
+				SendModEvent("PCSubChangeLook")
 			Else
 				Game.ShowLimitedRaceMenu()
+
+				SendModEvent("PCSubChangeLook")
 			EndIf
 
 		EndIf

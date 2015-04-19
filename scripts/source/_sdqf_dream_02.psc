@@ -2,14 +2,9 @@
 ;NEXT FRAGMENT INDEX 14
 Scriptname _sdqf_dream_02 Extends Quest Hidden
 
-;BEGIN ALIAS PROPERTY _SDRA_dreamer
+;BEGIN ALIAS PROPERTY _SDRA_sanguine_f
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_dreamer Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_dream_destination
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_dream_destination Auto
+ReferenceAlias Property Alias__SDRA_sanguine_f Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_sanguine_sam
@@ -17,24 +12,9 @@ ReferenceAlias Property Alias__SDRA_dream_destination Auto
 ReferenceAlias Property Alias__SDRA_sanguine_sam Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_naamah
+;BEGIN ALIAS PROPERTY _SDRA_meridiana
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_naamah Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_sanguine_ff
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sanguine_ff Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_enter
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_enter Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_irons
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_irons Auto
+ReferenceAlias Property Alias__SDRA_meridiana Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_sanguine_haelga
@@ -42,29 +22,14 @@ ReferenceAlias Property Alias__SDRA_irons Auto
 ReferenceAlias Property Alias__SDRA_sanguine_haelga Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_sanguine_mf
+;BEGIN ALIAS PROPERTY _SDRA_imperial_man
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sanguine_mf Auto
+ReferenceAlias Property Alias__SDRA_imperial_man Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_meridiana
+;BEGIN ALIAS PROPERTY _SDRA_enter
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_meridiana Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_leave
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_leave Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_eisheth
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_eisheth Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_redguard_girl
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_redguard_girl Auto
+ReferenceAlias Property Alias__SDRA_enter Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_sanguine
@@ -72,14 +37,44 @@ ReferenceAlias Property Alias__SDRA_redguard_girl Auto
 ReferenceAlias Property Alias__SDRA_sanguine Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_sanguine_f
+;BEGIN ALIAS PROPERTY _SDRA_sanguine_mf
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sanguine_f Auto
+ReferenceAlias Property Alias__SDRA_sanguine_mf Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_imperial_man
+;BEGIN ALIAS PROPERTY _SDRA_dreamer
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_imperial_man Auto
+ReferenceAlias Property Alias__SDRA_dreamer Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_irons
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_irons Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_leave
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_leave Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_dream_destination
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_dream_destination Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_sanguine_mm
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_sanguine_mm Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_sanguine_fm
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_sanguine_fm Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_redguard_girl
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_redguard_girl Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_nord_girl
@@ -92,38 +87,20 @@ ReferenceAlias Property Alias__SDRA_nord_girl Auto
 ReferenceAlias Property Alias__SDRA_sanguine_m Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_sanguine_fm
+;BEGIN ALIAS PROPERTY _SDRA_naamah
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sanguine_fm Auto
+ReferenceAlias Property Alias__SDRA_naamah Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_sanguine_mm
+;BEGIN ALIAS PROPERTY _SDRA_eisheth
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sanguine_mm Auto
+ReferenceAlias Property Alias__SDRA_eisheth Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_12
-Function Fragment_12()
-;BEGIN CODE
-; Player dreaming after first visit
-; Debug.Notification("[dream] Sanguine is welcoming you")
-
-; _SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
-_SDGV_Demerits.SetValue( 0 )
-; Game.FadeOutGame(true, true, 0.1, 15)
-
-kDreamer = Game.GetPlayer() as Actor
-kEnter = Alias__SDRA_enter.GetReference() as ObjectReference
-kLeave = Alias__SDRA_leave.GetReference() as ObjectReference
-
-kLeave.MoveTo( kDreamer )
-kDreamer.MoveTo( kEnter )
-dreamQuest.positionVictims( GetStage() )
-
-; Game.FadeOutGame(false, true, 5.0, 10.0)
-;END CODE
-EndFunction
-;END FRAGMENT
+;BEGIN ALIAS PROPERTY _SDRA_sanguine_ff
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_sanguine_ff Auto
+;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_8
 Function Fragment_8()
@@ -152,33 +129,6 @@ Reset()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_6
-Function Fragment_6()
-;BEGIN CODE
-; Player rescued from imminent death without slavery option
-; Debug.Notification("[dream] Sanguine pulls you back to his lap [ " + _SDGV_SanguineBlessing.GetValue() + " ]")
-; _SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
-_SDGV_Demerits.SetValue( 0 )
-; Game.FadeOutGame(true, true, 0.1, 15)
-
-kDreamer = Game.GetPlayer() as Actor
-kEnter = Alias__SDRA_enter.GetReference() as ObjectReference
-kLeave = Alias__SDRA_leave.GetReference() as ObjectReference
-
-kLeave.MoveTo( kDreamer )
-kDreamer.MoveTo( kEnter )
-
-; Debug.SetGodMode( True )
-; kDreamer.EndDeferredKill()
-; Debug.SetGodMode( False )
-
-dreamQuest.positionVictims( GetStage() )
-
-; Game.FadeOutGame(false, true, 5.0, 10.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
@@ -193,9 +143,44 @@ kDreamer = Game.GetPlayer() as Actor
 kEnter = Alias__SDRA_enter.GetReference() as ObjectReference
 kLeave = Alias__SDRA_leave.GetReference() as ObjectReference
 
-kLeave.MoveTo( kDreamer )
-kDreamer.MoveTo( kEnter )
-dreamQuest.positionVictims( GetStage() )
+If ( kDreamer.Is3DLoaded())
+    kLeave.MoveTo( kDreamer )
+    kDreamer.MoveTo( kEnter )
+
+    dreamQuest.positionVictims( GetStage() )
+Endif
+; Game.FadeOutGame(false, true, 5.0, 10.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+Debug.Notification("[dream] Sanguine is watching")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_6
+Function Fragment_6()
+;BEGIN CODE
+; Player rescued from imminent death without slavery option
+; Debug.Notification("[dream] Sanguine pulls you back to his lap [ " + _SDGV_SanguineBlessing.GetValue() + " ]")
+; _SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
+_SDGV_Demerits.SetValue( 0 )
+; Game.FadeOutGame(true, true, 0.1, 15)
+
+kDreamer = Game.GetPlayer() as Actor
+kEnter = Alias__SDRA_enter.GetReference() as ObjectReference
+kLeave = Alias__SDRA_leave.GetReference() as ObjectReference
+
+If ( kDreamer.Is3DLoaded())
+    kLeave.MoveTo( kDreamer )
+    kDreamer.MoveTo( kEnter )
+ 
+    dreamQuest.positionVictims( GetStage() )
+Endif
 
 ; Game.FadeOutGame(false, true, 5.0, 10.0)
 ;END CODE
@@ -225,11 +210,13 @@ kDreamer = Game.GetPlayer() as Actor
 kEnter = Alias__SDRA_enter.GetReference() as ObjectReference
 kLeave = Alias__SDRA_leave.GetReference() as ObjectReference
 
-kLeave.MoveTo( kDreamer )
-kDreamer.MoveTo( kEnter )
-dreamQuest.positionVictims( GetStage() )
+If ( kDreamer.Is3DLoaded())
+    kLeave.MoveTo( kDreamer )
+    kDreamer.MoveTo( kEnter )
+    dreamQuest.positionVictims( GetStage() )
+Endif
 
-Debug.Notification("[Dream] healing")
+; Debug.Notification("[Dream] healing")
 kDreamer.SetAV("health",1.0 )
 kDreamer.RestoreAV("health", kDreamer.GetBaseAV("health") )
 
@@ -238,10 +225,27 @@ kDreamer.RestoreAV("health", kDreamer.GetBaseAV("health") )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
+;BEGIN FRAGMENT Fragment_12
+Function Fragment_12()
 ;BEGIN CODE
-Debug.Notification("[dream] Sanguine is watching")
+; Player dreaming after first visit
+; Debug.Notification("[dream] Sanguine is welcoming you")
+
+; _SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
+_SDGV_Demerits.SetValue( 0 )
+; Game.FadeOutGame(true, true, 0.1, 15)
+
+kDreamer = Game.GetPlayer() as Actor
+kEnter = Alias__SDRA_enter.GetReference() as ObjectReference
+kLeave = Alias__SDRA_leave.GetReference() as ObjectReference
+
+If ( kDreamer.Is3DLoaded())
+    kLeave.MoveTo( kDreamer )
+    kDreamer.MoveTo( kEnter )
+    dreamQuest.positionVictims( GetStage() )
+Endif
+
+; Game.FadeOutGame(false, true, 5.0, 10.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
