@@ -360,6 +360,10 @@ State monitor
 			;	enslavement.PunishSlave( kMaster,  kSlave)
 			EndIf
 
+			If (StorageUtil.GetIntValue( kSlave  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kSlave  , "_SD_iEnableAction") == 1) 
+					StorageUtil.SetIntValue( kSlave  , "_SD_iHandsFree", 1 )
+					StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
+			Endif
 		EndIf
 
 		enslavement.UpdateSlaveState(kMaster ,kSlave)

@@ -63,7 +63,7 @@ Function Maintenance()
 
 		fctSlavery.InitPunishmentIdle()
 
-		If ( (StorageUtil.GetIntValue( kPlayer  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kPlayer  , "_SD_iEnableAction") == 1) 
+		If (StorageUtil.GetIntValue( kPlayer  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kPlayer  , "_SD_iEnableAction") == 1) 
 			StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1 )
 			StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1 )			
 		Endif

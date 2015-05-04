@@ -690,8 +690,14 @@ Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form 
 EndEvent
 
 Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 15.0, Form _sender)
-	int stageID = _argc as Int
+	int stageID = _args as Int
 	; Dreamworld has to be visited at least once for this event to work
+	Debug.Trace("[_sdras_player] Receiving dreamworld pull story event [" + _args  + "] [" + _argc as Int + "]")
+	Debug.Trace("[_sdras_player] StageID: " + stageID)
+
+	if (stageID == 0)
+		stageID = 15
+	endif
 
 	If (_SDGVP_sanguine_blessing.GetValue() > 0) 
 		_SD_dreamQuest.SetStage(stageID)

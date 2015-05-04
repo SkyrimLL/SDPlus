@@ -331,18 +331,18 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		int i = 0
 		Actor thisActor = None
 
-		while(i < valueCount)
+		while(i < valueCount) && (thisActor == None)
 			thisActor = StorageUtil.FormListGet(kMaster, "_SD_lEnslavedFollower", i) as Actor
 
 			i += 1
 		endwhile
 
-		; Debug.Notification("[SD sex] Num followers slaves: " + valueCount as Int)
+		Debug.Trace("[SD sex] Num followers slaves: " + valueCount as Int)
 
 		if (thisActor!=None) && !thisActor.IsDead()
 			; Pick the first available follower for now
 			if (Utility.RandomInt(0,100)>70)   ; chance the owner will prefer to use a follower
-				; Debug.Notification("[SD sex] Master using follower" )
+				Debug.Trace("[SD sex] Master using follower" )
 
 				if (Utility.RandomInt(0,100)>70) && (checkGenderRestriction(thisActor, akTarget))  ; chance of player + follower
 					akSpeaker = thisActor
