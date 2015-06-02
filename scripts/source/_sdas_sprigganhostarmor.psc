@@ -37,7 +37,7 @@ Event OnUpdateGameTime()
 	RegisterForSingleUpdateGameTime( RandomFloat( 0.5, 1.5 ) )
 	_SDSP_cum.RemoteCast(kWearer, kWearer, kWearer)
 
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0) 
+	If  (SexLab.ValidateActor( kWearer ) > 0) 
 	
     	; actor[] sexActors = new actor[1]
     	; sexActors[0] = kWearer
@@ -46,7 +46,7 @@ Event OnUpdateGameTime()
 
     	; SexLab.StartSex(sexActors, anims)
 
-    	SexLab.QuickStart(SexLab.PlayerRef, AnimationTags = "Solo")
+    	SexLab.QuickStart(kWearer, AnimationTags = "Solo")
     EndIf
 EndEvent
 

@@ -156,7 +156,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetFloatValue(none, "_SLH_fBreast", 0.8 ) 
 		StorageUtil.SetFloatValue(none, "_SLH_fWeight", 20.0 ) 
 		StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+		SendModEvent("SLHRefresh")
 			
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
@@ -315,7 +315,7 @@ Event OnUpdateGameTime()
 			StorageUtil.SetFloatValue(none, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
 			StorageUtil.SetFloatValue(none, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
 			StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
-			StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+			SendModEvent("SLHRefresh")
 		EndIf
 
 		SprigganFX.Play( kSlave, 30 )

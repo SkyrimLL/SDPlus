@@ -94,7 +94,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	Utility.Wait(1.0)
 
 
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
+	If  (SexLab.ValidateActor( akTarget ) > 0)
 		; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
 		; HACK: select rough sexlab animations 
 		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1, "Masturbation,Female")
@@ -105,7 +105,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 		; HACK: start sexlab animation
 		; SexLab.StartSex(sexActors, animations)
-		SexLab.QuickStart(SexLab.PlayerRef, AnimationTags = "Solo")
+		SexLab.QuickStart(akTarget, AnimationTags = "Solo")
 	EndIf
 
 	If ( Self )

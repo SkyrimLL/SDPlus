@@ -497,6 +497,10 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 
 EndFunction
 
+Function sexlabStripActor( Actor akActor )
+	SexLab.StripActor(akActor, DoAnimate= false) 
+EndFunction
+
 Function removeItemsInList( Actor akActor, FormList akItemList )
 	Int idx = 0
 	Int iCount = 0

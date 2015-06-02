@@ -279,7 +279,8 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		fctConstraints.togglePlayerControlsOff( False )
 		kPlayer.PlayIdle( _SDIAP_reset )	
 
-		Debug.Messagebox("The collar releases its grasp around your will, leaving behind a screaming headache and bruises around your neck.")
+		; Debug.Messagebox("The collar releases its grasp around your will, leaving behind a screaming headache and bruises around your neck.")
+		Debug.Notification("The collar releases its grasp around your will...")
 	EndIf
 
 EndEvent
