@@ -196,7 +196,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 				; Disabled for now
 				; Try a different approach to prevent issues with Devious Items being forcibly removed just as they are added
 
-				SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+				; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+				SexLab.StripActor( Game.GetPlayer(), DoAnimate= false)
 
 				kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 

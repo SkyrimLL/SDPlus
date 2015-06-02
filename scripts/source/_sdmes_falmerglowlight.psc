@@ -39,7 +39,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iFalmerSkinColor ) 
 			StorageUtil.SetFloatValue(none, "_SLH_fBreast", StorageUtil.GetFloatValue(none, "_SLH_fBreast" ) + breastMod ) 
 			StorageUtil.SetFloatValue(none, "_SLH_fWeight", StorageUtil.GetFloatValue(none, "_SLH_fWeight" ) + weightMod ) 
-			StorageUtil.SetIntValue(none, "_SLH_iForcedRefresh", 1)
+			SendModEvent("SLHRefresh")
 		EndIf
 EndEvent
 

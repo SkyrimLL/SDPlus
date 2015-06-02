@@ -92,6 +92,9 @@ int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
 int iCountSinceLastCheck
+Float fOldExposure 
+Float fExposureMultiplier 
+Float fNewExposure
 
 Int[] keys
 
@@ -108,6 +111,9 @@ Float fRFSU = 0.5
 Bool isPlayerEnslaved = False
 Bool isPlayerPregnant = False
 Bool isPlayerSuccubus = False
+Bool isPlayerHRT = False
+Bool isPlayerTG = False
+Bool isPlayerBimbo = False
 
 
 
@@ -292,10 +298,16 @@ Function _Maintenance()
 	isPlayerEnslaved = StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved") as Bool
 	isPlayerPregnant = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isPregnant") as Bool
 	isPlayerSuccubus = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isSuccubus") as Bool
+	isPlayerHRT = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isHRT") as Bool
+	isPlayerTG = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isTG") as Bool
+	isPlayerBimbo = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isBimbo") as Bool
 
 	_SDGVP_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
 	_SDGVP_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
 	_SDGVP_isPlayerEnslaved.SetValue(isPlayerEnslaved as Int)
+	_SDGVP_isPlayerHRT.SetValue(isPlayerHRT as Int)
+	_SDGVP_isPlayerTG.SetValue(isPlayerTG as Int)
+	_SDGVP_isPlayerBimbo.SetValue(isPlayerBimbo as Int)
 EndFunction
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
@@ -961,8 +973,22 @@ State monitor
 			iCountSinceLastCheck = 0
 
 			; Cooldown of slavery exposure when released
+
+			; StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") - 0 to 6
+			; StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") - -10 to 10
+			; _SDGVP_config_slavery_level_mult.GetValue() - 0 to 1
+
+
 			If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
-				Float fNewExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float) * (_SDGVP_config_slavery_level_mult.GetValue() as Float)
+				fOldExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float)
+				fExposureMultiplier = 1.0 - (_SDGVP_config_slavery_level_mult.GetValue() as Float) 
+
+				if ( StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") > 0)
+					fNewExposure =  fOldExposure - fOldExposure * fExposureMultiplier 
+				Else
+					fNewExposure =  fOldExposure - fOldExposure * fExposureMultiplier * ( ( (6 - StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
+				endif
+
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
 			EndIf
@@ -1301,6 +1327,9 @@ GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
 
 GlobalVariable Property _SDGVP_isPlayerPregnant auto
 GlobalVariable Property _SDGVP_isPlayerSuccubus auto
+GlobalVariable Property _SDGVP_isPlayerHRT auto
+GlobalVariable Property _SDGVP_isPlayerTG auto
+GlobalVariable Property _SDGVP_isPlayerBimbo auto
 GlobalVariable Property _SDGVP_isPlayerEnslaved auto
 
 GlobalVariable Property _SDGVP_sanguine_blessings auto

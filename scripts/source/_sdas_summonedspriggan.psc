@@ -37,17 +37,17 @@ Event OnUpdate()
 
 		If (Utility.RandomInt(0,100)>50)
 			Game.ForceThirdPerson()
-			Debug.SendAnimationEvent(Game.getPlayer() as ObjectReference, "bleedOutStart")
+			Debug.SendAnimationEvent(kPlayer as ObjectReference, "bleedOutStart")
 
 			Int IButton = _SD_rapeMenu.Show()
 
 			If IButton == 0 ; Show the thing.
-				StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+				StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", Self)
 				Self.SendModEvent("PCSubSex")
 			Else
-				StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iDom", StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iDom") + 1)
-				SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+				StorageUtil.SetIntValue(kPlayer, "_SD_iDom", StorageUtil.GetIntValue(kPlayer, "_SD_iDom") + 1)
+				SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false)
 			EndIf
 		EndIf
 	EndIf

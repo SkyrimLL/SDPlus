@@ -78,7 +78,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0)  
 				_SDSP_spent.Cast(akPlayer, akPlayer)
 
-				SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+				SexLab.QuickStart(akPlayer, akMaster, Victim = akPlayer, AnimationTags = "Aggressive")
 
 			EndIf
 		ElseIf ( !fctFactions.checkIfSpriggan ( akMaster) && ( akMaster.HasKeyword( _SDKP_actorTypeNPC )) )  
@@ -87,7 +87,7 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 			If  (SexLab.ValidateActor( akPlayer) > 0) &&  (SexLab.ValidateActor(akMaster) > 0) 
 				_SDSP_spent.Cast(akPlayer, akPlayer)
 
-				SexLab.QuickStart(SexLab.PlayerRef, akMaster, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+				SexLab.QuickStart(akPlayer, akMaster, Victim = akPlayer, AnimationTags = "Aggressive")
 
 			EndIf
 		; ElseIf (Utility.RandomInt(0,100)<= ((_SDGVP_health_threshold.GetValue() as Int) / 10) ) && ( (akMaster.HasKeyword( _SDKP_actorTypeNPC ) || (akMaster.GetRace() == falmerRace)) && funct.checkGenderRestriction( akMaster, akPlayer ) ) && !fctFactions.actorFactionInList( akMaster, _SDFLP_banned_factions ) 
