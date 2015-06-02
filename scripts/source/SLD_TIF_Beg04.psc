@@ -6,9 +6,7 @@ Scriptname SLD_TIF_Beg04 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-If (Utility.RandomInt(0,100)>20) && ( akSpeaker.GetRelationshipRank( SexLab.PlayerRef ) >= -2 )
-	SexLab.PlayerRef.AddItem(Gold, Utility.RandomInt(1, ((akSpeaker.GetAV("Confidence") as Int) + (akSpeaker.GetAV("Morality") as Int) ) * (akSpeaker.GetAV("Assistance") as Int) ), false)
-EndIf
+fctDialogue.GiftPlayer(SexLab.PlayerRef)
 
 fctDialogue.StartPlayerRape( akSpeaker, "Rough")
 ;END CODE

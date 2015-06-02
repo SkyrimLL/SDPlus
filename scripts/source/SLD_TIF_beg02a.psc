@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLD_TIF_Beg03 Extends TopicInfo Hidden
+Scriptname SLD_TIF_beg02a Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 fctDialogue.GiftPlayer(SexLab.PlayerRef)
 
-fctDialogue.StartPlayerRape( akSpeaker, "Dirty")
+fctDialogue.StartPlayerRape( akSpeaker, "Sex")
 ;END CODE
 EndFunction
 ;END FRAGMENT

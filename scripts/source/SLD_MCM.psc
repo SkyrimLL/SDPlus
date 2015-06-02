@@ -25,6 +25,7 @@ endFunction
 
 
 float	_CommentProbability		= 30.0
+float	_BeggingProbability		= 30.0
 bool	_BeastDialogueON		= true
 bool	_PCDomDialogueON		= true
 bool	_PCSubDialogueON		= true
@@ -81,6 +82,7 @@ event OnPageReset(string a_page)
 	endIf
 
 	_CommentProbability			= fMin( fMax( (_SLD_CommentProbability.GetValue() as Float) , 0.0), 100.0 )
+	_BeggingProbability			= fMin( fMax( (_SLD_BeggingProbability.GetValue() as Float) , 0.0), 100.0 )
  
 	_BeastDialogueON		= _SLD_BeastDialogueON.GetValue() as Int
 	_PCDomDialogueON		= _SLD_PCDomDialogueON.GetValue() as Int
@@ -115,11 +117,12 @@ event OnPageReset(string a_page)
 		SetCursorPosition(1)
 		AddHeaderOption(" Give and Take")
 		AddToggleOptionST("STATE_BeggingDialogueON","Enable Begging from NPCs", _BeggingDialogueON as Float)
-		AddToggleOptionST("STATE_GiftDialogueON","Enable Gifts to NPCs", _GiftDialogueON as Float)
+		AddSliderOptionST("STATE_BeggingProbability","Begging Probability",  _BeggingProbability	 as Float,"{0} %")
+ 		AddToggleOptionST("STATE_GiftDialogueON","Enable Gifts to NPCs", _GiftDialogueON as Float)
 
 		AddHeaderOption(" Shared settings")
 		AddSliderOptionST("STATE_CommentProbability","Comment Probability",  _CommentProbability	 as Float,"{0} %")
- 
+
 
 	ElseIf (a_page == "Quests")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -315,6 +318,30 @@ state STATE_CommentProbability ; SLIDER
 	endEvent
 endState
 
+; AddSliderOptionST("STATE_BeggingProbability","Begging Probability",  _BeggingProbability	 as Float,"{0} %")
+state STATE_BeggingProbability ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _SLD_BeggingProbability.GetValue() )
+		SetSliderDialogDefaultValue( 10.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		_SLD_BeggingProbability.SetValue( thisValue  )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		_SLD_BeggingProbability.SetValue( 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Chance of success when begging for items and gold. Other factors include being naked, wearing poor clothing and wearing a collar.")
+	endEvent
+endState
 
 ; AddToggleOptionST("STATE_BlacksmithQuestON","Become a Blacksmith", _BlacksmithQuestON as Float)
 state STATE_BlacksmithQuestON ; TOGGLE
@@ -356,6 +383,7 @@ EndFunction
 
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
 GlobalVariable Property _SLD_CommentProbability Auto  
+GlobalVariable Property _SLD_BeggingProbability Auto
 GlobalVariable Property _SLD_BeastDialogueON Auto  
 GlobalVariable Property _SLD_PCDomDialogueON Auto  
 GlobalVariable Property _SLD_PCSubDialogueON Auto  
