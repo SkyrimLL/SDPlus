@@ -6,7 +6,7 @@ Scriptname SLD_TIF_Beg01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-SexLab.PlayerRef.AddItem(Gold, Utility.RandomInt(1, ((akSpeaker.GetAV("Confidence") as Int) + (akSpeaker.GetAV("Morality") as Int) ) * (akSpeaker.GetAV("Assistance") as Int) ), false)
+fctDialogue.GiftPlayer(SexLab.PlayerRef)
 ;END CODE
 EndFunction
 ;END FRAGMENT

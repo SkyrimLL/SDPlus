@@ -18,7 +18,7 @@ Event OnPlayerLoadGame()
 EndEvent
 
 Function _maintenance()
-
+	Actor PlayerActor = Game.GetPlayer()
 
 	UnregisterForAllModEvents()
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
@@ -29,64 +29,66 @@ Function _maintenance()
 
 
 
-	isPlayerEnslaved = StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iEnslaved") as Bool
-	isPlayerPregnant = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isPregnant") as Bool
-	isPlayerSuccubus = StorageUtil.GetIntValue( Game.GetPlayer(), "_SLH_isSuccubus") as Bool
+	isPlayerEnslaved = StorageUtil.GetIntValue( PlayerActor, "_SD_iEnslaved") as Bool
+	isPlayerPregnant = StorageUtil.GetIntValue( PlayerActor, "_SLH_isPregnant") as Bool
+	isPlayerSuccubus = StorageUtil.GetIntValue( PlayerActor, "_SLH_isSuccubus") as Bool
 
-	Game.GetPlayer().AddSpell( RestSpell )
+	PlayerActor.AddSpell( RestSpell )
 
 	StorageUtil.SetIntValue( none, "_SLD_version", 2015021601)
 EndFunction
 
 Function _updateGlobals()
+	Actor PlayerActor = Game.GetPlayer()
+
 	_SLD_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
 	_SLD_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
 	_SLD_isPlayerEnslaved.SetValue(isPlayerEnslaved as Int)
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer(), "_SD_iSlaveryLevel"))
-		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iSlaveryLevel") )
+	If (StorageUtil.HasIntValue( PlayerActor, "_SD_iSlaveryLevel"))
+		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iSlaveryLevel") )
 	Else
 		_SLD_PCSubSlaveryLevel.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer(), "_SD_iEnslaved"))
-		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnslaved") )
+	If (StorageUtil.HasIntValue( PlayerActor, "_SD_iEnslaved"))
+		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iEnslaved") )
 	Else
 		_SLD_PCSubEnslaved.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasStringValue( Game.GetPlayer() , "_SD_sDefaultStance"))
-		If (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Crawling")
+	If (StorageUtil.HasStringValue( PlayerActor , "_SD_sDefaultStance"))
+		If (StorageUtil.GetStringValue( PlayerActor, "_SD_sDefaultStance") == "Crawling")
 			_SLD_PCSubDefaultStance.SetValue(  2 )
-		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Kneeling")
+		ElseIf (StorageUtil.GetStringValue( PlayerActor, "_SD_sDefaultStance") == "Kneeling")
 			_SLD_PCSubDefaultStance.SetValue(  1 )
-		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Standing")
+		ElseIf (StorageUtil.GetStringValue( PlayerActor, "_SD_sDefaultStance") == "Standing")
 			_SLD_PCSubDefaultStance.SetValue(  0 )
 		EndIf
 	Else
 		_SLD_PCSubDefaultStance.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableStand"))
-		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableStand") )
+	If (StorageUtil.HasIntValue( PlayerActor , "_SD_iEnableStand"))
+		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iEnableStand") )
 	Else
 		_SLD_PCSubEnableStand.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableLeash"))
-		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableLeash") )
+	If (StorageUtil.HasIntValue( PlayerActor , "_SD_iEnableLeash"))
+		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iEnableLeash") )
 	Else
 		_SLD_PCSubEnableLeash.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iHandsFree"))
-		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iHandsFree") )
+	If (StorageUtil.HasIntValue( PlayerActor , "_SD_iHandsFree"))
+		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iHandsFree") )
 	Else
 		_SLD_PCSubHandsFree.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iDominance"))
-		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iDominance") )
+	If (StorageUtil.HasIntValue( PlayerActor , "_SD_iDominance"))
+		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iDominance") )
 	Else
 		_SLD_PCSubDominance.SetValue( 0 )
 	EndIf
@@ -107,6 +109,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
     Bool isPCVictim = False
     Bool isPCRapist = False
+    Bool isPCBimbo = False
     Bool isAnimCorruption = False
     Bool isAnimSeduction = False
     Int iDisposition
@@ -132,13 +135,13 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 		;
 	; EndIf
 
-	If (animation.HasTag("Masturbation") || animation.HasTag("Solo")) && (actors.Length == 1) && (actors[0] == game.getPlayer() as Actor)
+	If (animation.HasTag("Masturbation") || animation.HasTag("Solo")) && (actors.Length == 1) && (actors[0] == PlayerActor)
 		; Catch masturbation events
 		_SLD_PCMasturbating.SetValue(1)
 
 	ElseIf (_hasPlayer(actors))
 
-		if (victim == game.getPlayer() as Actor)
+		if (victim == PlayerActor)
 			; Player is a victim
 			isPCVictim = True
 
@@ -147,6 +150,13 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			isPCRapist = True
 
 		endif
+
+		isPCBimbo = StorageUtil.GetIntValue(PlayerActor, "_SLH_iBimbo") as Bool
+
+		If isPCBimbo  
+			; Enable Bimbo Override as single rape (for now)
+			StorageUtil.SetIntValue( PlayerActor , "_SD_iSlaveryLevel", 6)
+		Endif
 
 		if ( animation.HasTag("Aggressive") || animation.HasTag("Anal")  || animation.HasTag("Dirty")  || animation.HasTag("Fisting")  || animation.HasTag("Orgy")  || animation.HasTag("Rough") )
 			; - Corruption
@@ -161,7 +171,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 		int idx = 0
 		while idx < actors.Length
-			if actors[idx] == game.getPlayer() as Actor
+			if actors[idx] == PlayerActor
 				; Actor is Player
 
 			else
@@ -179,11 +189,11 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				EndIf
 
 				If !(StorageUtil.HasIntValue( actors[idx] , "_SD_iTrust"))
-					StorageUtil.SetIntValue( actors[idx] , "_SD_iTrust", actors[idx].GetRelationshipRank(Game.GetPlayer() ) )
+					StorageUtil.SetIntValue( actors[idx] , "_SD_iTrust", actors[idx].GetRelationshipRank(PlayerActor ) )
 				EndIf
 
 				If !(StorageUtil.HasIntValue(actors[idx], "_SD_iRelationshipType"))
-					StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(Game.GetPlayer()) )
+					StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
 				EndIf				
 
 				If !isPCVictim && !isPCRapist
@@ -235,28 +245,28 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					EndIf
 
 					If (iSexCount >= 2) ; Friend
-						If (actors[idx].GetRelationshipRank(Game.GetPlayer()) == 0 )
-							actors[idx].SetRelationshipRank(Game.GetPlayer(), 1 )
+						If (actors[idx].GetRelationshipRank(PlayerActor) == 0 )
+							actors[idx].SetRelationshipRank(PlayerActor, 1 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 1 )
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
-							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(Game.GetPlayer()) )
+							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
 						EndIf
 						
 
 					ElseIf (iSexCount >= 4) ; Confident
-						If (actors[idx].GetRelationshipRank(Game.GetPlayer()) >= 0 ) && (actors[idx].GetRelationshipRank(Game.GetPlayer()) <= 1)
-							actors[idx].SetRelationshipRank(Game.GetPlayer(), 2 )
+						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 1)
+							actors[idx].SetRelationshipRank(PlayerActor, 2 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 2 )
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
-							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(Game.GetPlayer()) )
+							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
 						EndIf
 						
 
 					ElseIf (iSexCount >= 8) ; Ally
-						If (actors[idx].GetRelationshipRank(Game.GetPlayer()) >= 0 ) && (actors[idx].GetRelationshipRank(Game.GetPlayer()) <= 2)
-							actors[idx].SetRelationshipRank(Game.GetPlayer(), 3 )
+						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 2)
+							actors[idx].SetRelationshipRank(PlayerActor, 3 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 3 )
 							actors[idx].AddToFaction(PotentialFollowerFaction)
 							actors[idx].AddToFaction(CurrentFollowerFaction)
@@ -265,13 +275,13 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 							actors[idx].SetAV( "Confidence", 3)
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
-							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(Game.GetPlayer()) )
+							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
 						EndIf
 						
 
 					ElseIf (iSexCount >= 16) ; Lover
-						If (actors[idx].GetRelationshipRank(Game.GetPlayer()) >= 0 ) && (actors[idx].GetRelationshipRank(Game.GetPlayer()) <= 3)
-							actors[idx].SetRelationshipRank(Game.GetPlayer(), 4 )
+						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 3)
+							actors[idx].SetRelationshipRank(PlayerActor, 4 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 4 )
 							actors[idx].AddToFaction(PotentialFollowerFaction)
 							actors[idx].AddToFaction(CurrentFollowerFaction)
@@ -281,7 +291,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 							actors[idx].SetAV( "Confidence", 3)
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
-							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(Game.GetPlayer()) )
+							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
 						EndIf
 						
 					EndIf
@@ -296,22 +306,27 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 5 )
 
 					If ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") <= 20) && (Utility.RandomInt(0,100) >80)
-						actors[idx].SetRelationshipRank(Game.GetPlayer(), -2)
+						actors[idx].SetRelationshipRank(PlayerActor, -2)
 						actors[idx].SetActorValue("Aggression", 1)
 						actors[idx].SetActorValue("Confidence", 3)
 						actors[idx].SetActorValue("Assistance", 0)
 						Debug.Notification("Get away from me!")
 					Else
 						Debug.Notification("Enough... please! I will do anything you want!")
-						actors[idx].SetRelationshipRank(Game.GetPlayer(), 1)
+						actors[idx].SetRelationshipRank(PlayerActor, 1)
 						actors[idx].SetActorValue("Aggression", 0)
 						actors[idx].SetActorValue("Confidence", 0)
 						actors[idx].SetActorValue("Assistance", 0)
-						; StorageUtil.SetIntValue(Game.GetPlayer(), "Puppet_CastTarget", 1)
-						; StorageUtil.SetFormValue(Game.GetPlayer(), "Puppet_NewTarget", actors[idx] )
+						; StorageUtil.SetIntValue(PlayerActor, "Puppet_CastTarget", 1)
+						; StorageUtil.SetFormValue(PlayerActor, "Puppet_NewTarget", actors[idx] )
 					EndIf
 
 				EndIf	
+
+				If isPCBimbo && (StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCSub") >= 1)
+					; Enable Bimbo Override as single rape (for now)
+					StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", -5 )
+				Endif
 
 ;				Debug.Notification("[SLD] sx: " + iSexCount + " rpd: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom")  + " rps: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCSub") )
 ;				Debug.Notification("[SLD] d: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iDisposition") + " t: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iTrust") + " s: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iSeduction") + " c: " + StorageUtil.GetIntValue( actors[idx] , "_SD_iCorruption") + " r: " + StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") )

@@ -6,8 +6,10 @@ HeadPart playerCurrentHair
 Function SetNPCDialogueState ( Actor akSpeaker )
 	ObjectReference akSpeakerRef = akSpeaker as objectReference
 	Form kSpeakerForm = akSpeaker as Form
+	Actor Player = Game.GetPlayer()
+	Bool isPCBimbo = False
 	Bool isSpeakerHuman = kSpeakerForm.HasKeywordString("ActorTypeNPC")
-	Int iDominance = StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iDom") - StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iSub")
+	Int iDominance = StorageUtil.GetIntValue( Player , "_SD_iDom") - StorageUtil.GetIntValue( Player , "_SD_iSub")
 
 	; Force disable test dialogues
 	If (_SLD_TestDialogues.GetValue() != 0)
@@ -33,10 +35,17 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	If (StorageUtil.HasIntValue(akSpeaker, "_SD_iRelationshipType"))
 		_SLD_NPCRelationshipType.SetValue( StorageUtil.GetIntValue(akSpeaker, "_SD_iRelationshipType") )
 	Else
-		_SLD_NPCRelationshipType.SetValue( akSpeaker.GetRelationshipRank(Game.GetPlayer()) )
+		_SLD_NPCRelationshipType.SetValue( akSpeaker.GetRelationshipRank(Player) )
 	EndIf
 
-	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
+	isPCBimbo = StorageUtil.GetIntValue(Player, "_SLH_iBimbo") as Bool
+
+	If isPCBimbo  
+		; Enable Bimbo Override as single rape (for now)
+		StorageUtil.SetIntValue( Player , "_SD_iSlaveryLevel", 6)
+	Endif
+
+	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
 		If (isSpeakerHuman) && (_SLD_humanMasterAlias.GetReference() != akSpeakerRef)
 			_SLD_humanMasterAlias.ForceRefTo(akSpeakerRef )
 		ElseIf (!isSpeakerHuman) && (_SLD_beastMasterAlias.GetReference() != akSpeakerRef)
@@ -60,14 +69,14 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	EndIf
 	
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer(), "_SD_iSlaveryLevel"))
-		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iSlaveryLevel") )
+	If (StorageUtil.HasIntValue( Player, "_SD_iSlaveryLevel"))
+		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iSlaveryLevel") )
 	Else
 		_SLD_PCSubSlaveryLevel.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer(), "_SD_iEnslaved"))
-		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnslaved") )
+	If (StorageUtil.HasIntValue( Player, "_SD_iEnslaved"))
+		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnslaved") )
 	Else
 		_SLD_PCSubEnslaved.SetValue( 0 )
 	EndIf
@@ -109,38 +118,38 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		_SLD_PCSubFollowSlave.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasStringValue( Game.GetPlayer() , "_SD_sDefaultStance"))
-		If (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Crawling")
+	If (StorageUtil.HasStringValue( Player , "_SD_sDefaultStance"))
+		If (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Crawling")
 			_SLD_PCSubDefaultStance.SetValue(  2 )
-		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Kneeling")
+		ElseIf (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Kneeling")
 			_SLD_PCSubDefaultStance.SetValue(  1 )
-		ElseIf (StorageUtil.GetStringValue( Game.GetPlayer(), "_SD_sDefaultStance") == "Standing")
+		ElseIf (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Standing")
 			_SLD_PCSubDefaultStance.SetValue(  0 )
 		EndIf
 	Else
 		_SLD_PCSubDefaultStance.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableStand"))
-		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableStand") )
+	If (StorageUtil.HasIntValue( Player , "_SD_iEnableStand"))
+		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnableStand") )
 	Else
 		_SLD_PCSubEnableStand.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iEnableLeash"))
-		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iEnableLeash") )
+	If (StorageUtil.HasIntValue( Player , "_SD_iEnableLeash"))
+		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnableLeash") )
 	Else
 		_SLD_PCSubEnableLeash.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iHandsFree"))
-		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iHandsFree") )
+	If (StorageUtil.HasIntValue( Player , "_SD_iHandsFree"))
+		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iHandsFree") )
 	Else
 		_SLD_PCSubHandsFree.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( Game.GetPlayer() , "_SD_iDominance"))
-		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Game.GetPlayer() , "_SD_iDominance") )
+	If (StorageUtil.HasIntValue( Player , "_SD_iDominance"))
+		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iDominance") )
 	Else
 		_SLD_PCSubDominance.SetValue( 0 )
 	EndIf
@@ -189,9 +198,9 @@ EndFunction
 
 
 Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
-
+	Actor Player = Game.GetPlayer()
 	Game.ForceThirdPerson()
-	Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
+	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
 	Int IButton = _SLD_rapeMenu.Show()
 
@@ -201,15 +210,15 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 			; Debug.Notification( "[Resists weakly]" )
 		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
 		; EndIf
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 
 		Int randomNum = Utility.RandomInt(0, 100)
-		; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
 
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
 
 	Else
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
 	EndIf
@@ -217,9 +226,9 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 EndFunction
 
 Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
-
+	Actor Player = Game.GetPlayer()
 	Game.ForceThirdPerson()
-	Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
+	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
 	Int IButton = _SLD_rapeMenu.Show()
 
@@ -230,10 +239,10 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
 		; EndIf
 			
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 
 		Int randomNum = Utility.RandomInt(0, 100)
-		; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
+		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
 
 		If (randomNum > 70)
 			Debug.Notification("Dance for us...")
@@ -252,7 +261,7 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 
 
 	Else
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
 	EndIf
@@ -324,15 +333,15 @@ Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
 EndFunction
 
 Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
- 
+ 	Actor Player = Game.GetPlayer()
 	Utility.Wait(0.5)
 
 	Int IButton = _SLD_raceMenu.Show()
 
 	If IButton == 0  ; Show the thing.
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 
-		Actor kPlayer = Game.GetPlayer() as Actor
+		Actor kPlayer = Player as Actor
 
 		Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 
@@ -377,7 +386,7 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 		EndIf
 
 	Else
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 
  
 			
@@ -387,14 +396,42 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 
 EndFunction
 
+Function GiftPlayer ( Actor akSpeaker  ) 
+	; Player is a beggar
+	ObjectReference speakerRef = akSpeaker as ObjectReference
+
+	Debug.Notification("[SLD] Receiving a gift - actor: " + akSpeaker)
+
+	If akSpeaker.Isinfaction(InnkeeperFaction)
+		speakerRef.AddItem(InnkeeperGiftList, 1, false)
+
+	ElseIf akSpeaker.Isinfaction(TailorFaction)
+		speakerRef.AddItem(TailorGiftList, 1, false)
+
+	ElseIf akSpeaker.Isinfaction(MerchantFaction)
+		speakerRef.AddItem(MerchantGiftList, 1, false)
+
+	ElseIf akSpeaker.Isinfaction(FarmerFaction)
+		speakerRef.AddItem(FarmerGiftList, 1, false)
+
+	ElseIf akSpeaker.Isinfaction(PriestFaction)
+		speakerRef.AddItem(PriestGiftList, 1, false)
+
+	else
+		speakerRef.AddItem(Gold001, Utility.RandomInt(1, ((akSpeaker.GetAV("Confidence") as Int) + (akSpeaker.GetAV("Morality") as Int) ) * (akSpeaker.GetAV("Assistance") as Int) ), false)
+	endif
+
+EndFunction
+
 Function RobPlayer ( Actor akSpeaker  )
+	Actor Player = Game.GetPlayer()
 	Utility.Wait(0.5)
 
 	Int IButton = _SLD_robMenu.Show()
 
 	If IButton == 0  ; Show the thing.
 
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 
 		Actor _bandit = akSpeaker
 		Actor _target = SexLab.PlayerRef 
@@ -465,7 +502,7 @@ Function RobPlayer ( Actor akSpeaker  )
 		endif
 
 	Else
-		StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)			
 	EndIf
@@ -522,3 +559,15 @@ HeadPart Property _SLD_MaleSlaveHair  Auto
 
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
 MiscObject Property Gold001  Auto  
+
+Faction Property InnkeeperFaction  Auto  
+Faction Property TailorFaction  Auto  
+Faction Property MerchantFaction  Auto  
+Faction Property FarmerFaction  Auto  
+Faction Property PriestFaction  Auto  
+
+LeveledItem Property InnkeeperGiftList Auto  
+LeveledItem Property TailorGiftList Auto  
+LeveledItem Property MerchantGiftList Auto  
+LeveledItem Property FarmerGiftList Auto  
+LeveledItem Property PriestGiftList Auto  
