@@ -365,7 +365,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	ActorBase pActorBase = PlayerActor.GetActorBase()
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
 
-	if !Self || !SexLab 
+	if !Self || !SexLab || (animation == None)
 		Debug.Trace("[SD]: Critical error on SexLab End")
 		Return
 	EndIf
@@ -474,10 +474,10 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-	If (funct._hasPlayer(actors))
-		Debug.Trace("[SD]: Orgasm!")
+	; If (funct._hasPlayer(actors))
+	;	Debug.Trace("[SD]: Orgasm!")
 
-	EndIf
+	; EndIf
 	
 EndEvent
 

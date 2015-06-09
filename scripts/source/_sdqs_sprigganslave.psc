@@ -152,11 +152,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; For SexLab Hormones compatibiltiy... should not have any effect if it isn't installed
 		Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(196, 16) + Math.LeftShift(238, 8) + 218
-		StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
-		StorageUtil.SetFloatValue(none, "_SLH_fBreast", 0.8 ) 
-		StorageUtil.SetFloatValue(none, "_SLH_fWeight", 20.0 ) 
-		StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
-		SendModEvent("SLHRefresh")
+		StorageUtil.SetIntValue(akSlave, "_SLH_iSkinColor", iSprigganSkinColor ) 
+		StorageUtil.SetFloatValue(akSlave, "_SLH_fBreast", 0.8 ) 
+		StorageUtil.SetFloatValue(akSlave, "_SLH_fWeight", 20.0 ) 
+		StorageUtil.SetIntValue(akSlave, "_SLH_iForcedRairLoss", 1)
+		akSlave.SendModEvent("SLHRefresh")
 			
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
@@ -310,12 +310,12 @@ Event OnUpdateGameTime()
 		If (StorageUtil.GetIntValue(none, "_SLH_iHormones")==1)
 
 			Int iSprigganSkinColor = Math.LeftShift(255, 24) + Math.LeftShift(133, 16) + Math.LeftShift(184, 8) + 160
-			StorageUtil.SetIntValue(none, "_SLH_iSkinColor", iSprigganSkinColor ) 
-			StorageUtil.SetFloatValue(none, "_SLH_fBreast", Utility.RandomFloat(0.8, 1.4) ) 
-			StorageUtil.SetFloatValue(none, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
-			StorageUtil.SetFloatValue(none, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
-			StorageUtil.SetIntValue(none, "_SLH_iForcedRairLoss", 1)
-			SendModEvent("SLHRefresh")
+			StorageUtil.SetIntValue(kPlayer, "_SLH_iSkinColor", iSprigganSkinColor ) 
+			StorageUtil.SetFloatValue(kPlayer, "_SLH_fBreast", Utility.RandomFloat(0.8, 1.4) ) 
+			StorageUtil.SetFloatValue(kPlayer, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
+			StorageUtil.SetFloatValue(kPlayer, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
+			StorageUtil.SetIntValue(kPlayer, "_SLH_iForcedRairLoss", 1)
+			kPlayer.SendModEvent("SLHRefresh")
 		EndIf
 
 		SprigganFX.Play( kSlave, 30 )
