@@ -400,25 +400,25 @@ Function GiftPlayer ( Actor akSpeaker  )
 	; Player is a beggar
 	ObjectReference speakerRef = akSpeaker as ObjectReference
 
-	Debug.Notification("[SLD] Receiving a gift - actor: " + akSpeaker)
+	; Debug.Notification("[SLD] Receiving a gift")
 
 	If akSpeaker.Isinfaction(InnkeeperFaction)
-		speakerRef.AddItem(InnkeeperGiftList, 1, false)
+		speakerRef.AddItem(InnkeeperGiftList, 1, true)
 
 	ElseIf akSpeaker.Isinfaction(TailorFaction)
-		speakerRef.AddItem(TailorGiftList, 1, false)
+		speakerRef.AddItem(TailorGiftList, 1, true)
 
 	ElseIf akSpeaker.Isinfaction(MerchantFaction)
-		speakerRef.AddItem(MerchantGiftList, 1, false)
+		speakerRef.AddItem(MerchantGiftList, 1, true)
 
 	ElseIf akSpeaker.Isinfaction(FarmerFaction)
-		speakerRef.AddItem(FarmerGiftList, 1, false)
+		speakerRef.AddItem(FarmerGiftList, 1, true)
 
 	ElseIf akSpeaker.Isinfaction(PriestFaction)
-		speakerRef.AddItem(PriestGiftList, 1, false)
+		speakerRef.AddItem(PriestGiftList, 1, true)
 
 	else
-		speakerRef.AddItem(Gold001, Utility.RandomInt(1, ((akSpeaker.GetAV("Confidence") as Int) + (akSpeaker.GetAV("Morality") as Int) ) * (akSpeaker.GetAV("Assistance") as Int) ), false)
+		speakerRef.AddItem(Gold001, Utility.RandomInt(1, ((akSpeaker.GetAV("Confidence") as Int) + (akSpeaker.GetAV("Morality") as Int) ) * (akSpeaker.GetAV("Assistance") as Int) ), true)
 	endif
 
 EndFunction
