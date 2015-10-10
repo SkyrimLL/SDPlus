@@ -155,7 +155,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetIntValue(akSlave, "_SLH_iSkinColor", iSprigganSkinColor ) 
 		StorageUtil.SetFloatValue(akSlave, "_SLH_fBreast", 0.8 ) 
 		StorageUtil.SetFloatValue(akSlave, "_SLH_fWeight", 20.0 ) 
-		StorageUtil.SetIntValue(akSlave, "_SLH_iForcedRairLoss", 1)
+		StorageUtil.SetIntValue(akSlave, "_SLH_iForcedHairLoss", 1)
 		akSlave.SendModEvent("SLHRefresh")
 			
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
@@ -185,6 +185,15 @@ Event OnUpdateGameTime()
 	While ( !kSlave.Is3DLoaded() )
 	EndWhile
 
+	; Workaround to fix issue with player stuck in place after sex with spriggan armor on - remove once real solution is found
+	; Issue is triggered a little after sex ends... 
+
+  	If (!Game.IsMovementControlsEnabled() ) &&  (SexLab.ValidateActor(kPlayer) > 0) 
+  		; Debug.Notification( "[Spriggan slave loop] Player stuck - restoring controls")  
+		Game.SetPlayerAIDriven(false)
+		Game.EnablePlayerControls( abMovement = True )
+	Endif
+
 	; Debug.Notification( "[Spriggan slave loop] kSlave = Loaded " )
 
 	fTimeElapsed = GetCurrentGameTime() - fDaysEnslaved
@@ -212,12 +221,12 @@ Event OnUpdateGameTime()
 
 		Self.Setstage(70)
 
-	ElseIf !kPlayer.IsInCombat() && !kPlayer.IsOnMount()
+	ElseIf !kPlayer.IsInCombat() && !kPlayer.IsOnMount() &&  (SexLab.ValidateActor(kPlayer) > 0) 
     	; !( kSlave as Actor ).GetCurrentScene() 
     	; && !kPlayer.GetDialogueTarget()  ; always false when used on player - http://www.creationkit.com/Talk:GetDialogueTarget_-_Actor
 
         ; Debug.Notification( randomVar ) 
-		If (randomVar >= 98 ) &&  (SexLab.ValidateActor(kPlayer) > 0) 
+		If (randomVar >= 98 )
 			_SDSP_host_flare.RemoteCast(kPlayer, kPlayer, kPlayer)
 			Debug.Notification( "Tendrils are digging deeper under your skin..." )
 
@@ -249,25 +258,26 @@ Event OnUpdateGameTime()
 
 			SexLab.ApplyCum(kSlave as Actor, 1)
 		EndIf
+
 	Else
 		; Debug.Notification( "[SD] Issue with Spriggan root validation." )
 		Debug.Trace( "[Spriggan slave loop] Player is busy: SexLab.ValidateActor code: " + SexLab.ValidateActor(kPlayer) + " - Combat: " + !kPlayer.IsInCombat()  + " - Dialogue: " +  !kPlayer.GetDialogueTarget()   + " - Mount: " +  !kPlayer.IsOnMount() )       
 	EndIf
 
 	; Add housekeeping for parts of the armor
-	If fctOutfit.isBeltEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
+	; If fctOutfit.isBeltEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
 	;		Debug.Notification( "[SD] Adding player to: " + SprigganFaction )
 	;		Debug.Trace( "[SD] Adding player to: " + SprigganFaction )
 	;		kPlayer.AddToFaction(SprigganFaction)
 	;		kPlayer.AddToFaction(GiantFaction)
 			; GiantFaction.SetReaction(PlayerFaction, 3)
 			; SprigganFaction.SetReaction(PlayerFaction, 3)
-	EndIf
+	; EndIf
 
 	; random punishment events
-	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !kPlayer.GetCurrentScene() && !kPlayer.IsInCombat()  && !kPlayer.IsOnMount() ) ;  && !kPlayer.GetDialogueTarget() )
+	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !kPlayer.GetCurrentScene() && !kPlayer.IsInCombat()  && !kPlayer.IsOnMount() ) &&  (SexLab.ValidateActor(kPlayer) > 0) ;  && !kPlayer.GetDialogueTarget() )
 		; _SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
-		Game.ForceThirdPerson()
+		; Game.ForceThirdPerson()
 		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
 		Debug.Trace( "[SD] Spriggan roots growing" )
 		Debug.Notification( "The roots throb deeply in and out of you..." )
@@ -314,7 +324,7 @@ Event OnUpdateGameTime()
 			StorageUtil.SetFloatValue(kPlayer, "_SLH_fBreast", Utility.RandomFloat(0.8, 1.4) ) 
 			StorageUtil.SetFloatValue(kPlayer, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
 			StorageUtil.SetFloatValue(kPlayer, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
-			StorageUtil.SetIntValue(kPlayer, "_SLH_iForcedRairLoss", 1)
+			StorageUtil.SetIntValue(kPlayer, "_SLH_iForcedHairLoss", 1)
 			kPlayer.SendModEvent("SLHRefresh")
 		EndIf
 

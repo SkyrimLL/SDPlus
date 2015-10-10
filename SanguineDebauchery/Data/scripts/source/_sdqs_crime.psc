@@ -41,7 +41,12 @@ Event OnStoryCrimeGold(ObjectReference akVictim, ObjectReference akCriminal, For
 	kMaster = _SDRAP_master.GetReference() as Actor
 	kSlave = _SDRAP_slave.GetReference() as Actor
 
-	If ( akFaction && akCriminal as Actor == kSlave )
+  	if (aiCrime == 1) && (akVictim== (kMaster as ObjectReference)) &&   (akCriminal== (kSlave as ObjectReference)); Pick-pocketing
+   	 	Debug.Notification("You think you could get away with that?!")
+   	 	Debug.Notification("[SD] Slave got " + aiGoldAmount + " crime gold for pickpocketing " + akVictim)
+		kMaster.SendModEvent("PCSubWhip")
+	 
+	elseIf ( akFaction && (akCriminal as Actor == kSlave) )
 		fctConstraints.actorCombatShutdown( akVictim as Actor )
 		fctConstraints.actorCombatShutdown( kSlave )
 		
@@ -62,9 +67,10 @@ Event OnStoryCrimeGold(ObjectReference akVictim, ObjectReference akCriminal, For
 		EndIf
 
 		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-		SendModEvent("SDPunishSlave")
+		; SendModEvent("SDPunishSlave")
 		kMaster.SendModEvent("PCSubPunish")
 	EndIf
 	Stop()
 	Reset()
 EndEvent
+

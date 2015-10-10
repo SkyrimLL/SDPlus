@@ -298,6 +298,9 @@ Function positionVictims( Int aiStage )
  
 	; sanguineActorBase.SetWeight(fWeight) 
 	; kSanguine.UpdateWeight(NeckDelta) ;Apply the changes.
+
+
+	fctOutfit.sendSlaveTatModEvent(kDreamer, "SD+","Rose Stamp 1 (butt)" )
 	
 	Float fBreast  = 0.0
 	Float fSchlong = 0.0
@@ -314,15 +317,25 @@ Function positionVictims( Int aiStage )
 		NetImmerse.SetNodeScale(kSanguine, "NPC R Breast", fBreast  , false)
 		NetImmerse.SetNodeScale(kSanguine, "NPC L Breast", fBreast  , true)
 		NetImmerse.SetNodeScale(kSanguine, "NPC R Breast", fBreast  , true)
+
+		; Attempt at randomly giving a schlong to female sanguine - abandonned for now
+		; Issues with getting a schlong when sanguine is back in male form
+		if (StorageUtil.GetIntValue(kDreamer, "_SLH_iTG")==1)
+			if (Utility.RandomInt(0, 100)>80)
+	            ; kSanguine.SendModEvent("SLHSetSchlong", "UNP Bimbo")
+			elseif (Utility.RandomInt(0, 100)>80)
+	            ; kSanguine.SendModEvent("SLHRemoveSchlong")
+	        endIf
+	    endif		
 	EndIf
 
 	if ( bSchlongEnabled && kSanguine.GetLeveledActorBase().GetSex() == 0 )
 		fSchlong = Utility.RandomFloat(1.2, 2.0) ; NetImmerse.GetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", false)
+		; kSanguine.SendModEvent("SLHSetSchlong", "")
 
 		NetImmerse.SetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", fSchlong , false)
 		NetImmerse.SetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", fSchlong , true)
 	EndIf
-
 
 	Utility.Wait(2.0)
 	kSanguine.QueueNiNodeUpdate()

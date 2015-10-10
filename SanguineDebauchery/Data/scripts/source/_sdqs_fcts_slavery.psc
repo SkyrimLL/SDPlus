@@ -49,9 +49,11 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kSlave, "_SD_iSold", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 1)
 	If StorageUtil.HasIntValue(kSlave, "_SD_iEnslavedCount")
+		StorageUtil.SetIntValue(kMaster, "_SD_iSlaverCount", StorageUtil.GetIntValue(kMaster, "_SD_iSlaverCount") + 1)
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedCount", StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount") + 1)
 		_SDGVP_enslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount"))
 	Else
+		StorageUtil.SetIntValue(kMaster, "_SD_iSlaverCount", 1)
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedCount", 1)
 		_SDGVP_enslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedCount"))
 	EndIf
@@ -167,6 +169,11 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 0 ) 
 		endif
 	EndIf
+
+	If (_SDGVP_config_min_days_before_master_travel.GetValue()>0)
+		StorageUtil.SetIntValue(kMaster, "_SD_iDaysBeforeTravel", Utility.RandomInt(1,5)   )
+		_SDGVP_isMasterTraveller.SetValue(0)
+	endif
 
 	If (!StorageUtil.HasStringValue(kMaster, "_SD_sColorProfile"))
 		int colorChance =  Utility.RandomInt(0,100)
@@ -313,7 +320,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
 
-	UpdateStatusDaily(  kMaster,  kSlave)
+	UpdateStatusDaily(  kMaster,  kSlave, false)
 
 	SendModEvent("SDEnslavedStart") 
 
@@ -605,6 +612,7 @@ function SlaveryRefreshGlobalValues( Actor kMaster, Actor kSlave)
 	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunish")
 	Int masterFoodNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood")
 	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
+	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
 
 	_SDGVP_MasterDisposition.SetValue( masterDisposition ) 
 	_SDGVP_MasterDispositionOverall.SetValue( overallMasterDisposition ) 
@@ -624,18 +632,26 @@ Function UpdateSlaveryLevel(Actor kSlave)
 	; Update exposure level
 	If (exposure == 0) ; level 0 - free
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 0)
+		; slaveryQuest.SetObjectiveDisplayed(9, abDisplayed = true)
+
 	ElseIf (exposure >= 1) && (exposure <10) ; level 1 - rebelious
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 1)
+
 	ElseIf (exposure >= 10) && (exposure <20) ; level 2 - reluctant
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 2)
+
 	ElseIf (exposure >= 20) && (exposure <40) ; level 3 - accepting
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 3)
+
 	ElseIf (exposure >= 40) && (exposure < 80) ; level 4 - not so bad 
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 4)
+
 	ElseIf (exposure >= 80) && (exposure < 100) ; level 5 - getting to like it
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 5)
+
 	ElseIf (exposure >= 100)  ; level 6 - begging for it
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 6)
+
 	EndIf
 
 	; Correct slavery level based on user preference
@@ -678,7 +694,7 @@ function UpdateStatusHourly( Actor kMaster, Actor kSlave)
 EndFunction
 
 ; automatic refresh - updateStatusDaily() - make duration configurable in MCM 
-function UpdateStatusDaily( Actor kMaster, Actor kSlave)
+function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = true)
 	int slaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
 	Int exposure = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure")
 	Int masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
@@ -739,31 +755,31 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	If (masterPunishNeed <  0)
 		masterDisposition -= 1
 	EndIf
-	; Change of rules - food and gold goals are now optional
+	; Change of rules - food and gold goals are now optional at low levels
 	; Masters will not be mad if you miss targets but they will be happy if you complete them
-	; If (masterFoodNeed <  0) && (slaveryLevel >= 1)
-	;	masterDisposition -= 1
-	; EndIf
-	; If (masterGoldNeed <  0) && (slaveryLevel >= 2)
-	;	masterDisposition -= 1
-	; EndIf
+	If (masterFoodNeed <  0) && (slaveryLevel >= 1) && (slaveryLevel <= 5)
+		masterDisposition -= 1
+	EndIf
+	If (masterGoldNeed <  0) && (slaveryLevel >= 2) && (slaveryLevel <= 5)
+		masterDisposition -= 1
+	EndIf
 
 
 	; :: If counts match master personality type, master mood +1
 	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") > 0) && (masterSexNeed >= (-1 * masterNeedRange) ) && (masterSexNeed <= masterNeedRange)
-	 	masterDisposition += 1
+	 	masterDisposition += 2
 	 	iSexComplete += 1
 	EndIf
 	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") > 0) && (masterPunishNeed >= (-1 * masterNeedRange) )  && (masterPunishNeed <= masterNeedRange)
-	 	masterDisposition += 1
+	 	masterDisposition += 2
 		iPunishComplete += 1
 	EndIf
 	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") > 0) && (masterFoodNeed >= (-1 * masterNeedRange) )  && (masterFoodNeed <= masterNeedRange) 
-	 	masterDisposition += 1
+	 	masterDisposition += 2
 	 	iFoodComplete += 1
 	EndIf
 	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") > 0) && (masterGoldNeed >= (-5 * masterNeedRange) )  && (masterGoldNeed <= (masterNeedRange * 5)) 
-	 	masterDisposition += 1
+	 	masterDisposition += 2
 	 	iGoldComplete += 1
 	EndIf
 
@@ -837,9 +853,9 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	Int iTrustBonus = 0
 
 	If (iDominance < 0)
-		iTrustBonus += 1
+		iTrustBonus += slaveryLevel
 	Else
-		iTrustBonus -= 2
+	;	iTrustBonus -= 2
 	EndIf
 
 	If (iFoodComplete>=1)
@@ -870,13 +886,13 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kSlave, "_SD_iDominance", iDominance)
 
 	if (masterTrust > 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 20 + slaveryLevel * 10)  
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
-		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 300 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
+		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 300 + slaveryLevel * 100)
 	Else
-		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 5)  
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + slaveryLevel * 5)  
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 50)
+		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 150 + slaveryLevel * 50)
 		StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnableWeaponEquip", 0)
 	EndIf
@@ -890,8 +906,8 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		; Falmers follow slave by default
 		StorageUtil.SetIntValue(kSlave,"_SD_iEnableLeash", 1)
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
-		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 10)  
-		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 100 + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") * 100)
+		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + slaveryLevel * 10)  
+		StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 100 + slaveryLevel * 100)
 	EndIf
 
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
@@ -941,8 +957,10 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave)
 		statusDominance = "Defiant \n"
 	Endif
 
-	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "("  + overallMasterDisposition +")"+ "\nTrust: " + masterTrust
-	Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + " (" + exposure + ")")
+	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +")"+ "\nTrust: " + masterTrust
+	If (bDisplayStatus)
+		Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + "\n (Exposure: " + exposure + ")")
+	Endif
 
 	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
@@ -980,7 +998,7 @@ function DisplaySlaveryLevel( Actor kMaster, Actor kSlave )
 
 	If (slaveryLevel == 1) ; collared but resisting
 		Debug.MessageBox("As the cold iron clamps shut around your neck and wrists, you are now at the mercy of your new owner. You feel exposed and helpless. The rage of defeat fuels your desire to escape at the first occasion. ")
-			
+
 	ElseIf (slaveryLevel == 2) ; not resisting but sobbing
 		If (masterPersonalityType == 0) || (masterPersonalityType == 5) || (masterPersonalityType == 6)
 			; 0 - Simple profile. No additional constraints
@@ -1018,17 +1036,54 @@ function DisplaySlaveryLevel( Actor kMaster, Actor kSlave )
 		ElseIf (masterPersonalityType == 6) ; 6 - Perfectionist - Seeks full compliance for all goals
 			Debug.MessageBox("The reality of your situation starts to sink in. Escaping the grasp of your owner will take more time than you were hoping for. If you pretend to comply, you may distract your owner long enough to escape or even strike back. ")
 			
-		EndIf	 
+		EndIf	
+
 	ElseIf (slaveryLevel == 4) ; not too bad after all
 		Debug.MessageBox("You desperately try to keep the idea of an escape alive as you are going through the motions of serving your owner. If only you could earn your keep long enough to become a trusted slave...")
-			
+
 	ElseIf (slaveryLevel == 5) ; getting to enjoy it
 		Debug.MessageBox("The collar locked around your neck feels strangely familiar. Freedom feels like a distant memory. An echo of your former life. You are meant to serve.. that much is clear by now. Better make the best of it.")
-			
+
 	ElseIf (slaveryLevel == 6) ; totally submissive, masochist and sex addict 
 		Debug.MessageBox("Serving your owner in every way possible makes you so happy. The cravings burning deep inside you are satisfied only when you feel your owner's whip marking your skin or, even better, when you are finally allowed to serve your owner sexually. ")
-			
+		
 	EndIf
+	
+EndFunction
+
+function DisplaySlaveryLevelObjective( Actor kMaster, Actor kSlave, Quest qSlaveryQuest )
+	int slaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
+	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
+
+
+	if (StorageUtil.GetIntValue(kSlave, "_SD_iEnslaved") == 1)
+		qSlaveryQuest.SetObjectiveDisplayed(10, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(20, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(30, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(40, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(50, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(60, abDisplayed = false)
+
+		If (slaveryLevel == 1) ; collared but resisting
+			slaveryQuest.SetObjectiveDisplayed(10, abDisplayed = true)
+
+		ElseIf (slaveryLevel == 2) ; not resisting but sobbing
+			slaveryQuest.SetObjectiveDisplayed(20, abDisplayed = true)
+
+		ElseIf (slaveryLevel == 3) ; accepting fate
+			slaveryQuest.SetObjectiveDisplayed(30, abDisplayed = true)
+
+		ElseIf (slaveryLevel == 4) ; not too bad after all
+ 			slaveryQuest.SetObjectiveDisplayed(40, abDisplayed = true)
+
+		ElseIf (slaveryLevel == 5) ; getting to enjoy it
+			slaveryQuest.SetObjectiveDisplayed(50, abDisplayed = true)
+
+		ElseIf (slaveryLevel == 6) ; totally submissive, masochist and sex addict 
+ 			slaveryQuest.SetObjectiveDisplayed(60, abDisplayed = true)
+
+		EndIf
+	endif
 	
 EndFunction
 
@@ -1186,6 +1241,8 @@ GlobalVariable Property _SDGVP_falmerEnslavedCount  Auto
 GlobalVariable Property _SDGVP_config_min_slavery_level Auto
 GlobalVariable Property _SDGVP_config_max_slavery_level Auto
 GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+GlobalVariable Property _SDGVP_config_min_days_before_master_travel Auto
+GlobalVariable Property _SDGVP_isMasterTraveller  Auto  
 
 GlobalVariable Property _SDGVP_MasterDisposition  Auto  
 GlobalVariable Property _SDGVP_MasterDispositionOverall  Auto  
@@ -1198,3 +1255,6 @@ GlobalVariable Property _SDGVP_MasterNeedPunishment  Auto
 GlobalVariable Property _SDGVP_SlaveryLevel  Auto  
 
 
+ 
+
+Quest Property slaveryQuest  Auto  

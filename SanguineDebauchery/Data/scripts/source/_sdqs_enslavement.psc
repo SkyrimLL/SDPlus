@@ -145,6 +145,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		_SDGVP_stats_enslaved.Mod( 1.0 )
 		_SDGVP_enslaved.SetValue(1)
+		StorageUtil.SetIntValue(kSlave, "_SD_iForcedSurrender",0)
 
 		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") != 1)		
 			StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 0)
@@ -247,7 +248,6 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		fctSlavery.StartSlavery( kMaster, kSlave)
 		Utility.Wait(2.0)
 
-		fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
 
 		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
@@ -286,7 +286,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			PunishSlave( kMaster,  kSlave)
 		EndIf
 
- 
+		; Test slaver tattoo
+		fctOutfit.sendSlaveTatModEvent(kSlave, "SD+","Slavers Hand (back)" )
 
 		; fctOutfit.DDSetAnimating( kSlave, true )
 
@@ -295,6 +296,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		SetObjectiveDisplayed( 2 )
 		SetObjectiveDisplayed( 6 )
 		Utility.Wait(2.0)
+		; fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
+		kMaster.SendModEvent("PCSubStatus")
 
 		; Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )
 
@@ -606,6 +609,7 @@ Actor Function GetNearbyEnslavedFollower(Actor akSlave)
 
 	Return thisActor
 EndFunction
+
 
 
 Faction Property _SDFP_slaverCrimeFaction  Auto 
