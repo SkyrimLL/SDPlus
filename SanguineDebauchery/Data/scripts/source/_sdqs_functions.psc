@@ -368,7 +368,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		; uiSlotMask[8] = 0x20000000  ;59  DD Cuffs (Arms)
 
 		; Masturbation scenes
-		If ((SexLabInTags == "Masturbation") || (SexLabOutTags == "Masturbation")) && (SexLab.ValidateActor( akSpeaker ) > 0)
+		If (SexLabInTags == "Masturbation") && (SexLab.ValidateActor( akSpeaker ) > 0)
 
 			If (SexLabInTags == "Masturbation")  
 				If (speakerGender  == 0)
@@ -405,13 +405,14 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		; Gender restrictions - 2 actors
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
 
-			SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
+			; SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
 		
+			; Testing sexlab 1.6 - disabling gender restrictions for now / testing new 'gay filter' from sexlab
 			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) )
 				If (speakerGender  == 0)
-					SexLabInTags = SexLabInTags + ",MM"
+				;	SexLabInTags = SexLabInTags + ",MM"
 				Else
-					SexLabInTags = SexLabInTags + ",FF"
+				;	SexLabInTags = SexLabInTags + ",FF"
 				EndIf
 			ElseIf ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
 					

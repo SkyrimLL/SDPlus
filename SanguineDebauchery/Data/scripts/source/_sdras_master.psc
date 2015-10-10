@@ -34,6 +34,7 @@ GlobalVariable Property _SDDVP_buyoutEarned  Auto
 GlobalVariable Property _SDGVP_state_caged  Auto  
 GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto  
 GlobalVariable Property _SDGVP_health_threshold Auto
+GlobalVariable Property _SDGVP_config_healthMult Auto
 
 LocationAlias Property _SDLAP_masters_location  Auto  
 
@@ -408,7 +409,7 @@ State monitor
 			; Skipped - Not working as intended - especially under magic attack
 			; Should be detection of an attack by slave against master
 			If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight")) 
-				Debug.Notification( "Who said you could use magic, Slave!")
+				; Debug.Notification( "Who said you could use magic, Slave!")
  
 			ElseIf ((kSlave.GetEquippedItemType(0) == 9)||(kSlave.GetEquippedItemType(1) == 9 ))  && ( (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableSpellEquip")) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableShoutEquip")) )
 				Debug.Notification( "You better unequip that spell before I make you swallow it, Slave!")
@@ -515,7 +516,7 @@ State monitor
 				fSlaveFreeTime += 0.05
 				enslavement.bSearchForSlave = False
 
-				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()/10)
+				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<=_SDGVP_config_healthMult.GetValue()/10) && (Utility.RandomInt(0,100)>=(StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") * 30)) 
 					; Chance of spriggan infection if slave in close proximity of infected master
 					; Debug.Notification("[SD] Infected by spriggan swarm...")
 					SendModEvent("SDSprigganEnslave")

@@ -63,7 +63,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; EndIf
 	; kDreamer.EquipItem(  _SDA_gag , False, True )
 
-	fTimer = fRFSU * Utility.RandomInt(5,10)
+	fTimer = fRFSU * Utility.RandomInt(7 - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel") , 11  - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel"))
 	Debug.Trace("[SD] Sanguine items timer: " + fTimer)
 	RegisterForSingleUpdate( fTimer )
 EndEvent
@@ -82,7 +82,7 @@ Event OnUpdate()
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 	EndIf
 
-	fTimer = fRFSU * Utility.RandomInt(2,5)
+	fTimer = fRFSU * Utility.RandomInt(7 - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel") , 11  - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel"))
 	Debug.Trace("[SD] Sanguine items timer: " + fTimer)
 	RegisterForSingleUpdate( fTimer )
 EndEvent

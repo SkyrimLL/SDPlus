@@ -52,7 +52,7 @@ Event OnUpdate()
 		EndIf
 	EndIf
 
-	If ( bDispel && !Self.GetCurrentScene() && GetCurrentRealTime() - fSummonTime >= 10.0 )
+	If ( bDispel && !Self.GetCurrentScene() && GetCurrentRealTime() - fSummonTime >= 10.0  ) && (SexLab.ValidateActor( Self) > 0) && (SexLab.ValidateActor( kPlayer ) > 0)
 		Self.Kill()
 		Return
 	EndIf

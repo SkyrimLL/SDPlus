@@ -6,7 +6,7 @@ Scriptname _sdtif_submit_01a Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor akPlayer = SexLab.PlayerRef 
+Actor akPlayer = Game.GetPlayer()
 
 ; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)

@@ -927,9 +927,9 @@ EndFunction
 
 Function registerDeviousOutfitsKeywords ( Actor kActor )
 	Debug.Trace("[SD] Register devious keywords")
-
-	if (StorageUtil.StringListCount( kActor, "_SD_lDevicesKeyword") != 0)
-		Debug.Trace("[SD] Register devious keywords - aborting - list already set")
+  
+	if (StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword") != 0)
+		Debug.Trace("[SD] Register devious keywords - aborting - list already set - " + StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword"))
 		Return
 	EndIf	
 
@@ -1232,6 +1232,7 @@ Function clearCollar ( bool skipEvents = false, bool skipMutex = false )
 	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
 	libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, libs.zad_DeviousCollar, False, skipEvents,  skipMutex)
 EndFunction
+ 
 
 Function setDeviousOutfitByTags ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "" , Bool bDestroy = False)
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
@@ -1246,10 +1247,37 @@ Function setDeviousOutfitByTags ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip
 		Debug.Trace("[SD] Set device by tags" )
 
 		If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslaved"))
+			Debug.Trace("[SD] Looking in Master list - " + kMaster.getName())
 			ddArmorKeyword = StorageUtil.FormListGet( kMaster, "_SD_lDevicesKeyword", iOutfitPart) as Keyword 
 		Else
+			Debug.Trace("[SD] Looking in Slave list - " + kSlave.getName())
 			ddArmorKeyword = StorageUtil.FormListGet( kSlave, "_SD_lDevicesKeyword", iOutfitPart) as Keyword 
 		EndIf
+
+		if (ddArmorKeyword==None)
+			Debug.Trace("[SD] Keyword not found. Fallback on default. " )
+			If (iOutfitPart == 0 )
+				ddArmorKeyword =  libs.zad_DeviousCollar  ; 0 - Collar - Unused
+			ElseIf (iOutfitPart == 1 )
+				ddArmorKeyword =  libs.zad_DeviousArmbinder ; 1 - Arms cuffs
+			ElseIf (iOutfitPart == 2 )
+				ddArmorKeyword =  libs.zad_DeviousLegCuffs   ; 2 - Legs cuffs
+			ElseIf (iOutfitPart == 3 )
+				ddArmorKeyword =  libs.zad_DeviousGag   ; 3 - Gag
+			ElseIf (iOutfitPart == 4 )
+				ddArmorKeyword =  libs.zad_DeviousBlindfold   ; 4 - Blindfold
+			ElseIf (iOutfitPart == 5 )
+				ddArmorKeyword =  libs.zad_DeviousBelt   ; 5 - Belt
+			ElseIf (iOutfitPart == 6 )
+				ddArmorKeyword =  libs.zad_DeviousPlugAnal  ; 6 - Plug Anal
+			ElseIf (iOutfitPart == 7 )
+				ddArmorKeyword =  libs.zad_DeviousPlugVaginal ; 7 - Plug Vaginal
+			Else
+				Debug.Trace("[SD] Not a default outfit part - " + iOutfitPart)
+				Return
+			EndIf
+		endIf
+
 		Debug.Trace("[SD] Device keyword: " + ddArmorKeyword )
 
 		If (bEquip)
@@ -1496,6 +1524,27 @@ Function DDSetAnimating( Actor akActor, Bool isAnimating )
 	libs.SetAnimating( akActor, isAnimating )
 EndFunction
 
+; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
+
+; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
+
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
+	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+
+  	if (STevent) 
+        ModEvent.PushForm(STevent, akActor)      	; Form - actor
+        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
+        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, iColor)  			; Int - color
+        ModEvent.PushBool(STevent, false)        	; Bool - last = false
+        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
+
+        ModEvent.Send(STevent)
+  	else
+  		Debug.Trace("[_sdqs_fcts_outfit]  Send slave tat event failed.")
+	endIf
+endfunction
 
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto

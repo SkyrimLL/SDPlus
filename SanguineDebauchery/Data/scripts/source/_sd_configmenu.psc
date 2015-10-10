@@ -98,9 +98,9 @@ Int _SDOID_config_B14
 
 Int _SDOID_config_S1
 Float _SDOID_config_S1_min = 0.0
-Float _SDOID_config_S1_max = 3.0
-Float _SDOID_config_S1_default = 1.0
-Float _SDOID_config_S1_inc = 0.1
+Float _SDOID_config_S1_max = 100.0 ; 3.0
+Float _SDOID_config_S1_default = 100.0 ; 1.0
+Float _SDOID_config_S1_inc = 5.0 ; 0.1
 Int _SDOID_config_S2
 Float _SDOID_config_S2_min = 0.0
 Float _SDOID_config_S2_max = 100.0
@@ -441,7 +441,8 @@ event OnPageReset(string a_page)
 		AddHeaderOption("$SD_HEADER_P0_COMBAT") ;0 - 1
 		; _SDOID_config_S1 = AddSliderOption("$SD_OPTION_P0_BUFFER", _SDGVP_config_healthMult.GetValue() as Float, "$SD_HEALTH", OPTION_FLAG_DISABLED) ;2 - 2
 		; _SDOID_config_S2 = AddSliderOption("$SD_OPTION_P0_WEAKENED_AT", _SDGVP_config_healthThreshold.GetValue() as Float, "$SD_PERCENT_HEALTH") ;4 - 3
-		_SDOID_config_S2 = AddSliderOption("Chance of enslavement", _SDGVP_config_healthThreshold.GetValue() as Float, "{1} %") ;4 - 3
+		_SDOID_config_S2 = AddSliderOption("Chance of enslavement", _SDGVP_config_healthThreshold.GetValue() as Float, "{1} %")  
+		_SDOID_config_S1 = AddSliderOption("Chance of spriggan infection", _SDGVP_config_healthMult.GetValue() as Float, "{1} %")  
 		; _SDOID_config_B1 = AddToggleOption("$SD_OPTION_P0_ESSENTIAL_WHILE_WEAKENED", _SDGVP_config_essential.GetValue() as Bool, OPTION_FLAG_DISABLED) ;6 - 4
 		AddHeaderOption("$SD_HEADER_P0_ITEMS") ;8 - 5
 		_SDOID_config_B3 = AddToggleOption("$SD_OPTION_P0_LIMITED_REMOVAL", _SDGVP_config_itemRemovalType.GetValue() as Bool) ;10 - 6
@@ -691,10 +692,11 @@ event OnOptionHighlight(int a_option)
 		SetInfoText("Overall disposition to be considered for slave to be released (or disposed of). Use this as an Enslavement Difficulty setting.")
 	;#################################################################################################			
 	ElseIf ( a_option == _SDOID_config_S1 )
-		SetInfoText("$_SDOID_config_S1")
+		; SetInfoText("$_SDOID_config_S1")
+		SetInfoText("Adds a chance of success to the Death Alternative quests defined for Spriggan infection by SD.")
 	ElseIf ( a_option == _SDOID_config_S2 )
 		; SetInfoText("$_SDOID_config_S2")
-		SetInfoText("Adds a chance of success to the Death Alternative quests defined by SD.")
+		SetInfoText("Adds a chance of success to the Death Alternative quests defined for enslavement by SD.")
 	ElseIf ( a_option == _SDOID_config_S3 )
 		SetInfoText("$_SDOID_config_S3")
 	ElseIf ( a_option == _SDOID_config_S4 )
@@ -826,7 +828,8 @@ event OnOptionDefault(int a_option)
 		_SDGVP_config_itemRemovalType.SetValue( 0 )
 		SetToggleOptionValue(a_option, _SDGVP_config_itemRemovalType.GetValue() as Bool )
 	ElseIf ( a_option == _SDOID_config_S1 )
-		_SDGVP_config_healthMult.SetValue( _SDOID_config_S1_default )
+		; _SDGVP_config_healthMult.SetValue( _SDOID_config_S1_default )
+		_SDGVP_config_healthMult.SetValue( 80 )
 		SetSliderDialogStartValue( _SDGVP_config_healthMult.GetValue() as Float )
 	ElseIf ( a_option == _SDOID_config_S2 )
 		; _SDGVP_config_healthThreshold.SetValue( _SDOID_config_S2_default )
@@ -854,10 +857,14 @@ endEvent
 event OnOptionSliderOpen(int a_option)
 	{Called when a slider option has been selected}
 	If ( a_option == _SDOID_config_S1 )
+;		SetSliderDialogStartValue( _SDGVP_config_healthMult.GetValue() as Float )
+;		SetSliderDialogDefaultValue( _SDOID_config_S1_default )
+;		SetSliderDialogRange( _SDOID_config_S1_min, _SDOID_config_S1_max )
+;		SetSliderDialogInterval( _SDOID_config_S1_inc )
 		SetSliderDialogStartValue( _SDGVP_config_healthMult.GetValue() as Float )
-		SetSliderDialogDefaultValue( _SDOID_config_S1_default )
-		SetSliderDialogRange( _SDOID_config_S1_min, _SDOID_config_S1_max )
-		SetSliderDialogInterval( _SDOID_config_S1_inc )
+		SetSliderDialogDefaultValue( 80.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 5.0 )
 	ElseIf ( a_option == _SDOID_config_S2 )
 ;		SetSliderDialogStartValue( _SDGVP_config_healthThreshold.GetValue() as Float )
 ;		SetSliderDialogDefaultValue( _SDOID_config_S2_default )
@@ -920,7 +927,8 @@ event OnOptionSliderAccept(int a_option, float a_value)
 	{Called when a new slider value has been accepted}
 	If ( a_option == _SDOID_config_S1 )
 		_SDGVP_config_healthMult.SetValue( a_value )
-		SetSliderOptionValue(_SDOID_config_S1, a_value, "$SD_HEALTH")
+		; SetSliderOptionValue(_SDOID_config_S1, a_value, "$SD_HEALTH")
+		SetSliderOptionValue(_SDOID_config_S1, a_value, "{1} %")
 	ElseIf ( a_option == _SDOID_config_S2 )
 		_SDGVP_config_healthThreshold.SetValue( a_value )
 		; SetSliderOptionValue(_SDOID_config_S2, a_value, "$SD_PERCENT_HEALTH")

@@ -31,7 +31,12 @@ Bool Function checkIfSlaver ( Actor akActor )
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 	Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
 
-	If (checkIfSpriggan ( Game.GetPlayer() ))
+	If (checkIfSpriggan ( Game.GetPlayer() )) 
+		isSlaver = False
+	Endif
+	
+	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
+		; Prevent new enslavement by current master
 		isSlaver = False
 	Endif
 	
@@ -61,6 +66,11 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	; Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
 
 	If (checkIfSpriggan ( Game.GetPlayer() ))
+		isSlaver = False
+	Endif
+
+	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
+		; Prevent new enslavement by current master
 		isSlaver = False
 	Endif
 
@@ -110,6 +120,26 @@ Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormLis
 	Return found
 EndFunction
 
+
+; Function registerDeviousOutfitsKeywords ( Actor kActor )
+;	Debug.Trace("[SD] Register devious keywords")
+  
+;	if (StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword") != 0)
+;		Debug.Trace("[SD] Register devious keywords - aborting - list already set - " + StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword"))
+;		Return
+;	EndIf	
+
+	; Register list of reference keywords for each device in list
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousCollar) ; 0 - Collar - Unused
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousArmbinder) ; 1 - Arms cuffs
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousLegCuffs ) ; 2 - Legs cuffs
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousGag ) ; 3 - Gag
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBlindfold ) ; 4 - Blindfold
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBelt ) ; 5 - Belt
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugAnal) ; 6 - Plug Anal
+;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugVaginal) ; 7 - Plug Vaginal
+
+; EndFunction
 
 Function resetAllyToActor( Actor akSlave, FormList alFactionListIn )
 	Int index = 0

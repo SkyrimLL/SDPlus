@@ -93,30 +93,31 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; kCaster.SetAlpha(0.0)
 	SprigganFX.Play( akTarget, 120 )
 
+	_SD_spriggan_sprout1.Disable()
+	_SD_spriggan_sprout2.Disable()
+	_SD_spriggan_sprout3.Disable()
+
+	Debug.Messagebox("Sprigglings sprout around you...")
+
 	_SD_spriggan_sprout1.MoveTo(PlayerRef, 120.0 * Math.Sin(PlayerRef.GetAngleZ()), 120.0 * Math.Cos(PlayerRef.GetAngleZ()), PlayerRef.GetHeight() - 35.0)
 	_SD_spriggan_sprout2.MoveTo(PlayerRef, 120.0 * Math.Sin(PlayerRef.GetAngleZ() + 135.0), 120.0 * Math.Cos(PlayerRef.GetAngleZ() + 135.0), PlayerRef.GetHeight() - 35.0)
 	_SD_spriggan_sprout3.MoveTo(PlayerRef, 120.0 * Math.Sin(PlayerRef.GetAngleZ() - 135.0), 120.0 * Math.Cos(PlayerRef.GetAngleZ() - 135.0), PlayerRef.GetHeight() - 35.0)
 
+	_SD_spriggan_sprout1.Enable()
+	_SD_spriggan_sprout2.Enable()
+	_SD_spriggan_sprout3.Enable()
+
 	Utility.Wait(1.0)
 
 
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
-		; Debug.SendAnimationEvent(Game.GetPlayer(), "IdleForceDefaultState")
-		; HACK: select rough sexlab animations 
-		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1, "Masturbation,Female")
+	; If  (SexLab.ValidateActor( PlayerRef ) > 0)
+ 
+	;	SexLab.QuickStart(PlayerRef, AnimationTags = "Solo")
+	; EndIf
 
-		; HACK: get actors for sexlab
-		; actor[] sexActors = new actor[1]
-		; sexActors[0] = SexLab.PlayerRef
-
-		; HACK: start sexlab animation
-		; SexLab.StartSex(sexActors, animations)
-		SexLab.QuickStart(SexLab.PlayerRef, AnimationTags = "Solo")
-	EndIf
-
-	If ( Self )
-		RegisterForSingleUpdate( 0.1 )
-	EndIf
+	; If ( Self )
+	; 	RegisterForSingleUpdate( 0.1 )
+	; EndIf
 EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
@@ -128,9 +129,18 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 		kCaster.DeleteWhenAble()
 	Else
 
+	_SD_spriggan_sprout1.Disable()
+	_SD_spriggan_sprout2.Disable()
+	_SD_spriggan_sprout3.Disable()
+
 	_SD_spriggan_sprout1.MoveToMyEditorLocation()
 	_SD_spriggan_sprout2.MoveToMyEditorLocation()
 	_SD_spriggan_sprout3.MoveToMyEditorLocation()
+
+	_SD_spriggan_sprout1.Enable()
+	_SD_spriggan_sprout2.Enable()
+	_SD_spriggan_sprout3.Enable()
+
 
 	;     kCaster.MoveTo( _SDRAP_grovemarker.GetReference() )
 	;     kCaster.SetAlpha(1.0)
