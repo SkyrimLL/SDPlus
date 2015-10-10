@@ -772,7 +772,7 @@ Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form 
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		kActor = _SD_Enslaved.GetMaster() as Actor
-		fctSlavery.UpdateStatusDaily( kActor, Game.GetPlayer())
+		fctSlavery.UpdateStatusDaily( kActor, Game.GetPlayer(), true)
 		fctSlavery.DisplaySlaveryLevelObjective( kActor, Game.GetPlayer(), _SDQP_enslavement )
 
 	EndIf
