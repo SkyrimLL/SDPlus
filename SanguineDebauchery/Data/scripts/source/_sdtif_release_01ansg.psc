@@ -10,7 +10,8 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 Game.GetPlayer().RemoveItem(Gold, 100 )
 
-fctOutfit.setDeviousOutfitPlugAnal(  bDevEquip = False, sDevMessage = "Now relax and it won't hurt much.")
+; fctOutfit.setDeviousOutfitPlugAnal(  bDevEquip = False, sDevMessage = "Now relax and it won't hurt much.")
+fctOutfit.clearDeviceByString ( sDeviceString = "ParasiteAnal", sOutfitString = "Parasite"  )
 
 funct.SanguineRape(  akSpeaker, Game.GetPlayer() , SexLabInTags = "Fisting")
 ;END CODE

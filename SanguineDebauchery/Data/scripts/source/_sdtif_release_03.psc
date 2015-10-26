@@ -13,11 +13,13 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 ;		funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
-fctOutfit.setDeviousOutfitYoke (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
+fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
+fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
+fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
+fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
+fctOutfit.clearDeviceByString( sDeviceString = "Hood" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
+fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
 
 		funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE

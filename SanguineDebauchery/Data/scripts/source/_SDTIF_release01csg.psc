@@ -14,7 +14,8 @@ Game.GetPlayer().RemoveItem(Gold, 500 )
 
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")
+; fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")
+fctOutfit.clearDeviceByString( sDeviceString = "Collar" )
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Sex")
 ;END CODE

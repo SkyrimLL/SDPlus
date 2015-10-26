@@ -13,7 +13,9 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 ;Game.GetPlayer().RemoveItem(Gold, 200 )
  
-fctOutfit.setDeviousOutfitBra (  bDevEquip = False, sDevMessage = "")
+; fctOutfit.setDeviousOutfitBra (  bDevEquip = False, sDevMessage = "")
+fctOutfit.clearDeviceByString( sDeviceString = "Bra" )
+
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Breast")
 ;END CODE

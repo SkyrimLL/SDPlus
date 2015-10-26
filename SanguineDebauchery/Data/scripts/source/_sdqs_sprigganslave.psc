@@ -265,7 +265,7 @@ Event OnUpdateGameTime()
 	EndIf
 
 	; Add housekeeping for parts of the armor
-	; If fctOutfit.isBeltEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan"  ) && !kPlayer.IsInFaction(SprigganFaction)
+	; If fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Belt"  ) && !kPlayer.IsInFaction(SprigganFaction)
 	;		Debug.Notification( "[SD] Adding player to: " + SprigganFaction )
 	;		Debug.Trace( "[SD] Adding player to: " + SprigganFaction )
 	;		kPlayer.AddToFaction(SprigganFaction)

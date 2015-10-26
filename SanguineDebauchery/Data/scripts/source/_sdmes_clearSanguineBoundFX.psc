@@ -19,32 +19,37 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	
 	if (fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 0, "_SD_DeviousSanguine"  )) ; && (Utility.RandomInt(0, 100) < 110)
 		Debug.Trace("[SD] Removing Sanguine Collar")
-		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( sDeviceString = "Collar", sOutfitString = "Sanguine", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 	EndIf
 
 	if (fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 1, "_SD_DeviousSanguine"  )) ; && (Utility.RandomInt(0, 100) < 110)
 		Debug.Trace("[SD] Removing Sanguine Cuffs")
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder", sOutfitString = "Sanguine", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 	EndIf
 
 	if (fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 2, "_SD_DeviousSanguine"  )) 
 		Debug.Trace("[SD] Removing Sanguine Shackles")
-		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "Sanguine", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 	EndIf
 
 	if (fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 3, "_SD_DeviousSanguine"  )) ; if (Utility.RandomInt(0, 100) < 110)
 		Debug.Trace("[SD] Removing Sanguine Gag")
-		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( sDeviceString = "Gag", sOutfitString = "Sanguine", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 		; kDreamer.RemoveItem( _SDA_gag, 1, False  )
 	EndIf
 
 	if (fctOutfit.isDeviousOutfitPartByKeyword (  akTarget, 5, "_SD_DeviousSanguine"  ))  ;if (Utility.RandomInt(0, 100) < 110)
 		Debug.Trace("[SD] Removing Sanguine Artifact")
-		fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( sDeviceString = "PiercingVaginal", sOutfitString = "Sanguine", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 	;	fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 10, bDevEquip = False, sDevMessage = "")
 	EndIf

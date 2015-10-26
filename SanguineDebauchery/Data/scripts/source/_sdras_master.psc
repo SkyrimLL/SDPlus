@@ -286,6 +286,8 @@ EndState
 
 State monitor
 	Event OnBeginState()
+		; Debug.Notification("[_sdras_master] Master is monitoring slave")
+
 		fSlaveFreeTime = _SDGV_free_time.GetValue()
 		fLeashLength = _SDGV_leash_length.GetValue()
 		enslavement.bSearchForSlave = True
@@ -345,6 +347,10 @@ State monitor
 			; Park Master in Waiting mode while Enslavement quest is shutting down
 			GoToState("waiting")
 
+		ElseIf ( enslavement.bSearchForSlave || (GetCurrentRealTime() - fSlaveLastSeen > fSlaveFreeTime) || ( !kMaster.HasLOS( kSlave ))  )
+			; Master is looking for slave
+			GoToState("search")
+
 		ElseIf (kSlave.GetParentCell() == kMaster.GetParentCell())  &&  (kMaster.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0) )  
 			; If master and slave are in the same interior cell
 			If (RandomInt( 0, 100 ) > 95 )
@@ -373,10 +379,6 @@ State monitor
 		ElseIf ( kMaster.IsInCombat() || kSlave.IsInCombat() )
 			; Combat state
 			GoToState("combat")
-
-		ElseIf ( enslavement.bSearchForSlave || GetCurrentRealTime() - fSlaveLastSeen > fSlaveFreeTime )
-			; Master is looking for slave
-			GoToState("search")
 
 		ElseIf (   kSlave.IsWeaponDrawn() && ( bSlaveDetectedByMaster || bSlaveDetectedByTarget ))
 			; Slave is drawing a weapon in front of master
@@ -698,16 +700,20 @@ EndState
 
 State search
 	Event OnBeginState()
+		; Debug.Notification("[_sdras_master] Master starts searching for slave")
+		enslavement.bSearchForSlave = True
 		kMaster.EvaluatePackage()
 		RegisterForLOS( kMaster, kSlave )
 	EndEvent
 	
 	Event OnEndState()
+		; Debug.Notification("[_sdras_master] Master stops searching slave")
 		kMaster.EvaluatePackage()
 		UnregisterForLOS( kMaster, kSlave )
 	EndEvent
 
 	Event OnGainLOS(Actor akViewer, ObjectReference akTarget)
+		; Debug.Notification("[_sdras_master] Master found slave")
 		enslavement.bSearchForSlave = False
 		kMaster.EvaluatePackage()
 	EndEvent
@@ -729,8 +735,9 @@ State search
 			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 
-		ElseIf ( kMaster.GetDistance( kSlave ) <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") ) 
+		ElseIf ( (kMaster.GetDistance( kSlave ) <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") ) && (( kMaster.HasLOS( kSlave )) ) )
 			; Slave is back, next to master
+			; Debug.Notification("[_sdras_master] Master close to slave with LOS")
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
 			kMaster.EvaluatePackage()

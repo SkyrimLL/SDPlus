@@ -22,23 +22,23 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		StorageUtil.SetIntValue(kContainer, "_SD_iHandsFree", 1)
 
 
-		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isArmsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isArmsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "Armbinder"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
 			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isLegsEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isLegsEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "LegCuff" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "LegCuff"  )
 			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If fctOutfit.isBlindfoldEquipped( kContainer ) && !fctOutfit.isBlindfoldEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isBlindfoldEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isBlindfoldEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "Blindfold"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Blindfold" )
 			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If fctOutfit.isGagEquipped( kContainer ) && !fctOutfit.isGagEquippedKeyword( kContainer,  "_SD_DeviousSpriggan"  ) && !fctOutfit.isGagEquippedKeyword( kContainer,  "_SD_DeviousSanguine"  )
+		If fctOutfit.isGagEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "Gag" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine" , "Gag" )
 			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If fctOutfit.isCollarEquippedKeyword( kContainer,  "_SD_DeviousEnslaved"  )
+		If fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousEnslaved", "Collar"  )
 			if (Utility.RandomInt(0,100) < 77)
 				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
 				Debug.Messagebox("Your Master's Key helps you break free of your chains and immediately crumbles into dust.")
