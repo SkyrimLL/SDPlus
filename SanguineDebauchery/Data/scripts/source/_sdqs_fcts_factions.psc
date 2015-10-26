@@ -29,16 +29,19 @@ Bool Function checkIfSlaver ( Actor akActor )
 	Debug.Trace("[SD] Member of banned faction - " + actorFactionInList( akActor, _SDFLP_banned_factions ))
 	Debug.Trace("[SD] Member of banned actors - " + actorInList(_SDFLP_banned_actors , akActor))
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
-	Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
 
 	If (checkIfSpriggan ( Game.GetPlayer() )) 
+		Debug.Trace("[SD] Actor is Spriggan - aborting enslavement")
 		isSlaver = False
 	Endif
 	
 	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
 		; Prevent new enslavement by current master
+		Debug.Trace("[SD] Actor is already an owner")
 		isSlaver = False
 	Endif
+
+	Debug.Trace("[SD] Result - Actor Is Slaver - " + isSlaver + " --------- ")
 	
 	return isSlaver
 EndFunction

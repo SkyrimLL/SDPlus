@@ -139,7 +139,7 @@ Event OnUpdate()
 		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
 		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
 		
-	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 1) && (fctOutfit.isArmsEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved"  ) || fctOutfit.isArmsEquippedKeyword( kPlayer,  "_SD_DeviousSanguine"  ) ) && !fctOutfit.isYokeEquipped( kPlayer ) 
+	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 1) && (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) ) && !fctOutfit.isYokeEquipped( kPlayer ) 
 	;	Debug.Notification("[SD] SD cuffs detected" )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 0)
 		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 0)
@@ -177,7 +177,7 @@ Event OnUpdate()
 				
 			EndIf
 
-			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) && (fctOutfit.isArmsEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved"  ) || fctOutfit.isArmsEquippedKeyword( kPlayer,  "_SD_DeviousSanguine"  ) ) 
+			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) && (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved" , "Armbinder" ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) ) 
 
 				If ( (Utility.RandomInt( 0, 200 ) == 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )
@@ -237,9 +237,9 @@ Event OnUpdate()
 				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[5] ) ; Crawling
 				;EndIf
 
-				If  (fctOutfit.isArmsEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved"  ) || fctOutfit.isArmsEquippedKeyword( kPlayer,  "_SD_DeviousSanguine"  ) )
+				; If  (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) )
 				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
-				Endif
+				; Endif
 			EndIf
 
 

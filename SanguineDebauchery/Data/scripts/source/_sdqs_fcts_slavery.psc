@@ -407,7 +407,9 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 
 	; API variables
 	StorageUtil.SetFormValue(kSlave, "_SD_LastOwner", kMaster)
-
+	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", None)
+	StorageUtil.SetFormValue(kSlave, "_SD_DesiredOwner", None)
+	
 	StorageUtil.SetFloatValue(kSlave, "_SD_fLastReleasedGameTime", _SDGVP_gametime.GetValue())
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentGameTime", 0.0)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)

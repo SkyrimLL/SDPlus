@@ -12,10 +12,14 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
-fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
-fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
+Game.GetPlayer().RemoveItem(Gold, 100 )
+ 
+fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
+fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
+fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
+fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
+fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -8,10 +8,15 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Messagebox("The ointment washes away the residual roots clinging to your body.")
 
-            fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
-            fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
-            fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
-            fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")
+;            fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
+;           fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
+;            fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
+;            fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")
+
+fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder", sOutfitString = "Spriggan"  )
+fctOutfit.clearDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "Spriggan"  )
+fctOutfit.clearDeviceByString ( sDeviceString = "Belt", sOutfitString = "Spriggan"  )
+fctOutfit.clearDeviceByString ( sDeviceString = "Blindfold", sOutfitString = "Spriggan"  )
 ;END CODE
 EndFunction
 ;END FRAGMENT

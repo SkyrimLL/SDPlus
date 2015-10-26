@@ -529,13 +529,21 @@ State monitor
                 ; Game.FadeOutGame(true, true, 0.5, 5)
 				; (kSlave as ObjectReference).MoveTo( kSlaverDest )
 				; Replace by code to dreamDestination
+				Bool bMariaEden = False
 				Bool bWolfClub = False
+				Bool bSimpleSlavery = False
 
 				If (Utility.RandomInt(0,100) > 70) 
 					bWolfClub = WolfClubEnslave() 
+					
+				ElseIf (Utility.RandomInt(0,100) > 40) 
+					bSimpleSlavery = SimpleSlaveryEnslave() 
+
+				ElseIf (Utility.RandomInt(0,100) > 70) 
+				 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
 				EndIf
 
-				If (!bWolfClub)
+				If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden)
 					kActor = kSlaverDest as Actor
 					kActor.SendModEvent("PCSubTransfer")
 
@@ -729,7 +737,7 @@ State monitor
 				; Debug.Notification("[SD] Slave: Master dist: " + fMasterDistance )
 				; Debug.Notification("[SD] Slave: Kneeling dist: " + fKneelingDistance )
 
-				If (fctOutfit.isArmsEquippedKeyword( kSlave,  "_SD_DeviousSpriggan"  )) && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree")==0) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction")==0))
+				If (fctOutfit.isDeviceEquippedKeyword( kSlave,  "_SD_DeviousSpriggan" , "Armbinder" )) && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree")==0) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction")==0))
 					StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 1)
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 1)
 					StorageUtil.SetIntValue(kSlave, "_SD_iEnableAction", 1)
@@ -1006,6 +1014,8 @@ State escape_choking
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			enslavement.bSearchForSlave = True
 		Endif
+
+		kMaster.EvaluatePackage()
 	EndEvent
 	
 	Event OnEndState()
@@ -1281,7 +1291,9 @@ State escape_shock
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			enslavement.bSearchForSlave = True
 		Endif
- 
+
+		kMaster.EvaluatePackage()
+
 	EndEvent
 	
 	Event OnEndState()
@@ -1451,6 +1463,20 @@ bool function WolfClubEnslave() global
 	if handle
 		return ModEvent.Send(handle)
 	endif
+	return false
+endfunction
+
+bool function SimpleSlaveryEnslave() global
+	int idx = Game.GetModByName( "SimpleSlavery.esp" )
+	if ( idx != 255 )
+	    ;; The mod is loaded, so we can use it:
+	    ObjectReference PlayerActorRef = Game.GetPlayer() as ObjectReference
+	    PlayerActorRef.SendModEvent("SSLV Entry")
+	    return true
+	    ;; ... other stuff for your mod ...
+	else
+	    ;; ... other stuff for your mod ...
+	endIf
 	return false
 endfunction
 

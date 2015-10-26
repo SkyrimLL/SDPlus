@@ -174,7 +174,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Remove current collar if already equipped
 		if (fctOutfit.isCollarEquipped(kSlave))
-			fctOutfit.clearCollar ( true, true )
+			fctOutfit.clearDeviceByString ( sDeviceString = "Collar", skipEvents = true, skipMutex = true )
 		EndIf
 
 		; Transfer of inventory

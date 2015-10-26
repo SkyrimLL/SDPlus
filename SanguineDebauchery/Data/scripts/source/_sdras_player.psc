@@ -51,7 +51,7 @@ Faction Property _SDFP_thugs  Auto
 Faction Property _SDFP_bounty  Auto
 
 Quest Property _SD_dreamQuest  Auto
-
+_sdras_dreamer Property _SD_dreamerScript Auto
 
 ; reg enslavement
 Quest Property _SDQP_enslavement  Auto
@@ -266,11 +266,14 @@ Function _Maintenance()
 	RegisterForModEvent("SDParasiteVag",   "OnSDParasiteVag")
 	RegisterForModEvent("SDParasiteAn",   "OnSDParasiteAn")
 	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
+	RegisterForModEvent("SDDreamworldStart",   "OnSDDreamworldStart")
 	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
 	RegisterForModEvent("SDHandsFreeSlave",   "OnSDHandsFreeSlave")
 	RegisterForModEvent("SDHandsBoundSlave",   "OnSDHandsBoundSlave")
+	RegisterForModEvent("SDEquipDevice",   "OnSDEquipDevice")
+	RegisterForModEvent("SDClearDevice",   "OnSDClearDevice")
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
@@ -394,7 +397,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; EndIf
 
 	if animation.HasTag("Chaurus") && (funct._hasPlayer(actors))
-		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isPlugVaginalEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag"  )
+		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal" )
 
 			kPlayer.SendModEvent("SDParasiteVag")
 
@@ -402,7 +405,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	EndIf
 
 	if animation.HasTag("Spider") && (funct._hasPlayer(actors))
-		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isPlugAnalEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn"  )
+		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  )
 
 			kPlayer.SendModEvent("SDParasiteAn")
 
@@ -615,6 +618,7 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
+			SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
@@ -672,6 +676,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
+			SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
@@ -732,6 +737,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 			Debug.Trace("[_sdras_player] Slave transfer - stopping enslavement" )
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
+			SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
@@ -776,6 +782,19 @@ Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form 
 		fctSlavery.DisplaySlaveryLevelObjective( kActor, Game.GetPlayer(), _SDQP_enslavement )
 
 	EndIf
+
+EndEvent
+
+Event OnSDDreamworldStart(String _eventName, String _args, Float _argc = 15.0, Form _sender)
+	int stageID 
+	; Dreamworld has to be visited at least once for this event to work
+	Debug.Trace("[_sdras_player] Receiving dreamworld start story event [" + _args  + "] [" + _argc as Int + "]")
+	Debug.Trace("[_sdras_player] StageID: " + stageID)
+
+	stageID = 10
+
+	_SDGVP_sanguine_blessing.SetValue(0)
+	_SD_dreamerScript.startDreamworld()
 
 EndEvent
 
@@ -962,6 +981,85 @@ Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _
 	Else
 		Return
 	EndIf
+
+EndEvent
+
+Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iOutfitID = _argc as Int
+	String sDevice = _args
+
+	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
+	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
+
+	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "]")
+
+	; if OutfitID is provided, override with outfit from sender NPC in priority
+ 	if (iOutfitID != -1)
+ 		If (StorageUtil.GetIntValue(kActor, "_SD_iOutfitID") > 0)
+ 			iOutfitID = StorageUtil.GetIntValue(kActor, "_SD_iOutfitID")
+ 		endif
+
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", False)
+  		endif
+
+  		fctOutfit.setDeviousOutfitPartByString (iOutfitID, sDevice, True)
+
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", True)
+  		endif
+
+ 	Else
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
+  		endif
+
+  		fctOutfit.equipDeviceByString ( sDeviceString = sDevice )
+
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
+  		endif
+
+ 	endif
+
+EndEvent
+
+Event OnSDClearDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iOutfitID = _argc as Int
+	String sDevice = _args
+
+	Debug.Trace("[_sdras_player] Receiving device clear story event [" + _args  + "] [" + _argc as Int + "]")
+
+	; if OutfitID is provided, override with outfit from sender NPC in priority
+ 	if (iOutfitID != -1)
+ 		If (StorageUtil.GetIntValue(kActor, "_SD_iOutfitID") > 0)
+ 			iOutfitID = StorageUtil.GetIntValue(kActor, "_SD_iOutfitID")
+ 		endif
+
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", False)
+  		endif
+
+  		fctOutfit.setDeviousOutfitPartByString (iOutfitID, sDevice, False)
+
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", True)
+  		endif
+
+ 	Else
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
+  		endif
+
+  		fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
+
+ 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+  			fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
+  		endif
+
+ 	endif
 
 EndEvent
 

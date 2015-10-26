@@ -69,21 +69,14 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			; Debug.Notification("[dream] Sanguine finds you in your dream")
  	;		Game.FadeOutGame(true, true, 5.0, 10.0)
 
-			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
-			_SDGVP_config_lust.SetValue(0)
+		StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 
-			If (_SDGVP_sanguine_blessing.GetValue() == 0) 
-				If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
-					kConfig._SDBP_quests_primary_running[1] = True
-					kConfig._SDQP_quests_primary[1].Start()
-					kConfig._SDBP_quests_primary_running[2] = True
-					kConfig._SDQP_quests_primary[2].Start()
-				EndIf
+		If (_SDGVP_sanguine_blessing.GetValue() == 0) 
+ 			startDreamworld()
 
-				_SD_dreamQuest.SetStage(10)
-			Else
-				_SD_dreamQuest.SetStage(15)
-			EndIf
+		Else
+			_SD_dreamQuest.SetStage(15)
+		EndIf
 
 	;		Utility.Wait(1.0)
 
@@ -135,6 +128,19 @@ Event OnSleepStop(bool abInterrupted)
 	EndIf
 EndEvent
 
+function startDreamworld()
+
+	If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
+		_SDGVP_config_lust.SetValue(0)
+		kConfig._SDBP_quests_primary_running[1] = True
+		kConfig._SDQP_quests_primary[1].Start()
+		kConfig._SDBP_quests_primary_running[2] = True
+		kConfig._SDQP_quests_primary[2].Start()
+	EndIf
+			
+	_SD_dreamQuest.SetStage(10)
+
+endfunction
 
 Quest Property _SD_dreamQuest  Auto  
 
