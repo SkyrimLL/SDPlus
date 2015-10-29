@@ -11,6 +11,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 Int randomNum = Utility.RandomInt(0, 100)
 ; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) - 1  )
+
+SendModEvent("SDPunishSlave","Gag")
 
 If (randomNum > 60)
 	akSpeaker.SendModEvent("PCSubPunish") ; Punishment
