@@ -197,7 +197,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 			Wait(1.0)
 		EndIf
 
-		enslavement.PunishSlave(kMaster,kSlave)
+		enslavement.PunishSlave(kMaster,kSlave, "Yoke")
 
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
@@ -249,8 +249,8 @@ Event OnInit()
 
 	if (iRandomNum > 85)
 		; Punishment
-		enslavement.PunishSlave(kMaster,kSlave)
-		;;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+		; enslavement.PunishSlave(kMaster,kSlave,"Gag")
+		;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 	;	kMaster.SendModEvent("PCSubPunish") 
 		kMaster.SendModEvent("PCSubSex") 
 
@@ -447,7 +447,7 @@ State monitor
 				;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
 				fctConstraints.actorCombatShutdown( kSlave )
 				fctConstraints.actorCombatShutdown( kMaster )
-				enslavement.PunishSlave(kMaster,kSlave)
+				enslavement.PunishSlave(kMaster,kSlave, "Gag")
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 					kMaster.SendModEvent("PCSubPunish") 
@@ -465,7 +465,7 @@ State monitor
 					Debug.Notification( "Your owner pushes you down to your knees!" )
 					; Punish
 					;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					enslavement.PunishSlave(kMaster,kSlave)
+					enslavement.PunishSlave(kMaster,kSlave, "Gag")
 
 					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 						kMaster.SendModEvent("PCSubPunish") 
@@ -494,7 +494,7 @@ State monitor
 
 			If (bSlaveDetectedByMaster)
 				Debug.Notification( "There you are Slave... get your punishment, over here!" )
-				enslavement.PunishSlave(kMaster,kSlave)
+				enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 					; add punishment
@@ -533,7 +533,8 @@ State monitor
 				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,10) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) 
 					; Master is in a good mood - chance to remove punishment
 
-					enslavement.RewardSlave(kMaster,kSlave)
+					enslavement.RewardSlave(kMaster,kSlave,"Gag")
+					enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
 
 				EndIf
 			EndIf
@@ -677,7 +678,7 @@ State monitor
 				kSlave.UnequipItem( klHand )
 			EndIf
 
-			enslavement.PunishSlave(kMaster,kSlave)
+			enslavement.PunishSlave(kMaster,kSlave,"Yoke")
 
 			If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 				; add punishment

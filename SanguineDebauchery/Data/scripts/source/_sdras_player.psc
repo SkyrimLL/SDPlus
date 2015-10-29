@@ -960,11 +960,12 @@ EndEvent
 
 Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving punish slave event [" + _args  + "] [" + _argc as Int + "]")
+	String sDevice = _args
 
 	; TO DO - Add code to pass keyword to force a specific type of punishment item (use with Equip Device by Leyword)
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		_SD_Enslaved.PunishSlave(_SD_Enslaved.GetMaster() as Actor, kPlayer )
+		_SD_Enslaved.PunishSlave(_SD_Enslaved.GetMaster() as Actor, kPlayer, sDevice )
 	Else
 		Return
 	EndIf
@@ -973,11 +974,12 @@ EndEvent
 
 Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving reward slave event [" + _args  + "] [" + _argc as Int + "]")
+	String sDevice = _args
 
 	; TO DO - Add code to pass keyword to remove a specific type of punishment item (use with Equip Device by Leyword)
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		_SD_Enslaved.RewardSlave(_SD_Enslaved.GetMaster() as Actor, kPlayer )
+		_SD_Enslaved.RewardSlave(_SD_Enslaved.GetMaster() as Actor, kPlayer, sDevice )
 	Else
 		Return
 	EndIf

@@ -129,7 +129,8 @@ Event OnUpdate()
 	EndIf
 
 	If fctOutfit.isYokeEquipped( kPlayer ) && fctOutfit.isArmsEquipped( kPlayer ) 
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit = -1, bDevEquip = False, sDevMessage = "Removing cuffs since yoke is equipped.")
+		; fctOutfit.setDeviousOutfitArms ( iDevOutfit = -1, bDevEquip = False, sDevMessage = "Removing cuffs since yoke is equipped.")
+		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
 	Endif
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 0) && fctOutfit.isYokeEquipped( kPlayer ) 

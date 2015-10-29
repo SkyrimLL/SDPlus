@@ -77,42 +77,56 @@ Import SKSE
 Function equipDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
 	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
 	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
-	Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
+	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
 	Actor PlayerActor = Game.GetPlayer()
+	Actor kMaster = None
 	Int iDevOutfit
 	Int iDevOutfitPart
+
+	; If player enslaved, give priority to outfits for Gag, Blindfold, Belt, PlugAnal, PlugVaginal, Armbinder, LegCuffs
+	;	- set outfitString to Enslaved
+	;   - get outfitID from master
+	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved")==1) && ( getDeviousOutfitPartByString(sDeviceString) != -1 )
+		sOutfitString = "Enslaved"
+	Endif
  
 	If (sOutfitString=="") && (kwDeviceKeyword != None)
 
 		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
-			Debug.Notification("[SD] equip device string: " + sDeviceString)  
-			Debug.Notification("[SD] equip device keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SD] equip device string: " + sDeviceString)  
+			Debug.Trace("[SD] equip device keyword: " + kwDeviceKeyword)  
 
 			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, True, skipEvents,  skipMutex)
 		else
-			Debug.Notification("[SD] player is already wearing: " + sDeviceString)  
+			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
 		endIf
 
-	ElseIf (kwDeviceKeyword != None) && (kwOutfitKeyword != None)
+	ElseIf (sOutfitString!="") && (kwDeviceKeyword != None)
 
 		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
-			iDevOutfit = getDeviousOutfitByString(sOutfitString)
+			If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved")==1)
+				kMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+				iDevOutfit = StorageUtil.GetIntValue(kMaster, "_SD_iOutfitID")
+			Else
+				iDevOutfit = getDeviousOutfitByString(sOutfitString)
+			Endif
 			iDevOutfitPart = getDeviousOutfitPartByString(sDeviceString)
 
 			if (iDevOutfit!=-1) && (iDevOutfitPart!=-1)
-				Debug.Notification("[SD] equip device string: " + sDeviceString)  
+				Debug.Trace("[SD] equip device string: " + sDeviceString)  
 
-				setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = iDevOutfitPart, ddArmorKeyword=kwDeviceKeyword, bEquip = true, sMessage = "")
+				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=kwDeviceKeyword, bEquip = true, sMessage = "")
+				setDeviousOutfitByTags ( iDevOutfit, iDevOutfitPart, true)
 			else
-				Debug.Notification("[SD] unknown outfit to equip: " + iDevOutfit)  
-				Debug.Notification("[SD] unknown outfit part to equip: " + iDevOutfitPart)  
+				Debug.Trace("[SD] unknown outfit to equip: " + iDevOutfit)  
+				Debug.Trace("[SD] unknown outfit part to equip: " + iDevOutfitPart)  
 			endif
 
 		else
-			Debug.Notification("[SD] player is already wearing: " + sDeviceString)  
+			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
 		endIf
 	else
-		Debug.Notification("[SD] unknown device to equip " )  
+		Debug.Trace("[SD] unknown device to equip " )  
 
 	endif
 EndFunction
@@ -120,7 +134,7 @@ EndFunction
 Function clearDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
 	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
 	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
-	Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
+	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
 	Actor PlayerActor = Game.GetPlayer()
 	Int iDevOutfit
 	Int iDevOutfitPart
@@ -128,34 +142,34 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 	If (sOutfitString=="") && (kwDeviceKeyword != None)
 
 		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
-			Debug.Notification("[SD] clearing device string: " + sDeviceString)  
-			Debug.Notification("[SD] clearing device keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
+			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
 
 			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
 		else
-			Debug.Notification("[SD] player is not wearing: " + sDeviceString)  
+			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
 		endIf
 
-	ElseIf (kwDeviceKeyword != None) && (kwOutfitKeyword != None)
+	ElseIf (sOutfitString!="") && (kwDeviceKeyword != None)
 
 		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
 			iDevOutfit = getDeviousOutfitByString(sOutfitString)
 			iDevOutfitPart = getDeviousOutfitPartByString(sDeviceString)
 
 			if (iDevOutfit!=-1) && (iDevOutfitPart!=-1)
-				Debug.Notification("[SD] clearing device string: " + sDeviceString)  
+				Debug.Trace("[SD] clearing device string: " + sDeviceString)  
 
 				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = iDevOutfitPart, ddArmorKeyword=kwDeviceKeyword, bEquip = false, sMessage = "")
 				setDeviousOutfitByTags ( iDevOutfit, iDevOutfitPart, false)
 			else
-				Debug.Notification("[SD] unknown outfit to clear: " + iDevOutfit)  
-				Debug.Notification("[SD] unknown outfit part to clear: " + iDevOutfitPart)  
+				Debug.Trace("[SD] unknown outfit to clear: " + iDevOutfit)  
+				Debug.Trace("[SD] unknown outfit part to clear: " + iDevOutfitPart)  
 			endif
 		else
-			Debug.Notification("[SD] player is not wearing: " + sDeviceString)  
+			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
 		endIf
 	else
-		Debug.Notification("[SD] unknown device to clear " )  
+		Debug.Trace("[SD] unknown device to clear " )  
 
 	endif
 EndFunction
@@ -222,7 +236,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisKeyword = libs.zad_DeviousCollar
 
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinders") 
+	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder") 
 		thisKeyword = libs.zad_DeviousArmbinder
 
 	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs") 
@@ -286,7 +300,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		thisKeyword = libs.zad_DeviousPiercingsVaginal
 
 	else
-		Debug.Notification("[SD] unknown generic keyword: " + deviousKeyword)  
+		Debug.Notification("[SD] Unknown generic keyword: " + deviousKeyword)  
 	endIf
 
 	return thisKeyword
@@ -364,7 +378,7 @@ Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
 	if (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisOutfitPart = 0
 
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinders") 
+	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder") 
 		thisOutfitPart = 1
 
 	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs") 
@@ -392,7 +406,15 @@ Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
 	return thisOutfitPart
 EndFunction
 
+Bool Function isDeviceEquippedString( Actor akActor,  String sDeviceString  )
+
+	Return akActor.WornHasKeyword(getDeviousKeywordByString(sDeviceString))
+EndFunction
+
 Bool Function isDeviceEquippedKeyword( Actor akActor,  String sKeyword, String sDeviceString  )
+	; Debug.Trace("[SD] isDeviceEquippedKeyword -  getDeviousOutfitPartByString:" + getDeviousOutfitPartByString(sDeviceString))  
+	; Debug.Trace("[SD] isDeviceEquippedKeyword -  isDeviousOutfitPartByKeyword:" + isDeviousOutfitPartByKeyword (  akActor, getDeviousOutfitPartByString(sDeviceString), sKeyword ) )  
+
 	Return isDeviousOutfitPartByKeyword (  akActor, getDeviousOutfitPartByString(sDeviceString), sKeyword )
 EndFunction
 
@@ -1245,14 +1267,15 @@ Function setDeviousOutfitPartByString (Int iOutfit = -1, String sDeviceString, B
 	Int iOutfitPart = getDeviousOutfitPartByString(sDeviceString)
 	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
 
-	If (iOutfitPart!=-1)
+	If (iOutfitPart!=-1) && (iOutfit!=-1)
 		; SD Outfit device
 		if (kwDeviceKeyword != None)
 			if ((!kslave.WornHasKeyword(kwDeviceKeyword)) && (bEquip)) || ((kslave.WornHasKeyword(kwDeviceKeyword)) && (!bEquip))
-				setDeviousOutfitByTags ( iOutfit, iOutfitPart, bEquip, sMessage , bDestroy )
+				; setDeviousOutfitByTags ( iOutfit, iOutfitPart, bEquip, sMessage , bDestroy )
+				setDeviousOutfit ( iOutfit, iOutfitPart, bEquip, sMessage )
 			endIf
 		else
-			Debug.Notification("[SD] setDeviousOutfitPartByString - bad keyword")
+			Debug.Notification("[SD] setDeviousOutfitPartByString - bad keyword - " + sDeviceString)
 		endif
 	else
 		; Generic device
@@ -1425,12 +1448,16 @@ EndFunction
 
 
 Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
+	Debug.Notification("[SD] Call to deprecated addPunishment")
+EndFunction
+
+Function addPunishmentDevice(String sDevice)
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
 	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
-	If (bDevPlugAnal) && (isMasterSpeaking==1)
+	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
 			
@@ -1442,7 +1469,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 		equipDeviceByString ( sDeviceString = "Belt")
 	EndIf
 
-	If (bDevPlugVaginal) && (playerGender==1) && (isMasterSpeaking==1)
+	If (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly and shoves a cold plug into your abused womb." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 		
@@ -1455,7 +1482,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	EndIf
 
 	; Belt
-	If (bDevBelt)  && (isMasterSpeaking==1)
+	If (sDevice == "Belt")  ; && (isMasterSpeaking==1)
 		Debug.MessageBox("'Let's watch you squirm... that will change me from your attitude.'\n Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
@@ -1464,7 +1491,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 	EndIf
 
 	; Blinds
-	If (bDevBlindfold)
+	If (sDevice == "Blindfold")
 		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
@@ -1474,7 +1501,7 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 
 	; Gag
 
-	If (bDevGag) && (isMasterSpeaking==1)
+	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("'I don't want to hear one more word from you!'\n Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
@@ -1486,12 +1513,16 @@ Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bD
 EndFunction
 
 Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
+	Debug.Notification("[SD] Call to deprecated removePunishment")
+EndFunction
+
+Function removePunishmentDevice(String sDevice)
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
 	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
-	If (bDevPlugAnal) && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) && (isMasterSpeaking==1)
+	If (sDevice == "PlugAnal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
 			
@@ -1503,7 +1534,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 		equipDeviceByString ( sDeviceString = "Belt")
 	EndIf
 
-	If (bDevPlugVaginal) && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) && (isMasterSpeaking==1)
+	If (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
@@ -1516,7 +1547,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 	EndIf
 
 	; Belt
-	If (bDevBelt) && (isMasterSpeaking==1)
+	If (sDevice == "Belt") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
 			
@@ -1525,7 +1556,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 	EndIf
 
 	; Blinds
-	If (bDevBlindfold)
+	If (sDevice == "Blindfold")
 		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
 			
@@ -1535,7 +1566,7 @@ Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool
 
 	; Gag
 
-	If (bDevGag) && (isMasterSpeaking==1)
+	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
 
