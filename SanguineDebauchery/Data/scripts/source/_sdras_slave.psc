@@ -348,6 +348,7 @@ State monitor
 			kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
 			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
+			StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
 
 			If (_SDGVP_config_min_days_before_master_travel.GetValue()>0) && ( StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
 				Debug.Trace( "[SD] Master is bored - starting travel package")
@@ -368,8 +369,24 @@ State monitor
 			EndIf
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
-			;	enslavement.PunishSlave( kMaster,  kSlave)
+			;	enslavement.PunishSlave( kMaster,  kSlave, "Gag")
 			EndIf
+
+			; Safety - removal of punishments after one day
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
+				enslavement.RewardSlave(kMaster,kSlave,"Gag")
+				enslavement.RewardSlave(kMaster,kSlave,"Yoke")
+			endIf
+
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2) 
+				enslavement.RewardSlave(kMaster,kSlave,"Belt")
+				enslavement.RewardSlave(kMaster,kSlave,"Bra")
+			endIf
+
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 0)
+				enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
+				enslavement.RewardSlave(kMaster,kSlave,"Armbinder")
+			endif
 
 			If (StorageUtil.GetIntValue( kSlave  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kSlave  , "_SD_iEnableAction") == 1) 
 					StorageUtil.SetIntValue( kSlave  , "_SD_iHandsFree", 1 )
@@ -755,14 +772,16 @@ State monitor
 
 						if (iRandomNum > 90)
 							; Punishment
-							enslavement.PunishSlave(kMaster,kSlave)
+							enslavement.PunishSlave(kMaster,kSlave,"Bra")
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 							kMaster.SendModEvent("PCSubPunish")
+
 						ElseIf (iRandomNum > 80)
 							; Whipping
-							enslavement.PunishSlave(kMaster,kSlave)
+							enslavement.PunishSlave(kMaster,kSlave, "Belt")
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 							kMaster.SendModEvent("PCSubWhip")
+
 						ElseIf (iRandomNum > 70)
 							; Sex
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
@@ -821,12 +840,13 @@ State monitor
 
 						if (iRandomNum > 70)
 							; Punishment
-							enslavement.PunishSlave(kMaster,kSlave)
+							enslavement.PunishSlave(kMaster,kSlave, "Gag")
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 							kMaster.SendModEvent("PCSubPunish")
+
 						ElseIf (iRandomNum > 50)
 							; Whipping
-							enslavement.PunishSlave(kMaster,kSlave)
+							; enslavement.PunishSlave(kMaster,kSlave, "Yoke")
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 							kMaster.SendModEvent("PCSubWhip")
 						EndIf
@@ -1042,7 +1062,7 @@ State escape_choking
 			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 				if (Utility.RandomInt(0,100)>50)
 					; Punishment
-					enslavement.PunishSlave(kMaster,kSlave)
+					enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					kMaster.SendModEvent("PCSubPunish")
 				Else
@@ -1232,7 +1252,8 @@ State escape_choking
 
 
 						If (!kMaster.IsDead()) && (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-							enslavement.PunishSlave(kMaster,kSlave)
+							enslavement.PunishSlave(kMaster,kSlave,"Gag")
+							enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 
 							if (Utility.RandomInt(0,100)>50)
 								; Punishment
@@ -1320,7 +1341,7 @@ State escape_shock
 			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 				if (Utility.RandomInt(0,100)>50)
 					; Punishment
-					enslavement.PunishSlave(kMaster,kSlave)
+					enslavement.PunishSlave(kMaster,kSlave,"Gag")
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					kMaster.SendModEvent("PCSubPunish")
 				Else
