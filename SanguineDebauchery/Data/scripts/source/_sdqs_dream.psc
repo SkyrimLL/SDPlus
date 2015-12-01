@@ -33,6 +33,7 @@ Actor kNaamah
 Actor kSanguine
 Actor kSanguine_sam
 Actor kSanguine_haelga
+Actor kSanguine_svana
 Actor kSanguine_m
 Actor kSanguine_f
 Actor kMeridiana
@@ -129,6 +130,7 @@ Function positionVictims( Int aiStage )
 	kSanguine_f = _SDRAP_sanguine_f.GetReference() as Actor
 	kSanguine_sam = _SDRAP_sanguine_sam.GetReference() as Actor
 	kSanguine_haelga = _SDRAP_sanguine_haelga.GetReference() as Actor
+	kSanguine_svana = _SDRAP_sanguine_svana.GetReference() as Actor
 
 	If !(kSanguine_m as ObjectReference).IsDisabled()
 		(kSanguine_m as ObjectReference).Disable()
@@ -141,6 +143,9 @@ Function positionVictims( Int aiStage )
 	EndIf
 	If !(kSanguine_haelga as ObjectReference).IsDisabled()
 		(kSanguine_haelga as ObjectReference).Disable()
+	EndIf
+	If !(kSanguine_svana as ObjectReference).IsDisabled()
+		(kSanguine_svana as ObjectReference).Disable()
 	EndIf
 
 	iPlayerGender  = kDreamer.GetLeveledActorBase().GetSex() as Int
@@ -169,7 +174,7 @@ Function positionVictims( Int aiStage )
 			EndIf
 		elseif (iGenderRestrictions == 2)
 			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
-				kSanguine = _SDRAP_sanguine_haelga.GetReference() as Actor
+				kSanguine = _SDRAP_sanguine_svana.GetReference() as Actor
 			Else
 				kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
 			EndIf
@@ -179,7 +184,7 @@ Function positionVictims( Int aiStage )
 		; iPlayerGender = 1 - female
 		if (iGenderRestrictions == 1)
 			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
-				kSanguine = _SDRAP_sanguine_haelga.GetReference() as Actor
+				kSanguine = _SDRAP_sanguine_svana.GetReference() as Actor
 			Else
 				kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
 			EndIf
@@ -387,3 +392,5 @@ SPELL Property _SDSP_SanguineBound  Auto
 
 GlobalVariable Property _SDGVP_sanguine_blessing auto
 
+
+ReferenceAlias Property _SDRAP_Sanguine_Svana  Auto  

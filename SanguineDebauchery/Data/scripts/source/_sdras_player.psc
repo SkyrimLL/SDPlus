@@ -274,6 +274,7 @@ Function _Maintenance()
 	RegisterForModEvent("SDHandsBoundSlave",   "OnSDHandsBoundSlave")
 	RegisterForModEvent("SDEquipDevice",   "OnSDEquipDevice")
 	RegisterForModEvent("SDClearDevice",   "OnSDClearDevice")
+	RegisterForModEvent("SDEquipSlaveRags",   "OnSDEquipSlaveRags")
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
@@ -1062,6 +1063,26 @@ Event OnSDClearDevice(String _eventName, String _args, Float _argc = -1.0, Form 
   		endif
 
  	endif
+
+EndEvent
+
+Event OnSDEquipSlaveRags(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iOutfitID = _argc as Int
+	String sDevice = _args
+
+	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
+	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
+
+	if (kActor == None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kActor = Game.GetPlayer() as Actor
+	EndIf
+
+	Debug.Trace("[_sdras_player] Receiving slave rags equip story event [" + _args  + "] [" + _argc as Int + "]")
+
+	_SD_Enslaved.EquipSlaveRags(kActor)
 
 EndEvent
 
