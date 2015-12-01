@@ -447,6 +447,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 			; Debug.Notification("[SD] Slave Reward")
 
 			if (fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
+				Debug.Trace("[_sdqs_enslavement] Reward slave: Trying to remove - " + sDevice)
 				RemoveSlavePunishment( akSlave, sDevice)
 
 				punishmentRemoved = True
@@ -508,7 +509,7 @@ Function RemoveSlavePunishment(Actor kActor , String sDevice)
 		float fMasterDistance = (kActor as ObjectReference).GetDistance(kMaster as ObjectReference)
 		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
 
-		If (fPunishmentDuration > 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
+		If (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
 
 			; Additional time added to remove next punishment item
 			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
@@ -520,11 +521,13 @@ Function RemoveSlavePunishment(Actor kActor , String sDevice)
 
 			fctOutfit.removePunishmentDevice(sDevice)
 
-		ElseIf (fPunishmentDuration > 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
-			; Debug.Notification("Your owner is too far to remove your punishment.")
+		ElseIf (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
+			Debug.Trace("[_sdqs_enslavement] RemoveSlavePunishment - Your owner is too far to remove your punishment.")
 
-		ElseIf (fPunishmentDuration > 0)
+		Else
 			Debug.Trace("[_sdqs_enslavement] RemoveSlavePunishment - Punishment is not over yet.")
+			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
 		endif
 
 	Else
@@ -609,7 +612,12 @@ Actor Function GetNearbyEnslavedFollower(Actor akSlave)
 	Return thisActor
 EndFunction
 
+Function EquipSlaveRags(Actor akSlave)
+	ObjectReference kRags = _SDAP_clothing.GetReference() as  ObjectReference 
 
+	akSlave.AddItem( kRags, 1, True )
+	akSlave.EquipItem( kRags, True, True )
+EndFunction
 
 Faction Property _SDFP_slaverCrimeFaction  Auto 
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
