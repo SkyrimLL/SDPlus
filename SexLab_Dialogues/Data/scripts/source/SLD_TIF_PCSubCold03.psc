@@ -36,9 +36,10 @@ Actor kSlave = game.GetPlayer()
 
 	ElseIf (randomVar >= 2  )
 		Debug.Notification( "Your owner hands you something to wear" )
-		StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableClothingEquip", 1)
-		kSlave.AddItem( _SD_SlaveRags, 1, True )
-		kSlave.EquipItem( _SD_SlaveRags, True, True )
+		StorageUtil.SetIntValue( kSlave, "_SD_iEnableClothingEquip", 1)
+		; kSlave.AddItem( _SD_SlaveRags, 1, True )
+		; kSlave.EquipItem( _SD_SlaveRags, True, True )
+		kSlave.SendModEvent("SDEquipSlaveRags")
 
 	Else
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
