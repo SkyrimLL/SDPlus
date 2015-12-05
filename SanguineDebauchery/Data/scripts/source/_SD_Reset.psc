@@ -53,7 +53,7 @@ Function Maintenance()
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 
 	If fVersion < 2015102801 ; <--- Edit this value when updating
-		fVersion = 2015102801; and this
+		fVersion = 2015120401; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)

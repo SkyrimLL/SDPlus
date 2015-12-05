@@ -11,6 +11,7 @@ ReferenceAlias Property _SDRAP_meridiana  Auto
 ReferenceAlias Property _SDRAP_sanguine  Auto  
 ReferenceAlias Property _SDRAP_sanguine_sam  Auto  
 ReferenceAlias Property _SDRAP_sanguine_haelga  Auto  
+ReferenceAlias Property _SDRAP_Sanguine_Svana  Auto  
 ReferenceAlias Property _SDRAP_sanguine_m  Auto  
 ReferenceAlias Property _SDRAP_sanguine_f Auto  
 ReferenceAlias Property _SDRAP_nord_girl  Auto  
@@ -102,7 +103,7 @@ Function sendDreamerBack( Int aiStage )
 EndFunction
 
 Event OnInit()
-	Debug.Trace("_SDRAS_dream.OnInit()")
+	Debug.Trace("[_SDRAS_dream] OnInit()")
 	kDreamer = _SDRAP_dreamer.GetReference() as Actor
 	kEnter = _SDRAP_enter.GetReference() as ObjectReference
 	kLeave = _SDRAP_leave.GetReference() as ObjectReference
@@ -116,6 +117,11 @@ EndEvent
 
 Function positionVictims( Int aiStage )
 	Int    iGenderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+
+	; If (Game.GetPlayer().GetParentCell() == _SD_SanguineDreamworld)
+	;	Debug.Trace("[_SDRAS_dream] Player already in Dreamworld - abort.")
+	;	Return
+	; Endif
 
 	kDreamer = Game.GetPlayer() as Actor
 	kEnter = _SDRAP_enter.GetReference() as ObjectReference
@@ -144,11 +150,20 @@ Function positionVictims( Int aiStage )
 	If !(kSanguine_haelga as ObjectReference).IsDisabled()
 		(kSanguine_haelga as ObjectReference).Disable()
 	EndIf
-	If !(kSanguine_svana as ObjectReference).IsDisabled()
-		(kSanguine_svana as ObjectReference).Disable()
-	EndIf
+	; If !(kSanguine_svana as ObjectReference).IsDisabled() && (kSanguine_svana!=None)
+	;	(kSanguine_svana as ObjectReference).Disable()
+	; EndIf
 
 	iPlayerGender  = kDreamer.GetLeveledActorBase().GetSex() as Int
+
+	; Necessary to catch upgrades without a ref alias already initalized
+	If (kSanguine_svana==None)
+		_SDRAP_sanguine_svana = _SDRAP_sanguine_f
+	endIf
+
+	If (kSanguine_sam==None)
+		_SDRAP_sanguine_sam = _SDRAP_sanguine_m
+	endIf
 
 	If (Utility.RandomInt(0,100)>50)
 		If (Utility.RandomInt(0,100)>70) && SamQuest.IsCompleted()
@@ -157,8 +172,8 @@ Function positionVictims( Int aiStage )
 			kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
 		EndIf
 	Else
-		If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
-			kSanguine = _SDRAP_sanguine_haelga.GetReference() as Actor
+		If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted() && (kSanguine_svana!=None)
+			kSanguine = _SDRAP_sanguine_svana.GetReference() as Actor
 		Else
 			kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
 		EndIf
@@ -173,7 +188,7 @@ Function positionVictims( Int aiStage )
 				kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
 			EndIf
 		elseif (iGenderRestrictions == 2)
-			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
+			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted() && (kSanguine_svana!=None)
 				kSanguine = _SDRAP_sanguine_svana.GetReference() as Actor
 			Else
 				kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
@@ -183,8 +198,8 @@ Function positionVictims( Int aiStage )
 	Else
 		; iPlayerGender = 1 - female
 		if (iGenderRestrictions == 1)
-			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted()
-				kSanguine = _SDRAP_sanguine_svana.GetReference() as Actor
+			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted() && (kSanguine_svana!=None)
+				kSanguine =  _SDRAP_sanguine_svana.GetReference() as Actor
 			Else
 				kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
 			EndIf
@@ -204,7 +219,7 @@ Function positionVictims( Int aiStage )
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
-	SendModEvent("SDDreamworldStart") 
+	SendModEvent("SDInDreamworld") 
 	_SDGVP_sanguine_blessing.SetValue( _SDGVP_sanguine_blessing.GetValue() + 1)
 
 	kNaamah.EvaluatePackage()
@@ -393,4 +408,5 @@ SPELL Property _SDSP_SanguineBound  Auto
 GlobalVariable Property _SDGVP_sanguine_blessing auto
 
 
-ReferenceAlias Property _SDRAP_Sanguine_Svana  Auto  
+
+Cell Property _SD_SanguineDreamworld  Auto  

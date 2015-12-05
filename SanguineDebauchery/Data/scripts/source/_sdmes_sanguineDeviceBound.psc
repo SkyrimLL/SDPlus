@@ -30,19 +30,22 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; 8 - Harness
 	
 	if (!fctOutfit.isCollarEquipped (  akTarget ))
-		fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitCollar ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		fctOutfit.equipDeviceByString ( sDeviceString = "Collar", sOutfitString = "Sanguine")
 	Else
 		Debug.Trace("[SD] Skipping sanguine collar - slot in use")
 	EndIf
 
 	if (!fctOutfit.isArmsEquipped (  akTarget ))  && !fctOutfit.isYokeEquipped( akTarget ) 
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		fctOutfit.equipDeviceByString ( sDeviceString = "Armbinder", sOutfitString = "Sanguine")
 	Else
 		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
 	EndIf
 
 	if (!fctOutfit.isLegsEquipped (  akTarget ))
-		fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		fctOutfit.equipDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "Sanguine")
 	Else
 		Debug.Trace("[SD] Skipping sanguine shackles - slot in use")
 	EndIf
@@ -51,7 +54,8 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
 
 	if (!fctOutfit.IsGagEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
-		fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		; fctOutfit.setDeviousOutfitGag ( iDevOutfit = 10, bDevEquip = True, sDevMessage = "")
+		fctOutfit.equipDeviceByString ( sDeviceString = "Gag", sOutfitString = "Sanguine")
 	Else
 		Debug.Trace("[SD] Skipping sanguine gag - slot in use")
 	EndIf

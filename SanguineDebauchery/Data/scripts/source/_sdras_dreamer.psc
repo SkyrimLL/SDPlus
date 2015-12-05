@@ -80,7 +80,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 	;		Utility.Wait(1.0)
 
-	elseif (kLocation) && (kPlayer.IsArrested() == False)
+	elseif (kLocation)  
 
 		If kLocation.IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)<= (( _SDGVP_health_threshold.GetValue() as Int) / 4))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) 
 				
@@ -92,6 +92,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		elseif kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
 				StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 				_SDGVP_config_lust.SetValue(0)
+
+				Debug.Trace("[_sdras_dreamer] Sanguine blessings" + _SDGVP_sanguine_blessing.GetValue())
 
 				If (_SDGVP_sanguine_blessing.GetValue() == 0) 
 					If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
