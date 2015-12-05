@@ -57,12 +57,14 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 			Debug.Trace("[Whore queue] Removing actor from queue: " + _SDORP_queue[iIdx])
 			StorageUtil.SetIntValue( (akWhore as actor) , "_SD_iHandsFreeSex", 1)
 
-			If ( _SDORP_queue[iIdx+1] != None ) && ( _SDORP_queue[iIdx+1] != _SDORP_queue[iIdx] )  && ( _SDORP_queue[iIdx] != akWhore )  && ( _SDORP_queue[iIdx+1] != akWhore )
-				If ( _SDORP_queue[iIdx+1].GetParentCell() == akWhore.GetParentCell() )
-					iThreesome = 1
-				Else
-					iThreesome = 0
-				EndIf
+			If (iIdx <= (_SDORP_queue.Length - 2)) 
+				If ( _SDORP_queue[iIdx+1] != None ) && ( _SDORP_queue[iIdx+1] != _SDORP_queue[iIdx] )  && ( _SDORP_queue[iIdx] != akWhore )  && ( _SDORP_queue[iIdx+1] != akWhore )
+					If ( _SDORP_queue[iIdx+1].GetParentCell() == akWhore.GetParentCell() )
+						iThreesome = 1
+					Else
+						iThreesome = 0
+					EndIf
+				Endif
 			Else
 				iThreesome = 0
 			EndIf

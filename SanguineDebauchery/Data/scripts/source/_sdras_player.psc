@@ -807,6 +807,7 @@ Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 15.0, Fo
 
 	if (stageID == 0)
 		stageID = 15
+		Debug.Trace("[_sdras_player] StageID is 0, using this stage instead: " + stageID)
 	endif
 
 	If (_SDGVP_sanguine_blessing.GetValue() > 0) 
@@ -1245,7 +1246,7 @@ State monitor
 
 		EndIf
 
-		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(0,100)<= ( (_SDGVP_config_healthMult.GetValue() as Int ) / 20) ) && (Utility.RandomInt(0,100)>=(StorageUtil.GetIntValue(kPlayer, "_SD_iSprigganEnslavedCount") * 50)) 
+		If ( kPlayer.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(1,100)<= ( (_SDGVP_config_healthMult.GetValue() as Int ) / 20) ) && (Utility.RandomInt(0,100)>=(StorageUtil.GetIntValue(kPlayer, "_SD_iSprigganEnslavedCount") * 50)) 
 			; Chance of spriggan infection if slave is wearing a spriggan root armor item
 			; Debug.Notification("[SD] Infected by spriggan roots...")
 			SendModEvent("SDSprigganEnslave")
