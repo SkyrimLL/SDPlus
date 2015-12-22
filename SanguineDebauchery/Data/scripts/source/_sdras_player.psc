@@ -300,9 +300,9 @@ Function _Maintenance()
 	; Registering default outfit keywords for slave if not defined yet 
 	fctOutfit.registerDeviousOutfitsKeywords (  kPlayer )
 
-	If (kPlayer != Game.GetPlayer())
-		Debug.MessageBox("[SD] Player ref has changed. ")
-	Endif
+	; If (kPlayer != Game.GetPlayer())
+		; Debug.MessageBox("[SD] Player ref has changed. ")
+	; Endif
 
 	isPlayerEnslaved = StorageUtil.GetIntValue( kPlayer, "_SD_iEnslaved") as Bool
 	isPlayerPregnant = StorageUtil.GetIntValue( kPlayer, "_SLH_isPregnant") as Bool
@@ -1209,6 +1209,15 @@ State monitor
 			RegisterForKey( keys[0] )
 			RegisterForKey( keys[1] )
 		EndIf
+
+		; Compatibility issue - Captured Dream devices seem to block player menu after sex when SD is on.
+		; Not sure why
+		If (!Game.IsMenuControlsEnabled()) && (!fctOutfit.isArmbinderEquipped( kPlayer ))
+			Debug.Notification("[_sdras_player] Locked out of menu after sex - this can happen with Captured Dream devices.. not sure why")
+			Monitor.SetPlayerControl(true)
+			Game.EnablePlayerControls( abMenu = True )
+			fctOutfit.DDSetAnimating( kPlayer, false )
+		endif
 
 		; Cap on kill state for better integration with DA (avoid immortal / frozen state)
 		Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 15/100 )  

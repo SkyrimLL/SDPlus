@@ -236,7 +236,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisKeyword = libs.zad_DeviousCollar
 
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder") 
+	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders") 
 		thisKeyword = libs.zad_DeviousArmbinder
 
 	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs") 

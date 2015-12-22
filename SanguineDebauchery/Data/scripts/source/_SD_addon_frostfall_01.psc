@@ -17,14 +17,17 @@ mortality   = Game.GetFormFromFile(0x000BBF59, "sanguinesDebauchery.esp") As Glo
 
 Debug.Notification("[SD] Frostfall adding heatsources ")
 
-Int idx = 0
-While ( heatsources && idx < kArmor.Length )
-	If ( heatsources.Find( kArmor[idx] ) < 0 )
-		; Debug.Notification("SD Frostfall: adding armor as heatsource " + kArmor[idx])
-		heatsources.AddForm( kArmor[idx] )
-	EndIf
-	idx += 1
-EndWhile
+If (heatsources != None) && (exposure != None)
+
+	Int idx = 0
+	While ( heatsources && idx < kArmor.Length )
+		If ( heatsources.Find( kArmor[idx] ) < 0 )
+			; Debug.Notification("SD Frostfall: adding armor as heatsource " + kArmor[idx])
+			heatsources.AddForm( kArmor[idx] )
+		EndIf
+		idx += 1
+	EndWhile
+Endif
 
 RegisterForSingleUpdate( 1.0 )
 ;END CODE
@@ -36,13 +39,17 @@ Function Fragment_2()
 ;BEGIN CODE
 GoToState("null")
 
-Int idx = 0
-While ( heatsources && idx < kArmor.Length )
-	If ( heatsources.Find( kArmor[idx] ) >= 0 )
-		heatsources.RemoveAddedForm( kArmor[idx] )
-	EndIf
-	idx += 1
-EndWhile
+If (heatsources != None) && (exposure != None)
+
+	Int idx = 0
+	While ( heatsources && idx < kArmor.Length )
+		If ( heatsources.Find( kArmor[idx] ) >= 0 )
+			heatsources.RemoveAddedForm( kArmor[idx] )
+		EndIf
+		idx += 1
+	EndWhile
+
+EndIf
 
 _SDGVP_mirror_frostfallMortality.SetValue( -1 )
 _SDGVP_mirror_frostfallExposure.SetValue( -1 )
@@ -80,27 +87,30 @@ State monitor
 		kPlayerStorageRef = Game.GetFormFromFile(0x00113D17, "sanguinesDebauchery.esp") as ObjectReference
 		kPlayerRef = Game.GetPlayer() 
 
-		_SDGVP_mirror_frostfallMortality.SetValue( mortality.GetValueInt( ) )
-		_SDGVP_mirror_frostfallExposure.SetValue( exposure.GetValueInt( ) )
-		
-		; Debug.Notification("[SD] Frostfall mortality: " + mortality.GetValueInt( ))
-		; Debug.Notification("[SD] Frostfall exposure: " + exposure.GetValue( ))
+		If (heatsources != None) && (exposure != None)
 
-		If mortality.GetValueInt( ) == 1
-			If (exposure.GetValue() < 20)
-			;	Game.GetPlayer().EndDeferredKill()
-				If (StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSanguineBlessings") >= 1) && (kPlayerRef.GetParentCell() != kPlayerStorageRef.GetParentCell())
-					Debug.Trace("[SD] Frostfall: Sending SD Dreamworld event " )
-					Debug.MessageBox("You collapse after nearly freezing to death and wake up back into Sanguine's lap." )
-					SendModEvent("SDDreamworldPull")
+			_SDGVP_mirror_frostfallMortality.SetValue( mortality.GetValueInt( ) )
+			_SDGVP_mirror_frostfallExposure.SetValue( exposure.GetValueInt( ) )
+			
+			; Debug.Notification("[SD] Frostfall mortality: " + mortality.GetValueInt( ))
+			; Debug.Notification("[SD] Frostfall exposure: " + exposure.GetValue( ))
+
+			If mortality.GetValueInt( ) == 1
+				If (exposure.GetValue() < 20)
+				;	Game.GetPlayer().EndDeferredKill()
+					If (StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSanguineBlessings") >= 1) && (kPlayerRef.GetParentCell() != kPlayerStorageRef.GetParentCell())
+						Debug.Trace("[SD] Frostfall: Sending SD Dreamworld event " )
+						Debug.MessageBox("You collapse after nearly freezing to death and wake up back into Sanguine's lap." )
+						SendModEvent("SDDreamworldPull")
+					EndIf
+				ElseIf (exposure.GetValue() < 40) && (Utility.RandomInt(0,100)>90)
+					Debug.Notification("You are numb from the cold." )
+
+				Else
+				;	Game.GetPlayer().StartDeferredKill()
 				EndIf
-			ElseIf (exposure.GetValue() < 40) && (Utility.RandomInt(0,100)>90)
-				Debug.Notification("You are numb from the cold." )
-
-			Else
-			;	Game.GetPlayer().StartDeferredKill()
 			EndIf
-		EndIf
+		Endif
 		
 		RegisterForSingleUpdate( 1.0 )
 	EndEvent
