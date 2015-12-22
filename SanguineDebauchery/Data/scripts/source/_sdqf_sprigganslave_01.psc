@@ -2,14 +2,9 @@
 ;NEXT FRAGMENT INDEX 26
 Scriptname _sdqf_sprigganslave_01 Extends Quest Hidden
 
-;BEGIN ALIAS PROPERTY _SDQA_host
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe_b
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_host Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_spriggan
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_spriggan Auto
+ReferenceAlias Property Alias__SDQA_hostarmor_cbbe_b Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb_b
@@ -22,9 +17,14 @@ ReferenceAlias Property Alias__SDQA_hostarmor_unpb_b Auto
 ReferenceAlias Property Alias__SDQA_hostarmor_unpb Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe
+;BEGIN ALIAS PROPERTY _SDQA_sprigganmarker
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_cbbe Auto
+ReferenceAlias Property Alias__SDQA_sprigganmarker Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_spriggan
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_spriggan Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDQA_sprigganbook
@@ -32,9 +32,9 @@ ReferenceAlias Property Alias__SDQA_hostarmor_cbbe Auto
 ReferenceAlias Property Alias__SDQA_sprigganbook Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor Auto
+;BEGIN ALIAS PROPERTY _SDQA_spriggangrove
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDQA_spriggangrove Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDQA_safetysprigganmarker
@@ -42,24 +42,24 @@ ReferenceAlias Property Alias__SDQA_hostarmor Auto
 ReferenceAlias Property Alias__SDQA_safetysprigganmarker Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe_b
+;BEGIN ALIAS PROPERTY _SDQA_host
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_cbbe_b Auto
+ReferenceAlias Property Alias__SDQA_host Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_cbbe Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDLA_book_location
 ;ALIAS PROPERTY TYPE LocationAlias
 LocationAlias Property Alias__SDLA_book_location Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_spriggangrove
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDQA_spriggangrove Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_sprigganmarker
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_sprigganmarker Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDQA_companion
@@ -81,23 +81,6 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_14
-Function Fragment_14()
-;BEGIN CODE
-; stage 90
-oHost = Alias__SDQA_host.GetReference() as ObjectReference
-
-_SD_host_flare.RemoteCast( oHost, aHost, aHost )
-Utility.Wait(0.5)
-
-fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
-CompleteAllObjectives()
-
-Stop()
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_21
 Function Fragment_21()
 ;BEGIN CODE
@@ -111,6 +94,23 @@ SendModEvent("SDSprigganStart")
 
 ; Suspend Deviously Helpless attacks.
 SendModEvent("dhlp-Suspend")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_14
+Function Fragment_14()
+;BEGIN CODE
+; stage 90
+oHost = Alias__SDQA_host.GetReference() as ObjectReference
+
+_SD_host_flare.RemoteCast( oHost, aHost, aHost )
+Utility.Wait(0.5)
+
+fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
+CompleteAllObjectives()
+
+Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -146,11 +146,15 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 	; fctOutfit.setDeviousOutfitID ( iOutfit = -1, sMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
 		
 	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Belt"  )
-		fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+		Debug.Messagebox("The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
+		; fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+		fctOutfit.clearDeviceByString ( sDeviceString = "Belt", sOutfitString = "Spriggan" )
 	EndIf
 
 	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Blindfold"  )
-		fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
+		; fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
+		fctOutfit.clearDeviceByString ( sDeviceString = "Blindfold", sOutfitString = "Spriggan" )
+
 	Endif
 
 ; _SD_sprigganHusk.Enable()
@@ -189,57 +193,19 @@ fctConstraints.actorCombatShutdown( aHost )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_19
-Function Fragment_19()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-SetObjectiveDisplayed( 60 )
-;END CODE
-EndFunction
-;END FRAGMENT
+; stage 80
+aHost = Alias__SDQA_host.GetReference() as Actor
+oHost = Alias__SDQA_host.GetReference() as ObjectReference
+oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
 
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18()
-;BEGIN AUTOCAST TYPE _sdqs_sprigganslave
-Quest __temp = self as Quest
-_sdqs_sprigganslave kmyQuest = __temp as _sdqs_sprigganslave
-;END AUTOCAST
-;BEGIN CODE
-; stage 100
-Alias__SDQA_spriggan.Clear()
-Alias__SDQA_host.Clear()
-Alias__SDQA_spriggangrove.Clear()
-Alias__SDQA_hostarmor.Clear()
-Alias__SDQA_sprigganmarker.Clear()
+oSpriggan.Disable()
+; oSpriggan.placeAtMe( _SDABP_sprigganmatron )
+oSpriggan.Delete()
 
-kmyQuest.bQuestActive = False
-
-Game.GetPlayer().RemoveFromFaction(SprigganFaction)
-Game.GetPlayer().RemoveFromFaction(GiantFaction)
-StorageUtil.SetIntValue(Game.GetPlayer(),"_SD_iDisableDreamworldOnSleep", 0)
-
-fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")	
-fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
-
-SendModEvent("SDSprigganStop")
-
-_SDGVP_sprigganEnslaved.SetValue(0)
-_SD_spriggan_punishment.SetValue(0)
-StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 0)
-
-If ( kmyQuest.IsObjectiveDisplayed(10) )
-	kmyQuest.SetObjectiveDisplayed(10, False)
-EndIf
-
-; Resume Deviously Helpless attacks.
-SendModEvent("dhlp-Resume")
-
-_SDGVP_sprigganenslaved.SetValue(0)
-UnregisterForUpdate()
-
-SetObjectiveDisplayed(20, False)
-SetObjectiveDisplayed(30, False)
-SetObjectiveDisplayed(60, False)
-Reset()
+_SDSP_cum.RemoteCast( oHost, aHost, aHost )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -313,19 +279,60 @@ fctConstraints.actorCombatShutdown( aHost )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18()
+;BEGIN AUTOCAST TYPE _sdqs_sprigganslave
+Quest __temp = self as Quest
+_sdqs_sprigganslave kmyQuest = __temp as _sdqs_sprigganslave
+;END AUTOCAST
 ;BEGIN CODE
-; stage 80
-aHost = Alias__SDQA_host.GetReference() as Actor
-oHost = Alias__SDQA_host.GetReference() as ObjectReference
-oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
+; stage 100
+Alias__SDQA_spriggan.Clear()
+Alias__SDQA_host.Clear()
+Alias__SDQA_spriggangrove.Clear()
+Alias__SDQA_hostarmor.Clear()
+Alias__SDQA_sprigganmarker.Clear()
 
-oSpriggan.Disable()
-; oSpriggan.placeAtMe( _SDABP_sprigganmatron )
-oSpriggan.Delete()
+kmyQuest.bQuestActive = False
 
-_SDSP_cum.RemoteCast( oHost, aHost, aHost )
+Game.GetPlayer().RemoveFromFaction(SprigganFaction)
+Game.GetPlayer().RemoveFromFaction(GiantFaction)
+StorageUtil.SetIntValue(Game.GetPlayer(),"_SD_iDisableDreamworldOnSleep", 0)
+
+; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")	
+fctOutfit.clearDeviceByString ( sDeviceString = "ArmCuffs", sOutfitString = "Spriggan" )
+
+; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
+fctOutfit.clearDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "Spriggan" )
+
+SendModEvent("SDSprigganStop")
+
+_SDGVP_sprigganEnslaved.SetValue(0)
+_SD_spriggan_punishment.SetValue(0)
+StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 0)
+
+If ( kmyQuest.IsObjectiveDisplayed(10) )
+	kmyQuest.SetObjectiveDisplayed(10, False)
+EndIf
+
+; Resume Deviously Helpless attacks.
+SendModEvent("dhlp-Resume")
+
+_SDGVP_sprigganenslaved.SetValue(0)
+UnregisterForUpdate()
+
+SetObjectiveDisplayed(20, False)
+SetObjectiveDisplayed(30, False)
+SetObjectiveDisplayed(60, False)
+Reset()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_19
+Function Fragment_19()
+;BEGIN CODE
+SetObjectiveDisplayed( 60 )
 ;END CODE
 EndFunction
 ;END FRAGMENT
