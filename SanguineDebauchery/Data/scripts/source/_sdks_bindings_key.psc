@@ -22,7 +22,7 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		StorageUtil.SetIntValue(kContainer, "_SD_iHandsFree", 1)
 
 
-		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuffs"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
+		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuff"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
 			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
