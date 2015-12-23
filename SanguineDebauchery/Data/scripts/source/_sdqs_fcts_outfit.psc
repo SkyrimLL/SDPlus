@@ -239,7 +239,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders") 
 		thisKeyword = libs.zad_DeviousArmbinder
 
-	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs") 
+	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs")  || (deviousKeyword == "LegCuff") 
 		thisKeyword = libs.zad_DeviousLegCuffs
 
 	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") 
@@ -260,7 +260,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousBra") || (deviousKeyword == "Bra") 
 		thisKeyword = libs.zad_DeviousBra
 
-	elseif (deviousKeyword == "zad_DeviousArmCuffs") || (deviousKeyword == "ArmCuffs") 
+	elseif (deviousKeyword == "zad_DeviousArmCuffs") || (deviousKeyword == "ArmCuffs")  || (deviousKeyword == "ArmCuff") 
 		thisKeyword = libs.zad_DeviousArmCuffs
 
 	elseif (deviousKeyword == "zad_DeviousYoke") || (deviousKeyword == "Yoke") 

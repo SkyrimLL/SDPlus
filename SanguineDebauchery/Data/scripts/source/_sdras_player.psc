@@ -1213,7 +1213,7 @@ State monitor
 		; Compatibility issue - Captured Dream devices seem to block player menu after sex when SD is on.
 		; Not sure why
 		If (!Game.IsMenuControlsEnabled()) && (!fctOutfit.isArmbinderEquipped( kPlayer ))
-			Debug.Notification("[_sdras_player] Locked out of menu after sex - this can happen with Captured Dream devices.. not sure why")
+			Debug.Trace("[_sdras_player] Locked out of menu after sex - this can happen with Captured Dream devices.. not sure why")
 			Monitor.SetPlayerControl(true)
 			Game.EnablePlayerControls( abMenu = True )
 			fctOutfit.DDSetAnimating( kPlayer, false )
