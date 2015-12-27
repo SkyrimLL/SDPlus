@@ -195,7 +195,9 @@ Function clearDevicesForEnslavement()
 EndFunction
 
 
-
+Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
+	return libs.ActorHasKeyword(akActor, getDeviousKeywordByString( deviousKeyword ))
+EndFunction
 
 Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	Keyword thisKeyword = None
@@ -1579,6 +1581,10 @@ EndFunction
 
 Function DDSetAnimating( Actor akActor, Bool isAnimating )
 	libs.SetAnimating( akActor, isAnimating )
+EndFunction
+
+Bool Function DDIsBound( actor akActor )
+	return libs.IsBound(akActor)
 EndFunction
 
 ; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
