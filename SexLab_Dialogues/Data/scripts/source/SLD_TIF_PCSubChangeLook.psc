@@ -8,7 +8,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification( "I don't like the way you look..." )
 
-fctDialogue.ChangePlayerLook(akSpeaker)
+; fctDialogue.ChangePlayerLook(akSpeaker)
+
+akSpeaker.SendModEvent( "PCSubChangeLook" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

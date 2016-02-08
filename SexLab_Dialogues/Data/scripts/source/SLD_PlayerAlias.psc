@@ -27,6 +27,9 @@ Function _maintenance()
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 	RegisterForModEvent("SLDRefreshNPCDialogues",   "OnSLDRefreshNPCDialogues")
 	RegisterForModEvent("SLDRobPlayer",   "OnSLDRobPlayer")
+	RegisterForModEvent("SLDGiftPlayer",   "OnSLDGiftPlayer")
+
+	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
 
 
 
@@ -107,6 +110,12 @@ Event OnSLDRobPlayer(String _eventName, String _args, Float _argc, Form _sender)
  	Actor kActor = _sender as Actor
 
 	_SLD_Main.RobPlayer(kActor)
+EndEvent
+
+Event OnSLDGiftPlayer(String _eventName, String _args, Float _argc, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+	_SLD_Main.GiftPlayer(kActor)
 EndEvent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
@@ -413,6 +422,16 @@ Event OnSLDRefreshNPCDialogues(String _eventName, String _args, Float _argc, For
 	EndIf
 EndEvent
 
+Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving slave change look story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+ 	; Event currently defined in SexLab Dialogues... change that later
+	_SLD_Main.ChangePlayerLook(kActor)
+EndEvent
 
 
 int function iMin(int a, int b)

@@ -6,7 +6,7 @@ Scriptname SLD_TIF_beg02 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-fctDialogue.GiftPlayer(akSpeaker)
+akSpeaker.SendModEvent("SLDGiftPlayer")
 ;END CODE
 EndFunction
 ;END FRAGMENT
