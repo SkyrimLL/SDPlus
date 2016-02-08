@@ -30,10 +30,11 @@ Bool Function checkIfSlaver ( Actor akActor )
 	Debug.Trace("[SD] Member of banned actors - " + actorInList(_SDFLP_banned_actors , akActor))
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 
-	If (checkIfSpriggan ( Game.GetPlayer() )) 
-		Debug.Trace("[SD] Actor is Spriggan - aborting enslavement")
-		isSlaver = False
-	Endif
+	; Why should enslavement be disabled during spriggan effect?
+	; If (checkIfSpriggan ( Game.GetPlayer() )) 
+	;	Debug.Trace("[SD] Actor is Spriggan - aborting enslavement")
+	;	isSlaver = False
+	; Endif
 	
 	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
 		; Prevent new enslavement by current master

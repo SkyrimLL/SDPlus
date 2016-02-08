@@ -26,6 +26,7 @@ fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
 fctOutfit.clearDeviceByString( sDeviceString = "Hood" )
 fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
 fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gloves" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

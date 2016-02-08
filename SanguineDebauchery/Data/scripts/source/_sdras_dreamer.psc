@@ -59,8 +59,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	; Disable Dreamworld on Sleep if delay option is checked and DA14 quest not done yet
 	If  ( (_SDGVP_config_lust.GetValue()==1) && (!ANightQuest.IsCompleted()) ) && (_SDGVP_config_auto_start.GetValue() == 1)
 		_SDGVP_sanguine_blessing.SetValue(-1)
+		
 	ElseIf (_SDGVP_sanguine_blessing.GetValue() == -1)
 		_SDGVP_sanguine_blessing.SetValue(0)
+
 	EndIf
 
 	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && (_SDGVP_enslaved.GetValueInt() == 0)  ) ) || ( _SDGVP_sanguine_blessing.GetValue() > 0 && (Utility.RandomInt(0,100)<= ( (_SDGVP_health_threshold.GetValue() as Int) / 20))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) ) ) && (dbe.pSleepyTime != 1)  && (_SDGVP_config_auto_start.GetValue() == 1)  && (kPlayer.IsArrested() == False)
@@ -96,16 +98,12 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				Debug.Trace("[_sdras_dreamer] Sanguine blessings" + _SDGVP_sanguine_blessing.GetValue())
 
 				If (_SDGVP_sanguine_blessing.GetValue() == 0) 
-					If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
-						kConfig._SDBP_quests_primary_running[1] = True
-						kConfig._SDQP_quests_primary[1].Start()
-						kConfig._SDBP_quests_primary_running[2] = True
-						kConfig._SDQP_quests_primary[2].Start()
-					EndIf
+					
+					startDreamworld()
 
-					_SD_dreamQuest.SetStage(10)
 				Else
 					_SD_dreamQuest.SetStage(15)
+
 				EndIf
 		EndIf
 	; elseif (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
@@ -140,6 +138,9 @@ function startDreamworld()
 		kConfig._SDQP_quests_primary[2].Start()
 	EndIf
 			
+	_SDGVP_sanguine_blessing.SetValue( 1 )
+	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSanguineBlessings", _SDGVP_sanguine_blessing.GetValue() as Int )
+
 	_SD_dreamQuest.SetStage(10)
 
 endfunction

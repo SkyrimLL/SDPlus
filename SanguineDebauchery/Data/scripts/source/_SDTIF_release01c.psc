@@ -16,6 +16,7 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 ; fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")
 fctOutfit.clearDeviceByString( sDeviceString = "Collar" )
+fctOutfit.clearDeviceByString( sDeviceString = "Harness" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

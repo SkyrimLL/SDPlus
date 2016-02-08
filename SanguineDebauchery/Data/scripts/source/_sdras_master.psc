@@ -252,7 +252,8 @@ Event OnInit()
 		; enslavement.PunishSlave(kMaster,kSlave,"Gag")
 		;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 	;	kMaster.SendModEvent("PCSubPunish") 
-		kMaster.SendModEvent("PCSubSex") 
+		kMaster.SendModEvent("PCSubWhip")
+		; kMaster.SendModEvent("PCSubSex") 
 
 	ElseIf (iRandomNum > 70)
 		; Whipping
@@ -262,7 +263,7 @@ Event OnInit()
 	ElseIf (iRandomNum > 20)
 		; Sex
 		; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
-		kMaster.SendModEvent("PCSubSex") 
+		; kMaster.SendModEvent("PCSubSex") 
 
 	EndIf
 		

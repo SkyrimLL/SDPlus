@@ -343,10 +343,11 @@ Function initMod( Bool bResetGlobals = False )
 	Pages[4] = "$SD_PAGE_HELP"
 
 
-	_SDSP_config_genderRestrictions = New String[3]
+	_SDSP_config_genderRestrictions = New String[4]
 	_SDSP_config_genderRestrictions[0] = "$SD_GENDER_NO"
 	_SDSP_config_genderRestrictions[1] = "$SD_GENDER_SAME"
 	_SDSP_config_genderRestrictions[2] = "$SD_GENDER_OPPOSITE"
+	_SDSP_config_genderRestrictions[3] = "SEXLAB"
 
 	; primary
 	_SDOID_quests_p      = New Int[ 5 ]
@@ -723,6 +724,7 @@ event OnOptionSelect(int a_option)
 		_SDGVP_state_mcm.SetValue( i_T1_action )
 	ElseIf ( a_option == _SDOID_config_T2 )
 		_SDGVP_config_genderRestrictions.SetValue( ( _SDGVP_config_genderRestrictions.GetValueInt() + 1 ) % _SDSP_config_genderRestrictions.Length )
+		StorageUtil.SetIntValue( Game.GetPlayer()  , "_SD_iGenderRestrictions",  _SDGVP_config_genderRestrictions.GetValueInt() )
 		SetTextOptionValue(a_option, _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String )
 	ElseIf ( a_option == _SDOID_help_T1 )
 		ShowMessage("$_SDOID_help_T1_1" , False, "$SD_OK")

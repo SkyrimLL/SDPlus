@@ -16,6 +16,7 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 ; fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")
 fctOutfit.clearDeviceByString( sDeviceString = "Collar" )
+fctOutfit.clearDeviceByString( sDeviceString = "Harness" )
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Sex")
 ;END CODE

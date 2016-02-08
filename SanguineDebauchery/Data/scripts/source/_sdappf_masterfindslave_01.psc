@@ -5,7 +5,7 @@ Scriptname _SDAPPF_masterfindslave_01 Extends Package Hidden
 ;BEGIN FRAGMENT Fragment_2
 Function Fragment_2(Actor akActor)
 ;BEGIN CODE
-Debug.notification( "$SD_MESSAGE_STAY_CLOSE_TO_MASTER" )
+; Debug.notification( "$SD_MESSAGE_STAY_CLOSE_TO_MASTER" )
 ;END CODE
 EndFunction
 ;END FRAGMENT
