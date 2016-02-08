@@ -8,9 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification("Your owner removes the leash from your collar")
 
-StorageUtil.SetFormValue( Game.GetPlayer(), "_SD_LeashCenter", akSpeaker)
-StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableLeash", 0)
-; StorageUtil.SetIntValue(akSpeaker,"_SD_iFollowSlave",0)
+akSpeaker.SendModEvent( "PCSubUnleash" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

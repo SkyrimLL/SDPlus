@@ -219,6 +219,7 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 
 	Else
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
 	EndIf
@@ -262,6 +263,7 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 
 	Else
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
 	EndIf
@@ -380,25 +382,17 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 		If (iPlayerGender==0) 
 			If (playerCurrentHair != _SLD_MaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
 				kPlayer.ChangeHeadPart(_SLD_MaleSlaveHair)
-				Debug.Notification("Your owner shaves your head.")
-
-				SendModEvent("PCSubChangeLook")
+				Debug.Notification("Your head is shaved to remind you of your place.")
 			Else
 				Game.ShowLimitedRaceMenu()
-
-				SendModEvent("PCSubChangeLook")
 			EndIf
 
 		Else
 			If (playerCurrentHair != _SLD_FemaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
 				kPlayer.ChangeHeadPart(_SLD_FemaleSlaveHair)
-				Debug.Notification("Your owner shaves your head.")
-
-				SendModEvent("PCSubChangeLook")
+				Debug.Notification("Your head is shaved to remind you of your condition.")
 			Else
 				Game.ShowLimitedRaceMenu()
-
-				SendModEvent("PCSubChangeLook")
 			EndIf
 
 		EndIf
@@ -546,7 +540,7 @@ Function RobPlayer ( Actor akSpeaker  )
 
 	Else
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
-
+		SendModEvent("PCSubStripped")
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)			
 	EndIf
 

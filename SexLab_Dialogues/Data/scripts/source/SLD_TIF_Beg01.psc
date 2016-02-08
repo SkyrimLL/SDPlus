@@ -6,7 +6,7 @@ Scriptname SLD_TIF_Beg01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-fctDialogue.GiftPlayer(SexLab.PlayerRef)
+akSpeaker.SendModEvent("SLDGiftPlayer")
 ;END CODE
 EndFunction
 ;END FRAGMENT

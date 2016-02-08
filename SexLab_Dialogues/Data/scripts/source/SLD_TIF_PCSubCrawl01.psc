@@ -6,8 +6,7 @@ Scriptname SLD_TIF_PCSubCrawl01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-StorageUtil.SetStringValue( Game.GetPlayer(), "_SD_sDefaultStance", "Crawling")
-StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableStand", 0 )
+akSpeaker.SendModEvent( "PCSubStance" , "Crawling")
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -1,14 +1,19 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 1
-Scriptname SLD_TIF_PCSubStand03 Extends TopicInfo Hidden
+Scriptname SLD_TIF_BlacksmithTask03e1 Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-akSpeaker.SendModEvent( "PCSubStance" , "Kneeling")
+Self.GetOwningQuest().SetStage(235)
+
+; _SLD_ForgemasterGauntlets.Enable()
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
+
+
+ObjectReference Property _SLD_ForgemasterGauntlets  Auto  

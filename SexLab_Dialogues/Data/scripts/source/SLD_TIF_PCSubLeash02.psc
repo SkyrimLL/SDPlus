@@ -8,9 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Notification("Your owner starts following you around.")
 
-StorageUtil.SetFormValue( Game.GetPlayer(), "_SD_LeashCenter", akSpeaker)
-StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableLeash", 0)
-StorageUtil.SetIntValue(akSpeaker,"_SD_iFollowSlave",1)
+akSpeaker.SendModEvent( "PCSubMasterFollow" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -6,14 +6,7 @@ Scriptname SLD_TIF_PCSubWork10 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor kPlayer = Game.Getplayer()
-
-StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1)
-StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1)
-StorageUtil.SetStringValue( kPlayer , "_SD_sDefaultStance", "Standing")
-StorageUtil.SetIntValue( kPlayer , "_SD_iEnableStand", 1 )
-
-SendModEvent( "SDHandsFreeSlave" )
+akSpeaker.SendModEvent( "PCSubTrustAction")
 ;END CODE
 EndFunction
 ;END FRAGMENT

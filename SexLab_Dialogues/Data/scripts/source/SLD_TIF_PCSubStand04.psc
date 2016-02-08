@@ -6,8 +6,7 @@ Scriptname SLD_TIF_PCSubStand04 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-StorageUtil.SetStringValue( Game.GetPlayer(), "_SD_sDefaultStance", "Kneeling")
-StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableStand", 1 )
+akSpeaker.SendModEvent( "PCSubStance" , "Kneeling")
 ;END CODE
 EndFunction
 ;END FRAGMENT
