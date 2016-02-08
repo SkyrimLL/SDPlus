@@ -37,6 +37,7 @@ Event OnUpdate()
 				Self.SendModEvent("PCSubSex")
 			Else
 				StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iDom", StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iDom") + 1)
+				SendModEvent("PCSubStripped")
 				SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 			EndIf
 		EndIf

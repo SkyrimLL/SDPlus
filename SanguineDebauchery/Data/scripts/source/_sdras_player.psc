@@ -275,6 +275,17 @@ Function _Maintenance()
 	RegisterForModEvent("SDEquipDevice",   "OnSDEquipDevice")
 	RegisterForModEvent("SDClearDevice",   "OnSDClearDevice")
 	RegisterForModEvent("SDEquipSlaveRags",   "OnSDEquipSlaveRags")
+	RegisterForModEvent("PCSubStance",   "OnSDStance")
+	RegisterForModEvent("PCSubTrustAction",   "OnSDTrustAction")
+	RegisterForModEvent("PCSubTrustFight",   "OnSDTrustFight")
+	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
+	RegisterForModEvent("PCSubUnleash",   "OnSDUnleash")
+	RegisterForModEvent("PCSubLeash",   "OnSDLeash")
+	RegisterForModEvent("PCSubMasterFollow",   "OnSDMasterFollow")
+	RegisterForModEvent("PCSubMasterTravel",   "OnSDMasterTravel")
+	RegisterForModEvent("SDSanguineBlessingMod",   "OnSDSanguineBlessingMod")
+
+
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
@@ -368,6 +379,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 	EndIf
 
+
+
 EndEvent
 
 Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
@@ -397,7 +410,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		;
 	; EndIf
 
-	if animation.HasTag("Chaurus") && (funct._hasPlayer(actors))
+	if animation.HasTag("Chaurus") && (funct._hasPlayer(actors)) && (_SDGVP_enable_parasites.GetValue() == 1)
 		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal" )
 
 			kPlayer.SendModEvent("SDParasiteVag")
@@ -405,7 +418,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 	EndIf
 
-	if animation.HasTag("Spider") && (funct._hasPlayer(actors))
+	if animation.HasTag("Spider") && (funct._hasPlayer(actors)) && (_SDGVP_enable_parasites.GetValue() == 1)
 		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  )
 
 			kPlayer.SendModEvent("SDParasiteAn")
@@ -632,6 +645,7 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
+			SendModEvent("PCSubSubmit")
 		EndIf
 
 		; New enslavement - changing ownership
@@ -690,6 +704,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
+			SendModEvent("PCSubSubmit")
 		EndIf
 
 		; New enslavement - changing ownership
@@ -751,6 +766,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
+			SendModEvent("PCSubSubmit")
 		EndIf
 
 		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )
@@ -1072,13 +1088,15 @@ Event OnSDEquipSlaveRags(String _eventName, String _args, Float _argc = -1.0, Fo
 	Int iOutfitID = _argc as Int
 	String sDevice = _args
 
+	Debug.Trace("[_sdras_player] Receiving slave rags story event [" + _args  + "] [" + _argc as Int + "]")
+
 	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
 	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
 
 	if (kActor == None)
 		; StorageUtil _SD_TempAggressor is deprecated
 		; Use _sender through kActor.SendModEvent("") in priority instead 
-		kActor = Game.GetPlayer() as Actor
+		kActor = kPlayer
 	EndIf
 
 	Debug.Trace("[_sdras_player] Receiving slave rags equip story event [" + _args  + "] [" + _argc as Int + "]")
@@ -1086,6 +1104,148 @@ Event OnSDEquipSlaveRags(String _eventName, String _args, Float _argc = -1.0, Fo
 	_SD_Enslaved.EquipSlaveRags(kActor)
 
 EndEvent
+
+
+Event OnSDStance(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving change stance story event [" + _args  + "] [" + _argc as Int + "]")
+
+
+	if (iEventString == "Standing") || (iEventString == "Kneeling") || (iEventString == "Crawling")
+		StorageUtil.SetStringValue( kPlayer, "_SD_sDefaultStance", iEventString)
+	endIf
+
+	if (iEventString == "Standing")
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 1 )
+
+	elseif  (iEventString == "Kneeling") || (iEventString == "Crawling")
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
+	endif
+
+EndEvent
+ 
+Event OnSDTrustAction(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving slave trust action story event [" + _args  + "] [" + _argc as Int + "]")
+
+	StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1)
+	StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1)
+	StorageUtil.SetStringValue( kPlayer , "_SD_sDefaultStance", "Standing")
+	StorageUtil.SetIntValue( kPlayer , "_SD_iEnableStand", 1 )
+
+	SendModEvent( "SDHandsFreeSlave" )
+EndEvent
+ 
+Event OnSDTrustFight(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving slave trust fight story event [" + _args  + "] [" + _argc as Int + "]")
+
+ 
+	StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1)
+	StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1)
+
+	StorageUtil.SetIntValue( kPlayer , "_SD_iEnableWeaponEquip", 1)
+	StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableArmorEquip", 1)
+	StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableFight", 1)
+	StorageUtil.SetStringValue( kPlayer , "_SD_sDefaultStance", "Standing")
+	StorageUtil.SetIntValue( kPlayer , "_SD_iEnableStand", 1 )
+
+	SendModEvent( "SDHandsFreeSlave" )
+EndEvent
+ 
+Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving slave change look story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+ 	; Event currently defined in SexLab Dialogues... change that later
+	; fctDialogue.ChangePlayerLook(kActor)
+EndEvent
+ 
+Event OnSDUnleash(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving unleash slave story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+
+	StorageUtil.SetFormValue( kPlayer, "_SD_LeashCenter", kActor)
+	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableLeash", 0)
+	; StorageUtil.SetIntValue(kActor,"_SD_iFollowSlave",0)
+EndEvent
+ 
+Event OnSDLeash(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving leash slave story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+ 
+	StorageUtil.SetFormValue( kPlayer, "_SD_LeashCenter", kActor)
+	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableLeash", 1)
+	; StorageUtil.SetIntValue(kActor,"_SD_iFollowSlave",0)
+EndEvent
+ 
+Event OnSDMasterFollow(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving master follow story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+	Debug.Notification("Your owner starts following you around.")
+
+	StorageUtil.SetFormValue( kPlayer, "_SD_LeashCenter", kActor)
+	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableLeash", 0)
+	StorageUtil.SetIntValue(kActor,"_SD_iFollowSlave",1)
+EndEvent
+ 
+Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving master travel story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+ 	if (iEventString == "Start")
+ 		_SDGVP_enable_masterTravel.SetValue(1)
+
+ 	elseif  (iEventString == "Stop")
+ 		_SDGVP_enable_masterTravel.SetValue(1)
+
+ 	elseif  (iEventString == "Disable")
+ 		_SDGVP_enable_masterTravel.SetValue(0)
+
+ 	endIf
+
+EndEvent
+
+Event OnSDSanguineBlessingMod(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving sanguine blessing mod story event [" + _args  + "] [" + _argc as Int + "]")
+
+	if (_SDGVP_sanguine_blessings.GetValue() > 0 )
+		_SDGVP_sanguine_blessings.SetValue( _SDGVP_sanguine_blessings.GetValue() + iEventCode)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
+	endif
+EndEvent
+
 
 State waiting
 	Event OnUpdate()
@@ -1212,14 +1372,15 @@ State monitor
 
 		; Compatibility issue - Captured Dream devices seem to block player menu after sex when SD is on.
 		; Not sure why
-		If (!Game.IsMenuControlsEnabled()) && (Game.IsMovementControlsEnabled()) 
-			If (!fctOutfit.DDIsBound( kPlayer )) && fctOutfit.ActorHasKeywordByString(kPlayer, "zad_Lockable")
-				Debug.Trace("[_sdras_player] Locked out of menu after sex - this can happen with Captured Dream devices.. not sure why")
-				Monitor.SetPlayerControl(true)
-				Game.EnablePlayerControls( abMenu = True )
-				fctOutfit.DDSetAnimating( kPlayer, false )
-			Endif
-		endif
+		; Disabled for now - causing too many issues with other mods
+		; If (!Game.IsMenuControlsEnabled()) && (Game.IsMovementControlsEnabled()) && !(kPlayer.IsBleedingOut())
+			; If (!fctOutfit.DDIsBound( kPlayer )) && fctOutfit.ActorHasKeywordByString(kPlayer, "zad_Lockable")
+			;	Debug.Trace("[_sdras_player] Locked out of menu after sex - this can happen with Captured Dream devices.. not sure why")
+				; Monitor.SetPlayerControl(true)
+			;	Game.EnablePlayerControls( abMenu = True )
+				; fctOutfit.DDSetAnimating( kPlayer, false )
+			;Endif
+		;endif
 
 		; Cap on kill state for better integration with DA (avoid immortal / frozen state)
 		Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 15/100 )  
@@ -1549,3 +1710,6 @@ GlobalVariable Property _SDGVP_isPlayerBimbo auto
 GlobalVariable Property _SDGVP_isPlayerEnslaved auto
 
 GlobalVariable Property _SDGVP_sanguine_blessings auto
+
+GlobalVariable Property _SDGVP_enable_parasites auto
+GlobalVariable Property _SDGVP_enable_masterTravel auto

@@ -145,6 +145,7 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
 			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
 
+			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
 			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
 		else
 			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
@@ -158,9 +159,12 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 
 			if (iDevOutfit!=-1) && (iDevOutfitPart!=-1)
 				Debug.Trace("[SD] clearing device string: " + sDeviceString)  
+				Debug.Trace("[SD] clearing outfit: " + sOutfitString)  
+				Debug.Trace("[SD] clearing device outfit: " + iDevOutfit)  
+				Debug.Trace("[SD] clearing device outfit part: " + iDevOutfitPart)  
 
 				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = iDevOutfitPart, ddArmorKeyword=kwDeviceKeyword, bEquip = false, sMessage = "")
-				setDeviousOutfitByTags ( iDevOutfit, iDevOutfitPart, false)
+				setDeviousOutfitByTags ( iOutfit = iDevOutfit, iOutfitPart = iDevOutfitPart, bEquip = false, sMessage = "" , bDestroy = true)
 			else
 				Debug.Trace("[SD] unknown outfit to clear: " + iDevOutfit)  
 				Debug.Trace("[SD] unknown outfit part to clear: " + iDevOutfitPart)  
@@ -224,10 +228,10 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		thisKeyword = _SDKP_DeviousEnslavedWealthy
 
 	elseif (deviousKeyword == "_SD_DeviousParasiteAn" ) || (deviousKeyword == "ParasiteAnal") 
-		thisKeyword = _SDKP_DeviousParasiteAn
+		thisKeyword = libs.zad_DeviousPlugAnal ; _SDKP_DeviousParasiteAn
 
 	elseif (deviousKeyword == "_SD_DeviousParasiteVag" ) || (deviousKeyword == "ParasiteVaginal") 
-		thisKeyword = _SDKP_DeviousParasiteVag
+		thisKeyword = libs.zad_DeviousPlugVaginal ; _SDKP_DeviousParasiteVag
 		
 	elseif (deviousKeyword == "zad_BlockGeneric")
 		thisKeyword = libs.zad_BlockGeneric
@@ -302,7 +306,8 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 		thisKeyword = libs.zad_DeviousPiercingsVaginal
 
 	else
-		Debug.Notification("[SD] Unknown generic keyword: " + deviousKeyword)  
+		Debug.Notification("[SD] getDeviousKeywordByString: Unknown generic keyword: " + deviousKeyword)  
+		Debug.Trace("[SD] getDeviousKeywordByString: Unknown generic keyword: " + deviousKeyword)  
 	endIf
 
 	return thisKeyword
@@ -361,7 +366,7 @@ Int Function getDeviousOutfitByString(String deviousKeyword = ""  )
 		thisOutfit = 9
 
 	else
-		Debug.Notification("[SD] unknown non-generic outfit: " + deviousKeyword)  
+		Debug.Notification("[SD] getDeviousOutfitByString: unknown non-generic outfit: " + deviousKeyword)  
 	endif
 
 	return thisOutfit
@@ -380,10 +385,10 @@ Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
 	if (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisOutfitPart = 0
 
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder") 
+	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders")  
 		thisOutfitPart = 1
 
-	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs") 
+	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs")  || (deviousKeyword == "LegCuff") 
 		thisOutfitPart = 2
 
 	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") 
@@ -395,14 +400,14 @@ Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousBelt") || (deviousKeyword == "Belt") 
 		thisOutfitPart = 5
 
-	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal") 
+	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal")  || (deviousKeyword == "ParasiteAnal")
 		thisOutfitPart = 6
 
-	elseif (deviousKeyword == "zad_DeviousPlugVaginal") || (deviousKeyword == "PlugVaginal") 
+	elseif (deviousKeyword == "zad_DeviousPlugVaginal") || (deviousKeyword == "PlugVaginal")  || (deviousKeyword == "ParasiteVaginal")
 		thisOutfitPart = 7
 
 	else
-		Debug.Notification("[SD] unknown non-generic part: " + deviousKeyword)  
+		Debug.Notification("[SD] getDeviousOutfitPartByString: unknown non-generic part: " + deviousKeyword)  
 	endIf
 
 	return thisOutfitPart

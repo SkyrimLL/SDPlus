@@ -1432,6 +1432,11 @@ State escape_shock
 
 						_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 
+						int eid = ModEvent.Create("slaUpdateExposure")
+						ModEvent.PushForm(eid, kSlave as Actor)
+						ModEvent.PushFloat(eid, 2.0)
+						ModEvent.Send(eid)
+
 						If (Utility.RandomInt(0,100)>=95)
 							_SDSP_Weak.Cast(kSlave as Actor)
 						EndIf

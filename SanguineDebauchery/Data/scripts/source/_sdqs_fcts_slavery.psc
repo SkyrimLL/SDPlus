@@ -342,7 +342,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 			If (masterPersonalityType == 0)
 				; 0 - Simple, Common
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,zap") ; 1 - Arms cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
@@ -353,7 +353,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 			ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
 				; 4 - Gambler, 5 - Caring
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,zap") ; 1 - Arms cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
@@ -364,7 +364,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 			ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
 				; 3 - Sadistic, 6 - Perfectionist
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" ) ) ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather," + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" ) ) ; 1 - Arms cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 2 - Legs cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 3 - Gag
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 4 - Blindfold
@@ -375,7 +375,7 @@ function InitMasterDevices( Actor kMaster, Int iOutfit)
 			ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
 				; 1 - Comfortable , 2 - Horny
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
+				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,zap") ; 1 - Arms cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,strap") ; 3 - Gag
 				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold

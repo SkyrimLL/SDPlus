@@ -8,6 +8,9 @@ Function Fragment_4(Actor akActor)
 Actor kPlayer = Game.GetPlayer()
 Float kMaxTime = kPlayer.GetDistance(_SDRAP_cageMarker.getRef()) / 32
 Int kElapsed = 0
+
+SendModEvent("PCSubCaged")
+
 While (kElapsed < kMaxTime)
     Utility.Wait(10)
     If(kPlayer.GetDistance(_SDRAP_cageMarker.getRef()) < 150)

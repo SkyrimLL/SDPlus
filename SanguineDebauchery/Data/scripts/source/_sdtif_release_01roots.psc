@@ -13,7 +13,7 @@ Debug.Messagebox("The ointment washes away the residual roots clinging to your b
 ;            fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")
 ;            fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")
 
-fctOutfit.clearDeviceByString ( sDeviceString = "ArmCuffs", sOutfitString = "Spriggan"  )
+fctOutfit.clearDeviceByString ( sDeviceString = "ArmCuffs" )
 fctOutfit.clearDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "Spriggan"  )
 fctOutfit.clearDeviceByString ( sDeviceString = "Belt", sOutfitString = "Spriggan"  )
 fctOutfit.clearDeviceByString ( sDeviceString = "Blindfold", sOutfitString = "Spriggan"  )

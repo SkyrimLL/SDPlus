@@ -133,7 +133,10 @@ If ( !kABoss.IsDead() && !kABoss.IsDisabled() )
 	EndWhile
 	Utility.Wait(5)
 
-	_SDKP_enslave.SendStoryEvent( akLoc = kBoss.GetCurrentLocation(), akRef1 = kBoss, akRef2 = kSlave, aiValue1 = _SDGVP_demerits.GetValueInt(), aiValue2 = 1 )
+	; _SDKP_enslave.SendStoryEvent( akLoc = kBoss.GetCurrentLocation(), akRef1 = kBoss, akRef2 = kSlave, aiValue1 = _SDGVP_demerits.GetValueInt(), aiValue2 = 1 )
+
+	StorageUtil.SetIntValue(kBoss, "_SD_iForcedSlavery", 1)
+	kBoss.SendModEvent("PCSubEnslave")
 
 	Debug.MessageBox( "You finish the march bound and gagged and eventually wake up in front of your new master.")
 	Utility.Wait(5)
