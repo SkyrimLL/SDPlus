@@ -7,7 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Game.ForceThirdPerson()
-Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
+; Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
 
 Int IButton = _SD_rapeMenu.Show()
 

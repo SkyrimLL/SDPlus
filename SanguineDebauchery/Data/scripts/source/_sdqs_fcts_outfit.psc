@@ -82,6 +82,9 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 	Actor kMaster = None
 	Int iDevOutfit
 	Int iDevOutfitPart
+	Armor aWornDevice
+	Armor aRenderedDevice
+	Form kForm	
 
 	; If player enslaved, give priority to outfits for Gag, Blindfold, Belt, PlugAnal, PlugVaginal, Armbinder, LegCuffs
 	;	- set outfitString to Enslaved
@@ -97,6 +100,20 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 			Debug.Trace("[SD] equip device keyword: " + kwDeviceKeyword)  
 
 			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, True, skipEvents,  skipMutex)
+
+			aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+				kForm = aWornDevice as Form 
+
+				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+					Debug.Notification("[SD] adding zad_BlockGeneric device!")  
+					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
+				endif
+			else
+				Debug.Trace("[SD]    Can't get worn device")
+			endif
+ 
 		else
 			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
 		endIf
@@ -115,7 +132,7 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 			if (iDevOutfit!=-1) && (iDevOutfitPart!=-1)
 				Debug.Trace("[SD] equip device string: " + sDeviceString)  
 
-				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, ddArmorKeyword=kwDeviceKeyword, bEquip = true, sMessage = "")
+				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, wddArmorKeyword=kwDeviceKeyword, bEquip = true, sMessage = "")
 				setDeviousOutfitByTags ( iDevOutfit, iDevOutfitPart, true)
 			else
 				Debug.Trace("[SD] unknown outfit to equip: " + iDevOutfit)  
@@ -135,17 +152,34 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
 	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
 	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
-	Actor PlayerActor = Game.GetPlayer()
+	Armor aWornDevice
+	Armor aRenderedDevice
+	Actor PlayerActor = Game.GetPlayer() as Actor
 	Int iDevOutfit
 	Int iDevOutfitPart
+	Form kForm
  
 	If (sOutfitString=="") && (kwDeviceKeyword != None)
 
 		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
+			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
+
 			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
 			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
 
-			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
+			aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+				kForm = aWornDevice as Form
+
+				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+					Debug.Notification("[SD] removing zad_BlockGeneric device!")  
+					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - Can't clear device")  
+				endif
+			else
+				Debug.Trace("[SD]    Can't get worn device")
+			endif
+
 			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
 		else
 			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
@@ -186,9 +220,10 @@ Function clearDevicesForEnslavement()
 		clearDeviceByString ( sDeviceString = "Collar", skipEvents = true, skipMutex = true )
 	EndIf
 
-	If !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine", "Armbinder"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan", "Armbinder"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved", "Armbinder"  )
+	If !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine", "Armbinder"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan", "ArmCuffs"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved", "Armbinder"  )
 		; setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = -1, ddArmorKeyword = libs.zad_DeviousArmCuffs, bEquip = False, sMessage = "" , bDestroy = True)
 		clearDeviceByString ( sDeviceString = "ArmCuffs", skipEvents = true, skipMutex = true )
+		clearDeviceByString ( sDeviceString = "Armbinder", skipEvents = true, skipMutex = true )
 	EndIf
 
 	If !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine", "LegCuffs"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan", "LegCuffs"   ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved", "LegCuffs"   )
@@ -385,7 +420,7 @@ Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
 	if (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisOutfitPart = 0
 
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders")  
+	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders")   || (deviousKeyword == "ArmCuffs")    || (deviousKeyword == "ArmCuff")  
 		thisOutfitPart = 1
 
 	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs")  || (deviousKeyword == "LegCuff") 
@@ -465,7 +500,7 @@ Function registerDeviousOutfits ( )
 	Debug.Trace("[SD] Register devious outfits")
 
 	; These devices can be shared
-	libs.RegisterGenericDevice(zazIronCuffs			, "cuffs,arms,metal,iron,zap")
+	libs.RegisterGenericDevice(zazIronCuffs			, "armbinder,arms,metal,iron,zap")
 	libs.RegisterGenericDevice(zazIronShackles		, "cuffs,legs,metal,iron,zap")
 	libs.RegisterGenericDevice(zazWoodenBit			, "gag,leather,wood,zap")
 	libs.RegisterGenericDevice(zazBlinds 			, "blindfold,leather,zap")
@@ -941,6 +976,7 @@ EndFunction
 
 Function setDeviousOutfitArms ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
 	setDeviousOutfitPartByString (iDevOutfit, "Armbinder", bDevEquip)
+	setDeviousOutfitPartByString (iDevOutfit, "ArmCuffs", bDevEquip)
 EndFunction
 
 Function setDeviousOutfitLegs ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
@@ -1054,7 +1090,9 @@ Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = T
 			EndIf
 
 			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		Else
+		EndIf
+
+		If ( (iOutfitPart!=0) || (iOutfitPart==-1) )
 			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
 
 		EndIf
@@ -1119,7 +1157,7 @@ Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = T
 			; 1 - Arms - Spriggan host hands
 			ddArmorRendered = zazSprigganHandsRendered 
 			ddArmorInventory = zazSprigganHands
-			ddArmorKeyword = libs.zad_DeviousArmbinder 
+			ddArmorKeyword = libs.zad_DeviousArmCuffs
 
 			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
 		EndIf

@@ -2,52 +2,40 @@
 ;NEXT FRAGMENT INDEX 155
 Scriptname _sdsf_snp_07 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_89
-Function Fragment_89()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-ObjectReference masterREF = _SDRAP_male.GetReference()
-ObjectReference slaveREF = _SDRAP_female.GetReference()
-; Debug.SendAnimationEvent(slaveREF , "ZazAPC056")
-	
-Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+Actor female = _SDRAP_female.GetReference() as Actor
 
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(7)
 
-If ( _SDRAP_male )
-	whore.addToQueue( masterREF  )
-EndIf
-If ( _SDRAP_bystander_01 )
-	whore.addToQueue( _SDRAP_bystander_01.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_02)
-	whore.addToQueue( _SDRAP_bystander_02.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_03 )
-	whore.addToQueue( _SDRAP_bystander_03.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_04 )
-	whore.addToQueue( _SDRAP_bystander_04.GetReference() as ObjectReference )
-EndIf
-If ( _SDRAP_bystander_05 )
-	whore.addToQueue( _SDRAP_bystander_05.GetReference() as ObjectReference )
-EndIf
-
-; safety train on top of dance bystanders
-If ( _SDRAP_male )
-	masterREF.SendModEvent("PCSubEntertain", "Gangbang")
-endif
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
-;BEGIN CODE
-snp._SDUIP_phase = 5
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-Debug.Notification("Wait while they take their turns on you.")
 
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
+; if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
+; 	Debug.Notification("Your owner forces you to dance...")
+; Else
+	Debug.Notification("You slowly start to dance...")
+; EndIf
+
+		Debug.SendAnimationEvent(female, "Unequip")
+		Debug.SendAnimationEvent(female, "UnequipNoAnim")
+
+		; Drop current weapon 
+		if(female.IsWeaponDrawn())
+			female.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+ 
+
+Game.ForceThirdPerson()
+; libs.SetAnimating(Game.GetPlayer(), true)
+
+
+if (fctOutfit.isArmbinderEquipped( female ))
+	fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
+	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -84,23 +72,14 @@ Endif
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_71
-Function Fragment_71()
-;BEGIN CODE
-snp._SDUIP_phase = 3
-; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
-; Debug.Notification("The urge is irresistible [dance sex]")
-Utility.wait(2)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_2
 Function Fragment_2()
 ;BEGIN CODE
 Actor kMaster = StorageUtil.GetFormValue( Game.getPlayer(), "_SD_CurrentOwner") as Actor
 Actor male = _SDRAP_male.GetReference() as Actor
 Actor female = _SDRAP_female.GetReference() as Actor
+
+Int outfitID =	StorageUtil.GetIntValue(kMaster, "_SD_iOutfitID")
 
 snp._SDUIP_phase = -1
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
@@ -124,47 +103,33 @@ if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
 	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
 		; Keep hands free by accident
 	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+		fctOutfit.setDeviousOutfitArms ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
 	EndIf
 EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
 ;BEGIN CODE
-Actor female = _SDRAP_female.GetReference() as Actor
-
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(7)
-
+snp._SDUIP_phase = 5
 ; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+Debug.Notification("Wait while they take their turns on you.")
 
-; if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
-; 	Debug.Notification("Your owner forces you to dance...")
-; Else
-	Debug.Notification("You slowly start to dance...")
-; EndIf
+Game.EnablePlayerControls( abMovement = True )
+Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
 
-		Debug.SendAnimationEvent(female, "Unequip")
-		Debug.SendAnimationEvent(female, "UnequipNoAnim")
-
-		; Drop current weapon 
-		if(female.IsWeaponDrawn())
-			female.SheatheWeapon()
-			Utility.Wait(2.0)
-		endif
- 
-
-Game.ForceThirdPerson()
-; libs.SetAnimating(Game.GetPlayer(), true)
-
-
-if (fctOutfit.isArmbinderEquipped( female ))
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
-	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
-EndIf
+;BEGIN FRAGMENT Fragment_71
+Function Fragment_71()
+;BEGIN CODE
+snp._SDUIP_phase = 3
+; Debug.Notification("[dance] phase =" + snp._SDUIP_phase)
+; Debug.Notification("The urge is irresistible [dance sex]")
+Utility.wait(2)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -180,6 +145,43 @@ Debug.SendAnimationEvent(slaveREF , "IdleSilentBow")
 ; slaveREF.PlayAnimation("IdleSilentBow");Inte
 Utility.Wait(0.5)
 Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_89
+Function Fragment_89()
+;BEGIN CODE
+ObjectReference masterREF = _SDRAP_male.GetReference()
+ObjectReference slaveREF = _SDRAP_female.GetReference()
+; Debug.SendAnimationEvent(slaveREF , "ZazAPC056")
+	
+Debug.SendAnimationEvent(slaveREF , "IdleForceDefaultState")
+
+
+If ( _SDRAP_male )
+	whore.addToQueue( masterREF  )
+EndIf
+If ( _SDRAP_bystander_01 )
+	whore.addToQueue( _SDRAP_bystander_01.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_02)
+	whore.addToQueue( _SDRAP_bystander_02.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_03 )
+	whore.addToQueue( _SDRAP_bystander_03.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_04 )
+	whore.addToQueue( _SDRAP_bystander_04.GetReference() as ObjectReference )
+EndIf
+If ( _SDRAP_bystander_05 )
+	whore.addToQueue( _SDRAP_bystander_05.GetReference() as ObjectReference )
+EndIf
+
+; safety train on top of dance bystanders
+If ( _SDRAP_male )
+	masterREF.SendModEvent("PCSubEntertain", "Gangbang")
+endif
 ;END CODE
 EndFunction
 ;END FRAGMENT

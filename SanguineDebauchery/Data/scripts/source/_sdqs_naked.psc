@@ -27,7 +27,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	If (funct.checkGenderRestriction( akSpeaker,  akTarget))
 
 		Game.ForceThirdPerson()
-		Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
+		; Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
 
 		Int IButton = _SD_rapeMenu.Show()
 

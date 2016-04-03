@@ -9,6 +9,8 @@ Keyword Property _SDKP_actorTypeNPC  Auto
 FormList Property _SDFLP_banned_factions  Auto
 FormList Property _SDFLP_banned_actors  Auto
 
+int TYPE_FACTION = 11
+
 Bool Function checkIfSlaver ( Actor akActor )
 	Int  playerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
 	Actor akPlayer = Game.getPlayer() as Actor
@@ -30,11 +32,10 @@ Bool Function checkIfSlaver ( Actor akActor )
 	Debug.Trace("[SD] Member of banned actors - " + actorInList(_SDFLP_banned_actors , akActor))
 	; Debug.Trace("[SD] Enslavement check - " + akActor)
 
-	; Why should enslavement be disabled during spriggan effect?
-	; If (checkIfSpriggan ( Game.GetPlayer() )) 
-	;	Debug.Trace("[SD] Actor is Spriggan - aborting enslavement")
-	;	isSlaver = False
-	; Endif
+	If (checkIfSpriggan ( Game.GetPlayer() )) 
+		Debug.Trace("[SD] Actor is Spriggan - aborting enslavement")
+		isSlaver = False
+	Endif
 	
 	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
 		; Prevent new enslavement by current master
@@ -81,139 +82,6 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	return isSlaver
 EndFunction
 
-Bool Function actorInList(FormList akActorsList, Actor thisActor)
-	Actor kActor
-	int idx = 0
-	while idx < akActorsList.GetSize()
-		kActor = akActorsList.GetAt(idx) as Actor
-		if kActor == thisActor as ObjectReference
-			return True
-		endif
-		idx += 1
-	endwhile
-	Return False
-EndFunction
-
-Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormList akBannedFactionList = None )
-	Int index
-	Int size
-	Bool found = False
-	Bool banned = False
-
-	If ( akActor && !akActor.IsEssential() && !akActor.IsDead() )
-		If ( akBannedFactionList )
-			index = 0
-			size = akBannedFactionList.GetSize()
-			While ( index < size && !banned )
-				banned = akActor.IsInFaction( akBannedFactionList.GetAt(index) as Faction )
-				index += 1
-			EndWhile
-		EndIf
-
-		If ( !banned )
-			index = 0
-			size = akFactionList.GetSize()
-			While ( index < size && !found )
-				found = akActor.IsInFaction( akFactionList.GetAt(index) as Faction )
-				index += 1
-			EndWhile
-		EndIf
-	EndIf
-
-	Debug.Trace("_SD::actorFactionInList akActor:" + akActor + " found:" + found )
-	Return found
-EndFunction
-
-
-; Function registerDeviousOutfitsKeywords ( Actor kActor )
-;	Debug.Trace("[SD] Register devious keywords")
-  
-;	if (StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword") != 0)
-;		Debug.Trace("[SD] Register devious keywords - aborting - list already set - " + StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword"))
-;		Return
-;	EndIf	
-
-	; Register list of reference keywords for each device in list
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousCollar) ; 0 - Collar - Unused
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousArmbinder) ; 1 - Arms cuffs
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousLegCuffs ) ; 2 - Legs cuffs
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousGag ) ; 3 - Gag
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBlindfold ) ; 4 - Blindfold
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBelt ) ; 5 - Belt
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugAnal) ; 6 - Plug Anal
-;	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugVaginal) ; 7 - Plug Vaginal
-
-; EndFunction
-
-Function resetAllyToActor( Actor akSlave, FormList alFactionListIn )
-	Int index = 0
-	Int size = alFactionListIn.GetSize()
-
-	While ( index < size )
-		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
-		akSlave.RemoveFromFaction( nTHfaction )
-		index += 1
-	EndWhile
-
-	alFactionListIn.Revert()
-EndFunction
-
-
-Bool Function allyToActor( Actor akMaster, Actor akSlave, FormList alFactionListIn, FormList alFactionListOut = None )
-	Int index = 0
-	Int size = alFactionListIn.GetSize()
-	Bool ret = False
-
-	If ( akMaster == None || akSlave == None )
-		Return ret
-	EndIf
-
-	If ( alFactionListOut != None && alFactionListOut.GetSize() > 0 )
-		resetAllyToActor( akSlave, alFactionListOut )
-	EndIf
-
-	If ( !qualifyActor( akMaster, False ) )
-		Return ret
-	EndIf
-
-	While ( index < size )
-		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
-
-		If ( akMaster.IsInFaction( nTHfaction ) && !akSlave.IsInFaction( nTHfaction ) )
-			If ( alFactionListOut != None )
-				alFactionListOut.AddForm( nTHfaction )
-			EndIf
-			akSlave.AddToFaction( nTHfaction )
-			ret = True
-		EndIf
-		index += 1
-	EndWhile
-
-	Return ret
-EndFunction
-
-Bool Function qualifyActor( Actor akActor, Bool abCheckInScene = True )
-	Bool bOutOfScene = ( !abCheckInScene || ( abCheckInScene && akActor.GetCurrentScene() == None ) )
-	Return ( !akActor.IsDead() && !akActor.IsDisabled() && bOutOfScene )
-EndFunction
-
-
-
-Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionListOut = None )
-
-	Int iFormIndex = ( akMaster as ObjectReference ).GetNumItems()
-	While ( iFormIndex > 0 )
-		iFormIndex -= 1
-		Form nthForm = ( akMaster as ObjectReference ).GetNthForm(iFormIndex)
-		If ( nthForm && nthForm.GetType() == 11 )
-			If ( alFactionListOut != None )
-				alFactionListOut.AddForm( nthForm as Faction )
-			EndIf
-			akSlave.AddToFaction( nthForm as Faction )
-		EndIf
-	EndWhile
-
-EndFunction
 
 Bool Function checkIfSpriggan ( Actor akActor )
 	Bool bIsSpriggan = False
@@ -269,6 +137,193 @@ Bool Function checkIfFollower ( Actor akActor )
 	Return bIsFollower
 EndFunction
 
+; --------- Faction management
+
+Bool Function actorInList(FormList akActorsList, Actor thisActor)
+	Actor kActor
+	int idx = 0
+	while idx < akActorsList.GetSize()
+		kActor = akActorsList.GetAt(idx) as Actor
+		if kActor == thisActor as ObjectReference
+			return True
+		endif
+		idx += 1
+	endwhile
+	Return False
+EndFunction
+
+Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormList akBannedFactionList = None )
+	Int index
+	Int size
+	Bool found = False
+	Bool banned = False
+
+	If ( akActor && !akActor.IsEssential() && !akActor.IsDead() )
+		If ( akBannedFactionList )
+			index = 0
+			size = akBannedFactionList.GetSize()
+			While ( index < size && !banned )
+				banned = akActor.IsInFaction( akBannedFactionList.GetAt(index) as Faction )
+				index += 1
+			EndWhile
+		EndIf
+
+		If ( !banned )
+			index = 0
+			size = akFactionList.GetSize()
+			While ( index < size && !found )
+				found = akActor.IsInFaction( akFactionList.GetAt(index) as Faction )
+				index += 1
+			EndWhile
+		EndIf
+	EndIf
+
+	Debug.Trace("_SD::actorFactionInList akActor:" + akActor + " found:" + found )
+	Return found
+EndFunction
+
+
+
+Function resetAllyToActor( Actor akSlave, FormList alFactionListIn )
+	Int index = 0
+	Int size = alFactionListIn.GetSize()
+
+	While ( index < size )
+		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
+		akSlave.RemoveFromFaction( nTHfaction )
+		index += 1
+	EndWhile
+
+	alFactionListIn.Revert()
+EndFunction
+
+
+Bool Function allyToActor( Actor akMaster, Actor akSlave, FormList alFactionListIn, FormList alFactionListOut = None )
+	Form nthForm
+	Int index = 0
+	Int size = alFactionListIn.GetSize()
+	Bool ret = False
+
+	If ( akMaster == None || akSlave == None )
+		Return ret
+	EndIf
+
+	If ( alFactionListOut != None && alFactionListOut.GetSize() > 0 )
+		resetAllyToActor( akSlave, alFactionListOut )
+	EndIf
+
+	If ( !qualifyActor( akMaster, False ) )
+		Return ret
+	EndIf
+
+	While ( index < size )
+		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
+		nthForm = nTHfaction as Form
+
+		If ( akMaster.IsInFaction( nTHfaction ) && !akSlave.IsInFaction( nTHfaction ) )
+			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
+			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
+			Debug.Notification("Slave faction joined: " + nthForm.GetName())
+
+			If ( alFactionListOut != None )
+				alFactionListOut.AddForm( nTHfaction )
+			EndIf
+
+			akSlave.AddToFaction( nTHfaction )
+			ret = True
+		EndIf
+		index += 1
+	EndWhile
+
+	Return ret
+EndFunction
+
+Bool Function qualifyActor( Actor akActor, Bool abCheckInScene = True )
+	Bool bOutOfScene = ( !abCheckInScene || ( abCheckInScene && akActor.GetCurrentScene() == None ) )
+	Return ( !akActor.IsDead() && !akActor.IsDisabled() && bOutOfScene )
+EndFunction
+ 
+
+Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionListOut = None )
+	Form nthForm
+
+	Int iFormIndex = ( akMaster as ObjectReference ).GetNumItems()
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		nthForm = ( akMaster as ObjectReference ).GetNthForm(iFormIndex)
+		If ( nthForm )
+			If ( nthForm.GetType() == TYPE_FACTION )
+				if !akSlave.IsInFaction( nthForm as Faction )
+					; Only add slave to faction he/she is not member of yet
+
+					; TO DO: Add faction to list of temp joined factions + current game days to list of faction joined date
+
+					StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
+					StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
+					Debug.Notification("Slave faction joined: " + nthForm.GetName())
+
+					If ( alFactionListOut != None )
+						alFactionListOut.AddForm( nthForm as Faction )
+					EndIf
+
+					akSlave.AddToFaction( nthForm as Faction )
+				endif
+			Endif
+		EndIf
+	EndWhile
+
+EndFunction
+
+; TO DO: Create function to remove factions after certain date is passed
+
+Function expireSlaveFactions( Actor akSlave )
+	; // iterate list from first added to last added
+	Debug.Trace("[SD] Expire Slave Factions")
+
+	int currentDaysPassed = Game.QueryStat("Days Passed")
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
+	int i = 0
+	int daysJoined 
+	Form slaveFaction 
+
+	while(i < valueCount)
+		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+
+		if (daysJoined > StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") )
+			Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+
+			StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
+			StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
+			Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+
+			akSlave.RemoveFromFaction( slaveFaction as Faction )
+
+		EndIf
+
+		i += 1
+	endwhile
+EndFunction
+
+Function displaySlaveFactions( Actor akSlave )
+	; // iterate list from first added to last added
+	Debug.Trace("[SD] List Slave Factions")
+
+	int currentDaysPassed = Game.QueryStat("Days Passed")
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
+	int i = 0
+	int daysJoined 
+	Form slaveFaction 
+
+	while(i < valueCount)
+		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+
+		Debug.Trace("[SD]      Slave Faction[" + i + "] = " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined  + " - Days remaining: " + (StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") - daysJoined  ) )
+
+		i += 1
+	endwhile
+EndFunction
 
 Race Property FalmerRace  Auto  
 Race Property SprigganRace  Auto  

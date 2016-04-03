@@ -20,6 +20,7 @@ GlobalVariable Property _SDGVP_sprigganEnslaved  Auto
 GlobalVariable Property _SDGVP_enslaved  Auto
 GlobalVariable Property _SDGV_leash_length  Auto
 GlobalVariable Property _SDGVP_health_threshold Auto
+GlobalVariable Property _SDGVP_slave_days_max Auto
 GlobalVariable Property _SDGVP_config_healthMult Auto
 ; ragdolling
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto
@@ -267,6 +268,8 @@ Function _Maintenance()
 	RegisterForModEvent("SDParasiteAn",   "OnSDParasiteAn")
 	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
 	RegisterForModEvent("SDDreamworldStart",   "OnSDDreamworldStart")
+	RegisterForModEvent("SDDreamworldSuspend",   "OnSDDreamworldSuspend")
+	RegisterForModEvent("SDDreamworldResume",   "OnSDDreamworldResume")
 	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
@@ -348,6 +351,12 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
+	If (funct._hasPlayer(actors)) 
+		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 1)
+	else
+		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 0)
+	endif
+
 	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 		; Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
 		
@@ -400,7 +409,6 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
 
-
 	
 	; if config.bDebugMsg
 	; 	_listActors("End: ", actors)
@@ -409,6 +417,13 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; If (funct._hasPlayer(actors))
 		;
 	; EndIf
+
+	If (funct._hasPlayer(actors)) 
+		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 0)
+	else
+		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 1)
+	endif
+
 
 	if animation.HasTag("Chaurus") && (funct._hasPlayer(actors)) && (_SDGVP_enable_parasites.GetValue() == 1)
 		If (Utility.RandomInt(0,100)> 60) && (!fctOutfit.isBeltEquipped(PlayerActor)) && !fctOutfit.isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal" )
@@ -426,7 +441,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 		EndIf
 	EndIf
 
-	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (funct._hasPlayer(actors))
 		Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
 
 		If (kCurrentMaster != None)  
@@ -616,6 +631,7 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 	If (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
+		SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 			kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
@@ -632,7 +648,6 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
-			SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
@@ -675,6 +690,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 
 	If (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
+		SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 			kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
@@ -691,7 +707,6 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
-			SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
@@ -737,6 +752,9 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 	EndIf
 
 	If (kNewMaster != None)   &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
+		SendModEvent("da_PacifyNearbyEnemies", "Restore")
+
+
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 			kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 
@@ -753,7 +771,6 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 			Debug.Trace("[_sdras_player] Slave transfer - stopping enslavement" )
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
-			SendModEvent("da_PacifyNearbyEnemies", "Restore")
 
 			While ( _SDQP_enslavement.IsStopping() )
 			EndWhile
@@ -830,6 +847,17 @@ Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 15.0, Fo
 		_SD_dreamQuest.SetStage(stageID)
 	EndIf
 
+EndEvent
+
+
+Event OnSDDreamworldSuspend(String _eventName, String _args, Float _argc = 15.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving dreamworld suspend story event [" + _args  + "] [" + _argc as Int + "]")
+	StorageUtil.SetIntValue(kPlayer, "_SD_iDisableDreamworld", 1)
+EndEvent
+
+Event OnSDDreamworldResume(String _eventName, String _args, Float _argc = 15.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving dreamworld resume story event [" + _args  + "] [" + _argc as Int + "]")
+	StorageUtil.SetIntValue(kPlayer, "_SD_iDisableDreamworld", 0)
 EndEvent
 
 Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1221,14 +1249,42 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 	Debug.Trace("[_sdras_player] Receiving master travel story event [" + _args  + "] [" + _argc as Int + "]")
  
  	if (iEventString == "Start")
+		If ( _SDGVP_state_isMasterInTransit.GetValue() == 0 )
+			Debug.Messagebox("Your owner is going on a walk. Don't stray too far or you will be punished!")
+		EndIf
+
+		StorageUtil.SetIntValue( Game.GetPlayer() ,"_SD_iEnableLeash", 1)
+		StorageUtil.SetIntValue( kActor,"_SD_iFollowSlave", 0)
+		_SDGVP_state_isMasterFollower.SetValue(0) 
+		_SDGVP_state_isMasterTraveller.SetValue(1) 
+		_SDGVP_isLeashON.SetValue(1)
+		_SDGVP_state_isMasterInTransit.SetValue(1)
+
+
+		kActor.EvaluatePackage()
  		_SDGVP_enable_masterTravel.SetValue(1)
 
- 	elseif  (iEventString == "Stop")
+ 	elseif  (iEventString == "Stop") ||  (iEventString == "Disable")
+ 		If (_SDGVP_state_isMasterInTransit.GetValue() == 1 )
+			Debug.Messagebox("Your owner is staying put for now. Don't take that as a permission to wander off!!")
+		EndIf
+
+		StorageUtil.SetIntValue( Game.GetPlayer() ,"_SD_iEnableLeash", 0)
+		StorageUtil.SetIntValue( kActor,"_SD_iFollowSlave", 1)
+		_SDGVP_state_isMasterFollower.SetValue(1) 
+		_SDGVP_state_isMasterTraveller.SetValue(0) 
+		_SDGVP_isLeashON.SetValue(0)
+		_SDGVP_state_isMasterInTransit.SetValue(0)
+
+
+		kActor.EvaluatePackage()
  		_SDGVP_enable_masterTravel.SetValue(1)
 
- 	elseif  (iEventString == "Disable")
- 		_SDGVP_enable_masterTravel.SetValue(0)
 
+
+		if  (iEventString == "Disable")
+	  		_SDGVP_enable_masterTravel.SetValue(0)
+	  	endIf
  	endIf
 
 EndEvent
@@ -1240,10 +1296,10 @@ Event OnSDSanguineBlessingMod(String _eventName, String _args, Float _argc = -1.
 
 	Debug.Trace("[_sdras_player] Receiving sanguine blessing mod story event [" + _args  + "] [" + _argc as Int + "]")
 
-	if (_SDGVP_sanguine_blessings.GetValue() > 0 )
+	; if (_SDGVP_sanguine_blessings.GetValue() > 0 )
 		_SDGVP_sanguine_blessings.SetValue( _SDGVP_sanguine_blessings.GetValue() + iEventCode)
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
-	endif
+	; endif
 EndEvent
 
 
@@ -1344,13 +1400,20 @@ State monitor
 				fExposureMultiplier = 1.0 - (_SDGVP_config_slavery_level_mult.GetValue() as Float) 
 
 				if ( StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") > 0)
-					fNewExposure =  fOldExposure - fOldExposure * fExposureMultiplier 
+					fNewExposure =  fOldExposure * fExposureMultiplier 
 				Else
-					fNewExposure =  fOldExposure - fOldExposure * fExposureMultiplier * ( ( (6 - StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
+					fNewExposure =  fOldExposure * fExposureMultiplier * ( ( (6 - StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
 				endif
 
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
+
+				StorageUtil.SetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction", _SDGVP_slave_days_max.GetValue() as Int)
+				fctFactions.displaySlaveFactions( kPlayer )
+				Utility.Wait(2.0)
+				fctFactions.expireSlaveFactions( kPlayer )
+			else
+				fctFactions.displaySlaveFactions( kPlayer )
 			EndIf
 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iGenderRestrictions",  _SDGVP_config[3].GetValue() as Int )
@@ -1490,7 +1553,6 @@ State monitor
 
 			Bool isInKWeakenedState = funct.actorInWeakenedState( kPlayer, 25.0 /100.0 )  ; funct.actorInWeakenedState( kPlayer, _SDGVP_config[2].GetValue()/100 )
 			Bool isInKillState = funct.actorInKillState( kPlayer, 0.5 )   ; funct.actorInKillState( kPlayer, _SDGVP_config[1].GetValue() )
-			Debug.Trace("[SD] Surrender")
 			Debug.Trace("[SD] Player in weakened state: " + isInKWeakenedState )
 			Debug.Trace("[SD] Player in kill state: " + isInKillState )
 
@@ -1506,6 +1568,7 @@ State monitor
 
 				If (IButton == 0 ) 
 					; StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender", 1)	
+					Debug.Trace("[SD] Surrender")
 					SendModEvent("da_PacifyNearbyEnemies", "Restore")
 					SendModEvent("PCSubSurrender")
 
@@ -1549,6 +1612,8 @@ State monitor
 					fctOutfit.DDSetAnimating( kPlayer, false )
 					StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender", 0)
 
+					; Find a way to detect and fix situations when player is stuck 'flying' above ground
+
 					; Debug.SendAnimationEvent(kPlayer, "IdleForceDefaultState")
 
 					; SendModEvent("da_UpdateBleedingDebuff")
@@ -1556,6 +1621,9 @@ State monitor
 
 					Debug.SetGodMode( False )
 
+					if (kPlayer.IsFlying())
+						Debug.Notification("Player is stuck in flight. Reload your game.")
+					endif
 
 					; UnregisterForMenu( "Crafting Menu" )
 					; UnregisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
@@ -1713,3 +1781,7 @@ GlobalVariable Property _SDGVP_sanguine_blessings auto
 
 GlobalVariable Property _SDGVP_enable_parasites auto
 GlobalVariable Property _SDGVP_enable_masterTravel auto
+GlobalVariable Property _SDGVP_state_isMasterTraveller auto
+GlobalVariable Property _SDGVP_state_isMasterInTransit auto
+GlobalVariable Property _SDGVP_state_isMasterFollower auto
+GlobalVariable Property _SDGVP_isLeashON auto

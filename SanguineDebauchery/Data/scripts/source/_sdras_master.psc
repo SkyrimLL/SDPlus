@@ -338,6 +338,12 @@ State monitor
 		bTargetAllied = ( kCombatTarget && kCombatTarget != kMaster && fctFactions.actorFactionInList(kCombatTarget, _SDFLP_forced_allied) )
 		iCheckdemerits = _SDGVP_demerits.GetValueInt()
 		
+		If (kMaster.GetParentCell().IsInterior())
+			StorageUtil.SetIntValue(kMaster, "_SD_iDaysPassedOutside", 0)
+		Else
+			StorageUtil.SetIntValue(kMaster, "_SD_iDaysPassedOutside",  Game.QueryStat("Days Passed"))
+		EndIf
+
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			Debug.Trace("[_sdras_master] Master dead or disabled - Stop enslavement")
 
@@ -485,6 +491,7 @@ State monitor
 					Endif
 				EndIf
 			EndIf
+
 
 		ElseIf ((kSlave.GetParentCell() != kMaster.GetParentCell()) && (kMaster.GetParentCell().IsInterior()) && (!_SDGVP_state_caged.GetValueInt())) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			; Master is looking for slave (if not trusted)

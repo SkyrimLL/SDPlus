@@ -278,7 +278,7 @@ Event OnUpdateGameTime()
 	If(  (RandomFloat(0.0, 100.0) < fSprigganPunish) && (GetStage() < 70) && !kPlayer.GetCurrentScene() && !kPlayer.IsInCombat()  && !kPlayer.IsOnMount() ) &&  (SexLab.ValidateActor(kPlayer) > 0) ;  && !kPlayer.GetDialogueTarget() )
 		; _SDSP_host_flare.RemoteCast(kSlave as Actor, kSlave as Actor, kSlave as Actor)
 		; Game.ForceThirdPerson()
-		Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
+		; Debug.SendAnimationEvent(kSlave as ObjectReference, "bleedOutStart")
 		Debug.Trace( "[SD] Spriggan roots growing" )
 		Debug.Notification( "The roots throb deeply in and out of you..." )
 
