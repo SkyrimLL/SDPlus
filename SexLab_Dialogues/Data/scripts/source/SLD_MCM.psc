@@ -1,5 +1,6 @@
 Scriptname SLD_MCM extends ski_configbase  
 
+Import sslCreatureAnimationSlots
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;
@@ -35,6 +36,8 @@ bool	_PCSubEnableRobbery		= false
 bool	_BeggingDialogueON		= true
 bool	_GiftDialogueON		= true
 bool	_BlacksmithQuestON		= true
+bool	_RegisterCustomRaces		= false
+bool	_ClearGiantRaces		= false
 
 ; INITIALIZATION ----------------------------------------------------------------------------------
 
@@ -93,8 +96,8 @@ event OnPageReset(string a_page)
 	_BeggingDialogueON		= _SLD_BeggingDialogueON.GetValue() as Int
 	_GiftDialogueON			= _SLD_GiftDialogueON.GetValue() as Int
 	_BlacksmithQuestON		= _SLD_BlacksmithQuestON.GetValue() as Int
-
-
+	_RegisterCustomRaces		= false
+	_ClearGiantRaces = false
  
 
 	If (a_page == "Features")
@@ -122,6 +125,10 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Shared settings")
 		AddSliderOptionST("STATE_CommentProbability","Comment Probability",  _CommentProbability	 as Float,"{0} %")
+
+		AddHeaderOption(" Compatibility settings")
+		AddToggleOptionST("STATE_RegisterCustomRaces","Register custom races", _RegisterCustomRaces	 as Float) 
+		AddToggleOptionST("STATE_ClearGiantRaces","Clear giant races", _ClearGiantRaces	 as Float) 
 
 
 	ElseIf (a_page == "Quests")
@@ -363,6 +370,43 @@ state STATE_BlacksmithQuestON ; TOGGLE
 
 endState
 
+; AddToggleOptionST("STATE_RegisterCustomRaces","Register custom races", _RegisterCustomRaces	 as Float)
+state STATE_RegisterCustomRaces ; TOGGLE
+	event OnSelectST()
+		_RegisterRaces()
+		SetToggleOptionValueST( _RegisterCustomRaces )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Register custom races from Titans of Skyrim and JackGa Monster Lore (see SkyrimLL Obscure Patches page).")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_ClearGiantRaces","Clear giant races", _ClearGiantRaces	 as Float)
+state STATE_ClearGiantRaces ; TOGGLE
+	event OnSelectST()
+		_ClearRaces()
+		SetToggleOptionValueST( _ClearGiantRaces )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Remove SexLab regsitration for giant races (giants, dragons) and some ridiculous races (bears, sabrecats, chickens, skeevers).")
+	endEvent
+
+endState
 float function fMin(float  a, float b)
 	if (a<=b)
 		return a
@@ -380,6 +424,75 @@ float function fMax(float a, float b)
 EndFunction
 ;--------------------------------------
  
+function _RegisterRaces()
+
+	AddRaceID("Chaurus", "00ChaurusRedRace")
+	AddRaceID("Chaurus", "00scorprace")
+
+	; AddRaceID("Draugrs", "DraugrRace")
+
+	AddRaceID("Falmers", "00FalmerRaceHulk")
+
+	; AddRaceID("Horses", "HorseRace")
+
+	; AddRaceID("Spiders", "00bonehorrorspiderrace")
+
+	; AddRaceID("LargeSpiders", "FrostbiteSpiderRaceGiant")
+
+	; AddRaceID("Trolls", "TrollRace")
+
+	AddRaceID("Werewolves", "WerewolfBeastRaceEvilwolf")
+
+	; AddRaceID("Wolves", "WolfRace")
+
+	; AddRaceID("Dogs", "DogRace")
+
+	; AddRaceID("VampireLords", "DLC1VampireBeastRace")
+
+	; AddRaceID("Gargoyles", "DLC1GargoyleRace")
+
+	; AddRaceID("Rieklings", "DLC2RieklingRace")
+
+	; AddRaceID("Seekers", "DLC2SeekerRace")
+
+	; AddRaceID("Lurkers", "DLC2LurkerRace")
+
+	; AddRaceID("Spriggans", "SprigganRace")
+
+	AddRaceID("FlameAtronach", "00AtronachSpiritRacesmm")
+
+
+endFunction
+
+ 
+function _ClearRaces()
+	ClearRaceKey("Bears")
+	ClearRaceKey("SabreCats")
+	; ClearRaceKey("Chaurus")
+	ClearRaceKey("Dragons")
+	; ClearRaceKey("Draugrs")
+	; ClearRaceKey("Falmers")
+	ClearRaceKey("Giants")
+	; ClearRaceKey("Horses")
+	; ClearRaceKey("Spiders")
+	; ClearRaceKey("LargeSpiders")
+	; ClearRaceKey("Trolls")
+	; ClearRaceKey("Werewolves")
+	; ClearRaceKey("Wolves")
+	; ClearRaceKey("Dogs")
+	; ClearRaceKey("VampireLords")
+	; ClearRaceKey("Gargoyles")
+	; ClearRaceKey("Rieklings")
+	; ClearRaceKey("Seekers")
+	; ClearRaceKey("Lurkers")
+	; ClearRaceKey("Spriggans")
+	; ClearRaceKey("FlameAtronach")
+	ClearRaceKey("Skeevers")
+	ClearRaceKey("Chickens")
+	; AddRaceID("Chickens", "ChickenRace")
+	ClearRaceKey("Cows")
+
+endFunction
 
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
 GlobalVariable Property _SLD_CommentProbability Auto  
@@ -392,3 +505,5 @@ GlobalVariable Property _SLD_PCSubEnableRobbery Auto
 GlobalVariable Property _SLD_BeggingDialogueON Auto  
 GlobalVariable Property _SLD_GiftDialogueON Auto  
 GlobalVariable Property _SLD_BlacksmithQuestON Auto  
+
+; SexLabFramework     property SexLab Auto
