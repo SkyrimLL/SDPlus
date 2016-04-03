@@ -273,6 +273,11 @@ string Function unitsToRealWorld( Float afUnits, Bool abMetric = False )
 EndFunction
 
 Bool Function modInstalled( String asMod )
+	; ugly patch to allow upgrades to Frostfall 3.0 while game is running
+	if (asMod == "Chesko_Frostfall.esp")
+		asMod = "Frostfall.esp"
+	endIf
+
 	Int thisIdx = _SDSP_support_mods_name.RFind(asMod)
 
 	If ( thisIdx >= 0 )
@@ -283,6 +288,13 @@ Bool Function modInstalled( String asMod )
 EndFunction
 
 Bool Function requiredParentModInstalled( Int aiIdx )
+	; uglier patch to allow upgrades to Frostfall 3.0 while game is running
+	if (!_SDBP_support_mods_installed[3]) 
+		if (Game.GetModByName("Frostfall.esp") != 255)
+			_SDBP_support_mods_installed[3] = true
+		endif
+	endif
+
 	Return _SDBP_support_mods_installed[ _SDSP_quests_addon_required[aiIdx] ]
 EndFunction
 
@@ -312,8 +324,15 @@ Function initMod( Bool bResetGlobals = False )
 	EndWhile
 	idx = 0
 	While idx < _SDSP_support_mods_name.Length
-		Debug.Trace("Testing for: " + _SDSP_support_mods_name[idx])
-		_SDBP_support_mods_installed[idx] = Game.GetFormFromFile(_SDIP_support_mods_refid[idx], _SDSP_support_mods_name[idx]) as Bool
+		; Debug.Trace("Testing for: " + _SDSP_support_mods_name[idx])
+		; _SDBP_support_mods_installed[idx] = Game.GetFormFromFile(_SDIP_support_mods_refid[idx], _SDSP_support_mods_name[idx]) as Bool
+		if (idx==3) 
+			Debug.Trace("Testing for: Frostfall.esp" )
+			if (Game.GetModByName("Frostfall.esp") != 255)
+				_SDSP_support_mods_name[3] = "Frostfall.esp"
+				_SDBP_support_mods_installed[3] = true
+			endif
+		endif
 		idx += 1
 	EndWhile
 	Debug.Trace("=============== _SD::END IGNORE: Testing loaded addons & mods. ====================")
@@ -590,14 +609,15 @@ event OnPageReset(string a_page)
 		If ( _SDGVP_state_mcm.GetValueInt() == 0 )
 			idx = 0
 			While idx < _SDQP_quests_addon.Length
-				If ( _SDQP_quests_addon[idx] != None  && requiredParentModInstalled(idx) )
+				; Only display Frostfall addon entry
+				If (idx==2) && ( _SDQP_quests_addon[idx] != None  && requiredParentModInstalled(idx) )
 					bRunning = _SDQP_quests_addon[idx].IsRunning() || _SDQP_quests_addon[idx].IsStarting()
 					_SDOID_quests_a[idx] = AddToggleOption( _SDSP_quests_addon_name[idx], bRunning, OPTION_FLAG_NONE)
 					If ( _SDGVP_quests_addon_subToggle[idx] != None && bRunning )
-						_SDOID_quests_ast[idx] = AddToggleOption("» " + _SDGVP_quests_addon_subToggle_name[idx], _SDGVP_quests_addon_subToggle[idx].GetValue() as Bool)
+						_SDOID_quests_ast[idx] = AddToggleOption("> " + _SDGVP_quests_addon_subToggle_name[idx], _SDGVP_quests_addon_subToggle[idx].GetValue() as Bool)
 					EndIf
-				Else
-				 	_SDOID_quests_a[idx] = AddToggleOption( _SDSP_quests_addon_name[idx], False, OPTION_FLAG_DISABLED)
+				; Else
+				; 	_SDOID_quests_a[idx] = AddToggleOption( _SDSP_quests_addon_name[idx], False, OPTION_FLAG_DISABLED)
 				EndIf
 				idx += 1
 			EndWhile
@@ -609,7 +629,10 @@ event OnPageReset(string a_page)
 		AddHeaderOption("$SD_HEADER_P3_MODS")
 		idx = 0
 		While idx < _SDSP_support_mods_name.Length
-			AddToggleOption( _SDSP_support_mods_name[idx], _SDBP_support_mods_installed[idx], OPTION_FLAG_DISABLED)
+			; Only display Frostfall addon entry
+			If (idx==3) 
+				AddToggleOption( _SDSP_support_mods_name[idx], _SDBP_support_mods_installed[idx], OPTION_FLAG_DISABLED)
+			Endif
 			idx += 1
 		EndWhile
 
@@ -630,17 +653,17 @@ event OnPageReset(string a_page)
 		AddHeaderOption("$SD_HEADER_P4_OTHER")
 		_SDOID_help_T8 = AddTextOption("$SD_TEXT_P4_ARMOR_N_RACES_HELP", "$SD_HELP", OPTION_FLAG_NONE)
 
-		SetCursorPosition(1)
-		AddHeaderOption("$SD_HEADER_P4_VERIFIED_CONFLICTS")
-		AddTextOption("SPERG", "", OPTION_FLAG_DISABLED)
-		AddTextOption("PCEA - PC Exclusive Animation Path", "", OPTION_FLAG_DISABLED)
-		AddTextOption("WARZONES - Civil Unrest", "", OPTION_FLAG_DISABLED)
-		AddTextOption("Tundra Defence", "", OPTION_FLAG_DISABLED)
-		AddTextOption("Locational damage and more dynamic injuries", "", OPTION_FLAG_DISABLED)
-		AddTextOption("Duel - Combat Realism", "", OPTION_FLAG_DISABLED)
-		AddTextOption("SkyBoost and TES V Acceleration Layer", "", OPTION_FLAG_DISABLED)
-		AddTextOption("Animated Prostitution", "", OPTION_FLAG_DISABLED)
-		AddTextOption("Syynxs Perky", "", OPTION_FLAG_DISABLED)
+		; SetCursorPosition(1)
+		; AddHeaderOption("$SD_HEADER_P4_VERIFIED_CONFLICTS")
+		; AddTextOption("SPERG", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("PCEA - PC Exclusive Animation Path", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("WARZONES - Civil Unrest", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("Tundra Defence", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("Locational damage and more dynamic injuries", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("Duel - Combat Realism", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("SkyBoost and TES V Acceleration Layer", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("Animated Prostitution", "", OPTION_FLAG_DISABLED)
+		; AddTextOption("Syynxs Perky", "", OPTION_FLAG_DISABLED)
 	EndIf
 endEvent
 
@@ -688,7 +711,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_S9 )
 		SetInfoText("Maximum value for slavery level (0 = defiant, 6 = total submissive). Should be higher than Min Slavery Level.")
 	ElseIf ( a_option == _SDOID_config_S10 )
-		SetInfoText("Value multipler reduce (or increase) slavery exposure after each day.")
+		SetInfoText("Value multiplier to reduce (or increase) slavery exposure after each day of freedom. 0 removes slavery exposure after one night , 1.0 maintains slavery exposure at the same level, 2.0 increases slavery exposure over time (similar to withdrawal)")
 	ElseIf ( a_option == _SDOID_config_S11 )
 		SetInfoText("Overall disposition to be considered for slave to be released (or disposed of). Use this as an Enslavement Difficulty setting.")
 	;#################################################################################################			

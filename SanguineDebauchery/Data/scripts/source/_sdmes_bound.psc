@@ -156,7 +156,7 @@ Event OnUpdate()
 			throttle = 0
 		EndIf		
 
-	ElseIf !kPlayer.GetCurrentScene() && !kPlayer.IsOnMount() && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) && (SexLab.ValidateActor( kPlayer ) > 0) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
+	ElseIf !kPlayer.GetCurrentScene() && !kPlayer.IsOnMount() && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
 
 		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
 		;	fctConstraints.togglePlayerControlsOff()
@@ -272,7 +272,7 @@ EndEvent
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 
 	If ( kTarget == kPlayer )
-		if (SexLab.ValidateActor( kPlayer ) > 0)
+		if (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 )
 			Utility.Wait( 2.0 )
 			Debug.SendAnimationEvent(kPlayer, "IdleForceDefaultState")
 		endIf

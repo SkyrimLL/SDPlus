@@ -349,8 +349,9 @@ State monitor
 
 			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
 			StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
+			_SDGVP_config_min_days_before_master_travel.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iMasterTravelDelay"))
 
-			If (_SDGVP_config_min_days_before_master_travel.GetValue()>0) && ( StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
+			If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
 				Debug.Trace( "[SD] Master is bored - starting travel package")
 				_SDGVP_isMasterTraveller.SetValue(1)
 			endif
@@ -790,7 +791,7 @@ State monitor
 					EndIf
 				EndIf
 
-				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (SexLab.ValidateActor( kSlave ) > 0)  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
+				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
 
 					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
@@ -801,7 +802,7 @@ State monitor
 					; Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
 					; Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
 
-				ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (SexLab.ValidateActor( kSlave ) > 0) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   )
+				ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   )
 
 					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
 					Debug.Notification("Your owner releases your hands.")
@@ -1023,8 +1024,9 @@ EndState
 State escape_choking
 	Event OnBeginState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
-		Debug.Notification( "[SD] Escape attempt - choking collar" )
-		Debug.Notification( "[SD] starting timer" )
+		Debug.Notification( "Your collar tightens as you wander off." )
+		Debug.Trace( "[SD] Escape attempt - choking collar" )
+		Debug.Trace( "[SD] starting timer" )
 
 		freedomTimer ( 20 ) ; _SDGVP_escape_timer.GetValue() )
 		fEscapeTime = GetCurrentRealTime() + 20 ; forced to 30 s for choking - funct.intMin( StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer") as Int, _SDGVP_escape_timer.GetValue() as Int)
@@ -1040,12 +1042,13 @@ State escape_choking
 	
 	Event OnEndState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
-		Debug.Notification( "[SD] Escape attempt - end" )
+		Debug.Notification( "Your owner is keeping an eye on you." )
+		Debug.Trace( "[SD] Escape attempt - end" )
 
 		If (kSlave.GetDistance(kMaster)< (_SDGV_leash_length.GetValue() / 2) ) && (!kMaster.IsDead()) 
 			; Slave is close to master and master is not dead, stop escape state
 
-			Debug.Notification("The collar is sending shocks." )
+			Debug.Notification("The collar is choking you.." )
 			if (iPlayerGender==0)
 				_SDSMP_choke_m.Play( Game.GetPlayer() )
 			else
@@ -1283,8 +1286,9 @@ EndState
 State escape_shock
 	Event OnBeginState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
-		Debug.Notification( "[SD] Escape attempt - shock collar" )
-		Debug.Notification( "[SD] starting timer" )
+		Debug.Notification( "Your collar vibrates as you wander off." )
+		Debug.Trace( "[SD] Escape attempt - shock collar" )
+		Debug.Trace( "[SD] starting timer" )
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -1319,7 +1323,8 @@ State escape_shock
 	
 	Event OnEndState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
-		Debug.Notification( "[SD] Escape attempt - end" )
+		Debug.Notification( "Your collar stop vibrating." )
+		Debug.Trace( "[SD] Escape attempt - end" )
 
 		If (kSlave.GetDistance(kMaster)< (_SDGV_leash_length.GetValue() / 2) ) && (!kMaster.IsDead()) 
 			; Slave is close to master and master is not dead, stop escape state
@@ -1332,6 +1337,8 @@ State escape_shock
 			endif
 
 			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
+
+			UpdateSlaveArousal()
 			
 			kSlave.DispelSpell( _SDSP_Weak )
 
@@ -1432,10 +1439,7 @@ State escape_shock
 
 						_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 
-						int eid = ModEvent.Create("slaUpdateExposure")
-						ModEvent.PushForm(eid, kSlave as Actor)
-						ModEvent.PushFloat(eid, 2.0)
-						ModEvent.Send(eid)
+						UpdateSlaveArousal()
 
 						If (Utility.RandomInt(0,100)>=95)
 							_SDSP_Weak.Cast(kSlave as Actor)
@@ -1515,6 +1519,20 @@ bool function MariaEdenEnslave(Actor newMaster) global
 	return false
 endfunction
 
+function UpdateSlaveArousal()
+
+	if (slaUtil != None)
+		slaUtil.UpdateActorExposureRate(kSlave as Actor, 2.0)
+		Debug.Notification("The shocks are making ou hornier." )
+	endIf
+
+	; int eid = ModEvent.Create("slaUpdateExposure")
+	; ModEvent.PushForm(eid, kSlave as Actor)
+	; ModEvent.PushFloat(eid, 2.0)
+	; ModEvent.Send(eid)
+
+Endfunction
+
 GlobalVariable Property _SDGVP_state_SlaveDominance  Auto  
 GlobalVariable Property _SDGVP_state_joined  Auto  
 GlobalVariable Property _SDGVP_state_housekeeping  Auto   
@@ -1538,3 +1556,5 @@ Sound Property _SDSMP_choke  Auto
 ImageSpaceModifier Property _SD_CollarStrangleImod  Auto  
 
 Sound Property _SDSMP_choke_m  Auto  
+slaUtilScr Property slaUtil  Auto  
+ 

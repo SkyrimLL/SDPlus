@@ -37,7 +37,7 @@ Event OnUpdate()
 
 		If (Utility.RandomInt(0,100)>50)
 			Game.ForceThirdPerson()
-			Debug.SendAnimationEvent(kPlayer as ObjectReference, "bleedOutStart")
+			; Debug.SendAnimationEvent(kPlayer as ObjectReference, "bleedOutStart")
 
 			Int IButton = _SD_rapeMenu.Show()
 

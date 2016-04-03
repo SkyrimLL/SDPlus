@@ -28,18 +28,20 @@ Bool Function addToQueue( ObjectReference akObject )
 	Bool bAdded = False
 	Actor akActor = akObject as Actor
 	
-	If ( akObject != None ) && (!akActor.IsGhost())
-		Int iIdx = 0
-		While ( !bAdded && iIdx < _SDORP_queue.Length )
-			If ( _SDORP_queue[iIdx] == None )
-				bAdded = True
-				_SDORP_queue[iIdx] = akObject
-				_SDORP_queueAliasRef[iIdx].ForceRefTo( akObject )
+	If ( akObject != None ) 
+		If (!akActor.IsGhost())
+			Int iIdx = 0
+			While ( !bAdded && iIdx < _SDORP_queue.Length )
+				If ( _SDORP_queue[iIdx] == None )
+					bAdded = True
+					_SDORP_queue[iIdx] = akObject
+					_SDORP_queueAliasRef[iIdx].ForceRefTo( akObject )
 
-				Debug.Trace("[Whore queue] Adding actor to queue: " + akObject)
-			EndIf
-			iIdx += 1
-		EndWhile
+					Debug.Trace("[Whore queue] Adding actor to queue: " + akObject)
+				EndIf
+				iIdx += 1
+			EndWhile
+		Endif
 	EndIf
 	
 	Return bAdded

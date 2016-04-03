@@ -50,6 +50,11 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor kPlayer = Game.GetPlayer() as Actor
 	Location kLocation = Game.GetPlayer().GetCurrentLocation()
 
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworld") == 1)
+		Debug.Trace("[_sdras_dreamer] Disabled by script")
+		Return
+	Endif
+
 	Debug.Trace("[_sdras_dreamer] Auto start?: " + _SDGVP_config_auto_start.GetValue())
 	Debug.Trace("[_sdras_dreamer] Start after Night to remember?: " + _SDGVP_config_lust.GetValue())
 	Debug.Trace("[_sdras_dreamer] Is Night to remember completed?: " + ANightQuest.IsCompleted())

@@ -303,8 +303,18 @@ Bool Function checkGenderRestriction(Actor akSpeaker, Actor akTarget)
 	Int    speakerGender = akSpeaker.GetLeveledActorBase().GetSex() as Int
 	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
 	Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+	Bool bGenderChecked = false;
 
-	return (genderRestrictions  == 0) || ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) || ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
+	; usually, 'akTarget' is the player
+
+	if (genderRestrictions <= 2) ; SD+ gender restriction system
+		bGenderChecked = (genderRestrictions  == 0) || ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) || ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
+
+	else ; use SexLab gender restriction system
+		bGenderChecked = (SexLab.IsBisexual(akTarget)) || ( (SexLab.IsGay(akTarget)) && (speakerGender  == targetGender ) ) || ( (SexLab.IsStraight(akTarget)) && (speakerGender  != targetGender ) ) 
+	EndIf
+
+	return bGenderChecked;
 
 EndFunction
 

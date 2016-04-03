@@ -4,6 +4,7 @@ ObjectReference Property _SD_KynesGroveDoorREF  Auto
 
 
 Event OnTriggerEnter(ObjectReference akActionRef)
+	Actor akPlayerRef =  Game.GetPlayer() 
 	Actor akPlayer =  Game.GetPlayer() as Actor
     ActorBase PlayerBase = akPlayer.GetActorBase()
 
@@ -14,7 +15,7 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 		_SD_SprigganQuest.SetStage(75)
 	Else
 
-	   	if (akActionRef == Game.GetPlayer())  &&  ( ( (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") == 1) || ( ( !akPlayer.WornHasKeyword( ClothingBody   )) && ( !akPlayer.WornHasKeyword( ArmorCuirass  )) ) ) || (PlayerBase.GetRace() == PolymorphRace))
+	   	if (akActionRef == akPlayerRef)  &&  ( ( (StorageUtil.GetIntValue(akPlayerRef, "_SD_iSprigganInfected") == 1) || ( ( !akPlayer.WornHasKeyword( ClothingBody   )) && ( !akPlayer.WornHasKeyword( ArmorCuirass  )) ) ) || (PlayerBase.GetRace() == PolymorphRace))
 			If (_SD_KynesGroveDoorREF.IsDisabled() )
 				_SD_KynesGroveDoorREF.enable()
 			EndIf
