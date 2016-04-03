@@ -200,7 +200,7 @@ EndFunction
 Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
 	Game.ForceThirdPerson()
-	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
+;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
 	Int IButton = _SLD_rapeMenu.Show()
 
@@ -222,6 +222,10 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
+
+		If (Utility.RandomInt(0, 100)>40)
+			SendModEvent("PCSubWhip")
+		EndIf
 	EndIf
 
 EndFunction
@@ -229,7 +233,7 @@ EndFunction
 Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
 	Game.ForceThirdPerson()
-	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
+;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
 	Int IButton = _SLD_rapeMenu.Show()
 
@@ -266,6 +270,10 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
+
+		If (Utility.RandomInt(0, 100)>40)
+			SendModEvent("PCSubWhip")
+		EndIf
 	EndIf
 
 EndFunction
