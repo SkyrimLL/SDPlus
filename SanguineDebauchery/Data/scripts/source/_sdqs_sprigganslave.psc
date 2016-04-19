@@ -347,11 +347,11 @@ Event OnUpdateGameTime()
 		EndWhile
 		fDaysUpdate = GetCurrentGameTime()
 
-		If (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") == 1)
+		If (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") >= 1) && (!(kSlave as Actor).HasSpell( CallSpriggan ))
 			Debug.Messagebox("Your experience taking a spriggan essence back to its source gives you a unique bond with Kyne herself. Once a day, you will be able to call on nearby creatures for help.")
 			(kSlave as Actor).AddSpell( CallSpriggan )
-
-		elseIf (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") == 2)
+		Endif
+		If (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") >= 2) && (!(kSlave as Actor).AddSpell( PolymorphSpriggan ))
 			Debug.Messagebox("You have helped two spriggans complete their life cycle and for that, Kyne's waters grant you a gift. Once a day, you will be able to turn yourself into a spriggan.")
 			(kSlave as Actor).AddSpell( PolymorphSpriggan )
 		EndIf

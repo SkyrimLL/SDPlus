@@ -442,7 +442,7 @@ Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
 		thisOutfitPart = 7
 
 	else
-		Debug.Notification("[SD] getDeviousOutfitPartByString: unknown non-generic part: " + deviousKeyword)  
+		Debug.Trace("[SD] getDeviousOutfitPartByString: unknown non-generic part: " + deviousKeyword)  
 	endIf
 
 	return thisOutfitPart
@@ -1037,8 +1037,14 @@ Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = T
 
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
 	Actor kSlave = Game.GetPlayer() as Actor
-	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
+	int masterPersonalityType
 	String sDeviceTags
+
+ 	if (kMaster != None)
+ 		masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
+ 	else
+  		masterPersonalityType = 3
+ 	endIf
 
 	Armor ddArmorInventory
 	Armor ddArmorRendered
