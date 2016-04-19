@@ -10,6 +10,13 @@ Bool isPlayerEnslaved = False
 Bool isPlayerPregnant = False
 Bool isPlayerSuccubus = False
 
+Event OnInit()
+	_SLD_Reset._maintenance()
+	
+	_maintenance()
+	_updateGlobals()
+EndEvent
+
 Event OnPlayerLoadGame()
 	_SLD_Reset._maintenance()
 	
@@ -40,6 +47,11 @@ Function _maintenance()
 	PlayerActor.AddSpell( RestSpell )
 
 	StorageUtil.SetIntValue( none, "_SLD_version", 2015021601)
+
+	If (!StorageUtil.HasIntValue(none, "_SLD_iDialogues"))
+		StorageUtil.SetIntValue(none, "_SLD_iDialogues", 1)
+	EndIf
+
 EndFunction
 
 Function _updateGlobals()
