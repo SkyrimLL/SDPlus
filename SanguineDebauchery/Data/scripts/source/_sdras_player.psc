@@ -251,6 +251,10 @@ Event OnInit()
 EndEvent
 
 Function _Maintenance()
+	If (!StorageUtil.HasIntValue(none, "_SD_iSD"))
+		StorageUtil.SetIntValue(none, "_SD_iSD", 1)
+	EndIf
+
 ;	UnregisterForAllModEvents()
 	Debug.Trace("[_sdras_player] Register events")
 	RegisterForModEvent("PCSubEnslave",   "OnSDEnslave")
@@ -896,8 +900,12 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 	Else 
 		; Debug.Trace("[_sdras_player] Sending sex story")
 
+		if  (_args == "") 
+			_args = "Aggressive"
+		endif
+
 		; _SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0 )
-		funct.SanguineRape( kTempAggressor, kPlayer, "Aggressive")
+		funct.SanguineRape( kTempAggressor, kPlayer, _args)
 
 	EndIf
 EndEvent
@@ -1035,15 +1043,16 @@ EndEvent
 Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Int iOutfitID = _argc as Int
+	Float fOutfitID = _argc 
 	String sDevice = _args
 
 	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
 	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
 
-	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "]")
+	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "] [" + _argc + "]")
 
 	; if OutfitID is provided, override with outfit from sender NPC in priority
- 	if (iOutfitID != -1)
+ 	if (iOutfitID != 0)
  		If (StorageUtil.GetIntValue(kActor, "_SD_iOutfitID") > 0)
  			iOutfitID = StorageUtil.GetIntValue(kActor, "_SD_iOutfitID")
  		endif

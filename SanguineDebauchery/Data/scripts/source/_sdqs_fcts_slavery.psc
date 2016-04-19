@@ -300,6 +300,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iOutfitID", outfitID)
+	StorageUtil.SetIntValue(kSlave, "_SD_iOutfitID", outfitID)
 
 	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
 

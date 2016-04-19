@@ -59,6 +59,9 @@ Function Maintenance()
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
 		StorageUtil.SetIntValue( none, "_SD_version", fVersion as Int)
 
+		If (!StorageUtil.HasIntValue(none, "_SD_iSanguine"))
+			StorageUtil.SetIntValue(none, "_SD_iSanguine", 1)
+		EndIf
 		; Update Code
 
 		fctSlavery.InitPunishmentIdle()
