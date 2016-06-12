@@ -425,31 +425,43 @@ EndFunction
 ;--------------------------------------
  
 function _RegisterRaces()
+	; Adds races from Immersive Creatires, JackGa monsters and Skyrim MonsterMod
 
 	AddRaceID("Chaurus", "00ChaurusRedRace")
 	AddRaceID("Chaurus", "00scorprace")
 
-	; AddRaceID("Draugrs", "DraugrRace")
+	AddRaceID("Draugrs", "_00LichRace")
+	AddRaceID("Draugrs", "_00ArmoredSkeletonBeastRace_Old")
+	AddRaceID("Draugrs", "_00DraugrRaceSH")
+	AddRaceID("Draugrs", "_00DraugrVarRace")
 
 	AddRaceID("Falmers", "00FalmerRaceHulk")
+	AddRaceID("Falmers", "_00FalmerRace01")
+	AddRaceID("Falmers", "_00FalmerRace02")
+	AddRaceID("Falmers", "_00FalmerRace03")
+	AddRaceID("Falmers", "_00FalmerRace04")
+	AddRaceID("Falmers", "_00FalmerRace05") 
+	AddRaceID("Falmers", "_00GoblinRace") 
 
 	; AddRaceID("Horses", "HorseRace")
 
-	; AddRaceID("Spiders", "00bonehorrorspiderrace")
+	AddRaceID("Spiders", "_00ChaurusCrawlerRace")
+	AddRaceID("Spiders", "_00SkeletonSpiderRace")
 
 	; AddRaceID("LargeSpiders", "FrostbiteSpiderRaceGiant")
 
-	; AddRaceID("Trolls", "TrollRace")
+	AddRaceID("Trolls", "_00DLC1SwampTrollRaceArmored")
 
 	AddRaceID("Werewolves", "WerewolfBeastRaceEvilwolf")
+	AddRaceID("Werewolves", "_00WerewolfKingBeastRace") 
 
-	; AddRaceID("Wolves", "WolfRace")
+	AddRaceID("Wolves", "_00AspectRace")
 
 	; AddRaceID("Dogs", "DogRace")
 
 	; AddRaceID("VampireLords", "DLC1VampireBeastRace")
 
-	; AddRaceID("Gargoyles", "DLC1GargoyleRace")
+	AddRaceID("Gargoyles", "_00WrathBruteRace")
 
 	; AddRaceID("Rieklings", "DLC2RieklingRace")
 
