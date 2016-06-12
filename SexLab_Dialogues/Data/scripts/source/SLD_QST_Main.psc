@@ -359,6 +359,21 @@ Function StartPlayerClaimed ( Actor akSpeaker, string tags = "" )
 
 EndFunction
 
+Function StartPlayerClaimedBeast ( Actor akSpeaker, string tags = "" )
+ 	Actor Player = Game.GetPlayer()
+	Int IButton = _SLD_claimBeastMenu.Show()
+
+	If IButton == 0 ; Undress
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+		akSpeaker.SendModEvent("PCSubEnslave")
+
+	else
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		akSpeaker.SendModEvent("PCSubSex")
+
+	EndIf
+
+EndFunction
 
 Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
  	Actor Player = Game.GetPlayer()
@@ -593,6 +608,7 @@ Message Property _SLD_rapistMenu  Auto
 Message Property _SLD_raceMenu  Auto  
 Message Property _SLD_robMenu  Auto  
 Message Property _SLD_claimMenu  Auto  
+Message Property _SLD_claimBeastMenu  Auto  
 
  
 
