@@ -82,7 +82,7 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 				If  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor(akWhore as actor) > 0) 
 
 					If (iThreesome==0) && ( ( _SDORP_queue[iIdx] as actor ) == (akWhore as actor))
-						Debug.Notification("Your turn!")
+						Debug.Notification("You can't help giving them a good show.")
 
 						funct.SanguineRape( akWhore as Actor , akWhore as Actor , "Masturbation", "Masturbation")
 
@@ -92,11 +92,11 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 						If (iThreesome==1) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx+1] as actor ) > 0) 
 							If (iRandomNum>80)
-								Debug.Notification("Mind if I join in?")
+								Debug.Notification("They are not finished with you yet.")
 							ElseIf (iRandomNum>50)
-								Debug.Notification("We are going to stuff you good.")
+								Debug.Notification("They surround you with lust in their eyes.")
 							ElseIf (iRandomNum>0)
-								Debug.Notification("Look what we have here..")
+								Debug.Notification("You feel helpless as they take turns on you.")
 							EndIf
 
 							actor[] sexActors = new actor[3]
@@ -111,11 +111,11 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 						Else 
 							If (iRandomNum>80)
-								Debug.Notification("Next!")
+								Debug.Notification("Another one is waiting for you.")
 							ElseIf (iRandomNum>50)
-								Debug.Notification("Come here.. don't be shy.")
+								Debug.Notification("You can't hide from the next aggressor.")
 							ElseIf (iRandomNum>0)
-								Debug.Notification("Look what we have here..")
+								Debug.Notification("You feel weak as another one grabs you.")
 							EndIf
 
 							actor[] sexActors = new actor[2]

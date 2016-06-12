@@ -23,24 +23,24 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 
 		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuff"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
-			fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "LegCuff" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "LegCuff"  )
-			fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		If fctOutfit.isBlindfoldEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "Blindfold"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Blindfold" )
-			fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		If fctOutfit.isGagEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "Gag" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine" , "Gag" )
-			fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviceGag ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		If fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousEnslaved", "Collar"  )
 			if (Utility.RandomInt(0,100) < 77)
-				fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceCollar ( bDevEquip = False, sDevMessage = "")
 				Debug.Messagebox("Your Master's Key helps you break free of your chains and immediately crumbles into dust.")
 			Else
 				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key crumbles into dust before you can try to force your collar open.")

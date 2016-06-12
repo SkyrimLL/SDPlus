@@ -106,9 +106,7 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 
 ; Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk...")
 ; aHost.RemoveItem( oHostArmor.GetBaseObject(), aHost.GetItemCount( oHostArmor.GetBaseObject() )  )
-
-	; fctOutfit.setDeviousOutfitID ( iOutfit = -1, sMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
-		
+	
 	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Belt"  )
 		fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
 	EndIf

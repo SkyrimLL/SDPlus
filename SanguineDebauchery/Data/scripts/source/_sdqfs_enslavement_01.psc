@@ -1,45 +1,10 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 51
+;NEXT FRAGMENT INDEX 60
 Scriptname _sdqfs_enslavement_01 Extends Quest Hidden
 
-;BEGIN ALIAS PROPERTY _SDRA_slave_rags_cbbe
+;BEGIN ALIAS PROPERTY _SDRA_cage_door_3
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave_rags_cbbe Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_hostile_3
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_hostile_3 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slaver
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slaver Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slaver2_m
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slaver2_m Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_playerStorage
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_playerStorage Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_cage
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_cage_door_1
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage_door_1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_master
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_master Auto
+ReferenceAlias Property Alias__SDRA_cage_door_3 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_companion_3
@@ -47,139 +12,14 @@ ReferenceAlias Property Alias__SDRA_master Auto
 ReferenceAlias Property Alias__SDRA_companion_3 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_bindings
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_bindings Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_hostile_1
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_hostile_1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slave_rags_unpb
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave_rags_unpb Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_cage_marker
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage_marker Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slave_rags_norm
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave_rags_norm Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_ally_2
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_ally_2 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_capture_cell
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_capture_cell Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_shackles
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_shackles Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_crop
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_crop Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_collar
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_collar Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_key
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_key Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_ally_4
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_ally_4 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slave
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_companion_0
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_companion_0 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_hostile_2
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_hostile_2 Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SDRA_ally_0
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_ally_0 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDLA_bounty_castle
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_bounty_castle Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_ally_5
+;BEGIN ALIAS PROPERTY _SDRA_playerStorage
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_ally_5 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_ally_1
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_ally_1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_hostile_4
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_hostile_4 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slaver2_f
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slaver2_f Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_companion_1
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_companion_1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slave_rags
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave_rags Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_cage_door_4
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage_door_4 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_cage_door_2
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage_door_2 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_cage_door
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage_door Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_ally_3
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_ally_3 Auto
+ReferenceAlias Property Alias__SDRA_playerStorage Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_companion_2
@@ -187,39 +27,173 @@ ReferenceAlias Property Alias__SDRA_ally_3 Auto
 ReferenceAlias Property Alias__SDRA_companion_2 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_cage_door_3
+;BEGIN ALIAS PROPERTY _SDRA_ally_5
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_cage_door_3 Auto
+ReferenceAlias Property Alias__SDRA_ally_5 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_20
-Function Fragment_20()
-;BEGIN CODE
-Actor kMaster = Alias__SDRA_master.GetReference() as Actor
-Actor kSlave = Game.GetPlayer()
+;BEGIN ALIAS PROPERTY _SDRA_bindings
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_bindings Auto
+;END ALIAS PROPERTY
 
-SendModEvent("SDEnslavedStart") 
+;BEGIN ALIAS PROPERTY _SDRA_cage
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_cage Auto
+;END ALIAS PROPERTY
 
-; Suspend Deviously Helpless attacks.
-SendModEvent("dhlp-Suspend")
-StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTransfer",0)
+;BEGIN ALIAS PROPERTY _SDRA_slave_rags
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave_rags Auto
+;END ALIAS PROPERTY
 
-; fctSlavery.StartSlavery( kMaster, kSlave)
+;BEGIN ALIAS PROPERTY _SDRA_cage_door_2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_cage_door_2 Auto
+;END ALIAS PROPERTY
 
-; If Game.IsFastTravelEnabled()
-;	_SDGVP_state_fasttravel.SetValue( 1 )
-;	Game.EnableFastTravel( False )
-; EndIf
+;BEGIN ALIAS PROPERTY _SDRA_slaver2_f
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slaver2_f Auto
+;END ALIAS PROPERTY
 
-;master.AllowPCDialogue( True )
+;BEGIN ALIAS PROPERTY _SDRA_crop
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_crop Auto
+;END ALIAS PROPERTY
 
-SetStage( 10 )
-;END CODE
-EndFunction
-;END FRAGMENT
+;BEGIN ALIAS PROPERTY _SDRA_master
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_master Auto
+;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
+;BEGIN ALIAS PROPERTY _SDRA_ally_4
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_ally_4 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_key
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_key Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_shackles
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_shackles Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_hostile_3
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_hostile_3 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_cage_door_1
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_cage_door_1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_collar
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_collar Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_ally_2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_ally_2 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slave
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_companion_1
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_companion_1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slave_rags_unpb
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave_rags_unpb Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_bounty_castle
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_bounty_castle Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slaver
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slaver Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_capture_cell
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_capture_cell Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_cage_door
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_cage_door Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slave_rags_norm
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave_rags_norm Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_hostile_1
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_hostile_1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_cage_door_4
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_cage_door_4 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_cage_marker
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_cage_marker Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slave_rags_cbbe
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave_rags_cbbe Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_ally_3
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_ally_3 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_hostile_4
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_hostile_4 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_hostile_2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_hostile_2 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_companion_0
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_companion_0 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_ally_1
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_ally_1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slaver2_m
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slaver2_m Auto
+;END ALIAS PROPERTY
+
+;BEGIN FRAGMENT Fragment_43
+Function Fragment_43()
 ;BEGIN AUTOCAST TYPE _sdqs_enslavement
 Quest __temp = self as Quest
 _sdqs_enslavement kmyQuest = __temp as _sdqs_enslavement
@@ -227,33 +201,32 @@ _sdqs_enslavement kmyQuest = __temp as _sdqs_enslavement
 ;BEGIN CODE
 ; stage 100
 questShutdown()
-removeSlaveItems()
 
 Actor kMaster = Alias__SDRA_master.GetReference() as Actor
 Actor kSlave = Game.GetPlayer()
 
-
 Utility.Wait( 0.5 )
 
 If ( _SDGVP_state_joined.GetValueInt() >= 1 )
-	; removeSlaveItems()
+	If ( _SDGVP_state_joined.GetValueInt() == 1 )
+		removeSlaveItems()
+
+	ElseIf ( _SDGVP_state_joined.GetValueInt() == 2 ) ; joined as a slave
+		removeSlaveItems( bCollar = False, bBindings = True, bPunish = True, bFollowers = True  )
+	Endif
+
 	_SDGVP_state_joined.SetValue( 0 )
 
 	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
-	Debug.Notification( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
-If( kSlave.IsInFaction( _SDFP_mistwatch ) )
-	kSlave.SetFactionRank( _SDFP_mistwatch, -2 )
-	kSlave.RemoveFromFaction( _SDFP_mistwatch )
-EndIf
-
-fctFactions.resetAllyToActor( kSlave, _SDFLP_forced_allied )
-Debug.Notification( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
+Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+Debug.Notification("You are free")
 
 SetObjectiveCompleted( 100 )
 kmyQuest.bQuestActive = False
-
 fctSlavery.StopSlavery( kMaster, kSlave)
 
 _SDFLP_trade_items.Revert()
@@ -262,8 +235,17 @@ SetObjectiveDisplayed(0, False)
 SetObjectiveDisplayed(1, False)
 SetObjectiveDisplayed(2, False)
 SetObjectiveDisplayed(3, False)
+SetObjectiveDisplayed(4, False)
+SetObjectiveDisplayed(5, False)
 SetObjectiveDisplayed(6, False)
+SetObjectiveDisplayed(21, False)
+SetObjectiveDisplayed(22, False)
+SetObjectiveDisplayed(23, False)
+SetObjectiveDisplayed(24, False)
+SetObjectiveDisplayed(25, False)
+SetObjectiveDisplayed(26, False)
 SetObjectiveDisplayed(90, False)
+SetObjectiveDisplayed(95, False)
 SetObjectiveDisplayed(100, False)
 
 SendModEvent("SDEnslavedStop") 
@@ -274,63 +256,6 @@ If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTransfer") != 1)
 Endif
 
 Reset()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_38
-Function Fragment_38()
-;BEGIN CODE
-_SDKP_bounty.SendStoryEvent(akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0)
-
-If ( _SDGVP_config[0].GetValue() )
-;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_29
-Function Fragment_29()
-;BEGIN CODE
-_SDKP_thugs.SendStoryEvent(akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0)
-
-If ( _SDGVP_config[0].GetValue() )
-;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_40
-Function Fragment_40()
-;BEGIN CODE
-;_SDKP_sex.SendStoryEvent( akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
-
-If ( _SDGVP_config[0].GetValue() )
-;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
-EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_50
-Function Fragment_50()
-;BEGIN AUTOCAST TYPE _sdqs_enslavement
-Quest __temp = self as Quest
-_sdqs_enslavement kmyQuest = __temp as _sdqs_enslavement
-;END AUTOCAST
-;BEGIN CODE
-; stage 90
-questShutdown()
-removeSlaveItems( bCollar = False, bBindings = True, bPunish = True, bFollowers = True  )
-
-SetStage( 95 )
-
-
-kmyQuest.bQuestActive = False
-Utility.WaitGameTime( 1.0 )
-Self.Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -362,11 +287,12 @@ If ( _SDGVP_state_joined.GetValueInt() >= 1 )
 	_SDGVP_state_joined.SetValue( 0 )
 
 	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
-	Debug.Notification( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
 fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
-Debug.Notification( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+Debug.Notification( "You are free")
 
 SetObjectiveCompleted( 100 )
 kmyQuest.bQuestActive = False
@@ -378,8 +304,17 @@ SetObjectiveDisplayed(0, False)
 SetObjectiveDisplayed(1, False)
 SetObjectiveDisplayed(2, False)
 SetObjectiveDisplayed(3, False)
+SetObjectiveDisplayed(4, False)
+SetObjectiveDisplayed(5, False)
 SetObjectiveDisplayed(6, False)
+SetObjectiveDisplayed(21, False)
+SetObjectiveDisplayed(22, False)
+SetObjectiveDisplayed(23, False)
+SetObjectiveDisplayed(24, False)
+SetObjectiveDisplayed(25, False)
+SetObjectiveDisplayed(26, False)
 SetObjectiveDisplayed(90, False)
+SetObjectiveDisplayed(95, False)
 SetObjectiveDisplayed(100, False)
 
 SendModEvent("SDEnslavedStop") 
@@ -394,10 +329,204 @@ Reset()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_39
-Function Fragment_39()
+;BEGIN FRAGMENT Fragment_38
+Function Fragment_38()
 ;BEGIN CODE
-;_SDKP_sex.SendStoryEvent( akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
+_SDKP_bounty.SendStoryEvent(akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0)
+
+If ( _SDGVP_config[0].GetValue() )
+;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
+EndIf
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
+;BEGIN AUTOCAST TYPE _sdqs_enslavement
+Quest __temp = self as Quest
+_sdqs_enslavement kmyQuest = __temp as _sdqs_enslavement
+;END AUTOCAST
+;BEGIN CODE
+; stage 100
+questShutdown()
+removeSlaveItems()
+
+Actor kMaster = Alias__SDRA_master.GetReference() as Actor
+Actor kSlave = Game.GetPlayer()
+
+
+Utility.Wait( 0.5 )
+
+If ( _SDGVP_state_joined.GetValueInt() >= 1 )
+	; removeSlaveItems()
+	_SDGVP_state_joined.SetValue( 0 )
+
+	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
+	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+EndIf
+
+If( kSlave.IsInFaction( _SDFP_mistwatch ) )
+	kSlave.SetFactionRank( _SDFP_mistwatch, -2 )
+	kSlave.RemoveFromFaction( _SDFP_mistwatch )
+EndIf
+
+fctFactions.resetAllyToActor( kSlave, _SDFLP_forced_allied )
+Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+Debug.Notification("You are free.")
+
+SetObjectiveCompleted( 100 )
+kmyQuest.bQuestActive = False
+
+fctSlavery.StopSlavery( kMaster, kSlave)
+
+_SDFLP_trade_items.Revert()
+
+SetObjectiveDisplayed(0, False)
+SetObjectiveDisplayed(1, False)
+SetObjectiveDisplayed(2, False)
+SetObjectiveDisplayed(3, False)
+SetObjectiveDisplayed(4, False)
+SetObjectiveDisplayed(5, False)
+SetObjectiveDisplayed(6, False)
+SetObjectiveDisplayed(21, False)
+SetObjectiveDisplayed(22, False)
+SetObjectiveDisplayed(23, False)
+SetObjectiveDisplayed(24, False)
+SetObjectiveDisplayed(25, False)
+SetObjectiveDisplayed(26, False)
+SetObjectiveDisplayed(90, False)
+SetObjectiveDisplayed(95, False)
+SetObjectiveDisplayed(100, False)
+
+SendModEvent("SDEnslavedStop") 
+
+If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTransfer") != 1)
+   ; Resume Deviously Helpless attacks.
+   SendModEvent("dhlp-Resume")
+Endif
+
+Reset()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_55
+Function Fragment_55()
+;BEGIN CODE
+SetObjectiveDisplayed( 21, false )
+SetObjectiveDisplayed( 22, false )
+SetObjectiveDisplayed( 23 )
+SetObjectiveDisplayed( 24, false )
+SetObjectiveDisplayed( 25, false )
+SetObjectiveDisplayed( 26, false )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_50
+Function Fragment_50()
+;BEGIN AUTOCAST TYPE _sdqs_enslavement
+Quest __temp = self as Quest
+_sdqs_enslavement kmyQuest = __temp as _sdqs_enslavement
+;END AUTOCAST
+;BEGIN CODE
+; stage 90
+questShutdown()
+removeSlaveItems( bCollar = False, bBindings = True, bPunish = True, bFollowers = True  )
+
+SetStage( 95 )
+
+
+kmyQuest.bQuestActive = False
+Utility.WaitGameTime( 1.0 )
+Self.Stop()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_20
+Function Fragment_20()
+;BEGIN CODE
+Actor kMaster = Alias__SDRA_master.GetReference() as Actor
+Actor kSlave = Game.GetPlayer()
+
+SendModEvent("SDEnslavedStart") 
+
+; Suspend Deviously Helpless attacks.
+SendModEvent("dhlp-Suspend")
+StorageUtil.SetIntValue(kSlave, "_SD_iSlaveTransfer",0)
+
+; fctSlavery.StartSlavery( kMaster, kSlave)
+
+; If Game.IsFastTravelEnabled()
+;	_SDGVP_state_fasttravel.SetValue( 1 )
+;	Game.EnableFastTravel( False )
+; EndIf
+
+;master.AllowPCDialogue( True )
+
+SetStage( 10 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_58
+Function Fragment_58()
+;BEGIN CODE
+SetObjectiveDisplayed( 21, false )
+SetObjectiveDisplayed( 22, false )
+SetObjectiveDisplayed( 23, false )
+SetObjectiveDisplayed( 24, false )
+SetObjectiveDisplayed( 25, false )
+SetObjectiveDisplayed( 26 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_57
+Function Fragment_57()
+;BEGIN CODE
+SetObjectiveDisplayed( 21, false )
+SetObjectiveDisplayed( 22, false )
+SetObjectiveDisplayed( 23, false )
+SetObjectiveDisplayed( 24, false )
+SetObjectiveDisplayed( 25 )
+SetObjectiveDisplayed( 26, false )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_51
+Function Fragment_51()
+;BEGIN CODE
+SetObjectiveDisplayed( 21 )
+SetObjectiveDisplayed( 22, false )
+SetObjectiveDisplayed( 23, false )
+SetObjectiveDisplayed( 24, false )
+SetObjectiveDisplayed( 25, false )
+SetObjectiveDisplayed( 26, false )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_56
+Function Fragment_56()
+;BEGIN CODE
+SetObjectiveDisplayed( 21, false )
+SetObjectiveDisplayed( 22, false )
+SetObjectiveDisplayed( 23, false )
+SetObjectiveDisplayed( 24 )
+SetObjectiveDisplayed( 25, false )
+SetObjectiveDisplayed( 26, false )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_29
+Function Fragment_29()
+;BEGIN CODE
+_SDKP_thugs.SendStoryEvent(akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0)
 
 If ( _SDGVP_config[0].GetValue() )
 ;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
@@ -426,61 +555,39 @@ Self.Stop()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_43
-Function Fragment_43()
-;BEGIN AUTOCAST TYPE _sdqs_enslavement
-Quest __temp = self as Quest
-_sdqs_enslavement kmyQuest = __temp as _sdqs_enslavement
-;END AUTOCAST
+;BEGIN FRAGMENT Fragment_39
+Function Fragment_39()
 ;BEGIN CODE
-; stage 100
-questShutdown()
+;_SDKP_sex.SendStoryEvent( akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
-Actor kMaster = Alias__SDRA_master.GetReference() as Actor
-Actor kSlave = Game.GetPlayer()
-
-Utility.Wait( 0.5 )
-
-If ( _SDGVP_state_joined.GetValueInt() >= 1 )
-	If ( _SDGVP_state_joined.GetValueInt() == 1 )
-		removeSlaveItems()
-
-	ElseIf ( _SDGVP_state_joined.GetValueInt() == 2 ) ; joined as a slave
-		removeSlaveItems( bCollar = False, bBindings = True, bPunish = True, bFollowers = True  )
-	Endif
-
-	_SDGVP_state_joined.SetValue( 0 )
-
-	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
-	Debug.Notification( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+If ( _SDGVP_config[0].GetValue() )
+;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
 EndIf
+;END CODE
+EndFunction
+;END FRAGMENT
 
-fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
-Debug.Notification( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+;BEGIN FRAGMENT Fragment_53
+Function Fragment_53()
+;BEGIN CODE
+SetObjectiveDisplayed( 21, false )
+SetObjectiveDisplayed( 22 )
+SetObjectiveDisplayed( 23, false )
+SetObjectiveDisplayed( 24, false )
+SetObjectiveDisplayed( 25, false )
+SetObjectiveDisplayed( 26, false )
+;END CODE
+EndFunction
+;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_40
+Function Fragment_40()
+;BEGIN CODE
+;_SDKP_sex.SendStoryEvent( akRef1 = Alias__SDRA_master.GetReference() as ObjectReference, akRef2 = Alias__SDRA_slave.GetReference() as ObjectReference, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
-SetObjectiveCompleted( 100 )
-kmyQuest.bQuestActive = False
-fctSlavery.StopSlavery( kMaster, kSlave)
-
-_SDFLP_trade_items.Revert()
-
-SetObjectiveDisplayed(0, False)
-SetObjectiveDisplayed(1, False)
-SetObjectiveDisplayed(2, False)
-SetObjectiveDisplayed(3, False)
-SetObjectiveDisplayed(6, False)
-SetObjectiveDisplayed(90, False)
-SetObjectiveDisplayed(100, False)
-
-SendModEvent("SDEnslavedStop") 
-
-If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveTransfer") != 1)
-   ; Resume Deviously Helpless attacks.
-   SendModEvent("dhlp-Resume")
-Endif
-
-Reset()
+If ( _SDGVP_config[0].GetValue() )
+;	 Alias__SDRA_slave.GetActorReference().GetActorBase().SetEssential( False )
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -488,11 +595,14 @@ EndFunction
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 _SDQS_functions Property funct  Auto
+_SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_snp Property snp Auto
 
 Function questShutdown()
 	Actor master = Alias__SDRA_master.GetReference() as Actor
 	Actor slave = Alias__SDRA_slave.GetReference() as Actor
+
+	fctConstraints.CollarEffectFinish( slave, master)
 	
 	If _SDGVP_state_fasttravel.GetValueInt() == 1
 		Game.EnableFastTravel()
@@ -533,23 +643,23 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 
 	; Collar
 	If (bCollar)
-		fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceCollar (  bDevEquip = False, sDevMessage = "")
 	Endif
 
 	; Bindings items
 	If (bBindings )
-		fctOutfit.setDeviousOutfitArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
-		fctOutfit.setDeviousOutfitLegs (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitBlindfold (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitGag (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
+		fctOutfit.setDeviceLegs (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceBlindfold (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceGag (  bDevEquip = False, sDevMessage = "")
 		Utility.Wait(2.0)
 	Endif
 
 	; Punishment items
 	If (bPunish )
-		fctOutfit.setDeviousOutfitPlugAnal (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitPlugVaginal (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviousOutfitBelt (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDevicePlugAnal (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDevicePlugVaginal (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceBelt (  bDevEquip = False, sDevMessage = "")
 		Utility.Wait(2.0)
 	EndIf
 

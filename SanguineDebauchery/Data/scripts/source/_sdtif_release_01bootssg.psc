@@ -13,7 +13,6 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 ; Game.GetPlayer().RemoveItem(Gold,50 )
  
-; fctOutfit.setDeviousOutfitBoots (  bDevEquip = False, sDevMessage = "")
 fctOutfit.clearDeviceByString( sDeviceString = "Boots" )
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Sex")

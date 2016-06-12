@@ -42,6 +42,10 @@ EndFunction
 
 
 function StartSlavery( Actor kMaster, Actor kSlave)
+
+	; List initialization if it hasn't been set yet
+	fctOutfit.registerDeviousOutfits ( )
+
 	_SDGVP_enslaved.SetValue( 1 )
 	_SDGVP_can_join.SetValue( 0 )
 	
@@ -272,39 +276,70 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableMoney", False)
 
 	; Slavery items preferences
-	; List initialization if it hasn't been set yet
-	fctOutfit.registerDeviousOutfits ( )
 
 	; Outfit selection - Commoner by default
 	int outfitID = 0
 	ActorBase PlayerBase = Game.GetPlayer().GetActorBase()
 
-	if (kMaster.HasKeyword( ActorTypeNPC ))
-		if (PlayerBase.GetSex() == 0)
-				; Player is male - force outfit 0 for model compatibility
-				outfitID = 0
+	If (fctFactions.checkIfSlaverCreatureRace( kMaster))
+		StorageUtil.SetIntValue(kMaster, "_SD_iMasterIsCreature", 1)
+	else
+		StorageUtil.SetIntValue(kMaster, "_SD_iMasterIsCreature", 0)
+	endif
 
-		Elseif ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Health") as Int) ) && ( (kMaster.GetAV("Magicka") as Int) > (kMaster.GetAV("Stamina") as Int) )
-			; Greater magicka - use magicka outfit
-			outfitID = 2
+	fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
 
-		Elseif ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Magicka") as Int) ) && ( (kMaster.GetAV("Health") as Int) > (kMaster.GetAV("Stamina") as Int) )
-			; Greater health - use wealthy outfit
-			outfitID = 1
+	Form masterRace = StorageUtil.GetFormValue(kSlave, "_SD_fSlaveryGearRace")
 
+	; Set slave constraints based on master's race
+	if (masterRace!= none)
+		Debug.Trace("[SD] Master race found - using racial settings for " + masterRace)
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryCollarOn") )
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryBindingsOn"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryPunishmentOn"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryPunishmentSceneOn"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryWhippingSceneOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryWhippingSceneOn"))
+
+		StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  StorageUtil.GetStringValue(masterRace, "_SD_sSlaveryDefaultStance"))
+		StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", StorageUtil.GetStringValue(masterRace, "_SD_sSlaveryDefaultStance"))
+
+		StorageUtil.SetStringValue(kSlave, "_SD_sSlaverySlaveTat",  StorageUtil.GetStringValue(masterRace, "_SD_sSlaverySlaveTat"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaverySlaveTatDuration"))
+	else
+		If (fctFactions.checkIfNPC ( kMaster )) ; Defaults for humanoid masters
+			Debug.Trace("[SD] Master race not recognized - using default settings for humanoids " )
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", 1 )
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  1)
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentOn",  1)
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn",  1)
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryWhippingSceneOn",  1)
+
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Kneeling")
+			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Kneeling")
+
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaverySlaveTat",  "")
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  0)
+
+		Else 									; Defaults for beast masters
+			Debug.Trace("[SD] Master race not recognized - using default settings for beasts " )
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", 0 )
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  0)
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentOn",  0)
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn",  0)
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryWhippingSceneOn",  0)
+
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Crawling")
+			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Crawling")
+
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaverySlaveTat",  "")
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  0)
 		EndIf
-	ElseIf ( fctFactions.checkIfFalmer ( kMaster) )
-		outfitID = 5
-	Else
-		outfitID = 3
 	EndIf
 
-	StorageUtil.SetIntValue(kMaster, "_SD_iOutfitID", outfitID)
-	StorageUtil.SetIntValue(kSlave, "_SD_iOutfitID", outfitID)
-
-	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
-
-	InitMasterDevices( kMaster, outfitID)
+;	StorageUtil.SetIntValue(kMaster, "_SD_iOutfitID", outfitID)
+;	StorageUtil.SetIntValue(kSlave, "_SD_iOutfitID", outfitID)
+;	Debug.Trace("[SD] Master outfit: " + outfitID)
+;	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
 
 	If fctFactions.checkIfFalmer ( kMaster)
 		If StorageUtil.HasIntValue(kSlave, "_SD_iFalmerEnslavedCount")
@@ -326,84 +361,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	SendModEvent("SDEnslavedStart") 
 
 EndFunction
-
-function InitMasterDevices( Actor kMaster, Int iOutfit)
-	int masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
-
-	Debug.Trace("[SD] Init master devices - outfitID: " + iOutfit)
-
-	if (StorageUtil.StringListCount( kMaster, "_SD_lDevices") != 0)
-		Debug.Trace("[SD] Init master devices - aborting - list already set")
-		Return
-	Else
-
-		fctOutfit.registerDeviousOutfitsKeywords (  kMaster )
-
-		if (iOutfit <= 2) 
-			If (masterPersonalityType == 0)
-				; 0 - Simple, Common
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,zap") ; 1 - Arms cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,primitive") ; 6 - Plug Anal
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,primitive") ; 7 - Plug Vaginal
-
-			ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
-				; 4 - Gambler, 5 - Caring
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,zap") ; 1 - Arms cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,black") ; 3 - Gag
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,black") ; 4 - Blindfold
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,iron") ; 6 - Plug Anal
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,iron") ; 7 - Plug Vaginal
-
-			ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
-				; 3 - Sadistic, 6 - Perfectionist
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,leather," + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" ) ) ; 1 - Arms cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 2 - Legs cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,harness" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 3 - Gag
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather" + StorageUtil.GetStringValue(kMaster, "_SD_sColorProfile" )) ; 4 - Blindfold
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,iron") ; 5 - Belt
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,soulgem") ; 6 - Plug Anal
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,soulgem") ; 7 - Plug Vaginal
-
-			ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
-				; 1 - Comfortable , 2 - Horny
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "armbinder,zap") ; 1 - Arms cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,strap") ; 3 - Gag
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather") ; 4 - Blindfold
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,padded") ; 5 - Belt
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal,inflatable") ; 6 - Plug Anal
-				StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal,inflatable") ; 7 - Plug Vaginal
-			EndIf
-
-
-			; Harness disabled for now as it overlaps with collar
-			; StorageUtil.StringListAdd(Game.GetPlayer(), "_SD_lDevices", "harness,leather,black") ; 6 - Harness
-
-		Else ; Other
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "collar") ; 0 - Collar - Unused
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,arms,metal,iron,zap") ; 1 - Arms cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "cuffs,legs,metal,iron,zap") ; 2 - Legs cuffs
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "gag,leather,zap") ; 3 - Gag
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "blindfold,leather,zap") ; 4 - Blindfold
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "belt,metal,iron") ; 5 - Belt
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,anal") ; 6 - Plug Anal
-			StorageUtil.StringListAdd( kMaster, "_SD_lDevices", "plug,vaginal") ; 7 - Plug Vaginal
-		EndIf
-
-	EndIf	
-
-EndFunction
-
+ 
 function StopSlavery( Actor kMaster, Actor kSlave)
 
 	; API variables
@@ -1060,30 +1018,30 @@ function DisplaySlaveryLevelObjective( Actor kMaster, Actor kSlave, Quest qSlave
 
 
 	if (StorageUtil.GetIntValue(kSlave, "_SD_iEnslaved") == 1)
-		qSlaveryQuest.SetObjectiveDisplayed(10, abDisplayed = false)
-		qSlaveryQuest.SetObjectiveDisplayed(20, abDisplayed = false)
-		qSlaveryQuest.SetObjectiveDisplayed(30, abDisplayed = false)
-		qSlaveryQuest.SetObjectiveDisplayed(40, abDisplayed = false)
-		qSlaveryQuest.SetObjectiveDisplayed(50, abDisplayed = false)
-		qSlaveryQuest.SetObjectiveDisplayed(60, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(21, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(22, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(23, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(24, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(25, abDisplayed = false)
+		qSlaveryQuest.SetObjectiveDisplayed(26, abDisplayed = false)
 
 		If (slaveryLevel == 1) ; collared but resisting
-			slaveryQuest.SetObjectiveDisplayed(10, abDisplayed = true)
+			slaveryQuest.SetStage(21)
 
 		ElseIf (slaveryLevel == 2) ; not resisting but sobbing
-			slaveryQuest.SetObjectiveDisplayed(20, abDisplayed = true)
+			slaveryQuest.SetStage(22)
 
 		ElseIf (slaveryLevel == 3) ; accepting fate
-			slaveryQuest.SetObjectiveDisplayed(30, abDisplayed = true)
+			slaveryQuest.SetStage(23)
 
 		ElseIf (slaveryLevel == 4) ; not too bad after all
- 			slaveryQuest.SetObjectiveDisplayed(40, abDisplayed = true)
+			slaveryQuest.SetStage(24)
 
 		ElseIf (slaveryLevel == 5) ; getting to enjoy it
-			slaveryQuest.SetObjectiveDisplayed(50, abDisplayed = true)
+			slaveryQuest.SetStage(25)
 
 		ElseIf (slaveryLevel == 6) ; totally submissive, masochist and sex addict 
- 			slaveryQuest.SetObjectiveDisplayed(60, abDisplayed = true)
+			slaveryQuest.SetStage(26)
 
 		EndIf
 	endif
