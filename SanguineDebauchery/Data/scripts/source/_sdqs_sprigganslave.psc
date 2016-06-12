@@ -134,20 +134,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		( kMaster as Actor ).RestoreAV("health", ( kMaster as Actor ).GetBaseAV("health") )
 		( kSlave as Actor ).RestoreAV("health", ( kSlave as Actor ).GetBaseAV("health") )
 
-		; kCaster.RemoveAllItems(akTransferTo = kSlave)
-		; fctOutfit.clearDeviousOutfit ( )
-		; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")	
-		; Utility.Wait(1.0)
-		; fctOutfit.setDeviousOutfitID ( iOutfit = 7, sMessage = "Roots swarm around you.")
-			
 		if (!fctOutfit.isArmsEquipped(kSlave as Actor))
-			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "Roots swarm around you.")	
+			fctOutfit.equipDeviceSpriggan ( "ArmCuffs", "Roots swarm around you.")	
 		EndIf
 		if (!fctOutfit.isLegsEquipped(kSlave as Actor))
-			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
+			fctOutfit.equipDeviceSpriggan ( "LegCuffs")
 		EndIf	
-		; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")	
-		; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")	
+
 		Utility.Wait(1.0)
 
 		; For SexLab Hormones compatibiltiy... should not have any effect if it isn't installed
@@ -288,19 +281,19 @@ Event OnUpdateGameTime()
 		Debug.Trace( "[SD] Spriggan punishment: " + _SD_spriggan_punishment.GetValue() )
 
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped (  kSlave as Actor ))
-			fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")
+			fctOutfit.equipDeviceSpriggan ( "ArmCuffs")
  
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1 )
 			Debug.Trace("[SD] Skipping spriggan hands - slot in use")
 		EndIf
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isShacklesEquipped (  kSlave as Actor ))
-			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "")	
+			fctOutfit.equipDeviceSpriggan ( "LegCuffs")	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1)
 			Debug.Trace("[SD] Skipping spriggan feet - slot in use")
 		EndIf
 
 		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isBeltEquipped (  kSlave as Actor ))
-			fctOutfit.setDeviousOutfitBelt ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
+			fctOutfit.equipDeviceSpriggan ( "Belt", "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
 
 			; kPlayer.AddToFaction(SprigganFaction)
 			; kPlayer.AddToFaction(GiantFaction)
@@ -312,7 +305,7 @@ Event OnUpdateGameTime()
 		EndIf
 		
 		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isBlindfoldEquipped (  kSlave as Actor))
-			fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7, bDevEquip = True, sDevMessage = "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
+			fctOutfit.equipDeviceSpriggan ( "Blindfold", "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 3 )
 			Debug.Trace("[SD] Skipping spriggan mask - slot in use")
 		EndIf

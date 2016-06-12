@@ -163,7 +163,11 @@ EndFunction
 
 
 Event OnInit()
- 
+	kMaster = _SDRAP_master.GetReference() as Actor
+	kSlave = _SDRAP_slave.GetReference() as Actor
+
+	fctConstraints.CollarEffectStart(kSlave, kMaster)
+
 	If ( Self.GetOwningQuest() )
 		RegisterForSingleUpdate( fRFSU )
 	EndIf
@@ -214,23 +218,6 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 		; escape
 		Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
 
-		; fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
-		; fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-		; fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		; fctOutfit.setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
-	
-		; if (Utility.RandomInt(0,100) < 60)
-		;	fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-		;	Debug.Messagebox("Your Master's Key helps you break free of your chains.")
-		; Else
-		;	Debug.MessageBox("Your Master's Key helps you break free of your chains but the key snapped as you tried to force your collar open.")
-		;EndIf
-
-		; kSlave.RemoveItem(akItemReference, aiItemCount)
-
- 		; SendModEvent("PCSubFree")
-		; Self.GetOwningQuest().Stop()
-		; Utility.Wait(2.0)
 		Return
 
 		; Slave picks up a weapon
@@ -256,9 +243,9 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
 				Debug.Messagebox("You manage to break your chains with a weapon.")
 
-				fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
-				fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-				fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
 
 				fLastEscape = GetCurrentRealTime()
  				SendModEvent("PCSubFree")
@@ -276,6 +263,7 @@ EndEvent
 State waiting
 	Event OnUpdate()
 		If ( Self.GetOwningQuest().IsRunning() )
+			fctConstraints.CollarUpdate()
 			GoToState("monitor")
 		EndIf
 		If ( Self.GetOwningQuest() )
@@ -314,6 +302,8 @@ State monitor
 	Event OnUpdate()
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
+
+		fctConstraints.CollarUpdate()
 
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
@@ -664,17 +654,17 @@ State monitor
 
 
 
-		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  
+		ElseIf  (kMaster.GetParentCell().IsInterior()) && (kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlave.GetParentCell() != kMaster.GetParentCell())  && (fctOutfit.isCollarEquipped ( kSlave ))
 			; Special handling of interior cells (for large caves with connecting rooms)
 			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep or if master is following (prevent collar teleport when changing cells )
 
 			; If (RandomInt( 0, 100 ) > 95 )
 			; 	Debug.Notification( "Your collar weighs around your neck..." )
 			; EndIf
-
+ 
 			GoToState("escape_shock")	
 
-		ElseIf  (kMaster.GetParentCell().IsInterior()) && (!kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 ) || ( kMaster.HasLOS( kSlave ))) && (kSlave.GetParentCell() != kMaster.GetParentCell()) && (Utility.RandomInt(0,100) > 70)  
+		ElseIf  (kMaster.GetParentCell().IsInterior()) && (!kSlave.GetParentCell().IsInterior()) && ( ( kMaster.GetSleepState() != 0 ) || ( kMaster.HasLOS( kSlave ))) && (kSlave.GetParentCell() != kMaster.GetParentCell()) && (Utility.RandomInt(0,100) > 70)  && (fctOutfit.isCollarEquipped ( kSlave ))
 			; Special handling of of escape from master's cell while master is asleep or not paying attention
 
 			GoToState("escape_shock")	
@@ -690,8 +680,9 @@ State monitor
  
 			Else
 				; If distance based leash is Off, switch to time buffer leash instead
-
-				GoToState("escape_shock")
+				if (fctOutfit.isCollarEquipped ( kSlave ))
+					GoToState("escape_shock")
+				endif
 			EndIf
 
 		ElseIf ( fDistance > (_SDGVP_escape_radius.GetValue() * 0.7) ) && ( fDistance < _SDGVP_escape_radius.GetValue() )
@@ -791,21 +782,25 @@ State monitor
 					EndIf
 				EndIf
 
-				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   )
+				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iOutfitBindingsOn")==1)
 
-					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+					If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslaved") == 1)
+						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					else
+						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					endIf
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 
-					Debug.Notification("Your owner binds your hands again.")
+					; Debug.Notification("Your owner binds your hands again.")
 
 					; Debug.Trace("[SD] _SD_iHandsFreeSex: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex"))
 					; Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
 					; Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
 
-				ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   )
+				ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iOutfitBindingsOn")==1)
 
-					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
-					Debug.Notification("Your owner releases your hands.")
+					fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+					; Debug.Notification("Your owner releases your hands.")
 
 				EndIf
 
@@ -963,9 +958,9 @@ State monitor
 						Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
 						Debug.Messagebox("You manage to break your chains with a weapon.")
 
-						fctOutfit.setDeviousOutfitArms ( bDevEquip = False, sDevMessage = "")
-						fctOutfit.setDeviousOutfitLegs ( bDevEquip = False, sDevMessage = "")
-						fctOutfit.setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+						fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+						fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
+						fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
 
 						SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 						Return
@@ -1060,9 +1055,13 @@ State escape_choking
 			kSlave.DispelSpell( _SDSP_Weak )
 
 			SendModEvent("SDEscapeStop") 
-			Debug.Notification( "Where did you think you were going?" )
 
-			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0) && (StorageUtil.GetIntValue(kSlave, "_SD_iOutfitPunishmentOn") == 1)
+
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "Where did you think you were going?" )
+				endIf
+				
 				if (Utility.RandomInt(0,100)>50)
 					; Punishment
 					enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
@@ -1073,6 +1072,8 @@ State escape_choking
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 					kMaster.SendModEvent("PCSubWhip")
 				EndIf
+			Else
+				kMaster.SendModEvent("PCSubSex")
 			EndIf
 		EndIf
 	EndEvent
@@ -1080,6 +1081,8 @@ State escape_choking
 	Event OnUpdate()
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
+
+		fctConstraints.CollarUpdate()
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -1343,12 +1346,15 @@ State escape_shock
 			kSlave.DispelSpell( _SDSP_Weak )
 
 			SendModEvent("SDEscapeStop") 
-			Debug.Notification( "Where did you think you were going?" )
+			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0) && (StorageUtil.GetIntValue(kSlave, "_SD_iOutfitPunishmentOn") == 1)
 
-			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "Where did you think you were going?" )
+				endIf
+
 				if (Utility.RandomInt(0,100)>50)
 					; Punishment
-					enslavement.PunishSlave(kMaster,kSlave,"Gag")
+					enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					kMaster.SendModEvent("PCSubPunish")
 				Else
@@ -1356,6 +1362,8 @@ State escape_shock
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 					kMaster.SendModEvent("PCSubWhip")
 				EndIf
+			Else
+				kMaster.SendModEvent("PCSubSex")
 			EndIf
 		EndIf
 	EndEvent
@@ -1363,6 +1371,8 @@ State escape_shock
 	Event OnUpdate()
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
+
+		fctConstraints.CollarUpdate()
 
 		fMasterDistance = kSlave.GetDistance( kMaster )
 
@@ -1470,12 +1480,18 @@ State caged
 	Event OnUpdate()
 		While ( !Game.GetPlayer().Is3DLoaded() )
 		EndWhile
+
+		fctConstraints.CollarUpdate()
 		
 		If ( !_SDGVP_state_caged.GetValueInt() )
 			GoToState("monitor")
 
 		ElseIf ( _SDRAP_cage.GetReference().GetDistance( kSlave ) > 768 )
-			GoToState("escape_shock")
+			if (fctOutfit.isCollarEquipped ( kSlave ))
+				GoToState("escape_shock")
+			else
+				GoToState("monitor")
+			endif	
 			_SDGVP_state_caged.SetValue( 0 )
 		EndIf
 

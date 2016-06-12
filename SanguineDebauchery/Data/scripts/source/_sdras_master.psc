@@ -125,7 +125,7 @@ Event OnDeath(Actor akKiller)
 			If (Utility.RandomInt(0,100)>60)
 				SendModEvent("PCSubFree")
 			ElseIf (akKiller != kMaster)
-				Debug.Notification( "You are mine!" )
+				Debug.Notification( "A new owner grabs you." )
 				Debug.Trace("[_sdras_master] Start enslavement with:"  + akKiller)
 				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akKiller)
 
@@ -181,7 +181,9 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 		EndIf
 
-		Debug.Notification( "You will regret attacking me!" )
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+			Debug.Notification( "You will regret attacking me!" )
+		EndIf
 		_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 		
 		If (fctSlavery.ModMasterTrust( kMaster, -5)<0)
@@ -391,7 +393,9 @@ State monitor
 			; Slave is drawing a weapon in front of master
 
 			If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))  
-				Debug.Notification( "Who said you could fight, Slave!")
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "Who said you could fight, Slave!")
+				endif
 
 				; Drop current weapon 
 				if(kSlave.IsWeaponDrawn())
@@ -421,13 +425,17 @@ State monitor
 				; Debug.Notification( "Who said you could use magic, Slave!")
  
 			ElseIf ((kSlave.GetEquippedItemType(0) == 9)||(kSlave.GetEquippedItemType(1) == 9 ))  && ( (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableSpellEquip")) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableShoutEquip")) )
-				Debug.Notification( "You better unequip that spell before I make you swallow it, Slave!")
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "You better unequip that spell before I make you swallow it, Slave!")
+				endif
 
 			;ElseIf ((kSlave.GetEquippedItemType(0) == 11)||(kSlave.GetEquippedItemType(1) == 11))
 			;	Debug.Notification( "Hold that torch higher, Slave!" )
 
 			Else
-				Debug.Notification( "Better unequip that before I shove it up your ass, Slave!" )
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "Better unequip that before I shove it up your ass, Slave!" )
+				endif
 
 			EndIf
 			Wait(5.0)
@@ -449,7 +457,11 @@ State monitor
 				Wait(0.5)
 				; kSlave.PlayAnimation("ZazAPC055");Inte
 				; Wait(1.0)
-				Debug.Notification( "You will regret this!" )
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "You will regret this!" )
+				else
+					Debug.Notification( "Your owner barks at you." )
+				endif
 				; Punishment
 				;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
 				fctConstraints.actorCombatShutdown( kSlave )
@@ -501,7 +513,9 @@ State monitor
 			Wait(5.0)	
 
 			If (bSlaveDetectedByMaster)
-				Debug.Notification( "There you are Slave... get your punishment, over here!" )
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+					Debug.Notification( "There you are Slave... get your punishment, over here!" )
+				endif
 				enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
@@ -580,18 +594,26 @@ State monitor
 
 		If (kSourceContainer == kSlave )
 			Debug.Trace( "[SD] Master receives an item from player" )
-			Debug.Notification( "Good slave." )
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+				Debug.Notification( "Good slave." )
+			else
+				Debug.Notification( "Your owner seems pleased." )
+			endif
 
-			If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) )
+			If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || (iuType == 46) ) ; food or potion
 				; Master receives Food
 				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
 				fctSlavery.ModMasterTrust( kMaster, 1)
 
 				If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-					Debug.Notification("Mmm.. that should hit the spot.")
+					If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+						Debug.Notification("Mmm.. that should hit the spot.")
+					endif
 				Else
-					Debug.Notification("Well? What are you waiting for?.")
-					Debug.Notification("Get back to work slave!")
+					If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+						Debug.Notification("Well? What are you waiting for?.")
+						Debug.Notification("Get back to work slave!")
+					endif
 				EndIf
 
 			; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
@@ -621,15 +643,21 @@ State monitor
 					fctSlavery.ModMasterTrust( kMaster, 1)
 
 					If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-						Debug.Notification("Good slave... keep it coming.")
+						If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+							Debug.Notification("Good slave... keep it coming.")
+						endif
 
 					Else
-						Debug.Notification("That's right.")
-						Debug.Notification("You don't have a use for gold anymore.")
+						If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+							Debug.Notification("That's right.")
+							Debug.Notification("You don't have a use for gold anymore.")
+						endif
 					Endif
 
 				ElseIf (fGoldEarned == 0)
-					Debug.Notification("What is this junk!?.")
+					If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+						Debug.Notification("What is this junk!?.")
+					endif
 				EndIf
 
 				; TO DO - Master reaction if slave reaches buyout amount

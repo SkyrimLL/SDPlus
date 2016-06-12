@@ -315,9 +315,6 @@ Function _Maintenance()
 		SendModEvent("dhlp-Suspend")
 	EndIf
 
-	; Registering default outfit keywords for slave if not defined yet 
-	fctOutfit.registerDeviousOutfitsKeywords (  kPlayer )
-
 	; If (kPlayer != Game.GetPlayer())
 		; Debug.MessageBox("[SD] Player ref has changed. ")
 	; Endif
@@ -368,7 +365,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			; Player hands are freed temporarily for sex
 
 			if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
-				fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
 				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
 			EndIf
 		EndIf
@@ -447,6 +444,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (funct._hasPlayer(actors))
 		Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+		fctOutfit.setMasterGearByRace ( kCurrentMaster, PlayerActor  )
 
 		If (kCurrentMaster != None)  
 
@@ -458,6 +456,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iGoalSex", modValue = 1)
 				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
 
+
 				; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
 
 				; If master is trusting slave, increased chance of hands free after sex
@@ -465,8 +464,15 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
 
-				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
+
+					; If player is enslaved, use player outfit, else, use generic device
+					If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					else
+						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					endIf
+
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				EndIf
 			Else
@@ -476,8 +482,15 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
 
-				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-					fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
+				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
+
+					; If player is enslaved, use player outfit, else, use generic device
+					If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
+						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					else
+						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					endIf
+
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				EndIf
 			EndIf
@@ -534,14 +547,15 @@ Event OnSDParasiteVag(String _eventName, String _args, Float _argc = 1.0, Form _
 
 	if (kActor == PlayerActor)
 
-		fctOutfit.setDeviousOutfitPlugVaginal ( iDevOutfit = 9, bDevEquip = True, sDevMessage = "")
+		; Time to move parasites for their own mod
+		; fctOutfit.setDevicePlugVaginal ( bDevEquip = True, sDevMessage = "")
 
-		If !StorageUtil.HasIntValue(PlayerActor, "_SD_iParasiteVagCount")
-				StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteVagCount",  0)
-		EndIf
+		; If !StorageUtil.HasIntValue(PlayerActor, "_SD_iParasiteVagCount")
+		;		StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteVagCount",  0)
+		; EndIf
 
-		StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteVagCount",  StorageUtil.GetIntValue(PlayerActor, "_SD_iParasiteVagCount") + 1)
-		SendModEvent("SDCParasiteVagInfection")
+		; StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteVagCount",  StorageUtil.GetIntValue(PlayerActor, "_SD_iParasiteVagCount") + 1)
+		; SendModEvent("SDCParasiteVagInfection")
 
 	EndIf
 	
@@ -555,14 +569,14 @@ Event OnSDParasiteAn(String _eventName, String _args, Float _argc = 1.0, Form _s
 
 	if (kActor == PlayerActor)
 
-		fctOutfit.setDeviousOutfitPlugAnal ( iDevOutfit = 9, bDevEquip = True, sDevMessage = "")
+		; fctOutfit.setDevicePlugAnal ( iDevOutfit = 9, bDevEquip = True, sDevMessage = "")
 
-		If !StorageUtil.HasIntValue(PlayerActor, "_SD_iParasiteAnCount")
-				StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteAnCount",  0)
-		EndIf
+		; If !StorageUtil.HasIntValue(PlayerActor, "_SD_iParasiteAnCount")
+		;		StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteAnCount",  0)
+		; EndIf
 
-		StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteAnCount",  StorageUtil.GetIntValue(PlayerActor, "_SD_iParasiteAnCount") + 1)
-		SendModEvent("SDCParasiteAnInfection")
+		; StorageUtil.SetIntValue(PlayerActor, "_SD_iParasiteAnCount",  StorageUtil.GetIntValue(PlayerActor, "_SD_iParasiteAnCount") + 1)
+		; SendModEvent("SDCParasiteAnInfection")
 
 	EndIf
 	
@@ -643,10 +657,10 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 			If (!kCurrentMaster.IsDead()) && (kPlayer.GetDistance( kCurrentMaster ) <= ( StorageUtil.GetIntValue(kPlayer, "_SD_iLeashLength") * 2) ) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSold") != 1 )
 				kCurrentMaster.SetRelationshipRank( kPlayer, StorageUtil.GetIntValue(kCurrentMaster, "_SD_iOriginalRelationshipRank") )
 				If (Utility.RandomInt(0,100) >= 0) || ( StorageUtil.GetIntValue(kCurrentMaster, "_SD_iDisposition") > 0)
-					Debug.Notification("(Owner) Who do you think you are!")
+					Debug.Notification("Your previous owner fights back.")
 					kCurrentMaster.StartCombat(kNewMaster)
 				Else
-					Debug.Notification("(Owner) Good riddance...")
+					Debug.Notification("Your former owner leaves, disgusted.")
 				EndIf
 			EndIf
 
@@ -664,13 +678,14 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
-			SendModEvent("PCSubSubmit")
+			kNewMaster.SendModEvent("PCSubSubmit")
 		EndIf
 
 		; New enslavement - changing ownership
 		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
 	Else
 		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
+		kNewMaster.SendModEvent("PCSubSex")
 	EndIf
 EndEvent
 
@@ -702,10 +717,10 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 			If (!kCurrentMaster.IsDead()) && (kPlayer.GetDistance( kCurrentMaster ) <= ( StorageUtil.GetIntValue(kPlayer, "_SD_iLeashLength") * 2) ) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSold") != 1 )
 				kCurrentMaster.SetRelationshipRank( kPlayer, StorageUtil.GetIntValue(kCurrentMaster, "_SD_iOriginalRelationshipRank") )
 				If (Utility.RandomInt(0,100) >= 0) || ( StorageUtil.GetIntValue(kCurrentMaster, "_SD_iDisposition") > 0)
-					Debug.Notification("(Owner) Who do you think you are!")
+					Debug.Notification("Your owners fight each other.")
 					kCurrentMaster.StartCombat(kNewMaster)
 				Else
-					Debug.Notification("(Owner) Good riddance...")
+					Debug.Notification("Your former owner dismisses you.")
 				EndIf
 			EndIf
 
@@ -723,13 +738,14 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
-			SendModEvent("PCSubSubmit")
+			kNewMaster.SendModEvent("PCSubSubmit")
 		EndIf
 
 		; New enslavement - changing ownership
 		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
 	Else
 		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
+		kNewMaster.SendModEvent("PCSubSex")
 	EndIf
 EndEvent
 
@@ -765,10 +781,10 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 			If (!kCurrentMaster.IsDead()) && (kPlayer.GetDistance( kCurrentMaster ) <= ( StorageUtil.GetIntValue(kPlayer, "_SD_iLeashLength") * 2 ) ) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSold") != 1 )
 				kCurrentMaster.SetRelationshipRank( kPlayer, StorageUtil.GetIntValue(kCurrentMaster, "_SD_iOriginalRelationshipRank") )
 				If (Utility.RandomInt(0,100) >= 0) || ( StorageUtil.GetIntValue(kCurrentMaster, "_SD_iDisposition") > 0)
-					Debug.Notification("(Owner) Who do you think you are!")
+					Debug.Notification("Your owner barks at you with anger.")
 					kCurrentMaster.StartCombat(kNewMaster)
 				Else
-					Debug.Notification("(Owner) Good riddance...")
+					Debug.Notification("Your owner ignores you dismissively.")
 				EndIf
 			EndIf
 
@@ -787,7 +803,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
-			SendModEvent("PCSubSubmit")
+			kNewMaster.SendModEvent("PCSubSubmit")
 		EndIf
 
 		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )
@@ -796,7 +812,8 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0)
 	Else
 		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster)
-		Debug.Notification("Nevermind...")	
+		kNewMaster.SendModEvent("PCSubSex")
+		; Debug.Notification("Nevermind...")	
 	EndIf
 EndEvent
 
@@ -885,8 +902,10 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		Return
 	EndIf
 
+	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+
 	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
  
@@ -932,8 +951,10 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 		Return
 	EndIf
 
+	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+
 	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
 
@@ -964,7 +985,11 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 	Debug.Trace("[_sdras_player] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
 
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
+	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+
+	If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
+		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
+	Endif
 EndEvent
 
 Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -986,8 +1011,12 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 	Else
 		Return
 	EndIf
+
+	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
  
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+	If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
+		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+	endif
 EndEvent
 
 Event OnSDEmancipateSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -999,7 +1028,7 @@ EndEvent
 Event OnSDHandsFreeSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving hands free slave event [" + _args  + "] [" + _argc as Int + "]")
 
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = False, sDevMessage = "")
+	fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
 	StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 1)
 	Debug.Notification("Your owner releases your hands.")
 EndEvent
@@ -1007,9 +1036,19 @@ EndEvent
 Event OnSDHandsBoundSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving hands bound slave event [" + _args  + "] [" + _argc as Int + "]")
 
-	fctOutfit.setDeviousOutfitArms ( iDevOutfit =-1, bDevEquip = True, sDevMessage = "")
-	StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 0)
-	Debug.Notification("Your owner binds your hands.")
+	; If player is enslaved, use player outfit, else, use generic device
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryBindingsOn")==1)
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) 
+			Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+			fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+			fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+		else
+			fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+		endIf
+
+		StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 0)
+		Debug.Notification("Your owner binds your hands.")
+	endif
 EndEvent
 
 Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1018,8 +1057,10 @@ Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _
 
 	; TO DO - Add code to pass keyword to force a specific type of punishment item (use with Equip Device by Leyword)
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		_SD_Enslaved.PunishSlave(_SD_Enslaved.GetMaster() as Actor, kPlayer, sDevice )
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && 	(StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+		Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+		fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+		_SD_Enslaved.PunishSlave(kTempAggressor, kPlayer, sDevice )
 	Else
 		Return
 	EndIf
@@ -1032,8 +1073,10 @@ Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _
 
 	; TO DO - Add code to pass keyword to remove a specific type of punishment item (use with Equip Device by Leyword)
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		_SD_Enslaved.RewardSlave(_SD_Enslaved.GetMaster() as Actor, kPlayer, sDevice )
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+		Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+		fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+		_SD_Enslaved.RewardSlave(kTempAggressor, kPlayer, sDevice )
 	Else
 		Return
 	EndIf
@@ -1042,87 +1085,65 @@ EndEvent
 
 Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
-	Int iOutfitID = _argc as Int
-	Float fOutfitID = _argc 
+	; Int iOutfitID = _argc as Int
 	String sDevice = _args
+	String sTags = ""
+	Int iTagsIndex
 
-	; Example: akSpeaker forcing a gag on player using OutfitID = 1 [between 0 and 10] 
-	; akSpeaker.SendModEvent("SDEquipDevice", "Gag", 1) 
+	; Example: akSpeaker forcing a gag on player using additional tags
+	; akSpeaker.SendModEvent("SDEquipDevice", "Gag:harness,panel") 
 
 	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "] [" + _argc + "]")
 
-	; if OutfitID is provided, override with outfit from sender NPC in priority
- 	if (iOutfitID != 0)
- 		If (StorageUtil.GetIntValue(kActor, "_SD_iOutfitID") > 0)
- 			iOutfitID = StorageUtil.GetIntValue(kActor, "_SD_iOutfitID")
- 		endif
+	; Split _args between Device and Tags (separated by ':')
+	iTagsIndex = StringUtil.Find(_args, ":")
+	if (iTagsIndex==-1)
+	 	sDevice = _args
+		sTags = ""
+	else
+		sDevice = StringUtil.Substring(_args, 0, iTagsIndex )
+		sTags = StringUtil.Substring(_args, iTagsIndex +1 )
+	endIf
 
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", False)
-  		endif
+	fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
 
-  		fctOutfit.setDeviousOutfitPartByString (iOutfitID, sDevice, True)
+	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+	; 	fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
+	; endif
 
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", True)
-  		endif
+	Debug.Trace("[_sdras_player] 	sDevice = "+ sDevice +" - sTags = " + sTags )
 
- 	Else
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
-  		endif
+	fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sDeviceTags = sTags )
 
-  		fctOutfit.equipDeviceByString ( sDeviceString = sDevice )
-
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
-  		endif
-
- 	endif
+	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+	; 	fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
+	; endif
 
 EndEvent
 
 Event OnSDClearDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
-	Int iOutfitID = _argc as Int
 	String sDevice = _args
 
 	Debug.Trace("[_sdras_player] Receiving device clear story event [" + _args  + "] [" + _argc as Int + "]")
 
-	; if OutfitID is provided, override with outfit from sender NPC in priority
- 	if (iOutfitID != -1)
- 		If (StorageUtil.GetIntValue(kActor, "_SD_iOutfitID") > 0)
- 			iOutfitID = StorageUtil.GetIntValue(kActor, "_SD_iOutfitID")
- 		endif
+	fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
 
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", False)
-  		endif
+	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+	; 	fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
+	; endif
 
-  		fctOutfit.setDeviousOutfitPartByString (iOutfitID, sDevice, False)
+	fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
 
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.setDeviousOutfitPartByString (iOutfitID, "Belt", True)
-  		endif
+	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
+	; 	fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
+	; endif
 
- 	Else
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
-  		endif
-
-  		fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
-
- 		if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-  			fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
-  		endif
-
- 	endif
 
 EndEvent
 
 Event OnSDEquipSlaveRags(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
-	Int iOutfitID = _argc as Int
 	String sDevice = _args
 
 	Debug.Trace("[_sdras_player] Receiving slave rags story event [" + _args  + "] [" + _argc as Int + "]")

@@ -14,7 +14,6 @@ Game.GetPlayer().RemoveItem(Gold, 500 )
 
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-; fctOutfit.setDeviousOutfitCollar (  bDevEquip = False, sDevMessage = "")
 fctOutfit.clearDeviceByString( sDeviceString = "Collar" )
 fctOutfit.clearDeviceByString( sDeviceString = "Harness" )
 

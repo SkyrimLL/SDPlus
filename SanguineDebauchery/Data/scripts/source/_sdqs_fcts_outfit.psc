@@ -2,7 +2,79 @@ Scriptname _sdqs_fcts_outfit extends Quest
 { USED }
 Import Utility
 Import SKSE
+zadLibs Property libs Auto
+SexLabFrameWork Property SexLab Auto
 
+
+Keyword Property _SDKP_punish Auto
+Keyword Property _SDKP_bound Auto
+Keyword Property _SDKP_gagged Auto
+Keyword Property ArmorCuirass  Auto  
+Keyword Property ClothingBody  Auto  
+
+Keyword Property _SDKP_DeviousSanguine  Auto  
+Keyword Property _SDKP_DeviousEnslaved  Auto  
+Keyword Property _SDKP_DeviousEnslavedCommon  Auto  
+Keyword Property _SDKP_DeviousEnslavedMagic  Auto  
+Keyword Property _SDKP_DeviousEnslavedPrimitive  Auto  
+Keyword Property _SDKP_DeviousEnslavedWealthy  Auto  
+Keyword Property _SDKP_DeviousSpriggan  Auto  
+Keyword Property _SDKP_DeviousParasiteAn  Auto  
+Keyword Property _SDKP_DeviousParasiteVag  Auto  
+
+Armor Property DDiPostureSteelCollarRendered Auto         ; Internal Device
+Armor Property DDiPostureSteelCollar Auto        	       ; Inventory Device
+ 
+Armor Property DDiCuffLeatherCollarRendered Auto         ; Internal Device
+Armor Property DDiCuffLeatherCollar Auto        	       ; Inventory Device
+ 
+Armor Property zazLeatherCollarRendered Auto         ; Internal Device
+Armor Property zazLeatherCollar Auto        	       ; Inventory Device
+Armor Property zazIronCollarRendered Auto         ; Internal Device
+Armor Property zazIronCollar Auto        	       ; Inventory Device
+Armor Property zazIronCuffsRendered Auto         ; Internal Device
+Armor Property zazIronCuffs Auto        	       ; Inventory Device
+Armor Property zazIronShacklesRendered Auto         ; Internal Device
+Armor Property zazIronShackles Auto        	       ; Inventory Device
+Armor Property zazWoodenBitRendered Auto         ; Internal Device
+Armor Property zazWoodenBit Auto        	       ; Inventory Device
+Armor Property zazBlindsRendered Auto         ; Internal Device
+Armor Property zazBlinds Auto        	       ; Inventory Device
+
+Armor Property zazSprigganHandsRendered Auto         ; Internal Device
+Armor Property zazSprigganHands Auto        	       ; Inventory Device
+Armor Property zazSprigganFeetRendered Auto         ; Internal Device
+Armor Property zazSprigganFeet Auto        	       ; Inventory Device
+Armor Property zazSprigganMaskRendered Auto         ; Internal Device
+Armor Property zazSprigganMask Auto        	       ; Inventory Device
+Armor Property zazSprigganBodyRendered Auto         ; Internal Device
+Armor Property zazSprigganBody Auto        	       ; Inventory Device
+
+Armor Property zazFalmerCollarRendered Auto         ; Internal Device
+Armor Property zazFalmerCollar Auto        	       ; Inventory Device
+Armor Property zazFalmerCuffsRendered Auto         ; Internal Device
+Armor Property zazFalmerCuffs Auto        	       ; Inventory Device
+Armor Property zazWebCuffsRendered Auto         ; Internal Device
+Armor Property zazWebCuffs Auto        	       ; Inventory Device
+Armor Property zazWebCollarRendered Auto         ; Internal Device
+Armor Property zazWebCollar Auto        	       ; Inventory Device
+Armor Property zazSanguineCollarRendered Auto         ; Internal Device
+Armor Property zazSanguineCollar Auto        	       ; Inventory Device
+Armor Property zazSanguineCuffsRendered Auto         ; Internal Device
+Armor Property zazSanguineCuffs Auto        	       ; Inventory Device
+Armor Property zazSanguineShacklesRendered Auto         ; Internal Device
+Armor Property zazSanguineShackles Auto        	       ; Inventory Device
+Armor Property zazSanguineWoodenBitRendered Auto         ; Internal Device
+Armor Property zazSanguineWoodenBit Auto        	       ; Inventory Device
+Armor Property zazSanguineBlindsRendered Auto         ; Internal Device
+Armor Property zazSanguineBlinds Auto        	       ; Inventory Device
+Armor Property zazSanguineArtifactRendered Auto         ; Internal Device
+Armor Property zazSanguineArtifact Auto        	       ; Inventory Device
+
+Armor Property SDEggVaginalRendered Auto         ; Internal Device
+Armor Property SDEggVaginal Auto        	       ; Inventory Device
+Armor Property SDEggAnalRendered Auto         ; Internal Device
+Armor Property SDEggAnal Auto        	       ; Inventory Device
 
  
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
@@ -72,94 +144,492 @@ Import SKSE
 ; Body Harness: 58
 ; Cuffs (Arms): 59
 
+Function registerDeviousOutfits ( )
+	Debug.Trace("[SD] Register devious outfits")
+
+	Debug.Trace("[SD] 		Registering leather collar")
+	libs.RegisterGenericDevice(zazLeatherCollar		, "collar,leather,zap")
+	Debug.Trace("[SD] 		Registering iron collar")
+	libs.RegisterGenericDevice(zazIronCollar		, "collar,metal,iron,zap")
+	Debug.Trace("[SD] 		Registering iron arm cuffs")
+	libs.RegisterGenericDevice(zazIronCuffs			, "armbinder,arms,metal,iron,zap")
+	Debug.Trace("[SD] 		Registering iron leg cuffs")
+	libs.RegisterGenericDevice(zazIronShackles		, "cuffs,legs,metal,iron,zap")
+	Debug.Trace("[SD] 		Registering wooden gag")
+	libs.RegisterGenericDevice(zazWoodenBit			, "gag,leather,wood,zap")
+	Debug.Trace("[SD] 		Registering leather blinds")
+	libs.RegisterGenericDevice(zazBlinds 			, "blindfold,leather,zap")
+
+EndFunction
 
 
-Function equipDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+;---------------------------------------------------
+; TO DO:
+;
+; - Add support for forceful removal of racial devices (Sanguine, etc)
+
+;---------------------------------------------------
+; For new race based slavery gear
+
+
+Function initSlaveryGearByRace (  )
+; 	For each race in master races storageUtil
+;		registerSlaveryOptions( Race, allowCollar, allowArmbinders, allowPunishmentDevice, allowPunishmentScene, allowWhippingScene, defaultStance )
+; 		Register devices for slavery gear - collar, armbinders, leg cuffs, belt, vaginal plug, anal plug
+;			registerSlaveryGearDevice( Race, deviceString, deviceKeyword, deviceInventory, deviceRendered )
+
+	Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
+	int i = 0
+	Form thisRace
+	String sRaceName
+ 
+ 	Debug.Trace("[SD] Registering racial slavery gear")
+
+	while(i < valueCount)
+		thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+		sRaceName = thisRace.GetName()
+		Debug.Trace("	Race [" + i + "] = " + sRaceName)
+
+		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
+			; Falmer   
+			If (StringUtil.Find(sRaceName, "Falmer")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Crawling", raceSlaveTat="FalmerGlow", raceSlaveTatDuration=2 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazFalmerCollar, deviceRendered=zazFalmerCollarRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazFalmerCuffs, deviceRendered=zazFalmerCuffsRendered   )
+				; registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
+				; registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=None, deviceInventory=None, deviceRendered=None  )
+				; registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
+				; registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
+				; registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", genericDeviceTags=""  )
+				; registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", genericDeviceTags=""  )
+
+			; Hagraven    
+			ElseIf (StringUtil.Find(sRaceName, "Hagraven")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="MysticalSymbols", raceSlaveTatDuration=8 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="cuffs,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+
+			; Wolf   
+			ElseIf (StringUtil.Find(sRaceName, "Wolf")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesBack", raceSlaveTatDuration=5 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+
+			; Dog    
+			ElseIf (StringUtil.Find(sRaceName, "Dog")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesBack", raceSlaveTatDuration=5 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+
+			; Giant   
+			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Standing", raceSlaveTat="GiantsRunes", raceSlaveTatDuration=20 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="yoke"  )
+			; Chaurus   
+			ElseIf (StringUtil.Find(sRaceName, "Chaurus")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesVaginal", raceSlaveTatDuration=2 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )  ; ADD Chaurus slimy collar later
+
+			; Spider    
+			ElseIf (StringUtil.Find(sRaceName, "Spider")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesAnal", raceSlaveTatDuration=2 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazWebCuffs, deviceRendered=zazWebCuffsRendered   )
+
+			; Troll   
+			ElseIf (StringUtil.Find(sRaceName, "Troll")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesChest", raceSlaveTatDuration=3 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Troll rusted collar later
+
+			; Draugr    
+			ElseIf (StringUtil.Find(sRaceName, "Draugr")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="AncientNordRunes" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Draugr ancient collar later
+
+			endif
+		endIf
+
+		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Humanoid"  )
+			; Nord  
+			If (StringUtil.Find(sRaceName, "Nord")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="NordPaint", raceSlaveTatDuration=10 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,primitive"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,primitive"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+
+			; Breton
+			ElseIf (StringUtil.Find(sRaceName, "Breton")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+
+			; Imperial
+			ElseIf (StringUtil.Find(sRaceName, "Imperial")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="ImperialStamp" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,harness,leather" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,leather"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,leather" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,padded"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,inflatable"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,inflatable"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,harness"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather"  )
+
+			; Redguard
+			ElseIf (StringUtil.Find(sRaceName, "Redguard")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,padded,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,padded,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather"  )
+
+			; Orc
+			ElseIf (StringUtil.Find(sRaceName, "Orc")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,harness"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather"  )
+
+			; Elf
+			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,posture,leather" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,leather"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,leather" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,padded"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather"  )
+
+			; Khajit
+			ElseIf (StringUtil.Find(sRaceName, "Khajiit")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,leather,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,primitive"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,primitive"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+
+			; Argonian
+			ElseIf (StringUtil.Find(sRaceName, "Argonian")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+
+			; Dremora
+			ElseIf (StringUtil.Find(sRaceName, "Dremora")!= -1)
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="DaedricRunes" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="", deviceInventory=zazSanguineCuffs, deviceRendered=zazSanguineCuffsRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="", deviceInventory=zazSanguineShackles, deviceRendered=zazSanguineShacklesRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag  , genericDeviceTags="", deviceInventory=zazSanguineWoodenBit , deviceRendered=zazSanguineWoodenBitRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold  , genericDeviceTags="blindfold,leather,zap"  )
+
+			endif
+		endif
+
+		i += 1
+	endwhile
+EndFunction
+
+Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbinders, Bool allowPunishmentDevice, Bool allowPunishmentScene, Bool allowWhippingScene, String defaultStance, String raceSlaveTat, Int raceSlaveTatDuration = 0 )
+; 	For this Race
+;		Set options: allowCollar, allowArmbinders, allowPunishmentDevice, allowPunishmentScene, allowWhippingScene, defaultStance, raceSlaveTat
+;			
+;		Later - if device not defined for race, use generic or spectral
+	Debug.Trace("		Slavery Options")
+
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryCollarOn", allowCollar as Int)
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryBindingsOn", allowArmbinders as Int)
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryPunishmentOn", allowPunishmentDevice as Int)
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryPunishmentSceneOn", allowPunishmentDevice as Int)
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryWhippingSceneOn", allowPunishmentDevice as Int)
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryDefaultStance", defaultStance)
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaverySlaveTat", raceSlaveTat)
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaverySlaveTatDuration", raceSlaveTatDuration)
+
+EndFunction
+
+Function registerSlaveryGearDevice( Form fRace, String deviceString, Keyword deviceKeyword, String genericDeviceTags="", Armor deviceInventory=None, Armor deviceRendered=None )
+; 		Register devices for slavery gear - collar, armbinders, leg cuffs, belt, vaginal plug, anal plug
+	Debug.Trace("		Slavery device - " + deviceString + " - keyword: " + deviceKeyword + " - tags: " + genericDeviceTags)
+
+	StorageUtil.SetFormValue(fRace, "_SD_" + deviceString + "_keyword", deviceKeyword as Form)
+	StorageUtil.SetFormValue(fRace, "_SD_" + deviceString + "_inventory", deviceInventory as Form)
+	StorageUtil.SetFormValue(fRace, "_SD_" + deviceString + "_rendered", deviceRendered as Form)
+	StorageUtil.SetStringValue(fRace, "_SD_" + deviceString + "_tags", genericDeviceTags)
+
+
+
+EndFunction
+
+Function setMasterGearByRace ( Actor kMaster, Actor kSlave  )
+;	Set enslavement options + default slavery gear items based on race
+;	If race not listed and actorNPC keyword is found, use default gear
+	ActorBase akActorBase = kMaster.GetLeveledActorBase() as ActorBase
+
+	if (kMaster != none)
+
+		Form masterRace = akActorBase.GetRace() as Form
+		Debug.Trace("[SD] setMasterGearByRace -- Setting race to " + masterRace)
+
+		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", masterRace)
+		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearActor", kMaster)
+	else
+		; Use this to force default set if necessary later - for now, going with 'none' to force generic devices instead
+		; StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", StorageUtil.GetFormValue(none, "_SD_fDefaultSlaveryRace") )
+
+		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", none ) ; 
+		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearActor", none)
+	endIf
+
+
+EndFunction
+
+;---------------------------------------------------
+
+
+Function equipDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false,  String sDeviceTags = "")
 	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
 	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
 	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
 	Actor PlayerActor = Game.GetPlayer()
 	Actor kMaster = None
-	Int iDevOutfit
-	Int iDevOutfitPart
-	Armor aWornDevice
-	Armor aRenderedDevice
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
 	Form kForm	
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Bool bDeviceOverride = False
+	Bool bDeviceEquipSuccess = False
 
-	; If player enslaved, give priority to outfits for Gag, Blindfold, Belt, PlugAnal, PlugVaginal, Armbinder, LegCuffs
-	;	- set outfitString to Enslaved
-	;   - get outfitID from master
-	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved")==1) && ( getDeviousOutfitPartByString(sDeviceString) != -1 )
-		sOutfitString = "Enslaved"
+	; If master Race is set, check if override device is set for this race and use it first
+
+	If ( fActorOverride!= none)
+		Debug.Trace("[SD] equipDeviceByString - Actor override detected")  
+		if (StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword")!=none)
+			Debug.Trace("[SD] 	- Override detected for " + sDeviceString)  
+			bDeviceOverride = True
+			kwDeviceKeyword = 	StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword") as Keyword
+			aWornDevice = StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_inventory" ) as Armor
+			aRenderedDevice = StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_rendered" ) as Armor
+			sGenericDeviceTags = StorageUtil.GetStringValue(fActorOverride, "_SD_" + sDeviceString + "_tags" )
+		else
+			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
+		endIf
+	EndIf
+	
+	If ( fRaceOverride!= none) && (!bDeviceOverride)
+		Debug.Trace("[SD] equipDeviceByString - Race override detected")  
+		if (StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword")!=none)
+			Debug.Trace("[SD] 	- Override detected for " + sDeviceString)  
+			bDeviceOverride = True
+			kwDeviceKeyword = 	StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword") as Keyword
+			aWornDevice = StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_inventory" ) as Armor
+			aRenderedDevice = StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_rendered" ) as Armor
+			sGenericDeviceTags = StorageUtil.GetStringValue(fRaceOverride, "_SD_" + sDeviceString + "_tags" )
+		else
+			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
+		endIf
+	EndIf
+	
+	If (!bDeviceOverride) ; generic item
+		Debug.Trace("[SD] equipDeviceByString - NO override detected")  
+			kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+			aWornDevice = none
+			aRenderedDevice = none
+			sGenericDeviceTags = sDeviceTags
+	endIf
+
+	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved")==1) 
+		; Any tweaks during slavery goes here - color in tags based on master personality maybe?
 	Endif
  
-	If (sOutfitString=="") && (kwDeviceKeyword != None)
+ 	; If override forms are set, use them first
+ 	; ElseIf generic device tag is set, use it
+ 	; Else force random generic item
+
+	If (kwDeviceKeyword != None)
 
 		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
-			Debug.Trace("[SD] equip device string: " + sDeviceString)  
-			Debug.Trace("[SD] equip device keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SD] equipDeviceByString: " + sDeviceString)  
+			Debug.Trace("[SD] 		keyword: " + kwDeviceKeyword)  
 
-			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, True, skipEvents,  skipMutex)
+			if ( (aWornDevice!=none) && (aRenderedDevice!=none))
+				; preferred device
 
-			aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
-			if (aWornDevice != None)
-				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
-				kForm = aWornDevice as Form 
+				Debug.Trace("[SD] 		equipDeviceByString - preferred: " + aRenderedDevice + " - Device inventory: "  + aWornDevice  )
 
-				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
-					Debug.Notification("[SD] adding zad_BlockGeneric device!")  
-					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
-				endif
+				bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+
+			elseif (sGenericDeviceTags!="")
+				; preferred tags
+				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags  )
+
+				aWornDevice = libs.GetDeviceByTags(kwDeviceKeyword, sGenericDeviceTags)
+
+				If (aWornDevice!=None)
+					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+				EndIf
+
+				Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+
+				If (aWornDevice!=None) && (aRenderedDevice!=None)
+
+					bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+				Else
+					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
+				EndIf
 			else
-				Debug.Trace("[SD]    Can't get worn device")
+				; generic device
+				Debug.Trace("[SD] 		equipDeviceByString - generic: ")
+
+				; ManipulateGenericDeviceByKeyword doesn't seem to work very well. Trying the loger road instead
+				; bDeviceEquipSuccess = libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, True, skipEvents,  skipMutex)
+
+				aWornDevice = libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
+
+				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags + " - Device inventory: "  + aWornDevice  )
+
+				If (aWornDevice!=None)
+					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+				EndIf
+
+				Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+
+				If (aWornDevice!=None) && (aRenderedDevice!=None)
+
+					bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+				Else
+					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
+				EndIf
 			endif
+
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] equipDeviceByString called with message: " + sOutfitString)  
+			Endif
+
+			If (!bDeviceEquipSuccess)
+				Debug.Trace("[SD] 		equipDeviceByString - device equip FAILED for " + sDeviceString)
+				Debug.Notification("[SD] equipDeviceByString FAILED: " + sDeviceString)
+			endIf
+
+			; aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
+			; if (aWornDevice != None)
+			;	aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+			;	kForm = aWornDevice as Form 
+
+			;	if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+			;		Debug.Notification("[SD] adding zad_BlockGeneric device!")  
+			;		Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
+			;	endif
+			; else
+			;	Debug.Trace("[SD]    Can't get worn device")
+			; endif
  
 		else
 			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
 		endIf
 
-	ElseIf (sOutfitString!="") && (kwDeviceKeyword != None)
-
-		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
-			If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved")==1)
-				kMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
-				iDevOutfit = StorageUtil.GetIntValue(kMaster, "_SD_iOutfitID")
-			Else
-				iDevOutfit = getDeviousOutfitByString(sOutfitString)
-			Endif
-			iDevOutfitPart = getDeviousOutfitPartByString(sDeviceString)
-
-			if (iDevOutfit!=-1) && (iDevOutfitPart!=-1)
-				Debug.Trace("[SD] equip device string: " + sDeviceString)  
-
-				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = -1, wddArmorKeyword=kwDeviceKeyword, bEquip = true, sMessage = "")
-				setDeviousOutfitByTags ( iDevOutfit, iDevOutfitPart, true)
-			else
-				Debug.Trace("[SD] unknown outfit to equip: " + iDevOutfit)  
-				Debug.Trace("[SD] unknown outfit part to equip: " + iDevOutfitPart)  
-			endif
-
-		else
-			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
-		endIf
 	else
 		Debug.Trace("[SD] unknown device to equip " )  
 
 	endif
 EndFunction
 
+
+
 Function clearDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
 	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
 	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
 	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
-	Armor aWornDevice
-	Armor aRenderedDevice
 	Actor PlayerActor = Game.GetPlayer() as Actor
-	Int iDevOutfit
-	Int iDevOutfitPart
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
 	Form kForm
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Bool bDeviceOverride = False
+
+	; If master Race is set, check if override device is set for this race and use it first
+
+	If ( fActorOverride!= none)
+		Debug.Trace("[SD] clearDeviceByString - Actor override detected")  
+		if (StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword")!=none)
+			Debug.Trace("[SD] 	- Override detected for " + sDeviceString)  
+			bDeviceOverride = True
+			kwDeviceKeyword = 	StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword") as Keyword
+			aWornDevice = StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_inventory" ) as Armor
+			aRenderedDevice = StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_rendered" ) as Armor
+			sGenericDeviceTags = StorageUtil.GetStringValue(fActorOverride, "_SD_" + sDeviceString + "_tags" )
+		else
+			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
+		endIf
+	endIf
+
+	If ( fRaceOverride!= none) && (!bDeviceOverride)
+		Debug.Trace("[SD] clearDeviceByString - Race override detected")  
+		if (StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword")!=none)
+			Debug.Trace("[SD] 	- Override detected for " + sDeviceString)  
+			bDeviceOverride = True
+			kwDeviceKeyword = 	StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword") as Keyword
+			aWornDevice = StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_inventory" ) as Armor
+			aRenderedDevice = StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_rendered" ) as Armor
+			sGenericDeviceTags = StorageUtil.GetStringValue(fRaceOverride, "_SD_" + sDeviceString + "_tags" )
+		else
+			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
+		endIf
+	EndIf
+
+	If(!bDeviceOverride) ; generic item
+		Debug.Trace("[SD] clearDeviceByString - NO override detected")  
+			kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+			aWornDevice = none
+			aRenderedDevice = none
+			sGenericDeviceTags = none
+	endIf
  
-	If (sOutfitString=="") && (kwDeviceKeyword != None)
+	If (kwDeviceKeyword != None)
 
 		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
 			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
@@ -167,71 +637,225 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
 			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
 
-			aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
-			if (aWornDevice != None)
-				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
-				kForm = aWornDevice as Form
+			if ( (aWornDevice!=none) && (aRenderedDevice!=none))
+				; preferred device
 
-				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
-					Debug.Notification("[SD] removing zad_BlockGeneric device!")  
-					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - Can't clear device")  
+				Debug.Trace("[SD] 		equipDeviceByString - preferred: " + aRenderedDevice + " - Device inventory: "  + aWornDevice  )
+
+				clearDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+
+			else
+				; generic device
+				Debug.Trace("[SD] 		equipDeviceByString - generic: ")
+
+				aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
+				if (aWornDevice != None)
+					aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+					kForm = aWornDevice as Form
+
+					if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+						Debug.Notification("[SD] removing zad_BlockGeneric device!")  
+						Debug.Trace("[SD]    zad_BlockGeneric keyword detected - Can't clear device")  
+					else
+						clearDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+					endif
+				else
+					Debug.Trace("[SD]    Can't get worn device")
 				endif
-			else
-				Debug.Trace("[SD]    Can't get worn device")
+				
+				; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
+
 			endif
 
-			libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] clearDeviceByString called with message: " + sOutfitString)  
+			Endif
+
 		else
 			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
 		endIf
 
-	ElseIf (sOutfitString!="") && (kwDeviceKeyword != None)
-
-		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
-			iDevOutfit = getDeviousOutfitByString(sOutfitString)
-			iDevOutfitPart = getDeviousOutfitPartByString(sDeviceString)
-
-			if (iDevOutfit!=-1) && (iDevOutfitPart!=-1)
-				Debug.Trace("[SD] clearing device string: " + sDeviceString)  
-				Debug.Trace("[SD] clearing outfit: " + sOutfitString)  
-				Debug.Trace("[SD] clearing device outfit: " + iDevOutfit)  
-				Debug.Trace("[SD] clearing device outfit part: " + iDevOutfitPart)  
-
-				; setDeviousOutfitByKeyword ( iOutfit= iDevOutfit, iOutfitPart = iDevOutfitPart, ddArmorKeyword=kwDeviceKeyword, bEquip = false, sMessage = "")
-				setDeviousOutfitByTags ( iOutfit = iDevOutfit, iOutfitPart = iDevOutfitPart, bEquip = false, sMessage = "" , bDestroy = true)
-			else
-				Debug.Trace("[SD] unknown outfit to clear: " + iDevOutfit)  
-				Debug.Trace("[SD] unknown outfit part to clear: " + iDevOutfitPart)  
-			endif
-		else
-			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
-		endIf
 	else
 		Debug.Trace("[SD] unknown device to clear " )  
 
 	endif
 EndFunction
 
+Bool Function equipDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword)
+	Actor kSlave = Game.GetPlayer() as Actor
+	Keyword kwWornKeyword
+	Bool bDeviceEquipSuccess = False
+
+	libs.Log("[SD] equipDevice " )
+
+	if (ddArmorKeyword != None)
+		if (!kslave.WornHasKeyword(ddArmorKeyword))
+
+			bDeviceEquipSuccess = libs.EquipDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
+			bDeviceEquipSuccess = True
+		Else
+			libs.Log("[SD]   	skipped - device already equipped " )
+		EndIf
+	Else
+		Debug.Notification("[SD] equipDevice - bad keyword " )
+	endIf
+
+	return bDeviceEquipSuccess
+EndFunction
+
+Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
+	Actor kSlave = Game.GetPlayer() as Actor
+	Keyword kwWornKeyword
+	Bool bDeviceEquipSuccess = False
+
+	If (bDestroy)
+		libs.Log("[SD] clearDevice - destroy: " + ddArmorKeyword )
+
+		if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
+				bDeviceEquipSuccess = libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
+				bDeviceEquipSuccess = True
+			Else
+			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+		EndIf
+			
+			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, True, False)
+	Else
+		libs.Log("[SD] clearDevice - remove: " + ddArmorKeyword  )
+
+		if kSlave.GetItemCount(ddArmorInventory) > 0
+				bDeviceEquipSuccess = libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
+				bDeviceEquipSuccess = True
+			Else
+			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+		EndIf
+
+			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, False, False)
+	EndIf
+
+	return bDeviceEquipSuccess
+EndFunction
+
+
+
 Function clearDevicesForEnslavement()
 	; OutfitPart set to -1 to force the use of ManipulateGenericDeviceByKeyword when clearing items
+	Actor kPlayer = Game.GetPlayer()
 
-	If !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine", "Collar"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved", "Collar"  )
-		; setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = -1, ddArmorKeyword = libs.zad_DeviousCollar, bEquip = False, sMessage = "" , bDestroy = True)
+	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Collar"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Collar"  )
 		clearDeviceByString ( sDeviceString = "Collar", skipEvents = true, skipMutex = true )
 	EndIf
 
-	If !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine", "Armbinder"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan", "ArmCuffs"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved", "Armbinder"  )
-		; setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = -1, ddArmorKeyword = libs.zad_DeviousArmCuffs, bEquip = False, sMessage = "" , bDestroy = True)
+	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "ArmCuffs"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  )
 		clearDeviceByString ( sDeviceString = "ArmCuffs", skipEvents = true, skipMutex = true )
 		clearDeviceByString ( sDeviceString = "Armbinder", skipEvents = true, skipMutex = true )
 	EndIf
 
-	If !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSanguine", "LegCuffs"  ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousSpriggan", "LegCuffs"   ) && !isDeviceEquippedKeyword( Game.getPlayer(),  "_SD_DeviousEnslaved", "LegCuffs"   )
-		; setDeviousOutfitByKeyword ( iOutfit = -1, iOutfitPart = -1, ddArmorKeyword = libs.zad_DeviousLegCuffs, bEquip = False, sMessage = "" , bDestroy = True)
+	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "LegCuffs"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "LegCuffs"   ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "LegCuffs"   )
 		clearDeviceByString ( sDeviceString = "LegCuffs", skipEvents = true, skipMutex = true )
 	EndIf
 
 EndFunction
+
+
+Function setDeviceCollar ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Collar", sDevMessage )
+	else
+		clearDeviceByString ( "Collar", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceArms ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Armbinder", sDevMessage )
+		equipDeviceByString ( "ArmCuffs", sDevMessage )
+	else
+		clearDeviceByString ( "Armbinder", sDevMessage )
+		clearDeviceByString ( "ArmCuffs", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceLegs (  Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "LegCuffs", sDevMessage )
+	else
+		clearDeviceByString ( "LegCuffs", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceBelt ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Belt", sDevMessage )
+	else
+		clearDeviceByString ( "Belt", sDevMessage )
+	endif
+
+EndFunction
+
+Function setDeviceGag ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Gag", sDevMessage )
+	else
+		clearDeviceByString ( "Gag", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceBlindfold ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Blindfold", sDevMessage )
+	else
+		clearDeviceByString ( "Blindfold", sDevMessage )
+	endif
+EndFunction
+
+Function setDevicePlugAnal ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "PlugAnal", sDevMessage )
+	else
+		clearDeviceByString ( "PlugAnal", sDevMessage )
+	endif
+EndFunction
+
+Function setDevicePlugVaginal ( Bool bDevEquip = True, String sDevMessage = "")	
+	If (bDevEquip)
+		equipDeviceByString ( "PlugVaginal", sDevMessage )
+	else
+		clearDeviceByString ( "PlugVaginal", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceBra ( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Bra", sDevMessage )
+	else
+		clearDeviceByString ( "Bra", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceBoots( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Boots", sDevMessage )
+	else
+		clearDeviceByString ( "Boots", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceHarness( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Harness", sDevMessage )
+	else
+		clearDeviceByString ( "Harness", sDevMessage )
+	endif
+EndFunction
+
+Function setDeviceYoke( Bool bDevEquip = True, String sDevMessage = "")
+	If (bDevEquip)
+		equipDeviceByString ( "Yoke", sDevMessage )
+	else
+		clearDeviceByString ( "Yoke", sDevMessage )
+	endif
+EndFunction
+
 
 
 Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
@@ -348,105 +972,6 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	return thisKeyword
 EndFunction
 
-Keyword function getDeviousKeywordByOutfitPart(Int iDevOutfitPart)
-	Keyword thisKeyword = None
-
-	If (iDevOutfitPart == 0 )
-		thisKeyword =  libs.zad_DeviousCollar  ; 0 - Collar - Unused
-
-	ElseIf (iDevOutfitPart == 1 )
-		thisKeyword =  libs.zad_DeviousArmbinder ; 1 - Arms cuffs
-
-	ElseIf (iDevOutfitPart == 2 )
-		thisKeyword =  libs.zad_DeviousLegCuffs   ; 2 - Legs cuffs
-
-	ElseIf (iDevOutfitPart == 3 )
-		thisKeyword =  libs.zad_DeviousGag   ; 3 - Gag
-
-	ElseIf (iDevOutfitPart == 4 )
-		thisKeyword =  libs.zad_DeviousBlindfold   ; 4 - Blindfold
-
-	ElseIf (iDevOutfitPart == 5 )
-		thisKeyword =  libs.zad_DeviousBelt   ; 5 - Belt
-
-	ElseIf (iDevOutfitPart == 6 )
-		thisKeyword =  libs.zad_DeviousPlugAnal  ; 6 - Plug Anal
-
-	ElseIf (iDevOutfitPart == 7 )
-		thisKeyword =  libs.zad_DeviousPlugVaginal ; 7 - Plug Vaginal
-
-	Else
-		Debug.Notification("[SD] Not a default outfit part - " + iDevOutfitPart)
-	endIf
-
-	return thisKeyword
-EndFunction
-
-Int Function getDeviousOutfitByString(String deviousKeyword = ""  )
-	Int thisOutfit = -1
-
-	if (deviousKeyword == "_SD_DeviousSanguine" ) || (deviousKeyword == "Sanguine") 
-		thisOutfit = 10
-
-	elseif (deviousKeyword == "_SD_DeviousSpriggan" ) || (deviousKeyword == "Spriggan") 
-		thisOutfit = 7
-
-	elseif (deviousKeyword == "_SD_DeviousEnslaved" ) || (deviousKeyword == "Enslaved") 
-		thisOutfit = 0
-
-	elseif (deviousKeyword == "_SD_DeviousParasiteAn" ) || (deviousKeyword == "ParasiteAnal")  || (deviousKeyword == "Parasite") 
-		thisOutfit = 9
-
-	elseif (deviousKeyword == "_SD_DeviousParasiteVag" ) || (deviousKeyword == "ParasiteVaginal")  || (deviousKeyword == "Parasite")
-		thisOutfit = 9
-
-	else
-		Debug.Notification("[SD] getDeviousOutfitByString: unknown non-generic outfit: " + deviousKeyword)  
-	endif
-
-	return thisOutfit
-EndFunction
-
-Int Function getDeviousOutfitPartByString(String deviousKeyword = ""  )
-	Int thisOutfitPart = -1
-	; 0 - Collar
-	; 1 - Arms
-	; 2 - Legs
-	; 3 - Gag
-	; 4 - Blindfold
-	; 5 - Belt
-	; 6 - Plug Anal
-	; 7 - Plug Vaginal 
-	if (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
-		thisOutfitPart = 0
-
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders")   || (deviousKeyword == "ArmCuffs")    || (deviousKeyword == "ArmCuff")  
-		thisOutfitPart = 1
-
-	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs")  || (deviousKeyword == "LegCuff") 
-		thisOutfitPart = 2
-
-	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") 
-		thisOutfitPart = 3
-
-	elseif (deviousKeyword == "zad_DeviousBlindfold") || (deviousKeyword == "Blindfold") 
-		thisOutfitPart = 4
-
-	elseif (deviousKeyword == "zad_DeviousBelt") || (deviousKeyword == "Belt") 
-		thisOutfitPart = 5
-
-	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal")  || (deviousKeyword == "ParasiteAnal")
-		thisOutfitPart = 6
-
-	elseif (deviousKeyword == "zad_DeviousPlugVaginal") || (deviousKeyword == "PlugVaginal")  || (deviousKeyword == "ParasiteVaginal")
-		thisOutfitPart = 7
-
-	else
-		Debug.Trace("[SD] getDeviousOutfitPartByString: unknown non-generic part: " + deviousKeyword)  
-	endIf
-
-	return thisOutfitPart
-EndFunction
 
 Bool Function isDeviceEquippedString( Actor akActor,  String sDeviceString  )
 
@@ -454,137 +979,24 @@ Bool Function isDeviceEquippedString( Actor akActor,  String sDeviceString  )
 EndFunction
 
 Bool Function isDeviceEquippedKeyword( Actor akActor,  String sKeyword, String sDeviceString  )
-	; Debug.Trace("[SD] isDeviceEquippedKeyword -  getDeviousOutfitPartByString:" + getDeviousOutfitPartByString(sDeviceString))  
-	; Debug.Trace("[SD] isDeviceEquippedKeyword -  isDeviousOutfitPartByKeyword:" + isDeviousOutfitPartByKeyword (  akActor, getDeviousOutfitPartByString(sDeviceString), sKeyword ) )  
-
-	Return isDeviousOutfitPartByKeyword (  akActor, getDeviousOutfitPartByString(sDeviceString), sKeyword )
-EndFunction
-
-Bool Function isDeviousOutfitPartByKeyword (  Actor akActor, Int iOutfitPart = -1, String deviousKeyword = "zad_Lockable"  )
+	Actor PlayerActor = Game.GetPlayer() as Actor
 	Form kForm
-	Keyword kKeyword
-	Int[] uiSlotMask = New Int[10]
-	uiSlotMask[0] = 0x00008000 ;45  Collar / DD Collars / DD Cuffs (Neck)
-	uiSlotMask[1] = 0x20000000 ;59  DD Cuffs (Arms) 
-	uiSlotMask[2] = 0x00800000 ;53  DD Cuffs (Legs)
-	uiSlotMask[3] = 0x00004000 ;44  DD Gags Mouthpieces
-	uiSlotMask[4] = 0x02000000 ;55  DD Blindfold
-	uiSlotMask[5] = 0x00080000 ;49  DD Chastity Belts
-	uiSlotMask[6] = 0x00040000 ;48  DD plugs (Anal)
-	uiSlotMask[7]=  0x08000000 ;57  DD Plugs (Vaginal)
-	uiSlotMask[8]=  0x00100000 ;50  DD Piercings
-	uiSlotMask[9] = 0x00010000 ;46  DD Armbinder  
+	Keyword kKeyword = getDeviousKeywordByString(sDeviceString)
  
-
-	Int iFormIndex = uiSlotMask.Length 
-
-	If (iOutfitPart>=0)
-		kForm = akActor.GetWornForm( uiSlotMask[iOutfitPart] ) 
+ 	If (kKeyword != None)
+		kForm = libs.GetWornDevice(PlayerActor, kKeyword) as Form
 		If (kForm != None)
-			Armor kArmor = kForm  as Armor
 			; Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword   )
-			return (kForm.HasKeywordString(deviousKeyword) ) 
+			return (kForm.HasKeywordString(sKeyword) ) 
 		Else
 			; Debug.Trace("[SD] SetOutfit: test part " + iOutfitPart + " for keyword " +  deviousKeyword + " - nothing equipped "  )
 			Return False
 		EndIf
-
-	EndIf
+	else
+		Debug.Trace("[SD] isDeviceEquippedKeyword: Keyword not found for: " + sDeviceString)  
+	endIf
  
 	Return False
-EndFunction
-
-Function registerDeviousOutfits ( )
-	; Collar not registered - contains enchantment secific to SD
-	; libs.RegisterGenericDevice(zazIronCollar		, "collar,arms,metal,iron,zap")
-	Debug.Trace("[SD] Register devious outfits")
-
-	; These devices can be shared
-	libs.RegisterGenericDevice(zazIronCuffs			, "armbinder,arms,metal,iron,zap")
-	libs.RegisterGenericDevice(zazIronShackles		, "cuffs,legs,metal,iron,zap")
-	libs.RegisterGenericDevice(zazWoodenBit			, "gag,leather,wood,zap")
-	libs.RegisterGenericDevice(zazBlinds 			, "blindfold,leather,zap")
-
-EndFunction
-
-Function registerDeviousOutfitsKeywords ( Actor kActor )
-	Debug.Trace("[SD] Register devious keywords")
-  
-	if (StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword") != 0)
-		Debug.Trace("[SD] Register devious keywords - aborting - list already set - " + StorageUtil.FormListCount( kActor, "_SD_lDevicesKeyword"))
-		Return
-	EndIf	
-
-	; Register list of reference keywords for each device in list
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousCollar) ; 0 - Collar - Unused
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousArmbinder) ; 1 - Arms cuffs
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousLegCuffs ) ; 2 - Legs cuffs
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousGag ) ; 3 - Gag
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBlindfold ) ; 4 - Blindfold
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousBelt ) ; 5 - Belt
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugAnal) ; 6 - Plug Anal
-	StorageUtil.FormListAdd( kActor, "_SD_lDevicesKeyword", libs.zad_DeviousPlugVaginal) ; 7 - Plug Vaginal
-
-EndFunction
-
-; -------------------------------------------------------- Old Functions
-
-Bool Function isArmorRemovable ( Form kForm )
-	If ( !kForm  )
-	;	Debug.Trace("[SD] Armor: " + kForm )
-		Return False
-	EndIf
-
-	Bool isLocked = (kForm.HasKeywordString("_SD_nounequip")  || kForm.HasKeywordString("_SD_DeviousSanguine")  || kForm.HasKeywordString("_SD_DeviousSpriggan") || kForm.HasKeywordString("SOS_Underwear")  || kForm.HasKeywordString("SOS_Genitals") || kForm.HasKeywordString("_SLMC_MCdevice") || !SexLab.IsStrippable(kForm) || kForm.HasKeywordString("zad_Lockable") || kForm.HasKeywordString("zad_BlockGeneric") )
-
-	Debug.Trace("[SD] Armor: " + kForm + " - " + kForm.GetNumKeywords())
-	; Debug.Trace("[SD] _SD_nounequip: " + kForm.HasKeywordString("_SD_nounequip") )
-	; Debug.Trace("[SD] _SD_DeviousSanguine: " + kForm.HasKeywordString("_SD_DeviousSanguine") )
-	; Debug.Trace("[SD] _SD_DeviousSpriggan: " + kForm.HasKeywordString("_SD_DeviousSpriggan") )
-	; Debug.Trace("[SD] SOS_Underwear: " + kForm.HasKeywordString("SOS_Underwear") )
-	; Debug.Trace("[SD] SOS_Genitals: " + kForm.HasKeywordString("SOS_Genitals") )
-	; Debug.Trace("[SD] _SLMC_MCdevice: " + kForm.HasKeywordString("_SLMC_MCdevice") )
-	Debug.Trace("[SD] SexLabNoStrip: " + kForm.HasKeywordString("SexLabNoStrip") )
-	Debug.Trace("[SD] NoStrip: " + SexLab.IsStrippable(kForm) )
-	; Debug.Trace("[SD] zad_Lockable: " + kForm.HasKeywordString("zad_Lockable") )
-	; Debug.Trace("[SD] VendorNoSale: " + kForm.HasKeywordString("VendorNoSale") )
-	Debug.Trace("[SD] isLocked: "+ isLocked)
-
-	Return !isLocked
-
-EndFunction
-
-Int Function countRemovable ( Actor akActor )
-	If ( !akActor || akActor.IsDead() )
-		Return -1
-	EndIf
-	
-	Int[] uiSlotMask = New Int[7]
-	uiSlotMask[0]  = 0x00000004 ;32  Body
-	uiSlotMask[1]  = 0x00000008 ;33  Hands
-	uiSlotMask[2]  = 0x00000010 ;34  Forearms
-	uiSlotMask[3]  = 0x00000080 ;37  Feet
-	uiSlotMask[4]  = 0x00000100 ;38  Calves
-	uiSlotMask[5]  = 0x00000200 ;39  Shield
-	uiSlotMask[6]  = 0x00001000 ;42  Circlet
-
-
-	Int iRemovable = 0
-
-	Int iFormIndex = uiSlotMask.Length
-	While ( iFormIndex > 0 )
-		iFormIndex -= 1
-		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
-
-		Armor kArmor = kForm as Armor
-		If ( kArmor && isArmorRemovable( kForm ) )
-			iRemovable += 1
-			Debug.Trace("[SD] Found removable: " + kArmor + " - slot index: " + iFormIndex)
-		EndIf
-	EndWhile	
-
-	Return iRemovable
-
 EndFunction
 
 
@@ -839,6 +1251,215 @@ Bool Function isClothingBodyEquipped( Actor akActor )
 EndFunction
 
 
+
+; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
+
+; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
+
+function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
+	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+
+  	if (STevent) 
+        ModEvent.PushForm(STevent, akActor)      	; Form - actor
+        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
+        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, iColor)  			; Int - color
+        ModEvent.PushBool(STevent, false)        	; Bool - last = false
+        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
+
+        ModEvent.Send(STevent)
+  	else
+  		Debug.Trace("[_sdqs_fcts_outfit]  Send slave tat event failed.")
+	endIf
+endfunction
+
+
+
+Function addPunishmentDevice(String sDevice)
+	Actor kPlayer = Game.getPlayer() as Actor
+	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
+
+	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "PlugAnal")
+		equipDeviceByString ( sDeviceString = "Belt")
+	EndIf
+
+	If (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly and shoves a cold plug into your abused womb." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
+		
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "PlugVaginal")
+		equipDeviceByString ( sDeviceString = "Belt")
+	EndIf
+
+	; Belt
+	If (sDevice == "Belt")  ; && (isMasterSpeaking==1)
+		Debug.MessageBox("'Let's watch you squirm... that will change me from your attitude.'\n Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Belt")
+	EndIf
+
+	; Blinds
+	If (sDevice == "Blindfold")
+		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
+			
+		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Blindfold")
+	EndIf
+
+	; Gag
+
+	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("'I don't want to hear one more word from you!'\n Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Gag")
+
+	EndIf
+
+EndFunction
+
+
+Function removePunishmentDevice(String sDevice)
+	Actor kPlayer = Game.getPlayer() as Actor
+	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
+
+	If (sDevice == "PlugAnal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString ( sDeviceString = "PlugAnal")
+		equipDeviceByString ( sDeviceString = "Belt")
+	EndIf
+
+	If (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString ( sDeviceString = "PlugVaginal")
+		equipDeviceByString ( sDeviceString = "Belt")
+	EndIf
+
+	; Belt
+	If (sDevice == "Belt") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+	EndIf
+
+	; Blinds
+	If (sDevice == "Blindfold")
+		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
+			
+		; setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Blindfold")
+	EndIf
+
+	; Gag
+
+	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
+
+		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Gag")
+
+	EndIf
+
+EndFunction
+
+
+Bool Function isArmorRemovable ( Form kForm )
+	If ( !kForm  )
+	;	Debug.Trace("[SD] Armor: " + kForm )
+		Return False
+	EndIf
+
+	Bool isLocked = (kForm.HasKeywordString("_SD_nounequip")  || kForm.HasKeywordString("_SD_DeviousSanguine")  || kForm.HasKeywordString("_SD_DeviousSpriggan") || kForm.HasKeywordString("SOS_Underwear")  || kForm.HasKeywordString("SOS_Genitals") || kForm.HasKeywordString("_SLMC_MCdevice") || !SexLab.IsStrippable(kForm) || kForm.HasKeywordString("zad_Lockable") || kForm.HasKeywordString("zad_BlockGeneric") )
+
+	Debug.Trace("[SD] Armor: " + kForm + " - " + kForm.GetNumKeywords())
+	; Debug.Trace("[SD] _SD_nounequip: " + kForm.HasKeywordString("_SD_nounequip") )
+	; Debug.Trace("[SD] _SD_DeviousSanguine: " + kForm.HasKeywordString("_SD_DeviousSanguine") )
+	; Debug.Trace("[SD] _SD_DeviousSpriggan: " + kForm.HasKeywordString("_SD_DeviousSpriggan") )
+	; Debug.Trace("[SD] SOS_Underwear: " + kForm.HasKeywordString("SOS_Underwear") )
+	; Debug.Trace("[SD] SOS_Genitals: " + kForm.HasKeywordString("SOS_Genitals") )
+	; Debug.Trace("[SD] _SLMC_MCdevice: " + kForm.HasKeywordString("_SLMC_MCdevice") )
+	Debug.Trace("[SD] SexLabNoStrip: " + kForm.HasKeywordString("SexLabNoStrip") )
+	Debug.Trace("[SD] NoStrip: " + SexLab.IsStrippable(kForm) )
+	; Debug.Trace("[SD] zad_Lockable: " + kForm.HasKeywordString("zad_Lockable") )
+	; Debug.Trace("[SD] VendorNoSale: " + kForm.HasKeywordString("VendorNoSale") )
+	Debug.Trace("[SD] isLocked: "+ isLocked)
+
+	Return !isLocked
+
+EndFunction
+
+Int Function countRemovable ( Actor akActor )
+	If ( !akActor || akActor.IsDead() )
+		Return -1
+	EndIf
+	
+	Int[] uiSlotMask = New Int[7]
+	uiSlotMask[0]  = 0x00000004 ;32  Body
+	uiSlotMask[1]  = 0x00000008 ;33  Hands
+	uiSlotMask[2]  = 0x00000010 ;34  Forearms
+	uiSlotMask[3]  = 0x00000080 ;37  Feet
+	uiSlotMask[4]  = 0x00000100 ;38  Calves
+	uiSlotMask[5]  = 0x00000200 ;39  Shield
+	uiSlotMask[6]  = 0x00001000 ;42  Circlet
+
+
+	Int iRemovable = 0
+
+	Int iFormIndex = uiSlotMask.Length
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+
+		Armor kArmor = kForm as Armor
+		If ( kArmor && isArmorRemovable( kForm ) )
+			iRemovable += 1
+			Debug.Trace("[SD] Found removable: " + kArmor + " - slot index: " + iFormIndex)
+		EndIf
+	EndWhile	
+
+	Return iRemovable
+
+EndFunction
+
+
+
 Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = False )
 	If ( !akActor || akActor.IsDead() )
 		Return
@@ -931,7 +1552,6 @@ Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = F
 	EndIf
 EndFunction
 
-
 Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword = "zad_Lockable" )
  
 	Form kForm
@@ -970,663 +1590,159 @@ Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword 
 	Return devicesCount
 EndFunction
 
-Function setDeviousOutfitCollar ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Collar", bDevEquip)
-EndFunction
+;------------------------- Special spriggan outfit / will be moved to parasite mod...  someday maybe
 
-Function setDeviousOutfitArms ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Armbinder", bDevEquip)
-	setDeviousOutfitPartByString (iDevOutfit, "ArmCuffs", bDevEquip)
-EndFunction
+Function equipDeviceSpriggan ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
+	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
+	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
+	Actor PlayerActor = Game.GetPlayer()
+	Actor kMaster = None
+	Int iDevOutfit
+	Int iDevOutfitPart
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm	
 
-Function setDeviousOutfitLegs ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "LegCuffs", bDevEquip)
-EndFunction
+	If (kwDeviceKeyword != None)
 
-Function setDeviousOutfitBelt ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Belt", bDevEquip)
-EndFunction
+		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
+			Debug.Trace("[SD] equipDeviceSpriggan: " + sDeviceString)  
+			Debug.Trace("[SD] 		keyword: " + kwDeviceKeyword)  
 
-Function setDeviousOutfitGag ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Gag", bDevEquip)
-EndFunction
+			If ( sDeviceString == "ArmCuffs" )
+				aRenderedDevice = zazSprigganHandsRendered 
+				aWornDevice = zazSprigganHands
 
-Function setDeviousOutfitBlindfold ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Blindfold", bDevEquip)
-EndFunction
-
-Function setDeviousOutfitPlugAnal ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "PlugAnal", bDevEquip)
-EndFunction
-
-Function setDeviousOutfitPlugVaginal ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")	
-	setDeviousOutfitPartByString (iDevOutfit, "PlugVaginal", bDevEquip)
-EndFunction
-
-Function setDeviousOutfitBra ( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Bra", bDevEquip)
-EndFunction
-
-Function setDeviousOutfitBoots( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Boots", bDevEquip)
-EndFunction
-
-Function setDeviousOutfitHarness( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Harness", bDevEquip)
-EndFunction
-
-Function setDeviousOutfitYoke( Int iDevOutfit =-1, Bool bDevEquip = True, String sDevMessage = "")
-	setDeviousOutfitPartByString (iDevOutfit, "Yoke", bDevEquip)
-EndFunction
-
-
-
-
-Function setDeviousOutfitID ( Int iOutfit, String sMessage = "")
-	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iOutfit", iOutfit)
-
-	If (sMessage != "")
-		Debug.MessageBox(sMessage)
-	EndIf
-EndFunction
-
-
-Function setDeviousOutfit ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "")
-	; iOutfitPart = -1 means 'equip all items in outfit'
-	; bEquip = True means 'equip item' (False means remove item)
-
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
-	Actor kSlave = Game.GetPlayer() as Actor
-	int masterPersonalityType
-	String sDeviceTags
-
- 	if (kMaster != None)
- 		masterPersonalityType = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile")
- 	else
-  		masterPersonalityType = 3
- 	endIf
-
-	Armor ddArmorInventory
-	Armor ddArmorRendered
-	Keyword ddArmorKeyword
-	Bool bDestroy = False
-
-	Debug.Trace("[SD] Slave set - Outfit: " + iOutfitID + " - Part: " + iOutfitPart + " - Equip: " + bEquip )
-
-	; List initialization if it hasn't been set yet
-	; int valueCount = StorageUtil.IntListCount(Game.GetPlayer(), "_SD_lSlaveOutfitList")
-	; if (valueCount == 0)
-	;	valueCount = 10
-	;	while(valueCount > 0)
-	;		valueCount -= 1
-	;		StorageUtil.IntListAdd(Game.GetPlayer(), "_SD_lSlaveOutfitList", -1)
-			; Debug.Notification("List[" + valueCount + "] = " + StorageUtil.IntListGet(Game.GetPlayer(), "_SD_lSlaveOutfitList", valueCount))
-	;	endwhile
-	; EndIf
-
-	; --------------------------------------------------------------------------------------------
-	If (iOutfitID <= 2) ; Default outfit - Zaz or DDi slave items based on personality type
-
-		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
-			; 0 - Collar - Zaz Iron Collar
-
-			If (masterPersonalityType == 0)
-				; 0 - Simple, Common
-				ddArmorRendered = zazIronCollarRendered 
-				ddArmorInventory = zazIronCollar
-				ddArmorKeyword = libs.zad_DeviousCollar 
-
-			ElseIf (masterPersonalityType == 4) ||  (masterPersonalityType == 5)
-				; 4 - Gambler, 5 - Caring
-				ddArmorRendered = DDiCuffLeatherCollarRendered
-				ddArmorInventory = DDiCuffLeatherCollar
-				ddArmorKeyword = libs.zad_DeviousCollar 
-
-			ElseIf (masterPersonalityType == 3) ||  (masterPersonalityType == 6)
-				; 3 - Sadistic, 6 - Perfectionist
-				ddArmorRendered = DDiPostureSteelCollarRendered
-				ddArmorInventory = DDiPostureSteelCollar
-				ddArmorKeyword = libs.zad_DeviousCollar 
-
-			ElseIf (masterPersonalityType == 1) ||  (masterPersonalityType == 2)
-				; 1 - Comfortable , 2 - Horny
-				ddArmorRendered = zazLeatherCollarRendered
-				ddArmorInventory = zazLEatherCollar
-				ddArmorKeyword = libs.zad_DeviousCollar 
+			ElseIf ( sDeviceString == "LegCuffs" )
+				aRenderedDevice = zazSprigganFeetRendered 
+				aWornDevice = zazSprigganFeet
+			
+			ElseIf ( sDeviceString == "Blidfold" )
+				aRenderedDevice = zazSprigganMaskRendered 
+				aWornDevice = zazSprigganMask
+			
+			ElseIf ( sDeviceString == "Belt" )
+				aRenderedDevice = zazSprigganBodyRendered
+				aWornDevice = zazSprigganBody
 			EndIf
 
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		EndIf
+			if ( (aWornDevice!=none) && (aRenderedDevice!=none))
+				; preferred device
 
-		If ( (iOutfitPart!=0) || (iOutfitPart==-1) )
-			setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
+				Debug.Trace("[SD] 		equipDeviceByString - preferred: " + aRenderedDevice + " - Device inventory: "  + aWornDevice  )
 
-		EndIf
+				equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 3) ; Primitive outfit - Ropes only (Forsworn, Giants, Hagravens)
-		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
-			; 0 - Collar - Zaz Iron Collar
-			ddArmorRendered = zazIronCollarRendered 
-			ddArmorInventory = zazIronCollar
-			ddArmorKeyword = libs.zad_DeviousCollar 
+			endif
 
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		EndIf
-		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
-			; 1 - Arms - Zaz Iron Cuffs
-			ddArmorRendered = zazIronCuffsRendered 
-			ddArmorInventory = zazIronCuffs
-			ddArmorKeyword = libs.zad_DeviousArmbinder 
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] equipDeviceSpriggan called with message: " + sOutfitString)  
+			Endif
 
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		EndIf
+			aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+				kForm = aWornDevice as Form 
 
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 4) ; Spider outfit - Zaz spider web
-
-
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 5) ; Falmer outfit - Chaurus textured Zaz spider web
-		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
-			; 0 - Collar - Zaz Iron Collar
-			ddArmorRendered = zazIronCollarRendered 
-			ddArmorInventory = zazIronCollar
-			ddArmorKeyword = libs.zad_DeviousCollar 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		EndIf
-		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
-			; 1 - Arms - Zaz Iron Cuffs
-			ddArmorRendered = zazIronCuffsRendered 
-			ddArmorInventory = zazIronCuffs
-			ddArmorKeyword = libs.zad_DeviousArmbinder 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword)
-		EndIf
-
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 6) ; Animal outfit - Dirt and scratches textures Zaz spider web
-
-
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 7) ; Spriggan Host outfit - Vegetal armor
-		if (!bEquip)
-			bDestroy = True
-		EndIf
-
-		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
-			; 1 - Arms - Spriggan host hands
-			ddArmorRendered = zazSprigganHandsRendered 
-			ddArmorInventory = zazSprigganHands
-			ddArmorKeyword = libs.zad_DeviousArmCuffs
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
-			; 2 - Legs - Spriggan host feet
-			ddArmorRendered = zazSprigganFeetRendered 
-			ddArmorInventory = zazSprigganFeet
-			ddArmorKeyword = libs.zad_DeviousLegCuffs 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-
-		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
-			; 4 - Blindfold - Spriggan host mask
-			ddArmorRendered = zazSprigganMaskRendered 
-			ddArmorInventory = zazSprigganMask
-			ddArmorKeyword = libs.zad_DeviousBlindfold 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-
-		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
-			; 5 - Belt - Spriggan belt
-			ddArmorRendered = zazSprigganBodyRendered
-			ddArmorInventory = zazSprigganBody
-			ddArmorKeyword = libs.zad_DeviousBelt 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-
-
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 8) ; Tentacle outfit -  Biological armor
-
-
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 9) ; Queen of Chaurus outfit - Based on Brood Mother
-
-		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
-			; 6 - Plug Anal - Spider eggs cluster
-			ddArmorRendered = SDEggAnalRendered
-			ddArmorInventory = SDEggAnal
-			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-
-		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
-			; 7 - Plug Vaginal - Chaurus worm
-			ddArmorRendered = SDEggVaginalRendered
-			ddArmorInventory = SDEggVaginal
-			ddArmorKeyword = libs.zad_DeviousPlugVaginal 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == 10) ; Sanguine Artefacts - Spectral bondage devices
-		if (!bEquip)
-			bDestroy = True
-		EndIf
-
-		If ( (iOutfitPart==0) || (iOutfitPart==-1) )
-			; 0 - Collar - Sanguine Bound FX 
-			ddArmorRendered = zazSanguineCollarRendered
-			ddArmorInventory = zazSanguineCollar
-			ddArmorKeyword = libs.zad_DeviousCollar 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==1) || (iOutfitPart==-1) )
-			; 1 - Arms - Sanguine Bound FX 
-			ddArmorRendered = zazSanguineCuffsRendered
-			ddArmorInventory = zazSanguineCuffs
-			ddArmorKeyword = libs.zad_DeviousArmbinder 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==2) || (iOutfitPart==-1) )
-			; 2 - Legs - Sanguine Bound FX 
-			ddArmorRendered = zazSanguineShacklesRendered
-			ddArmorInventory = zazSanguineShackles
-			ddArmorKeyword = libs.zad_DeviousLegCuffs 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==3) || (iOutfitPart==-1) )
-			; 3 - Gag - Sanguine Bound FX 
-			ddArmorRendered = zazSanguineWoodenBitRendered
-			ddArmorInventory = zazSanguineWoodenBit
-			ddArmorKeyword = libs.zad_DeviousGag 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==4) || (iOutfitPart==-1) )
-			; 4 - Blindfold
-			ddArmorRendered = zazSanguineBlindsRendered
-			ddArmorInventory = zazSanguineBlinds
-			ddArmorKeyword = libs.zad_DeviousBlindfold 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==5) || (iOutfitPart==-1) )
-			; 5 - Belt - DDBelt Iron
-			ddArmorRendered = libs.beltIronRendered
-			ddArmorInventory = libs.beltIron
-			ddArmorKeyword = libs.zad_DeviousBelt 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==6) || (iOutfitPart==-1) )
-			; 6 - Plug Anal - DD Soul Gem Plug Anal
-			ddArmorRendered = libs.plugSoulgemAnRendered
-			ddArmorInventory = libs.plugSoulgemAn
-			ddArmorKeyword = libs.zad_DeviousPlugAnal 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-		If ( (iOutfitPart==7) || (iOutfitPart==-1) )
-			; 7 - Plug Vaginal - Sanguine's Artifact
-			ddArmorRendered = zazSanguineArtifactRendered
-			ddArmorInventory = zazSanguineArtifact
-			ddArmorKeyword = libs.zad_DeviousPiercingsVaginal 
-
-			setDeviousOutfitPart ( iOutfitID, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		EndIf
-
-	; --------------------------------------------------------------------------------------------
-	ElseIf (iOutfitID == -1) ; No special outfit ID provided... fall back on generic item add/removal
-		if (!bEquip)
-			bDestroy = True
-		EndIf
-
-		setDeviousOutfitByTags ( iOutfitID, iOutfitPart, bEquip, sMessage, True  )
-
-	EndIf
-
-	Utility.Wait(0.5)
-
-	If (sMessage != "")
-		Debug.MessageBox(sMessage)
-	EndIf
-
-EndFunction
-
-
-Function setDeviousOutfitPartByString (Int iOutfit = -1, String sDeviceString, Bool bEquip = True, String sMessage = "" , Bool bDestroy = False)
-	Actor kSlave = Game.GetPlayer() as Actor
-	; Int iOutfit = getDeviousOutfitByString(sOutfitString)
-	Int iOutfitPart = getDeviousOutfitPartByString(sDeviceString)
-	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
-
-	If (iOutfitPart!=-1) && (iOutfit!=-1)
-		; SD Outfit device
-		if (kwDeviceKeyword != None)
-			if ((!kslave.WornHasKeyword(kwDeviceKeyword)) && (bEquip)) || ((kslave.WornHasKeyword(kwDeviceKeyword)) && (!bEquip))
-				; setDeviousOutfitByTags ( iOutfit, iOutfitPart, bEquip, sMessage , bDestroy )
-				setDeviousOutfit ( iOutfit, iOutfitPart, bEquip, sMessage )
-			endIf
+				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+					Debug.Notification("[SD] adding zad_BlockGeneric device!")  
+					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
+				endif
+			else
+				Debug.Trace("[SD]    Can't get worn device")
+			endif
+ 
 		else
-			Debug.Notification("[SD] setDeviousOutfitPartByString - bad keyword - " + sDeviceString)
-		endif
-	else
-		; Generic device
-		; setDeviousOutfitByKeyword ( iOutfit, iOutfitPart, kwDeviceKeyword, bEquip, sMessage , bDestroy )
-
-		if (bEquip)
-			equipDeviceByString ( sDeviceString )
-		else
-			clearDeviceByString ( sDeviceString )
-		endif 
-	endIf
-
-EndFunction
-
-Function setDeviousOutfitByTags ( Int iOutfit, Int iOutfitPart = -1, Bool bEquip = True, String sMessage = "" , Bool bDestroy = False)
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
-	Actor kSlave = Game.GetPlayer() as Actor
-	String sDeviceTags
-
-	Armor ddArmorInventory = None
-	Armor ddArmorRendered = None
-	Keyword ddArmorKeyword
-
-	If (iOutfitPart!=-1) 
-		Debug.Trace("[SD] Set device by tags" )
-
-		If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslaved"))
-			Debug.Trace("[SD] Looking in Master list - " + kMaster.getName())
-			ddArmorKeyword = StorageUtil.FormListGet( kMaster, "_SD_lDevicesKeyword", iOutfitPart) as Keyword 
-		Else
-			Debug.Trace("[SD] Looking in Slave list - " + kSlave.getName())
-			ddArmorKeyword = StorageUtil.FormListGet( kSlave, "_SD_lDevicesKeyword", iOutfitPart) as Keyword 
-		EndIf
-
-		if (ddArmorKeyword==None)
-			Debug.Trace("[SD] Keyword not found. Fallback on default. " )
-			ddArmorKeyword = getDeviousKeywordByOutfitPart(iOutfitPart)
+			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
 		endIf
 
-		Debug.Trace("[SD] Device keyword: " + ddArmorKeyword )
+	else
+		Debug.Trace("[SD] unknown device to equip " )  
 
-		If (bEquip)
-			sDeviceTags = StorageUtil.StringListGet(kMaster, "_SD_lDevices", iOutfitPart)  
-
-			Debug.Trace("[SD] Device tags: " + sDeviceTags )
-
-			ddArmorInventory = libs.GetDeviceByTags(ddArmorKeyword, sDeviceTags)
-		Else
-			ddArmorInventory = libs.GetWornDevice(libs.PlayerRef, ddArmorKeyword)
-		EndIf
-
-		Debug.Trace("[SD] Equip: " + bEquip + " - Device inventory: "  + ddArmorInventory  )
-
-		If (ddArmorInventory!=None)
-			ddArmorRendered = libs.GetRenderedDevice(ddArmorInventory)
-		EndIf
-
-		Debug.Trace("[SD] Device rendered: " + ddArmorRendered  )
-
-		If (ddArmorInventory!=None) && (ddArmorRendered!=None)
-
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		Else
-			Debug.Trace("[SD] setDeviousOutfitByTags - no device found"  )
-		EndIf
-	Else
-		Debug.Trace("[SD] setDeviousOutfitByTags - no outfit provided"  )
-
-	EndIf
-
+	endif
 EndFunction
 
-Function setDeviousOutfitByKeyword ( Int iOutfit, Int iOutfitPart = -1, Keyword ddArmorKeyword, Bool bEquip = True, String sMessage = "" , Bool bDestroy = False)
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
-	Actor kSlave = Game.GetPlayer() as Actor
-	String sDeviceTags
 
-	Armor ddArmorInventory = None
-	Armor ddArmorRendered = None
 
-	If (iOutfitPart!=-1) 
+Function clearDeviceSpriggan ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false, bool bDestroy = false )
+	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
+	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
+	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
+	Armor aWornDevice
+	Armor aRenderedDevice
+	Actor PlayerActor = Game.GetPlayer() as Actor
+	Int iDevOutfit
+	Int iDevOutfitPart
+	Form kForm
+ 
+	If (kwDeviceKeyword != None)
 
-		Debug.Trace("[SD] Set device by part"  + iOutfitPart + " and keyword: " + ddArmorKeyword )
+		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
+			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
 
-		If (bEquip)
-			sDeviceTags = StorageUtil.StringListGet(kMaster, "_SD_lDevices", iOutfitPart)  
+			Debug.Trace("[SD] clearDeviceSpriggan: " + sDeviceString)  
+			Debug.Trace("[SD]  		keyword: " + kwDeviceKeyword)  
 
-			Debug.Trace("[SD] Device tags: " + sDeviceTags )
+			If ( sDeviceString == "ArmCuffs" )
+				aRenderedDevice = zazSprigganHandsRendered 
+				aWornDevice = zazSprigganHands
 
-			ddArmorInventory = libs.GetDeviceByTags(ddArmorKeyword, sDeviceTags)
-		Else
-			ddArmorInventory = libs.GetWornDevice(kSlave, ddArmorKeyword)
-		EndIf
+			ElseIf ( sDeviceString == "LegCuffs" )
+				aRenderedDevice = zazSprigganFeetRendered 
+				aWornDevice = zazSprigganFeet
+			
+			ElseIf ( sDeviceString == "Blidfold" )
+				aRenderedDevice = zazSprigganMaskRendered 
+				aWornDevice = zazSprigganMask
+			
+			ElseIf ( sDeviceString == "Belt" )
+				aRenderedDevice = zazSprigganBodyRendered
+				aWornDevice = zazSprigganBody
+			EndIf
 
-		Debug.Trace("[SD] Equip: " + bEquip + " - Device inventory: "  + ddArmorInventory  )
-
-		If (ddArmorInventory!=None)
-			ddArmorRendered = libs.GetRenderedDevice(ddArmorInventory)
-		EndIf
-
-		Debug.Trace("[SD] Device rendered: " + ddArmorRendered  )
-
-		If (ddArmorInventory!=None) && (ddArmorRendered!=None)
-
-			setDeviousOutfitPart ( iOutfit, iOutfitPart, bEquip,  ddArmorInventory,  ddArmorRendered,  ddArmorKeyword, bDestroy)
-		Else
-			Debug.Trace("[SD] Aborting device update - no device found"  )
-		EndIf
-	Else
-		; If iOutfitPart = -1, use purely generic device functions
-
-		Debug.Trace("[SD] Set device by keyword only: " + ddArmorKeyword )
-
-		libs.ManipulateGenericDeviceByKeyword(kSlave, ddArmorKeyword, bEquip, skipEvents = false, skipMutex = false)
-
-	EndIf
-
-EndFunction
-
-Function setDeviousOutfitPart ( Int iOutfitID, Int iOutfitPart = -1, Bool bEquip = True, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
-	Actor kSlave = Game.GetPlayer() as Actor
-	Keyword kwWornKeyword
-
-	if (iOutfitPart!=-1) 
-		libs.Log("[SD] SetOutfit: ID:" + iOutfitID + " - Part: "  + iOutfitPart + " - Equip: "  + bEquip )
-
-		if (bEquip) 
-			kwWornKeyword = getDeviousKeywordByOutfitPart (iOutfitPart )
-
-			if (kwWornKeyword != None)
-				if (!kslave.WornHasKeyword(kwWornKeyword))
-
-					libs.Log("[SD] SetOutfit: equip - " + iOutfitID + " [ " + iOutfitPart + "]")
-					libs.EquipDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
-				Else
-					libs.Log("[SD] SetOutfit: equip - " + iOutfitID + "skipped - device already equipped " )
-				EndIf
-			Else
-				Debug.Notification("[SD] setDeviousOutfitPart - bad outfitpart: " + iOutfitPart )
-			endIf
-
-		Else
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] clearDeviceSpriggan called with Outfit: " + sOutfitString)  
+			Endif
 
 			If (bDestroy)
-				libs.Log("[SD] SetOutfit: destroy - " + iOutfitID + " [ " + iOutfitPart + "] " )
+				libs.Log("[SD] 		SetOutfit: destroy " )
 
-				if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
-	 				libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
+				if PlayerActor.GetItemCount(aWornDevice) > 0
+	 				libs.RemoveDevice(PlayerActor, aWornDevice , aRenderedDevice , kwDeviceKeyword, True, False, True)
 	 			Else
-	 			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+	 			 	libs.Log("[SD] 		No matching item found in inventory - " + aWornDevice)
 				EndIf
 	 			
 	 			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, True, False)
 			Else
-				libs.Log("[SD] SetOutfit: remove - " + iOutfitID + " [ " + iOutfitPart + "] " )
+				libs.Log("[SD] 		SetOutfit: remove "  )
 
-				if kSlave.GetItemCount(ddArmorInventory) > 0
-	 				libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
+				if PlayerActor.GetItemCount(aWornDevice) > 0
+	 				libs.RemoveDevice(PlayerActor, aWornDevice , aRenderedDevice , kwDeviceKeyword, False, False, False)
 	 			Else
-	 			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+	 			 	libs.Log("[SD] 		No matching item found in inventory - " + aWornDevice)
 				EndIf
 
 	 			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, False, False)
-			EndIf
+			EndIf		
+		else
+			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
+		endIf
 
-		EndIf
-	EndIf
+	else
+		Debug.Trace("[SD] unknown device to clear " )  
 
+	endif
 EndFunction
 
+;================================================================================
 
-Function addPunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
-	Debug.Notification("[SD] Call to deprecated addPunishment")
-EndFunction
+; Deprecated functions - remove eventually
 
-Function addPunishmentDevice(String sDevice)
-	Actor kPlayer = Game.getPlayer() as Actor
-	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
-	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
+;================================================================================
 
-	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		equipDeviceByString ( sDeviceString = "PlugAnal")
-		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	If (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly and shoves a cold plug into your abused womb." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
-		
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		equipDeviceByString ( sDeviceString = "PlugVaginal")
-		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	; Belt
-	If (sDevice == "Belt")  ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Let's watch you squirm... that will change me from your attitude.'\n Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	; Blinds
-	If (sDevice == "Blindfold")
-		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
-			
-		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Blindfold")
-	EndIf
-
-	; Gag
-
-	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'I don't want to hear one more word from you!'\n Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
-
-		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Gag")
-
-	EndIf
-
-EndFunction
-
-Function removePunishment(Bool bDevGag = False, Bool bDevBlindfold = False, Bool bDevBelt = False, Bool bDevPlugAnal = False, Bool bDevPlugVaginal = False, Bool bDevArmbinder = False)
-	Debug.Notification("[SD] Call to deprecated removePunishment")
-EndFunction
-
-Function removePunishmentDevice(String sDevice)
-	Actor kPlayer = Game.getPlayer() as Actor
-	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
-	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
-
-	If (sDevice == "PlugAnal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		clearDeviceByString ( sDeviceString = "PlugAnal")
-		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	If (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		clearDeviceByString ( sDeviceString = "PlugVaginal")
-		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	; Belt
-	If (sDevice == "Belt") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	; Blinds
-	If (sDevice == "Blindfold")
-		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
-			
-		; setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Blindfold")
-	EndIf
-
-	; Gag
-
-	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
-
-		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Gag")
-
-	EndIf
-
-EndFunction
 
 Function DDSetAnimating( Actor akActor, Bool isAnimating )
 	libs.SetAnimating( akActor, isAnimating )
@@ -1635,29 +1751,6 @@ EndFunction
 Bool Function DDIsBound( actor akActor )
 	return libs.IsBound(akActor)
 EndFunction
-
-; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
-
-; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
-
-function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
-	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
-  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
-
-  	if (STevent) 
-        ModEvent.PushForm(STevent, akActor)      	; Form - actor
-        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
-        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
-        ModEvent.PushInt(STevent, iColor)  			; Int - color
-        ModEvent.PushBool(STevent, false)        	; Bool - last = false
-        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
-
-        ModEvent.Send(STevent)
-  	else
-  		Debug.Trace("[_sdqs_fcts_outfit]  Send slave tat event failed.")
-	endIf
-endfunction
-
 
 Function toggleActorClothing_old ( Actor akActor, Bool strip = True )
 	If ( akActor.IsDead() )
@@ -1712,68 +1805,3 @@ Function toggleActorClothing_old ( Actor akActor, Bool strip = True )
 EndFunction
 
 
-Keyword Property _SDKP_punish Auto
-Keyword Property _SDKP_bound Auto
-Keyword Property _SDKP_gagged Auto
-Keyword Property ArmorCuirass  Auto  
-Keyword Property ClothingBody  Auto  
-
-Keyword Property _SDKP_DeviousSanguine  Auto  
-Keyword Property _SDKP_DeviousEnslaved  Auto  
-Keyword Property _SDKP_DeviousEnslavedCommon  Auto  
-Keyword Property _SDKP_DeviousEnslavedMagic  Auto  
-Keyword Property _SDKP_DeviousEnslavedPrimitive  Auto  
-Keyword Property _SDKP_DeviousEnslavedWealthy  Auto  
-Keyword Property _SDKP_DeviousSpriggan  Auto  
-Keyword Property _SDKP_DeviousParasiteAn  Auto  
-Keyword Property _SDKP_DeviousParasiteVag  Auto  
-
-
-zadLibs Property libs Auto
-SexLabFrameWork Property SexLab Auto
-
-Armor Property DDiPostureSteelCollarRendered Auto         ; Internal Device
-Armor Property DDiPostureSteelCollar Auto        	       ; Inventory Device
- 
-Armor Property DDiCuffLeatherCollarRendered Auto         ; Internal Device
-Armor Property DDiCuffLeatherCollar Auto        	       ; Inventory Device
- 
-Armor Property zazLeatherCollarRendered Auto         ; Internal Device
-Armor Property zazLeatherCollar Auto        	       ; Inventory Device
-Armor Property zazIronCollarRendered Auto         ; Internal Device
-Armor Property zazIronCollar Auto        	       ; Inventory Device
-Armor Property zazIronCuffsRendered Auto         ; Internal Device
-Armor Property zazIronCuffs Auto        	       ; Inventory Device
-Armor Property zazIronShacklesRendered Auto         ; Internal Device
-Armor Property zazIronShackles Auto        	       ; Inventory Device
-Armor Property zazWoodenBitRendered Auto         ; Internal Device
-Armor Property zazWoodenBit Auto        	       ; Inventory Device
-Armor Property zazBlindsRendered Auto         ; Internal Device
-Armor Property zazBlinds Auto        	       ; Inventory Device
-
-Armor Property zazSprigganHandsRendered Auto         ; Internal Device
-Armor Property zazSprigganHands Auto        	       ; Inventory Device
-Armor Property zazSprigganFeetRendered Auto         ; Internal Device
-Armor Property zazSprigganFeet Auto        	       ; Inventory Device
-Armor Property zazSprigganMaskRendered Auto         ; Internal Device
-Armor Property zazSprigganMask Auto        	       ; Inventory Device
-Armor Property zazSprigganBodyRendered Auto         ; Internal Device
-Armor Property zazSprigganBody Auto        	       ; Inventory Device
-
-Armor Property zazSanguineCollarRendered Auto         ; Internal Device
-Armor Property zazSanguineCollar Auto        	       ; Inventory Device
-Armor Property zazSanguineCuffsRendered Auto         ; Internal Device
-Armor Property zazSanguineCuffs Auto        	       ; Inventory Device
-Armor Property zazSanguineShacklesRendered Auto         ; Internal Device
-Armor Property zazSanguineShackles Auto        	       ; Inventory Device
-Armor Property zazSanguineWoodenBitRendered Auto         ; Internal Device
-Armor Property zazSanguineWoodenBit Auto        	       ; Inventory Device
-Armor Property zazSanguineBlindsRendered Auto         ; Internal Device
-Armor Property zazSanguineBlinds Auto        	       ; Inventory Device
-Armor Property zazSanguineArtifactRendered Auto         ; Internal Device
-Armor Property zazSanguineArtifact Auto        	       ; Inventory Device
-
-Armor Property SDEggVaginalRendered Auto         ; Internal Device
-Armor Property SDEggVaginal Auto        	       ; Inventory Device
-Armor Property SDEggAnalRendered Auto         ; Internal Device
-Armor Property SDEggAnal Auto        	       ; Inventory Device

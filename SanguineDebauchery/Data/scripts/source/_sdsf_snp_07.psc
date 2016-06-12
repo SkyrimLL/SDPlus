@@ -103,7 +103,7 @@ if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
 	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
 		; Keep hands free by accident
 	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
-		fctOutfit.setDeviousOutfitArms ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
+		fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
 	EndIf
 EndIf
 ;END CODE

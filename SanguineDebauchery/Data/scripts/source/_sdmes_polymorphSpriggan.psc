@@ -212,6 +212,8 @@ Event OnEffectStart(Actor Target, Actor Caster)
             StorageUtil.SetIntValue(Player, "_SD_iSprigganTransformCount", 1)
         EndIf
 
+        StorageUtil.SetIntValue(Player, "_SD_iSprigganPlayer", 1)
+
         RegisterForSingleUpdate( fRFSU )
 
     endif
@@ -280,6 +282,7 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
         Player.SetScale (1.0)
 
         SprigganFX.Play( Player, 30 )
+        StorageUtil.SetIntValue(Player, "_SD_iSprigganPlayer", 0)
     endif
 endEvent
 

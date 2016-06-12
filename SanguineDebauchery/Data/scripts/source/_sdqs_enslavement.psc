@@ -111,6 +111,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	If ( !bQuestActive )
 		; Debug.Trace("[SD] Starting enslavement story.")
 		bQuestActive = True
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnsvalementInitSquenceOn",1)
 	    					
 		fEnslavementStart = GetCurrentGameTime()
 
@@ -147,13 +148,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDGVP_enslaved.SetValue(1)
 		StorageUtil.SetIntValue(kSlave, "_SD_iForcedSurrender",0)
 
-		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") != 1)		
-			StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 0)
-		EndIf
-
-		if (StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC") != 1)		
-			StorageUtil.SetIntValue(kMaster, "_SD_iSpeakingNPC", 0)
-		EndIf
+		; Unclear why this was set - disabling for now
+		; if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") != 1)		
+		;	StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 0)
+		; EndIf
+		; if (StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC") != 1)		
+		;	StorageUtil.SetIntValue(kMaster, "_SD_iSpeakingNPC", 0)
+		; EndIf
 
 		; a new slave into a slaver faction
 		If ( aiValue2 == 0 )
@@ -173,9 +174,13 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Utility.Wait(5.0)
 
 		; Remove current collar if already equipped
-		if (fctOutfit.isCollarEquipped(kSlave))
-			fctOutfit.clearDeviceByString ( sDeviceString = "Collar", skipEvents = true, skipMutex = true )
+		; if (fctOutfit.isCollarEquipped(kSlave))
+		;	fctOutfit.clearDeviceByString ( sDeviceString = "Collar", skipEvents = true, skipMutex = true )
+		; EndIf
+		if ((fctOutfit.isCollarEquipped(kSlave)) || (fctOutfit.isCuffsEquipped(kSlave))) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+			fctOutfit.clearDevicesForEnslavement()
 		EndIf
+
 
 		; Transfer of inventory
 		If ( aiValue2 == 0 )
@@ -206,7 +211,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		EndIf
 
 		; Waking up
-		Game.FadeOutGame(false, true, 2.0, 10)
+		; Game.FadeOutGame(false, true, 2.0, 10)
 		; Game.ForceThirdPerson()
 
 		; item cleanup
@@ -227,9 +232,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		EndIf
 
 		_SDGVP_demerits.SetValueInt( aiValue1 )
-		_SDGVP_state_housekeeping.SetValue(1)
-		_SDKP_trust_hands.SetValue(0)
-		_SDKP_trust_feet.SetValue(0)
+		; _SDGVP_state_housekeeping.SetValue(1)
+		; _SDKP_trust_hands.SetValue(0)
+		; _SDKP_trust_feet.SetValue(0)
 		
 		If ( kCrimeFaction && !kMaster.IsInFaction( _SDFP_bountyhunter ) )
 			iGold = kCrimeFaction.GetCrimeGold()
@@ -248,34 +253,17 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		fctSlavery.StartSlavery( kMaster, kSlave)
 		Utility.Wait(2.0)
 
-
 		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
-		Int outfitID =	StorageUtil.GetIntValue(kMaster, "_SD_iOutfitID")
-
-		; fctOutfit.setDeviousOutfitID ( iOutfit = outfitID, sMessage = "")
-
-		if (fctOutfit.isCollarEquipped(kSlave)) || (fctOutfit.isCuffsEquipped(kSlave))
-			fctOutfit.clearDevicesForEnslavement()
+		if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
+			fctOutfit.setDeviceCollar ( bDevEquip = True )
 		EndIf
 
-		if (!fctOutfit.isCollarEquipped(kSlave))
-			; if (Utility.RandomInt(0,100)> ( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ) )
-
-				; Replace by function with detection of currently worn collar / outfit
-				; fctOutfit.setDeviousOutfitCollar ( bDevEquip = False, sDevMessage = "")
-				; Utility.Wait(1.0)
-				; fctOutfit.setDeviousOutfitHarness ( bDevEquip = True, sDevMessage = "")
-			; Else
-				fctOutfit.setDeviousOutfitCollar ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
-			; EndIf
+		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+			fctOutfit.setDeviceArms ( bDevEquip = True )
 		EndIf
-
-		if (!fctOutfit.isArmbinderEquipped(kSlave))
-			fctOutfit.setDeviousOutfitArms ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
-		EndIf
-		if (!fctOutfit.isShacklesEquipped(kSlave))
-			fctOutfit.setDeviousOutfitLegs ( iDevOutfit = outfitID, bDevEquip = True, sDevMessage = "")
+		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+			fctOutfit.setDeviceLegs ( bDevEquip = True )
 		EndIf
 
 		If ( _SDGVP_config[3].GetValue() as Bool )
@@ -307,6 +295,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			; _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
 		; EndIf
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnsvalementInitSquenceOn",0)
 
 		If ( Self )
 			RegisterForSingleUpdate( fRFSU )
@@ -373,7 +362,7 @@ EndState
 
 Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 
-	If (akSlave == Game.GetPlayer())
+	If (akSlave == Game.GetPlayer()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
 
 		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
 		Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
@@ -402,7 +391,9 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 			EndIf
 		EndIf
 	Else
-		Debug.Trace("[_sdqs_enslavement] Update slave state: Target is not the player")
+		If (akSlave != Game.GetPlayer())
+			Debug.Trace("[_sdqs_enslavement] Update slave state: Target is not the player")
+		endif
 	EndIf
 
 
@@ -412,7 +403,7 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 	Bool punishmentAdded = False
 	Keyword kwDeviceKeyword = fctOutfit.getDeviousKeywordByString(sDevice)
 
-	If (akSlave == Game.GetPlayer())
+	If (akSlave == Game.GetPlayer()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
 		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength")) && (kwDeviceKeyword!=None)
@@ -440,7 +431,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 	Bool punishmentRemoved = False
 	Keyword kwDeviceKeyword = fctOutfit.getDeviousKeywordByString(sDevice)
 
-	If (akSlave == Game.GetPlayer())
+	If (akSlave == Game.GetPlayer()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
 		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
@@ -474,7 +465,7 @@ Function AddSlavePunishment(Actor kActor , String sDevice)
 	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
 	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
 
-	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
 		fPunishmentsLength = (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
 		uiPunishmentsEarned = uiPunishmentsEarned + 1
 
@@ -503,7 +494,7 @@ Function RemoveSlavePunishment(Actor kActor , String sDevice)
 	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
 	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
 
-	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat())
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
 		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(kActor, "_SD_fPunishmentGameTime")
 		Float fPunishmentDuration = StorageUtil.GetFloatValue(kActor, "_SD_fPunishmentDuration")
 		float fMasterDistance = (kActor as ObjectReference).GetDistance(kMaster as ObjectReference)
