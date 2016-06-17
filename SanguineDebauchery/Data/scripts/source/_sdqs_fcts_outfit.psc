@@ -207,7 +207,7 @@ Function initSlaveryGearByRace (  )
 			ElseIf (StringUtil.Find(sRaceName, "Hagraven")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="MysticalSymbols", raceSlaveTatDuration=8 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="cuffs,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
@@ -229,7 +229,7 @@ Function initSlaveryGearByRace (  )
 			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Standing", raceSlaveTat="GiantsRunes", raceSlaveTatDuration=20 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="yoke"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 			; Chaurus   
 			ElseIf (StringUtil.Find(sRaceName, "Chaurus")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesVaginal", raceSlaveTatDuration=2 )
@@ -428,9 +428,7 @@ EndFunction
 
 
 Function equipDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false,  String sDeviceTags = "")
-	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
-	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
-	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
+	Keyword kwDeviceKeyword = none
 	Actor PlayerActor = Game.GetPlayer()
 	Actor kMaster = None
 	Armor aWornDevice = none
@@ -522,10 +520,7 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 			else
 				; generic device
 				Debug.Trace("[SD] 		equipDeviceByString - generic: ")
-
-				; ManipulateGenericDeviceByKeyword doesn't seem to work very well. Trying the loger road instead
-				; bDeviceEquipSuccess = libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, True, skipEvents,  skipMutex)
-
+ 
 				aWornDevice = libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
 
 				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags + " - Device inventory: "  + aWornDevice  )
@@ -552,19 +547,85 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 				Debug.Trace("[SD] 		equipDeviceByString - device equip FAILED for " + sDeviceString)
 				Debug.Notification("[SD] equipDeviceByString FAILED: " + sDeviceString)
 			endIf
+ 
+		else
+			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
+		endIf
 
-			; aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
-			; if (aWornDevice != None)
-			;	aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
-			;	kForm = aWornDevice as Form 
+	else
+		Debug.Trace("[SD] unknown device to equip " )  
 
-			;	if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
-			;		Debug.Notification("[SD] adding zad_BlockGeneric device!")  
-			;		Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
-			;	endif
-			; else
-			;	Debug.Trace("[SD]    Can't get worn device")
-			; endif
+	endif
+EndFunction
+
+Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false,  String sDeviceTags = "")
+	Keyword kwDeviceKeyword = none
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm	
+	Bool bDeviceEquipSuccess = False
+
+ 
+	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+	aWornDevice = none
+	aRenderedDevice = none
+	sGenericDeviceTags = sDeviceTags
+
+	If (kwDeviceKeyword != None)
+
+		if !akActor.WornHasKeyword(kwDeviceKeyword)
+			Debug.Trace("[SD] equipDeviceByString: " + sDeviceString)  
+			Debug.Trace("[SD] 		keyword: " + kwDeviceKeyword)  
+
+			if (sGenericDeviceTags!="")
+				; preferred tags
+				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags  )
+
+				aWornDevice = libs.GetDeviceByTags(kwDeviceKeyword, sGenericDeviceTags)
+
+				If (aWornDevice!=None)
+					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+				EndIf
+
+				Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+
+				If (aWornDevice!=None) && (aRenderedDevice!=None)
+
+					bDeviceEquipSuccess = equipDeviceNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+				Else
+					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
+				EndIf
+			else
+				; generic device
+				Debug.Trace("[SD] 		equipDeviceByString - generic: ")
+ 
+				aWornDevice = libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
+
+				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags + " - Device inventory: "  + aWornDevice  )
+
+				If (aWornDevice!=None)
+					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+				EndIf
+
+				Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+
+				If (aWornDevice!=None) && (aRenderedDevice!=None)
+
+					bDeviceEquipSuccess = equipDeviceNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+				Else
+					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
+				EndIf
+			endif
+
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] equipDeviceByString called with message: " + sOutfitString)  
+			Endif
+
+			If (!bDeviceEquipSuccess)
+				Debug.Trace("[SD] 		equipDeviceByString - device equip FAILED for " + sDeviceString)
+				Debug.Notification("[SD] equipDeviceByString FAILED: " + sDeviceString)
+			endIf
  
 		else
 			Debug.Trace("[SD] player is already wearing: " + sDeviceString)  
@@ -579,9 +640,7 @@ EndFunction
 
 
 Function clearDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
-	; Armor kCollar = libs.GetWornDeviceFuzzyMatch(libs.PlayerRef, libs.zad_DeviousCollar  )
-	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDeviceString)
-	; Keyword kwOutfitKeyword = getDeviousKeywordByString(sOutfitString)
+	Keyword kwDeviceKeyword = none
 	Actor PlayerActor = Game.GetPlayer() as Actor
 	Armor aWornDevice = none
 	Armor aRenderedDevice = none
@@ -681,6 +740,62 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 	endif
 EndFunction
 
+Function clearDeviceNPCByString ( Actor akActor, String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+	Keyword kwDeviceKeyword = none 
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm
+
+ 
+	Debug.Trace("[SD] clearDeviceByString - NO override detected")  
+	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+	aWornDevice = none
+	aRenderedDevice = none
+	sGenericDeviceTags = none
+ 
+	If (kwDeviceKeyword != None)
+
+		if akActor.WornHasKeyword(kwDeviceKeyword)
+			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
+
+			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
+			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
+
+			; generic device
+			Debug.Trace("[SD] 		equipDeviceByString - generic: ")
+
+			aWornDevice = libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+				kForm = aWornDevice as Form
+
+				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+					Debug.Notification("[SD] removing zad_BlockGeneric device!")  
+					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - Can't clear device")  
+				else
+					clearDeviceNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+				endif
+			else
+				Debug.Trace("[SD]    Can't get worn device")
+			endif
+			
+			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
+ 
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] clearDeviceByString called with message: " + sOutfitString)  
+			Endif
+
+		else
+			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
+		endIf
+
+	else
+		Debug.Trace("[SD] unknown device to clear " )  
+
+	endif
+EndFunction
+
 Bool Function equipDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword)
 	Actor kSlave = Game.GetPlayer() as Actor
 	Keyword kwWornKeyword
@@ -691,7 +806,7 @@ Bool Function equipDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 	if (ddArmorKeyword != None)
 		if (!kslave.WornHasKeyword(ddArmorKeyword))
 
-			bDeviceEquipSuccess = libs.EquipDevice(libs.PlayerRef, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
+			bDeviceEquipSuccess = libs.EquipDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
 			bDeviceEquipSuccess = True
 		Else
 			libs.Log("[SD]   	skipped - device already equipped " )
@@ -703,6 +818,28 @@ Bool Function equipDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 	return bDeviceEquipSuccess
 EndFunction
 
+Bool Function equipDeviceNPC ( Actor akActor, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword)
+	Keyword kwWornKeyword
+	Bool bDeviceEquipSuccess = False
+
+	libs.Log("[SD] equipDevice " )
+
+	if (ddArmorKeyword != None)
+		if (!akActor.WornHasKeyword(ddArmorKeyword))
+
+			bDeviceEquipSuccess = libs.EquipDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword)
+			bDeviceEquipSuccess = True
+		Else
+			libs.Log("[SD]   	skipped - device already equipped " )
+		EndIf
+	Else
+		Debug.Notification("[SD] equipDevice - bad keyword " )
+	endIf
+
+	return bDeviceEquipSuccess
+EndFunction
+
+
 Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
 	Actor kSlave = Game.GetPlayer() as Actor
 	Keyword kwWornKeyword
@@ -711,7 +848,7 @@ Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 	If (bDestroy)
 		libs.Log("[SD] clearDevice - destroy: " + ddArmorKeyword )
 
-		if libs.PlayerRef.GetItemCount(ddArmorInventory) > 0
+		if kSlave.GetItemCount(ddArmorInventory) > 0
 				bDeviceEquipSuccess = libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
 				bDeviceEquipSuccess = True
 			Else
@@ -735,22 +872,52 @@ Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 	return bDeviceEquipSuccess
 EndFunction
 
+Bool Function clearDeviceNPC ( Actor akActor, Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False) 
+	Keyword kwWornKeyword
+	Bool bDeviceEquipSuccess = False
+
+	If (bDestroy)
+		libs.Log("[SD] clearDevice - destroy: " + ddArmorKeyword )
+
+		if akActor.GetItemCount(ddArmorInventory) > 0
+				bDeviceEquipSuccess = libs.RemoveDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword, True, False, True)
+				bDeviceEquipSuccess = True
+			Else
+			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+		EndIf
+			
+			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, True, False)
+	Else
+		libs.Log("[SD] clearDevice - remove: " + ddArmorKeyword  )
+
+		if akActor.GetItemCount(ddArmorInventory) > 0
+				bDeviceEquipSuccess = libs.RemoveDevice(akActor, ddArmorInventory , ddArmorRendered , ddArmorKeyword, False, False, False)
+				bDeviceEquipSuccess = True
+			Else
+			 	libs.Log("[SD] No matching item found in inventory - " + ddArmorInventory)
+		EndIf
+
+			; libs.ManipulateGenericDeviceByKeyword(libs.PlayerRef, ddArmorKeyword, bEquip, False, False)
+	EndIf
+
+	return bDeviceEquipSuccess
+EndFunction
 
 
 Function clearDevicesForEnslavement()
 	; OutfitPart set to -1 to force the use of ManipulateGenericDeviceByKeyword when clearing items
 	Actor kPlayer = Game.GetPlayer()
 
-	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Collar"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Collar"  )
+	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Collar"  ) 
 		clearDeviceByString ( sDeviceString = "Collar", skipEvents = true, skipMutex = true )
 	EndIf
 
-	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "ArmCuffs"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  )
+	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "ArmCuffs"  ) 
 		clearDeviceByString ( sDeviceString = "ArmCuffs", skipEvents = true, skipMutex = true )
 		clearDeviceByString ( sDeviceString = "Armbinder", skipEvents = true, skipMutex = true )
 	EndIf
 
-	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "LegCuffs"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "LegCuffs"   ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "LegCuffs"   )
+	If !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "LegCuffs"  ) && !isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "LegCuffs"   ) 
 		clearDeviceByString ( sDeviceString = "LegCuffs", skipEvents = true, skipMutex = true )
 	EndIf
 
@@ -1458,7 +1625,28 @@ Int Function countRemovable ( Actor akActor )
 
 EndFunction
 
+Int Function countPunishmentEquipped (  Actor akActor )
+	Int countPunishments = 0
 
+	if (isGagEquipped(akActor))
+		countPunishments += 1
+	endIf
+	if isBlindfoldEquipped(akActor) 
+		countPunishments += 1
+	endIf
+	if isBeltEquipped(akActor) 
+		countPunishments += 1
+	endIf
+	if isPlugVaginalEquipped(akActor)
+		countPunishments += 1
+	endIf
+	if isPlugAnalEquipped(akActor)
+		countPunishments += 1
+	endIf
+
+	Return countPunishments
+
+EndFunction
 
 Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = False )
 	If ( !akActor || akActor.IsDead() )

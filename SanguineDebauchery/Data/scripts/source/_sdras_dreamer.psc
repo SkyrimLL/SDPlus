@@ -48,7 +48,9 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	ObjectReference lust_f = Alias__SDRA_lust_f.GetReference() as ObjectReference
 	ObjectReference lust_m = Alias__SDRA_lust_m.GetReference() as ObjectReference
 	Actor kPlayer = Game.GetPlayer() as Actor
-	Location kLocation = Game.GetPlayer().GetCurrentLocation()
+	Location kLocation = kPlayer.GetCurrentLocation()
+
+	CleanupSlaveDevices(kPlayer)
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworld") == 1)
 		Debug.Trace("[_sdras_dreamer] Disabled by script")
@@ -149,6 +151,23 @@ function startDreamworld()
 	_SD_dreamQuest.SetStage(10)
 
 endfunction
+
+
+Function CleanupSlaveDevices(Actor akActor)
+	; kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+
+	Int iFormIndex = ( akActor as ObjectReference ).GetNumItems()
+	Debug.Trace("[_sdras_dreamer] CleanupSlaveDevices - items to scan: " + iFormIndex )
+
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		Form kForm = ( akActor as ObjectReference ).GetNthForm(iFormIndex)
+		If ( kForm.GetType() == 26 && kForm.HasKeywordString("zad_Lockable") )
+			Debug.Trace("[_sdras_dreamer]  		Removing : " + kForm )
+			akActor.RemoveItem(kForm as Armor, 1, True )
+		EndIf
+	EndWhile	
+EndFunction
 
 Quest Property _SD_dreamQuest  Auto  
 

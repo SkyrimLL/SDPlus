@@ -324,14 +324,7 @@ Function CollarUpdate()
 
 	EndIf
 
-	if (! kPlayer.WornHasKeyword(libs.zbf.zbfWornWrist)) ; Stop kneeling restriction if the cuffs are escaped from.
-		throttle += 1
-		if throttle >= 15 ; Avoid updating controls 10 times per second...
-			libs.UpdateControls()
-			throttle = 0
-		EndIf		
-
-	ElseIf !kPlayer.GetCurrentScene() && !kPlayer.IsOnMount() && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
+	If !kPlayer.GetCurrentScene() && !kPlayer.IsOnMount() && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
 
 		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
 		;	togglePlayerControlsOff()
@@ -353,7 +346,7 @@ Function CollarUpdate()
 				
 			EndIf
 
-			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) && (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved" , "Armbinder" ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) ) 
+			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) && fctOutfit.isCollarEquipped( kPlayer )
 
 				If ( (Utility.RandomInt( 0, 200 ) == 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
 					Debug.Notification( "The collar forces you down on your knees." )
@@ -401,7 +394,7 @@ Function CollarUpdate()
 					EndIf
 				EndIf
 
-			ElseIf !fctOutfit.isYokeEquipped( kPlayer) 
+			Else ; If !fctOutfit.isYokeEquipped( kPlayer) 
 				; Debug.Notification("[SD] Turning DD animations on - 4");
 				;If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
 	
@@ -413,7 +406,8 @@ Function CollarUpdate()
 				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[5] ) ; Crawling
 				;EndIf
 
-				If  (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) )
+				;If  (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) )
+				If fctOutfit.isCollarEquipped( kPlayer )
 					PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
 				Endif
 			EndIf

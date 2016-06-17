@@ -444,12 +444,12 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (funct._hasPlayer(actors))
 		Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
-		fctOutfit.setMasterGearByRace ( kCurrentMaster, PlayerActor  )
 
 		If (kCurrentMaster != None)  
 
 			If (funct._hasActor(actors,kCurrentMaster))
 				Debug.Trace("[SD]: Sex with your master")
+				fctOutfit.setMasterGearByRace ( kCurrentMaster, PlayerActor  )
 
 				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountToday", modValue = 1)
 				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSexCountTotal", modValue = 1)
@@ -467,16 +467,15 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; If player is enslaved, use player outfit, else, use generic device
-					If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
-					else
-						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
-					endIf
+					fctOutfit.setDeviceArms ( bDevEquip = True)
 
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
+				else
+					Debug.Trace("[_sdras_player] Unable to find bound hands conditions.")
 				EndIf
 			Else
 
+				fctOutfit.setMasterGearByRace ( actors[1], PlayerActor  )
 
 				If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
@@ -485,13 +484,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; If player is enslaved, use player outfit, else, use generic device
-					If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
-					else
-						fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
-					endIf
+					fctOutfit.setDeviceArms ( bDevEquip = True)
 
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
+				else
+					Debug.Trace("[_sdras_player] Unable to find bound hands conditions.")
 				EndIf
 			EndIf
 
@@ -1054,33 +1051,62 @@ EndEvent
 Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving punish slave event [" + _args  + "] [" + _argc as Int + "]")
 	String sDevice = _args
+ 	Actor kActor = _sender as Actor
+	String sTags = ""
+	Int iTagsIndex 
 
-	; TO DO - Add code to pass keyword to force a specific type of punishment item (use with Equip Device by Leyword)
+	; Split _args between Device and Tags (separated by ':')
+	iTagsIndex = StringUtil.Find(_args, ":")
+	if (iTagsIndex==-1)
+	 	sDevice = _args
+		sTags = ""
+	else
+		sDevice = StringUtil.Substring(_args, 0, iTagsIndex )
+		sTags = StringUtil.Substring(_args, iTagsIndex +1 )
+	endIf
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && 	(StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
-		Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
-		fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
-		_SD_Enslaved.PunishSlave(kTempAggressor, kPlayer, sDevice )
+	If (kActor == kPlayer)
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && 	(StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+			Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+			fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+			_SD_Enslaved.PunishSlave(kTempAggressor, kPlayer, sDevice )
+		Else
+			Return
+		EndIf
 	Else
-		Return
-	EndIf
+		fctOutfit.EquipDeviceNPCByString(kActor,sDevice,sTags )
+	Endif
 
 EndEvent
 
 Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving reward slave event [" + _args  + "] [" + _argc as Int + "]")
 	String sDevice = _args
+ 	Actor kActor = _sender as Actor
+	String sTags = ""
+	Int iTagsIndex 
 
-	; TO DO - Add code to pass keyword to remove a specific type of punishment item (use with Equip Device by Leyword)
+	; Split _args between Device and Tags (separated by ':')
+	iTagsIndex = StringUtil.Find(_args, ":")
+	if (iTagsIndex==-1)
+	 	sDevice = _args
+		sTags = ""
+	else
+		sDevice = StringUtil.Substring(_args, 0, iTagsIndex )
+		sTags = StringUtil.Substring(_args, iTagsIndex +1 )
+	endIf
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
-		Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
-		fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
-		_SD_Enslaved.RewardSlave(kTempAggressor, kPlayer, sDevice )
+	If (kActor == kPlayer)
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+			Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+			fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
+			_SD_Enslaved.RewardSlave(kTempAggressor, kPlayer, sDevice )
+		Else
+			Return
+		EndIf
 	Else
-		Return
+		fctOutfit.ClearDeviceNPCByString(kActor,sDevice,sTags )
 	EndIf
-
 EndEvent
 
 Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
@@ -1088,7 +1114,7 @@ Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 	; Int iOutfitID = _argc as Int
 	String sDevice = _args
 	String sTags = ""
-	Int iTagsIndex
+	Int iTagsIndex 
 
 	; Example: akSpeaker forcing a gag on player using additional tags
 	; akSpeaker.SendModEvent("SDEquipDevice", "Gag:harness,panel") 
@@ -1105,39 +1131,31 @@ Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 		sTags = StringUtil.Substring(_args, iTagsIndex +1 )
 	endIf
 
-	fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
 
-	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-	; 	fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
-	; endif
+	If (kActor == kPlayer)
+		Debug.Trace("[_sdras_player] 	sDevice = "+ sDevice +" - sTags = " + sTags )
 
-	Debug.Trace("[_sdras_player] 	sDevice = "+ sDevice +" - sTags = " + sTags )
-
-	fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sDeviceTags = sTags )
-
-	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-	; 	fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
-	; endif
+		fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
+		fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sDeviceTags = sTags )
+	else
+		fctOutfit.equipDeviceNPCByString (kActor, sDeviceString = sDevice, sDeviceTags = sTags )
+	endIf
 
 EndEvent
 
 Event OnSDClearDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
-	String sDevice = _args
+	String sDevice = _args 
 
 	Debug.Trace("[_sdras_player] Receiving device clear story event [" + _args  + "] [" + _argc as Int + "]")
 
-	fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
+	If (kActor == kPlayer)
 
-	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-	; 	fctOutfit.clearDeviceByString ( sDeviceString = "Belt" )
-	; endif
-
-	fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
-
-	; if (sDevice == "PlugAnal") || (sDevice == "PlugVaginal")
-	; 	fctOutfit.equipDeviceByString ( sDeviceString = "Belt" )
-	; endif
+		fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
+		fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
+	Else
+		fctOutfit.clearDeviceNPCByString (kActor, sDeviceString = sDevice )
+	Endif
 
 
 EndEvent

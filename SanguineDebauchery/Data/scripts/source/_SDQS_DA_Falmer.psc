@@ -20,7 +20,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	UnregisterForModEvent("da_PlayerRecovered")
 
 	
-	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue()) && !fctFactions.checkIfSlaver (  thisAggressor )  && fctFactions.checkIfSlaverCreature (  thisAggressor ) && fctFactions.checkIfFalmer (  thisAggressor )  &&  !fctFactions.checkIfFollower (  thisAggressor ) 
+	If    (Utility.RandomInt(0,100)<=_SDGVP_health_threshold.GetValue())  && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslavementInitSequenceOn")!=1)  ; Simplified check for DA only - SD mod event will handle complex faction checks
 		Debug.Trace("[SD DA integration] QuestCondition - Falmer - Passed")
 		return true
 	else

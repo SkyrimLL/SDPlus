@@ -43,8 +43,6 @@ EndFunction
 
 function StartSlavery( Actor kMaster, Actor kSlave)
 
-	; List initialization if it hasn't been set yet
-	fctOutfit.registerDeviousOutfits ( )
 
 	_SDGVP_enslaved.SetValue( 1 )
 	_SDGVP_can_join.SetValue( 0 )
