@@ -6,17 +6,39 @@ Scriptname SLD_TIF_PCSubBeastEnslave Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Form speakerRaceForm = akspeaker.GetActorBase().GetRace() as Form
+ActorBase akActorBase = akspeaker.GetLeveledActorBase() as ActorBase
+Form speakerRaceForm = akActorBase.GetRace() as Form
 
-if RaceBeastMasterList.HasForm(speakerRaceForm )
+Debug.Notification("[SD] beast enslavement - Race: " + akActorBase.GetRace().GetName())
+Debug.Trace("[SD] beast enslavement - Race: " + akActorBase.GetRace().GetName())
 
-	Debug.Notification(" (tries to overpower you) ")
+Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
+int i = 0
+Form thisRace
+String sRaceName
+Bool bRaceMatch = False
 
-	fctDialogue.SetNPCDialogueState ( akSpeaker )
- 
-	fctDialogue.StartPlayerClaimedBeast( akSpeaker)
-else
+while(i < valueCount) && (!bRaceMatch)
+	thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+	sRaceName = thisRace.GetName()
+
+	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && (thisRace != speakerRaceForm); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
+		Debug.Trace("	Race [" + i + "] = " + sRaceName + " Race formID: " + thisRace + " FormID to match: " + speakerRaceForm)
+		bRaceMatch = True
+		Debug.Notification(" (tries to overpower you) ")
+
+		fctDialogue.SetNPCDialogueState ( akSpeaker )
+	 
+		fctDialogue.StartPlayerClaimedBeast( akSpeaker)
+	endif
+
+	i += 1
+EndWhile
+
+
+if  (!bRaceMatch)
 	Debug.Notification("[SD] beast enslavement attempt failed")
+	Debug.Trace("[SD] beast enslavement attempt failed")
 
 
 endIf
@@ -28,6 +50,7 @@ EndFunction
 
 SLD_QST_Main Property fctDialogue  Auto
 
+; Deprecated - using storageUtil list instead (as defined by SD+)
 GlobalVariable Property isRaceBeastMaster  Auto  
 
 FormList Property RaceBeastMasterList  Auto  
