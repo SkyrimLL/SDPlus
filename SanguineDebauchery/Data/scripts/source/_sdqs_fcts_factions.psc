@@ -251,7 +251,7 @@ Bool Function checkIfSlaverCreatureRace ( Actor akActor )
 	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
 	Race actorRace = akActorBase.GetRace()
 
-	bIsSlaverCreature = (StorageUtil.GetIntValue(actorRace, "_SD_iSlaveryRace") == 1)
+	bIsSlaverCreature = (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryRace") == 1)
 
   	Return bIsSlaverCreature
 EndFunction
@@ -261,7 +261,7 @@ Bool Function checkIfSlaverCreatureCollar ( Actor akActor )
 	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
 	Race actorRace = akActorBase.GetRace()
 
-	bIsSlaverCreatureCollar = (StorageUtil.GetIntValue(actorRace, "_SD_iSlaveryCollarOn") == 1)
+	bIsSlaverCreatureCollar = (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryCollarOn") == 1)
 
   	Return bIsSlaverCreatureCollar
 EndFunction

@@ -24,7 +24,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	Debug.Trace("SD Blackout start master:" + thisAggressor)
 	; Debug.Notification("SD Blackout start master:" + thisAggressor)
 	
-	if (Utility.RandomInt(1,100)<=_SDGVP_health_threshold.GetValue()) && fctFactions.checkIfSlaver (  thisAggressor )  && !fctFactions.checkIfSlaverCreature (  thisAggressor )  &&  !fctFactions.checkIfFollower (  thisAggressor ) && (		StorageUtil.GetIntValue(thisPlayer, "_SD_iEnsvalementInitSquenceOn")!=1)  ; ( (thisAggressor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( thisAggressor, thisPlayer ) ) || (  fctFactions.checkIfFalmer ( thisAggressor) )) && !thisAggressor.IsGhost() && !fctFactions.actorFactionInList( thisAggressor, _SDFLP_banned_factions )
+	if (Utility.RandomInt(1,100)<=_SDGVP_health_threshold.GetValue()) && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslavementInitSequenceOn")!=1)  ; Simplified check for DA only - SD mod event will handle complex faction checks
 		return true
 	else
 		return false
@@ -60,9 +60,9 @@ Event OnUpdate()
 		UnregisterForModEvent("da_PlayerRecovered")	
 		
 		; what to do? do we risk starting enslavement anyway?
-		Debug.Trace("SD Blackout end after timeout")
-		UnregisterForUpdate()
-		UnregisterForModEvent("da_PlayerRecovered")
+		; Debug.Trace("SD Blackout end after timeout")
+		; UnregisterForUpdate()
+		; UnregisterForModEvent("da_PlayerRecovered")
 
 			; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
 			; _SDGV_leash_length.SetValue(400)
@@ -74,9 +74,9 @@ Event OnUpdate()
 			; Debug.Trace("[SD] Sending enslavement story.")
 			; _SDKP_enslave.SendStoryEvent( akLoc = thisLocation, akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
 			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", thisAggressor)
-			StorageUtil.SetIntValue(thisAggressor, "_SD_iForcedSlavery", 1)
-			StorageUtil.SetIntValue(thisAggressor, "_SD_iSpeakingNPC", 1)
-			thisAggressor.SendModEvent("PCSubEnslave")
+		;	StorageUtil.SetIntValue(thisAggressor, "_SD_iForcedSlavery", 1)
+		;	StorageUtil.SetIntValue(thisAggressor, "_SD_iSpeakingNPC", 1)
+		;	thisAggressor.SendModEvent("PCSubEnslave")
 		else
 			Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")
 		EndIf

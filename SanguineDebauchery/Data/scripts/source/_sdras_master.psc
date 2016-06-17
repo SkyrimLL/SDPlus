@@ -199,7 +199,8 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 			Wait(1.0)
 		EndIf
 
-		enslavement.PunishSlave(kMaster,kSlave, "Yoke")
+		; enslavement.PunishSlave(kMaster,kSlave, "Yoke")
+		kSlave.SendModEvent("SDPunishSlave", "Yoke")
 
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
@@ -311,7 +312,7 @@ State monitor
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
+		While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		EndWhile
 
 		; Master variable updates
@@ -466,7 +467,8 @@ State monitor
 				;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
 				fctConstraints.actorCombatShutdown( kSlave )
 				fctConstraints.actorCombatShutdown( kMaster )
-				enslavement.PunishSlave(kMaster,kSlave, "Gag")
+				; enslavement.PunishSlave(kMaster,kSlave, "Gag")
+				kSlave.SendModEvent("SDPunishSlave", "Gag")
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 					kMaster.SendModEvent("PCSubPunish") 
@@ -484,7 +486,8 @@ State monitor
 					Debug.Notification( "Your owner pushes you down to your knees!" )
 					; Punish
 					;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					enslavement.PunishSlave(kMaster,kSlave, "Gag")
+					; enslavement.PunishSlave(kMaster,kSlave, "Gag")
+					kSlave.SendModEvent("SDPunishSlave", "Gag")
 
 					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 						kMaster.SendModEvent("PCSubPunish") 
@@ -516,7 +519,8 @@ State monitor
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 					Debug.Notification( "There you are Slave... get your punishment, over here!" )
 				endif
-				enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
+				; enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
+				kSlave.SendModEvent("SDPunishSlave", "Blindfold")
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 					; add punishment
@@ -540,7 +544,7 @@ State monitor
 				fSlaveFreeTime += 0.05
 				enslavement.bSearchForSlave = False
 
-				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(1,100)<=_SDGVP_config_healthMult.GetValue()/10) && (Utility.RandomInt(0,100)>=(StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") * 30)) 
+				If ( kMaster.WornHasKeyword( _SDKP_spriggan_infected ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganInfected") != 1) ) && (Utility.RandomInt(1,100)<=_SDGVP_config_healthMult.GetValue()/10) && (Utility.RandomInt(0,100)>=(StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") * 30)) 
 					; Chance of spriggan infection if slave in close proximity of infected master
 					; Debug.Notification("[SD] Infected by spriggan swarm...")
 					SendModEvent("SDSprigganEnslave")
@@ -555,8 +559,10 @@ State monitor
 				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,10) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) 
 					; Master is in a good mood - chance to remove punishment
 
-					enslavement.RewardSlave(kMaster,kSlave,"Gag")
-					enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
+					; enslavement.RewardSlave(kMaster,kSlave,"Gag")
+					; enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
+					kSlave.SendModEvent("SDRewardSlave", "Gag")
+					kSlave.SendModEvent("SDRewardSlave", "Blindfold")
 
 				EndIf
 			EndIf
@@ -602,7 +608,7 @@ State monitor
 
 			If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || (iuType == 46) ) ; food or potion
 				; Master receives Food
-				fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalFood", modValue = 1)
+				fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalFood", modValue = 1)
 				fctSlavery.ModMasterTrust( kMaster, 1)
 
 				If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
@@ -635,7 +641,7 @@ State monitor
 				fGoldEarned = fGoldEarned + fGoldCoins
 
 				If (fGoldEarned > 0) 
-					fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalGold", modValue = fGoldEarned as Int)
+					fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldEarned as Int)
 					StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
 
 					_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
@@ -714,7 +720,8 @@ State monitor
 				kSlave.UnequipItem( klHand )
 			EndIf
 
-			enslavement.PunishSlave(kMaster,kSlave,"Yoke")
+			; enslavement.PunishSlave(kMaster,kSlave,"Yoke")
+			kSlave.SendModEvent("SDPunishSlave", "Yoke")
 
 			If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 				; add punishment

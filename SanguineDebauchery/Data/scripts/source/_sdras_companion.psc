@@ -16,6 +16,7 @@ Idle Property OffsetBoundStandingStart  Auto
 Bool bEnslaved = False
 Actor kCompanion
 Actor kMaster
+Actor kPlayer
 Float fRFSU = 0.1
 
 Int idx = 0
@@ -96,6 +97,7 @@ EndState
 Function enslaveCompanion( Actor kActor)
 	Debug.Notification("Your follower has been enslaved!")
 		bEnslaved = True
+		kPlayer = Game.GetPlayer()
 
 		kActor.RemoveFromFaction( _SDFP_slaverResistance )
 		kActor.StopCombat()
@@ -116,13 +118,17 @@ Function enslaveCompanion( Actor kActor)
 				funct.sexlabStripActor( kActor )
 			EndIf
 			
-			idx = 0
-			While idx < _SDFLP_companion_items.GetSize()
-				nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
-				kActor.AddItem( nthArmor, 1 )
-				kActor.EquipItem( nthArmor, True, True )
-				idx += 1
-			EndWhile
+			; idx = 0
+			; While idx < _SDFLP_companion_items.GetSize()
+			; 	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
+			; 	kActor.AddItem( nthArmor, 1 )
+			; 	kActor.EquipItem( nthArmor, True, True )
+			; 	idx += 1
+			; EndWhile
+
+			kActor.SendModEvent("SDEquipDevice","Collar:zap")
+			kActor.SendModEvent("SDEquipDevice","Gag:zap")
+			kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
 
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
 			;kActor.playIdle(OffsetBoundStandingStart)
@@ -132,10 +138,10 @@ Function enslaveCompanion( Actor kActor)
 
 				Debug.MessageBox("Your follower is dragged away in bondage...")
 			Else
-				int index = StorageUtil.FormListFind(Game.GetPlayer(), "_SD_lEnslavedFollower", kActor)
+				int index = StorageUtil.FormListFind(kPlayer, "_SD_lEnslavedFollower", kActor)
 				if (index < 0)
 					; Debug.Notification("Not found!")
-					StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", kActor)
+					StorageUtil.FormListAdd( kPlayer, "_SD_lEnslavedFollower", kActor)
 				else
 					; Debug.Notification("Element 183 is at index " + index)
 				endif
