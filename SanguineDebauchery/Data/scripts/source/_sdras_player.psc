@@ -365,7 +365,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			; Player hands are freed temporarily for sex
 
 			if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
-				fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
 			EndIf
 		EndIf
@@ -467,7 +467,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; If player is enslaved, use player outfit, else, use generic device
-					fctOutfit.setDeviceArms ( bDevEquip = True)
+					fctOutfit.setDeviceArmbinder ( bDevEquip = True)
 
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				else
@@ -484,7 +484,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; If player is enslaved, use player outfit, else, use generic device
-					fctOutfit.setDeviceArms ( bDevEquip = True)
+					fctOutfit.setDeviceArmbinder ( bDevEquip = True)
 
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				else
@@ -679,7 +679,7 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 		EndIf
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
 	Else
 		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
 		kNewMaster.SendModEvent("PCSubSex")
@@ -739,7 +739,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		EndIf
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0)
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
 	Else
 		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
 		kNewMaster.SendModEvent("PCSubSex")
@@ -806,7 +806,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0)
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0, aiValue2 = 2)
 	Else
 		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster)
 		kNewMaster.SendModEvent("PCSubSex")
@@ -902,7 +902,7 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
 	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
  
@@ -951,7 +951,7 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
 	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+		fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
 
@@ -1025,7 +1025,7 @@ EndEvent
 Event OnSDHandsFreeSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving hands free slave event [" + _args  + "] [" + _argc as Int + "]")
 
-	fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+	fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 	StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 1)
 	Debug.Notification("Your owner releases your hands.")
 EndEvent
@@ -1038,9 +1038,9 @@ Event OnSDHandsBoundSlave(String _eventName, String _args, Float _argc = 1.0, Fo
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) 
 			Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
 			fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
-			fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+			fctOutfit.setDeviceArmbinder ( bDevEquip = True, sDevMessage = "")
 		else
-			fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+			fctOutfit.setDeviceArmbinder ( bDevEquip = True, sDevMessage = "")
 		endIf
 
 		StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 0)

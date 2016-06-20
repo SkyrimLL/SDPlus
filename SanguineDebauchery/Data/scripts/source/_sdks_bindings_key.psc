@@ -23,7 +23,8 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 
 		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuff"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
-			fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.setDeviceArmCuffs ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
 		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "LegCuff" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "LegCuff"  )
@@ -38,7 +39,9 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 			fctOutfit.setDeviceGag ( bDevEquip = False, sDevMessage = "")
 		EndIf
 
-		If fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousEnslaved", "Collar"  )
+
+		If fctOutfit.isCollarEquipped( kContainer  )
+			fctOutfit.unLockDeviceByString( kContainer,  "Collar")
 			if (Utility.RandomInt(0,100) < 77)
 				fctOutfit.setDeviceCollar ( bDevEquip = False, sDevMessage = "")
 				Debug.Messagebox("Your Master's Key helps you break free of your chains and immediately crumbles into dust.")

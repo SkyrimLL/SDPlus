@@ -22,13 +22,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		Debug.Trace("[SD] Skipping sanguine collar - slot in use")
 	EndIf
 
-	if (!fctOutfit.isArmsEquipped (  akTarget ))  && !fctOutfit.isYokeEquipped( akTarget ) 
+	if (!fctOutfit.isArmsEquipped (  akTarget ))  && !fctOutfit.isYokeEquipped( akTarget )  && (Utility.RandomInt(0,100) > 40)
 		fctOutfit.equipDeviceByString ( sDeviceString = "Armbinder")
 	Else
 		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
 	EndIf
 
-	if (!fctOutfit.isLegsEquipped (  akTarget ))
+	if (!fctOutfit.isLegsEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
 		fctOutfit.equipDeviceByString ( sDeviceString = "LegCuffs")
 	Else
 		Debug.Trace("[SD] Skipping sanguine shackles - slot in use")
@@ -37,7 +37,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	if (!fctOutfit.IsGagEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
 		fctOutfit.equipDeviceByString ( sDeviceString = "Gag")
 	Else
-		Debug.Trace("[SD] Skipping sanguine gag - slot in use")
+		Debug.Trace("[SD] Skipping sanguine gag ")
+	EndIf
+
+	if (!fctOutfit.isPiercingsVaginalEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
+		fctOutfit.equipDeviceByString ( sDeviceString = "VaginalPiercing")
+	Else
+		Debug.Trace("[SD] Skipping sanguine gag ")
 	EndIf
 
 	fTimer = fRFSU * Utility.RandomInt(7 - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel") , 11  - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel"))

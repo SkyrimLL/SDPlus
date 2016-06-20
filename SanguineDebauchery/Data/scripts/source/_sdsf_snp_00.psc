@@ -57,7 +57,7 @@ _SDGVP_snp_busy.SetValue(0)
 
 
 if (fctOutfit.isArmbinderEquipped( Game.getPlayer()  )) && (Utility.RandomInt(0,100) > 30)
-	fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+	fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 	StorageUtil.SetIntValue(Game.getPlayer() , "_SD_iHandsFreeSex", 1)
 EndIf
 ;END CODE

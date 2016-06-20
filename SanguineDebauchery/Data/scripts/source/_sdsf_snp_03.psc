@@ -96,7 +96,7 @@ ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
 
 if (fctOutfit.isArmbinderEquipped( female ))  
-	fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+	fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 	StorageUtil.SetIntValue(female , "_SD_iHandsFreeSex", 1)
 EndIf
 
@@ -159,7 +159,7 @@ Utility.Wait(2)
 		EndIf
 
 	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
-		fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+		fctOutfit.setDeviceArmbinder ( bDevEquip = True, sDevMessage = "")
 	EndIf
 
 

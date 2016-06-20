@@ -115,18 +115,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDGVP_stats_enslaved.Mod( 1.0 )
 		_SDGVP_enslaved.SetValue(1)	    					
 		fEnslavementStart = GetCurrentGameTime()
-		fctSlavery.StartSlavery( kMaster, kSlave)
-
-		Debug.Trace("[SD] You submit to a new owner.")
-		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
-			Debug.Notification("You submit to a new owner.")
-		Else
-			Debug.Notification("Your new owner defeated you.")
-		Endif
-
 		; fctConstraints.actorCombatShutdown( kMaster )
 		fctConstraints.actorCombatShutdown( kSlave )
-		fctConstraints.togglePlayerControlsOff( )
 
 		; a new slave into a slaver faction
 		If ( aiValue2 == 0 )
@@ -136,6 +126,16 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			fctFactions.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
 		EndIf
 
+		fctSlavery.StartSlavery( kMaster, kSlave)
+
+		Debug.Trace("[SD] You submit to a new owner.")
+		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
+			Debug.Notification("You submit to a new owner.")
+		Else
+			Debug.Notification("Your new owner defeated you.")
+		Endif
+
+		fctConstraints.togglePlayerControlsOff( )
 		Debug.SendAnimationEvent(kSlave, "Unequip")
 		Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
 
@@ -225,8 +225,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
 		SetObjectiveDisplayed( 0 )
-		SetObjectiveDisplayed( 1 )
-		SetObjectiveDisplayed( 2 )
+		if (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
+			SetObjectiveDisplayed( 1 )
+			SetObjectiveDisplayed( 2 )
+		EndIf
 		SetObjectiveDisplayed( 6 )
 		; Utility.Wait(2.0)
 
@@ -285,10 +287,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
 			fctOutfit.setDeviceCollar ( bDevEquip = True )
+			fctOutfit.lockDeviceByString( kSlave,  "Collar")
 		EndIf
 
 		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
-			fctOutfit.setDeviceArms ( bDevEquip = True )
+			fctOutfit.setDeviceArmbinder( bDevEquip = True )
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 			fctOutfit.setDeviceLegs ( bDevEquip = True )

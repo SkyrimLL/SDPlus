@@ -155,21 +155,37 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	If (!StorageUtil.HasIntValue(kMaster, "_SD_iPersonalityProfile"))
 		int profileChance =  Utility.RandomInt(0,100)
 
-		if (profileChance >= 95)
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 6 ) 
-		elseif (profileChance >= 80)
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 5 ) 
-		elseif (profileChance >= 70)
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 4 ) 
-		elseif (profileChance >= 60)
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 3 ) 
-		elseif (profileChance >= 50)
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 2 ) 
-		elseif (profileChance >= 40)
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 1 ) 
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
+
+			if (profileChance >= 95)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 6 ) 
+			elseif (profileChance >= 80)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 5 ) 
+			elseif (profileChance >= 70)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 4 ) 
+			elseif (profileChance >= 60)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 3 ) 
+			elseif (profileChance >= 50)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 2 ) 
+			elseif (profileChance >= 40)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 1 ) 
+			else
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 0 ) 
+			endif
 		else
-			StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 0 ) 
-		endif
+			if (profileChance >= 95)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 6 ) 
+			elseif (profileChance >= 80)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 5 ) 
+			elseif (profileChance >= 50)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 2 ) 
+			elseif (profileChance >= 40)
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 1 ) 
+			else
+				StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 0 ) 
+			endif
+		EndIf
+
 	EndIf
 
 	If (_SDGVP_config_min_days_before_master_travel.GetValue()>0)
@@ -729,7 +745,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	 	masterDisposition += 2
 	 	iSexComplete += 1
 	EndIf
-	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") > 0) && (masterPunishNeed >= (-1 * masterNeedRange) )  && (masterPunishNeed <= masterNeedRange)
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") > 0) && (masterPunishNeed >= (-1 * masterNeedRange) )  && (masterPunishNeed <= masterNeedRange) 
 	 	masterDisposition += 2
 		iPunishComplete += 1
 	EndIf
@@ -748,7 +764,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		masterDisposition += 2
 		iSexComplete += 1 
 	EndIf
-	If (masterPunishNeed > masterNeedRange)
+	If (masterPunishNeed > masterNeedRange) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
 		masterDisposition += 2
 		iPunishComplete += 1 
 	EndIf
@@ -756,7 +772,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		masterDisposition += 2
 		iFoodComplete += 1 
 	EndIf
-	If (masterGoldNeed > (masterNeedRange * 5)) 
+	If (masterGoldNeed > (masterNeedRange * 5))  && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
 		masterDisposition += 2
 		iGoldComplete += 1
 	EndIf
