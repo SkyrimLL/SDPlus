@@ -221,7 +221,7 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 		SendModEvent("PCSubStripped")
 
-		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
+		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
 
 		If (Utility.RandomInt(0, 100)>40)
 			SendModEvent("PCSubWhip")
@@ -269,7 +269,7 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 		SendModEvent("PCSubStripped")
 
-		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)
+		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
 
 		If (Utility.RandomInt(0, 100)>40)
 			SendModEvent("PCSubWhip")
@@ -280,6 +280,7 @@ EndFunction
 
 
 Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
+	Actor Player = Game.GetPlayer()
 	Bool isVictim = True
 	Int randomNum = Utility.RandomInt(0, 100)
 
@@ -324,12 +325,12 @@ Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
 		If (tags != "")
 			StorageUtil.SetIntValue( akSpeaker , "_SD_iSub", StorageUtil.GetIntValue( akSpeaker, "_SD_iSub") + 1)
 
-			If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+			If  (SexLab.ValidateActor( Player) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
 				Debug.Notification( "[Resists weakly]" )
 				If (isVictim)
-					SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = akSpeaker , AnimationTags = tags)
+					SexLab.QuickStart(Player,  akSpeaker, Victim = akSpeaker , AnimationTags = tags)
 				Else
-					SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, AnimationTags = tags)
+					SexLab.QuickStart(Player,  akSpeaker, AnimationTags = tags)
 				Endif
 			EndIf
 		Endif
@@ -494,7 +495,7 @@ Function RobPlayer ( Actor akSpeaker  )
 		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 
 		Actor _bandit = akSpeaker
-		Actor _target = SexLab.PlayerRef 
+		Actor _target = Player
 		int   itemCount
 		int   idx
 		int   stolenCnt
@@ -525,7 +526,7 @@ Function RobPlayer ( Actor akSpeaker  )
 				canSteal = True
 			EndIf
 			
-			if canSteal && _bandit != SexLab.PlayerRef  && (nthItem.HasKeywordString("VendorNoSale") || nthItem.HasKeywordString("MagicDisallowEnchanting"))
+			if canSteal && _bandit != Player  && (nthItem.HasKeywordString("VendorNoSale") || nthItem.HasKeywordString("MagicDisallowEnchanting"))
 				canSteal = False
 				; _notify("Pick: !Q " + nthItem.GetName())
 			endif
@@ -564,7 +565,7 @@ Function RobPlayer ( Actor akSpeaker  )
 	Else
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 		SendModEvent("PCSubStripped")
-		SexLab.ActorLib.StripActor( SexLab.PlayerRef, VictimRef = SexLab.PlayerRef, DoAnimate= false)			
+		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)			
 	EndIf
 
 	Utility.Wait(1.0)

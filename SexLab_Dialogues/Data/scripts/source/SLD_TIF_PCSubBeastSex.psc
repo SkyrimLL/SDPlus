@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 2
-Scriptname SLD_TIF_PCSubBeastEnslave Extends TopicInfo Hidden
+Scriptname SLD_TIF_PCSubBeastSex Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -10,7 +10,7 @@ ActorBase akActorBase = akspeaker.GetLeveledActorBase() as ActorBase
 Form speakerRaceForm = akActorBase.GetRace() as Form
 
 ; Debug.Notification("[SD] beast enslavement - Race: " + akActorBase.GetRace().GetName())
-Debug.Trace("[SD] beast enslavement - Race: " + akActorBase.GetRace().GetName())
+Debug.Trace("[SD] beast sex - Race: " + akActorBase.GetRace().GetName())
 
 Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
 int i = 0
@@ -25,11 +25,12 @@ while(i < valueCount) && (!bRaceMatch)
 	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && (thisRace == speakerRaceForm); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
 		Debug.Trace("	Race [" + i + "] = " + sRaceName + " Race formID: " + thisRace + " FormID to match: " + speakerRaceForm)
 		bRaceMatch = True
-		Debug.Notification(" (tries to overpower you) ")
+		Debug.Notification(" (tries to hump you) ")
 
 		fctDialogue.SetNPCDialogueState ( akSpeaker )
 	 
-		fctDialogue.StartPlayerClaimedBeast( akSpeaker)
+		; fctDialogue.StartPlayerClaimedBeast( akSpeaker)
+		akSpeaker.SendModEvent("PCSubSex")
 	endif
 
 	i += 1
@@ -38,7 +39,7 @@ EndWhile
 
 if  (!bRaceMatch)
 	; Debug.Notification("[SD] beast enslavement attempt failed")
-	Debug.Trace("[SD] beast enslavement attempt failed")
+	Debug.Trace("[SD] beast sex attempt failed")
 
 
 endIf
