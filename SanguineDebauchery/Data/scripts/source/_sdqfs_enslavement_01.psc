@@ -648,7 +648,7 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 
 	; Bindings items
 	If (bBindings )
-		fctOutfit.setDeviceArms (  bDevEquip = False, sDevMessage = "You have been released from your chains")
+		fctOutfit.setDeviceArmbinder (  bDevEquip = False, sDevMessage = "You have been released from your chains")
 		fctOutfit.setDeviceLegs (  bDevEquip = False, sDevMessage = "")
 		fctOutfit.setDeviceBlindfold (  bDevEquip = False, sDevMessage = "")
 		fctOutfit.setDeviceGag (  bDevEquip = False, sDevMessage = "")

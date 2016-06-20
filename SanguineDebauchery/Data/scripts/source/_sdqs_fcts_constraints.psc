@@ -407,9 +407,9 @@ Function CollarUpdate()
 				;EndIf
 
 				;If  (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) )
-				If fctOutfit.isCollarEquipped( kPlayer )
-					PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
-				Endif
+				; If fctOutfit.isCollarEquipped( kPlayer )
+				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
+				; Endif
 			EndIf
 
 

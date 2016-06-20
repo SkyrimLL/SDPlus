@@ -91,6 +91,7 @@ Spell Property _SDSP_SelfVibratingEffect  Auto
 Spell Property _SDSP_SelfTinglingEffect  Auto  
 Spell Property _SDSP_Weak  Auto  
 
+Faction kCrimeFaction
 
 ; LOCAL
 Int iuType
@@ -214,14 +215,15 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	
 	iuType = akBaseItem.GetType()
 	
-	If ( akItemReference == _SDRAP_masters_key.GetReference() )
+	;If ( akItemReference == _SDRAP_masters_key.GetReference() )
 		; escape
-		Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
+	;	Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
 
-		Return
+	;	Return
 
 		; Slave picks up a weapon
-	ElseIf  ( iuType == 41 ) 
+	; Else
+	If  ( iuType == 41 ) 
 
 		If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight")) ; ( GetCurrentRealTime() - fLastEscape < 5.0 )
 			; Debug.Notification( "$SD_MESSAGE_WAIT_5_SEC" )
@@ -243,7 +245,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
 				Debug.Messagebox("You manage to break your chains with a weapon.")
 
-				fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 				fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
 				fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
 
@@ -516,7 +518,7 @@ State monitor
 				; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
 				_SD_dreamQuest.SetStage(10)
 
-			ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor))
+			ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
 				; Master made profit - slave can be sold
 				if (iPlayerGender==0)
 					_SDSMP_choke_m.Play( Game.GetPlayer() )
@@ -801,7 +803,7 @@ State monitor
 				If (fMasterDistance < fKneelingDistance) && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
 					fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
-					fctOutfit.setDeviceArms ( bDevEquip = True, sDevMessage = "")
+					fctOutfit.setDeviceArmbinder ( bDevEquip = True, sDevMessage = "")
 
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 
@@ -813,7 +815,7 @@ State monitor
 
 				ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
-					fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+					fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 					; Debug.Notification("Your owner releases your hands.")
 
 				EndIf
@@ -973,7 +975,7 @@ State monitor
 						Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
 						Debug.Messagebox("You manage to break your chains with a weapon.")
 
-						fctOutfit.setDeviceArms ( bDevEquip = False, sDevMessage = "")
+						fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 						fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
 						fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
 
@@ -1045,6 +1047,11 @@ State escape_choking
 		; SD 3.3 - testing Master searching for slave during collar events
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			enslavement.bSearchForSlave = True
+
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+				kCrimeFaction = kMaster.GetCrimeFaction()
+				kCrimeFaction.SetCrimeGold(100)
+			endif
 		Endif
 
 		kMaster.EvaluatePackage()
@@ -1075,6 +1082,10 @@ State escape_choking
 
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 					Debug.Notification( "Where did you think you were going?" )
+
+					Int iGold = kCrimeFaction.GetCrimeGold()
+					kCrimeFaction.PlayerPayCrimeGold( True, False )	
+					_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
 				endIf
 				
 				if (Utility.RandomInt(0,100)>50)
@@ -1336,6 +1347,11 @@ State escape_shock
 		; SD 3.3 - testing Master searching for slave during collar events
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			enslavement.bSearchForSlave = True
+
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+				kCrimeFaction = kMaster.GetCrimeFaction()
+				kCrimeFaction.SetCrimeGold(100)
+			endif
 		Endif
 
 		kMaster.EvaluatePackage()
@@ -1368,6 +1384,11 @@ State escape_shock
 
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 					Debug.Notification( "Where did you think you were going?" )
+
+					Int iGold = kCrimeFaction.GetCrimeGold()
+					kCrimeFaction.PlayerPayCrimeGold( True, False )	
+					_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
+
 				endIf
 
 				if (Utility.RandomInt(0,100)>50)
