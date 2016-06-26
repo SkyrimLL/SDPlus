@@ -9,12 +9,21 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Actor Player = Game.GetPlayer()
 	Bool isPCBimbo = False
 	Bool isSpeakerHuman = kSpeakerForm.HasKeywordString("ActorTypeNPC")
+	Bool isSpeakerMasterBeast = False
 	Int iDominance = StorageUtil.GetIntValue( Player , "_SD_iDom") - StorageUtil.GetIntValue( Player , "_SD_iSub")
 
 	; Force disable test dialogues
 	If (_SLD_TestDialogues.GetValue() != 0)
 		_SLD_TestDialogues.SetValue(0)
 	EndIf
+
+	If (StorageUtil.GetIntValue(akSpeaker, "_SD_iMasterIsCreature") ==1)
+		isSpeakerMasterBeast = True
+		_SLD_PCSubMasterBeast.SetValue(1)
+	else
+		isSpeakerMasterBeast = False
+		_SLD_PCSubMasterBeast.SetValue(0)
+	endif
 
 	_SLD_speakerAlias.ForceRefTo(akSpeakerRef )
 
@@ -377,43 +386,27 @@ Function StartPlayerClaimedBeast ( Actor akSpeaker, string tags = "" )
 EndFunction
 
 Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
- 	Actor Player = Game.GetPlayer()
+ 	Actor kPlayer = Game.GetPlayer()
 	Utility.Wait(0.5)
 
 	Int IButton = _SLD_raceMenu.Show()
 
 	If IButton == 0  ; Show the thing.
-		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
-
-		Actor kPlayer = Player as Actor
+		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 
 		Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 
-		Int Hair = kPlayer.GetLeveledActorBase().GetNumHeadParts()
-		Int i = 0
-		While i < Hair
-			If kPlayer.GetLeveledActorBase().GetNthHeadPart(i).GetType() == 3
-				playerCurrentHair = kPlayer.GetLeveledActorBase().GetNthHeadPart(i)
-				i = Hair
-			EndIf
-			i += 1
-		EndWhile
-
-		If (playerOrigHair == None)
-			playerOrigHair = playerCurrentHair
-		EndIf
-
 		If (iPlayerGender==0) 
-			If (playerCurrentHair != _SLD_MaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
-				kPlayer.ChangeHeadPart(_SLD_MaleSlaveHair)
+			If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
+				kPlayer.SendModEvent("SLHShaveHead")
 				Debug.Notification("Your head is shaved to remind you of your place.")
 			Else
 				Game.ShowLimitedRaceMenu()
 			EndIf
 
 		Else
-			If (playerCurrentHair != _SLD_FemaleSlaveHair) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
-				kPlayer.ChangeHeadPart(_SLD_FemaleSlaveHair)
+			If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
+				kPlayer.SendModEvent("SLHShaveHead")
 				Debug.Notification("Your head is shaved to remind you of your condition.")
 			Else
 				Game.ShowLimitedRaceMenu()
@@ -422,13 +415,54 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 		EndIf
 
 	Else
-		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
 
  
 			
 	EndIf
 
 	Utility.Wait(1.0)
+
+EndFunction
+
+Function ShaveHead ( Actor akSpeaker, string type = "Racemenu" )
+ 	Actor kPlayer = Game.GetPlayer()
+	Utility.Wait(0.5)
+
+	Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+
+	Int Hair = kPlayer.GetLeveledActorBase().GetNumHeadParts()
+	Int i = 0
+	While i < Hair
+		If kPlayer.GetLeveledActorBase().GetNthHeadPart(i).GetType() == 3
+			playerCurrentHair = kPlayer.GetLeveledActorBase().GetNthHeadPart(i)
+			i = Hair
+		EndIf
+		i += 1
+	EndWhile
+
+	If (playerOrigHair == None)
+		playerOrigHair = playerCurrentHair
+	EndIf
+
+	If (iPlayerGender==0) 
+		If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (_SLD_PCSubShavedON.GetValue() ==1)
+			kPlayer.ChangeHeadPart(_SLD_MaleSlaveHair)
+			; Debug.Notification("Your head is shaved to remind you of your place.")
+			StorageUtil.SetIntValue(kPlayer, "_SLH_iShavedHead", 1)
+
+		EndIf
+
+	Else
+		If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (_SLD_PCSubShavedON.GetValue() ==1)
+			kPlayer.ChangeHeadPart(_SLD_FemaleSlaveHair)
+			; Debug.Notification("Your head is shaved to remind you of your condition.")
+			StorageUtil.SetIntValue(kPlayer, "_SLH_iShavedHead", 1)
+
+		EndIf
+
+	EndIf
+
 
 EndFunction
 
@@ -586,6 +620,7 @@ GlobalVariable Property _SLD_NPCDrugged  Auto
 
 GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
 GlobalVariable Property _SLD_PCSubEnslaved Auto
+GlobalVariable Property _SLD_PCSubMasterBeast Auto
 GlobalVariable Property _SLD_PCSubForcedSlavery Auto
 
 GlobalVariable Property _SLD_PCSubFollowSlave Auto

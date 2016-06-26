@@ -38,6 +38,9 @@ Function _maintenance()
 
 	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
 
+	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) ; If Hormones isn't defined, create our own shave head event
+		RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
+	Endif
 
 
 	isPlayerEnslaved = StorageUtil.GetIntValue( PlayerActor, "_SD_iEnslaved") as Bool
@@ -443,6 +446,17 @@ Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _
  
  	; Event currently defined in SexLab Dialogues... change that later
 	_SLD_Main.ChangePlayerLook(kActor)
+EndEvent
+
+Event OnSDShaveHead(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving slave change look story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+ 	; Event currently defined in SexLab Dialogues... change that later
+	_SLD_Main.ShaveHead(kActor)
 EndEvent
 
 
