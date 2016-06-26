@@ -86,6 +86,7 @@ Actor kPlayer
 Actor kMasterToBe = None
 ObjectReference kLust
 ObjectReference kPlayerSafe
+ObjectReference kCrosshairTarget
 Int uiCarryWeight
 Int iMsgResponse
 Int iLustCount
@@ -290,7 +291,7 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubMasterFollow",   "OnSDMasterFollow")
 	RegisterForModEvent("PCSubMasterTravel",   "OnSDMasterTravel")
 	RegisterForModEvent("SDSanguineBlessingMod",   "OnSDSanguineBlessingMod")
-
+	RegisterForCrosshairRef()
 
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
@@ -643,7 +644,7 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 		kNewMaster = kActor
 	EndIf
 		
-	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
+	Debug.Trace("[_sdras_player] Receiving 'surrender' event - New master: " + kNewMaster)
 
 	If (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
@@ -746,6 +747,7 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		kNewMaster.SendModEvent("PCSubSex")
 	EndIf
 EndEvent
+
 
 Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -1340,6 +1342,23 @@ Event OnSDSanguineBlessingMod(String _eventName, String _args, Float _argc = -1.
 	; endif
 EndEvent
 
+Event OnCrosshairRefChange(ObjectReference ref)
+
+	If ref ;Used to determine if it's none or not.
+
+		if (ref.GetVoiceType() != none) && (!(ref as Actor).IsDead())  ;is this an actor?
+			kCrosshairTarget = ref 
+			Debug.Notification("[SD] Looking at potential master")
+		endif
+
+	EndIf
+EndEvent
+
+
+Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	kCrosshairTarget = none ; reset target
+
+EndEvent
 
 State waiting
 	Event OnUpdate()
@@ -1603,12 +1622,20 @@ State monitor
 				Monitor.SetPlayerControl(true)
 
 				Actor kCombatTarget = kPlayer.GetCombatTarget() as Actor
+				Actor kSubmitTarget = kCrosshairTarget as Actor
 
 				If (IButton == 0 ) 
 					; StorageUtil.SetIntValue(kPlayer, "_SD_iForcedSurrender", 1)	
 					Debug.Trace("[SD] Surrender")
 					SendModEvent("da_PacifyNearbyEnemies", "Restore")
-					SendModEvent("PCSubSurrender")
+
+					if (kCombatTarget!=none)
+						kCombatTarget.SendModEvent("PCSubSurrender")
+					elseif (kSubmitTarget!=none)
+						kSubmitTarget.SendModEvent("PCSubSurrender")
+					else
+						Debug.Notification("[SD] Surrender - empty targets")
+					endif
 
 				ElseIf (IButton == 1)
 					; Pray to Sanguine

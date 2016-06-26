@@ -557,40 +557,43 @@ EndFunction
  
 
 Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionListOut = None )
+	Faction nthFaction
 	Form nthForm
+	Faction[] MasterFactions = akMaster.GetFactions(-128, 127);The maximum range allowed.
 
 	Debug.Trace("[SD] Checking slave factions for " + akMaster)
+	Debug.Trace("[SD] Master is a part of the following factions: " + MasterFactions)
 
-	Int iFormIndex = ( akMaster as ObjectReference ).GetNumItems()
+	Int iFormIndex = MasterFactions.Length
 	While ( iFormIndex > 0 )
 		iFormIndex -= 1
-		nthForm = ( akMaster as ObjectReference ).GetNthForm(iFormIndex)
-		If ( nthForm )
-			If ( nthForm.GetType() == TYPE_FACTION )
-				Debug.Notification("	Master Faction: " + nthForm)
-				Debug.Trace("	Master Faction: " + nthForm)
-				if !akSlave.IsInFaction( nthForm as Faction )
-					; Only add slave to faction he/she is not member of yet
+		nthFaction = MasterFactions[iFormIndex]
+		nthForm = nthFaction as Form
+		If ( nthFaction )
+			; Debug.Notification("	Master Faction: " + nthFaction)
+			Debug.Trace("	Master Faction: " + nthFaction)
+			if !akSlave.IsInFaction( nthFaction )
+				; Only add slave to faction he/she is not member of yet
 
-					StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
-					StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
-					Debug.Notification("[SD] Slave faction joined: " + nthForm)
-					Debug.Trace("[SD]		- Slave faction joined: " + nthForm)
+				StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
+				StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
+				; Debug.Notification("[SD] Slave faction joined: " + nthFaction)
+				Debug.Trace("[SD]		- Slave faction joined: " + nthFaction)
 
-					If ( alFactionListOut != None )
-						alFactionListOut.AddForm( nthForm as Faction )
-					EndIf
+				If ( alFactionListOut != None )
+					alFactionListOut.AddForm( nthFaction )
+				EndIf
 
-					akSlave.AddToFaction( nthForm as Faction )
-				else
-					Debug.Trace("[SD]		- Slave already in faction: " + nthForm )
+				akSlave.AddToFaction( nthFaction )
+			else
+				Debug.Trace("[SD]			- Slave already in faction: " + nthFaction )
 
-				endif
-			Endif
+			endif
 		EndIf
 	EndWhile
 
 EndFunction
+
 
 Form Function findMatchingRace( Actor akMaster )
 	ActorBase akActorBase = akMaster.GetLeveledActorBase() as ActorBase

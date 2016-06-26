@@ -211,6 +211,10 @@ Function CollarUpdate()
 		Return
 	EndIf
 
+	If (kTarget!=kPlayer)
+		Return
+	endif
+
 	; If (Utility.RandomInt( 0, 100 ) >= 99 )
 	;	Debug.Notification( "Your collar weighs around your neck..." )
 	; EndIf
@@ -346,7 +350,7 @@ Function CollarUpdate()
 					Debug.Notification( "The collar forces you down on your knees." )
 				EndIf
 
-				If (kTarget == kPlayer) 
+				If !fctOutfit.isYokeEquipped( kPlayer)  
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
 						CollarStand()
 
@@ -372,12 +376,12 @@ Function CollarUpdate()
 						EndIf
 					EndIf
 
-				ElseIf !fctOutfit.isYokeEquipped( kPlayer) 
-					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
-						CollarStand()
-					Else
-						PlayIdleWrapper(kPlayer, _SDIAP_bound[1] )
-					EndIf
+				; ElseIf !fctOutfit.isYokeEquipped( kPlayer) 
+				;	If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
+				;		CollarStand()
+				;	Else
+				;		PlayIdleWrapper(kPlayer, _SDIAP_bound[1] )
+				;	EndIf
 				EndIf
 
 			Else
