@@ -92,7 +92,7 @@ Faction kCrimeFaction
 
 ; ObjectReference akRef1 = master
 ; ObjectReference akRef2 = slave
-Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRef1, ObjectReference akRef2, int aiValue1, int aiValue2)
+Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRef1, ObjectReference akRef2, int aiValue1, int aiValue2 )
 	ObjectReference shackles = _SDRAP_shackles.GetReference() as ObjectReference
 	ObjectReference bindings = _SDRAP_bindings.GetReference() as ObjectReference
 	ObjectReference collar = _SDRAP_collar.GetReference() as ObjectReference
@@ -116,15 +116,15 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDGVP_enslaved.SetValue(1)	    					
 		fEnslavementStart = GetCurrentGameTime()
 		; fctConstraints.actorCombatShutdown( kMaster )
-		fctConstraints.actorCombatShutdown( kSlave )
 
 		; a new slave into a slaver faction
-		If ( aiValue2 == 0 )
-			bOriginallyEnemies = fctFactions.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )
-		; transfer of ownership
-		ElseIf ( aiValue2 == 1 )
-			fctFactions.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
-		EndIf
+		; If ( aiValue2 == 1 )
+			; transfer of ownership
+		fctFactions.syncActorFactionsByRace( kMaster, kSlave, _SDFLP_allied )
+		fctFactions.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
+		; Else
+		;	bOriginallyEnemies = fctFactions.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )
+		; EndIf
 
 		fctSlavery.StartSlavery( kMaster, kSlave)
 
@@ -135,9 +135,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 			Debug.Notification("Your new owner defeated you.")
 		Endif
 
+		fctConstraints.actorCombatShutdown( kSlave )
 		fctConstraints.togglePlayerControlsOff( )
-		Debug.SendAnimationEvent(kSlave, "Unequip")
-		Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
+		; Debug.SendAnimationEvent(kSlave, "Unequip")
+		; Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
 
 		; Drop current weapon 
 		if(kSlave.IsWeaponDrawn())
@@ -227,9 +228,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		SetObjectiveDisplayed( 0 )
 		if (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
 			SetObjectiveDisplayed( 1 )
-			SetObjectiveDisplayed( 2 )
+			; SetObjectiveDisplayed( 2 )
+			SetObjectiveDisplayed( 6 )
 		EndIf
-		SetObjectiveDisplayed( 6 )
 		; Utility.Wait(2.0)
 
 		; Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )

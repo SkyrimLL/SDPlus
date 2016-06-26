@@ -221,8 +221,8 @@ If ( _SDGVP_state_joined.GetValueInt() >= 1 )
 	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
-fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
-Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+; fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
+; Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
 Debug.Notification("You are free")
 
 SetObjectiveCompleted( 100 )
@@ -290,8 +290,8 @@ If ( _SDGVP_state_joined.GetValueInt() >= 1 )
 	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
-fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
-Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+; fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
+; Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
 Debug.Notification( "You are free")
 
 SetObjectiveCompleted( 100 )
@@ -371,8 +371,8 @@ If( kSlave.IsInFaction( _SDFP_mistwatch ) )
 	kSlave.RemoveFromFaction( _SDFP_mistwatch )
 EndIf
 
-fctFactions.resetAllyToActor( kSlave, _SDFLP_forced_allied )
-Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
+; fctFactions.resetAllyToActor( kSlave, _SDFLP_forced_allied )
+; Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
 Debug.Notification("You are free.")
 
 SetObjectiveCompleted( 100 )

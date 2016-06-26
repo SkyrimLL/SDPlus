@@ -19,7 +19,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 
 	; UnregisterForModEvent("da_PlayerRecovered")
 	
-	if (_SDGVP_sanguine_blessing.GetValue() > 0)  && (_SDGVP_enslaved.GetValue() == 0)
+	if (StorageUtil.GetIntValue(thisPlayer, "_SD_iSanguineBlessings") > 0)  && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslaved")==0)
 
 		return true
 	else

@@ -552,6 +552,31 @@ event OnPageReset(string a_page)
 			Else
 				AddToggleOption("SAFE WORD", _SDGVP_config_safeword.GetValue() as Bool, OPTION_FLAG_DISABLED )
 			EndIf
+
+			; ------ List slavery factions
+			; // iterate list from first added to last added
+			Actor kPlayer = Game.GetPlayer()
+			Debug.Trace("[SD] Expire Slave Factions")
+
+			int currentDaysPassed = Game.QueryStat("Days Passed")
+			int valueCount = StorageUtil.FormListCount(kPlayer, "_SD_lSlaveFactions")
+			int i = 0
+			int daysJoined 
+			Form slaveFaction 
+
+			while(i < valueCount)
+				slaveFaction = StorageUtil.FormListGet(kPlayer, "_SD_lSlaveFactions", i)
+				daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+
+				;	Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+
+				AddTextOption(" Faction[" + slaveFaction.GetFormID() + "] : " + slaveFaction.GetName() , OPTION_FLAG_DISABLED)
+				AddTextOption("     Days Since Joined: " + daysJoined, "", OPTION_FLAG_DISABLED)
+
+
+				i += 1
+			endwhile
+			; ------
 						
 			SetCursorPosition( _SDQP_quests_secondary.Length * 2 + 5)
 

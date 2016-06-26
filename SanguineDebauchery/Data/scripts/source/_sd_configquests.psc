@@ -264,7 +264,7 @@ State stopping
 		removeSDSpells()
 		removeSDItems()
 		
-		fctFactions.resetAllyToActor(player, _SDFLP_forced_joined )
+;		fctFactions.resetAllyToActor(player, _SDFLP_forced_joined )
 
 		Debug.Notification("$SD_STATUS_UNINSTALL_3")
 		Utility.WaitGameTime( 2.0 )

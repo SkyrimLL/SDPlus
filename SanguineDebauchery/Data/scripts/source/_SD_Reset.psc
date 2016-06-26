@@ -56,8 +56,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2016061700 ; <--- Edit this value when updating
-		fVersion = 2016061700; and this
+	If fVersion < 2016062400 ; <--- Edit this value when updating
+		fVersion = 2016062400; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -71,6 +71,7 @@ Function Maintenance()
 		fctFactions.initHumanoidMastersList (  )
 		fctFactions.initBeastMastersList (  )
 		fctOutfit.initSlaveryGearByRace (  )
+		fctFactions.initSlaveryFactionByRace (  )
 
 		fctSlavery.InitPunishmentIdle()
 
