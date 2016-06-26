@@ -15,6 +15,7 @@ Debug.Trace("[SD] beast sex - Race: " + akActorBase.GetRace().GetName())
 Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
 int i = 0
 Form thisRace
+String sMasterRaceName = speakerRaceForm.GetName()
 String sRaceName
 Bool bRaceMatch = False
 
@@ -22,7 +23,11 @@ while(i < valueCount) && (!bRaceMatch)
 	thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
 	sRaceName = thisRace.GetName()
 
-	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && (thisRace == speakerRaceForm); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
+	If (sMasterRaceName == "")
+		sMasterRaceName = speakerRaceForm as String
+	endif
+
+	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && ((thisRace == speakerRaceForm) || (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
 		Debug.Trace("	Race [" + i + "] = " + sRaceName + " Race formID: " + thisRace + " FormID to match: " + speakerRaceForm)
 		bRaceMatch = True
 		Debug.Notification(" (tries to hump you) ")
