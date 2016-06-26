@@ -285,7 +285,6 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubStance",   "OnSDStance")
 	RegisterForModEvent("PCSubTrustAction",   "OnSDTrustAction")
 	RegisterForModEvent("PCSubTrustFight",   "OnSDTrustFight")
-	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
 	RegisterForModEvent("PCSubUnleash",   "OnSDUnleash")
 	RegisterForModEvent("PCSubLeash",   "OnSDLeash")
 	RegisterForModEvent("PCSubMasterFollow",   "OnSDMasterFollow")
@@ -365,7 +364,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 			; Player hands are freed temporarily for sex
 
 			if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
-				fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
+				; Testing if devices automatically removed by DDi 3.0+
+				; fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
 				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
 			EndIf
 		EndIf
@@ -466,8 +466,8 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
-					; If player is enslaved, use player outfit, else, use generic device
-					fctOutfit.setDeviceArmbinder ( bDevEquip = True)
+					; Testing if devices automatically removed by DDi 3.0+
+					; fctOutfit.setDeviceArmbinder ( bDevEquip = True)
 
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				else
@@ -480,11 +480,12 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
+					fctOutfit.setDeviceArmbinder ( bDevEquip = False)
 
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; If player is enslaved, use player outfit, else, use generic device
-					fctOutfit.setDeviceArmbinder ( bDevEquip = True)
+					; fctOutfit.setDeviceArmbinder ( bDevEquip = True)
 
 					StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFree", 0)
 				else
@@ -1236,17 +1237,6 @@ Event OnSDTrustFight(String _eventName, String _args, Float _argc = -1.0, Form _
 	StorageUtil.SetIntValue( kPlayer , "_SD_iEnableStand", 1 )
 
 	SendModEvent( "SDHandsFreeSlave" )
-EndEvent
- 
-Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _sender)
- 	Actor kActor = _sender as Actor
-	Int iEventCode = _argc as Int
-	String iEventString = _args
-
-	Debug.Trace("[_sdras_player] Receiving slave change look story event [" + _args  + "] [" + _argc as Int + "]")
- 
- 	; Event currently defined in SexLab Dialogues... change that later
-	; fctDialogue.ChangePlayerLook(kActor)
 EndEvent
  
 Event OnSDUnleash(String _eventName, String _args, Float _argc = -1.0, Form _sender)

@@ -206,61 +206,114 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 EndEvent
 
 Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
-	If ( Self.GetOwningQuest().GetStage() >= 90 || _SDFLP_sex_items.Find( akBaseItem ) >= 0 || _SDFLP_punish_items.Find( akBaseItem ) >= 0 || _SDFLP_slave_clothing.Find( akBaseItem ) >= 0 )
+
+	If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) ) || kSlave.GetCurrentScene()
 		Return
 	EndIf
-	If ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) )
-		Return
-	EndIf
-	
+
 	iuType = akBaseItem.GetType()
-	
-	;If ( akItemReference == _SDRAP_masters_key.GetReference() )
-		; escape
-	;	Debug.Trace("[_sdras_slave] Master key - Stop enslavement")
+	_SDFLP_trade_items.AddForm( akBaseItem )
 
-	;	Return
+;		Debug.Notification("[_sdras_slave] Adding item: " + akBaseItem)
+;		Debug.Notification("[_sdras_slave] Slave bound status: " + kSlave.WornHasKeyword( _SDKP_bound ) )
+;		Debug.Notification("[_sdras_slave] Item type: " + iuType)
 
-		; Slave picks up a weapon
-	; Else
-	If  ( iuType == 41 ) 
+	If ( akItemReference == _SDRAP_masters_key.GetReference() ) && (akItemReference == (kSlave as ObjectReference))
+		; Slave equips master key - Escape
 
-		If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight")) ; ( GetCurrentRealTime() - fLastEscape < 5.0 )
-			; Debug.Notification( "$SD_MESSAGE_WAIT_5_SEC" )
+		; Debug.Trace("[_sdras_slave] Master key stolen - Stop enslavement")
+		; This should be redundant - already handled by _sdks_bindings_key
 
-			; SD 3.3 - Disabled for now as this is causing an issue with some mods like SPERG
-			; Debug.MessageBox("You collar gives you a small shock to remind you that you are not allowed to use a weapon. Try asking your owner for permission.")
-			; kSlave.DropObject(akBaseItem, aiItemCount)
+		Return
+
+	ElseIf (fctOutfit.isCollarEquipped(kSlave))
+		; Slave is collared - control item awareness
+
+		; Debug.Notification( "$SD_MESSAGE_MASTER_AWARE" )
 		
-		ElseIf (0==1); disabled for now - slave should be able to pick up a weapon to defend master
-			fDamage = ( akBaseItem as Weapon ).GetBaseDamage() as Float
+		If ( iuType == 41 || iuType == 42 ) && (fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") ) 
+			; weapon or ammo
 
-			If ( fDamage <= 0.0 )
-				fDamage = Utility.RandomFloat( 1.0, 4.0 )
+			If ( _SDGVP_state_caged.GetValueInt() )
+				; Slave is caged
+
+				If ( kSlave.GetActorValue("Lockpicking") > Utility.RandomInt(0, 100) )
+					Debug.Notification( "$SD_MESSAGE_MAKE_LOCKPICK" )
+					kSlave.AddItem( _SDMOP_lockpick, 1 )
+				Else
+					Debug.Notification( "$SD_MESSAGE_FAIL_LOCKPICK" )
+				EndIf
+				; kSlave.RemoveItem( akBaseItem, aiItemCount, False )
+
+			ElseIf (false) && ( kMaster.GetSleepState() == 3 || !kMaster.HasLOS( kSlave ) )
+				fDamage = ( akBaseItem as Weapon ).GetBaseDamage() as Float
+				; Disabling 'breaking chains with weapon' for now.
+
+				If ( fDamage <= 0.0 )
+					fDamage = Utility.RandomFloat( 1.0, 4.0 )
+				EndIf
+
+				_SDFP_bindings_health -= fDamage
+				If ( _SDFP_bindings_health < 0.0 )
+					Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
+					Debug.Messagebox("You manage to break your chains with a weapon.")
+
+					fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
+					fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
+					fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
+
+					SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
+					Return
+				Else
+				;	kSlave.DropObject(akBaseItem, aiItemCount)
+				EndIf
 			EndIf
 
-			_SDFP_bindings_health -= fDamage
-			enslavement.ufBindingsHealth = _SDFP_bindings_health
-			If ( _SDFP_bindings_health < 0.0 && !_SDGVP_state_caged.GetValueInt() )
-				Debug.Trace("[_sdras_slave] Broken chains - Stop enslavement")
-				Debug.Messagebox("You manage to break your chains with a weapon.")
+			; fLastEscape = GetCurrentRealTime()
 
-				fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
-				fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
-				fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
+		ElseIf ( iuType == 41 ) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") )
+				; TO DO - Add code here for compatibility with SPERG and other mods relying on equiping invisible weapons
 
-				fLastEscape = GetCurrentRealTime()
- 				SendModEvent("PCSubFree")
-				; Self.GetOwningQuest().Stop()
-				Return
-			Else
-				kSlave.DropObject(akBaseItem, aiItemCount)
-			EndIf
+				; Debug.Notification( "$SD_MESSAGE_CAUGHT" )
+				; Debug.Notification( "You are not allowed to hold a weapon.  Your collar compels you to remove it." )
+
+				; kSlave.UnequipItem( akBaseItem, aiItemCount )
+				Weapon krHand = kSlave.GetEquippedWeapon()
+				Weapon klHand = kSlave.GetEquippedWeapon( True )
+
+				; Drop current weapon 
+				if(kSlave.IsWeaponDrawn())
+					kSlave.SheatheWeapon()
+					Utility.Wait(2.0)
+				endif
+
+				If ( krHand )
+				;	kSlave.DropObject( krHand )
+					kSlave.UnequipItem( krHand )
+				EndIf
+				If ( klHand )
+				;	kSlave.DropObject( klHand )
+					kSlave.UnequipItem( klHand )
+				EndIf
+
+		ElseIf ( iuType == 26 )  &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip") && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip"))  &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals")
+			; Armor
+
+				; Debug.MessageBox( "You are not allowed to wear clothing. Your Master won't behappy about that." )
+
+				; kSlave.UnequipItem( akBaseItem, aiItemCount )
+
+		ElseIf ( kMaster.GetSleepState() != 0 && kMaster.HasLOS( kSlave ) ) &&  !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableInventory") && ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
+			; Not working as intended - revisit later
+			
+			;	Debug.MessageBox( "You are not allowed to pick something up yet. Your owner takes that away from you." )
+
+			;	kSlave.RemoveItem( akBaseItem, aiItemCount, False, kMaster )
+
 		EndIf
-		
-
 	EndIf
 EndEvent
+
 
 State waiting
 	Event OnUpdate()
@@ -548,6 +601,7 @@ State monitor
 				Bool bMariaEden = False
 				Bool bWolfClub = False
 				Bool bSimpleSlavery = False
+				Bool bRedWave = False
 
 				If (Utility.RandomInt(0,100) > 70) 
 					bWolfClub = WolfClubEnslave() 
@@ -555,16 +609,19 @@ State monitor
 				ElseIf (Utility.RandomInt(0,100) > 40) 
 					bSimpleSlavery = SimpleSlaveryEnslave() 
 
+				ElseIf (Utility.RandomInt(0,100) > 50) 
+					bRedWave = RedWaveEnslave()
+
 				ElseIf (Utility.RandomInt(0,100) > 70) 
 				 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
 				EndIf
 
-				If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden)
-					kActor = kSlaverDest as Actor
-					kActor.SendModEvent("PCSubTransfer")
+				If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
 
 	                Game.FadeOutGame(true, true, 0.5, 5)
 					(kSlave as ObjectReference).MoveTo( kSlaverDest )
+					kActor = kSlaverDest as Actor
+					kActor.SendModEvent("PCSubTransfer")
 					Game.FadeOutGame(false, true, 2.0, 20)
 				Else
 					SendModEvent("PCSubFree")
@@ -900,136 +957,6 @@ State monitor
 		EndIf
 	EndEvent
 	
-	Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
-
-		If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) ) || kSlave.GetCurrentScene()
-			Return
-		EndIf
-
-		iuType = akBaseItem.GetType()
-		_SDFLP_trade_items.AddForm( akBaseItem )
-
-;		Debug.Notification("[_sdras_slave] Adding item: " + akBaseItem)
-;		Debug.Notification("[_sdras_slave] Slave bound status: " + kSlave.WornHasKeyword( _SDKP_bound ) )
-;		Debug.Notification("[_sdras_slave] Item type: " + iuType)
-
-		If ( akItemReference == _SDRAP_masters_key.GetReference() )
-			; Slave equips master key - Escape
-
-			Debug.Trace("[_sdras_slave] Master key stolen - Stop enslavement")
-
-			; This should be redundant - already handled by _sdks_bindings_key
-
-			Return
-
-		ElseIf ( kSlave.WornHasKeyword( _SDKP_collar ) )
-			; Slave is collared - control item awareness
-
-			; Debug.Notification( "$SD_MESSAGE_MASTER_AWARE" )
-			
-			If ( akSourceContainer == (kMaster as ObjectReference) ) && ( iuType == 46 || akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || akBaseItem.HasKeyword( _SDKP_food_vendor ) )
-				; kPotion = 46 or food
-				; Only check when Master is feeding Slave
-
-				If ( GetCurrentRealTime() - fLastIngest > 5.0 && !fctOutfit.isGagEquipped(kSlave) )
-					If ( aiItemCount - 1 > 0 )
-						kSlave.DropObject(akBaseItem, aiItemCount - 1)
-					EndIf
-					kSlave.EquipItem(akBaseItem, True, True)
-				Else
-					If ( kSlave.WornHasKeyword( _SDKP_gagged ) )
-						Debug.Notification( "$SD_MESSAGE_GAGGED" )
-					EndIf
-					If ( GetCurrentRealTime() - fLastIngest <= 5.0 )
-						Debug.Notification( "$SD_MESSAGE_WAIT_5_SEC" )
-					EndIf
-					kSlave.DropObject(akBaseItem, aiItemCount)
-				EndIf
-
-				fLastIngest = GetCurrentRealTime()
-
-			ElseIf ( iuType == 41 || iuType == 42 ) && (fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") ) 
-				; weapon or ammo
-
-				If ( _SDGVP_state_caged.GetValueInt() )
-					; Slave is caged
-
-					If ( kSlave.GetActorValue("Lockpicking") > Utility.RandomInt(0, 100) )
-						Debug.Notification( "$SD_MESSAGE_MAKE_LOCKPICK" )
-						kSlave.AddItem( _SDMOP_lockpick, 1 )
-					Else
-						Debug.Notification( "$SD_MESSAGE_FAIL_LOCKPICK" )
-					EndIf
-					; kSlave.RemoveItem( akBaseItem, aiItemCount, False )
-
-				ElseIf (false) && ( kMaster.GetSleepState() == 3 || !kMaster.HasLOS( kSlave ) )
-					fDamage = ( akBaseItem as Weapon ).GetBaseDamage() as Float
-					; Disabling 'breaking chains with weapon' for now.
-
-					If ( fDamage <= 0.0 )
-						fDamage = Utility.RandomFloat( 1.0, 4.0 )
-					EndIf
-
-					_SDFP_bindings_health -= fDamage
-					If ( _SDFP_bindings_health < 0.0 )
-						Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
-						Debug.Messagebox("You manage to break your chains with a weapon.")
-
-						fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
-						fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
-						fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
-
-						SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
-						Return
-					Else
-					;	kSlave.DropObject(akBaseItem, aiItemCount)
-					EndIf
-				EndIf
-
-				; fLastEscape = GetCurrentRealTime()
-
-			ElseIf ( iuType == 41 ) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") )
-					; TO DO - Add code here for compatibility with SPERG and other mods relying on equiping invisible weapons
-
-					; Debug.Notification( "$SD_MESSAGE_CAUGHT" )
-					; Debug.Notification( "You are not allowed to hold a weapon.  Your collar compels you to remove it." )
-
-					; kSlave.UnequipItem( akBaseItem, aiItemCount )
-					Weapon krHand = kSlave.GetEquippedWeapon()
-					Weapon klHand = kSlave.GetEquippedWeapon( True )
-
-					; Drop current weapon 
-					if(kSlave.IsWeaponDrawn())
-						kSlave.SheatheWeapon()
-						Utility.Wait(2.0)
-					endif
-
-					If ( krHand )
-					;	kSlave.DropObject( krHand )
-						kSlave.UnequipItem( krHand )
-					EndIf
-					If ( klHand )
-					;	kSlave.DropObject( klHand )
-						kSlave.UnequipItem( klHand )
-					EndIf
-
-			ElseIf ( iuType == 26 )  &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip") && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip"))  &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals")
-				; Armor
- 
-					; Debug.MessageBox( "You are not allowed to wear clothing. Your Master won't behappy about that." )
-
-					; kSlave.UnequipItem( akBaseItem, aiItemCount )
-
-			ElseIf ( kMaster.GetSleepState() != 0 && kMaster.HasLOS( kSlave ) ) &&  !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableInventory") && ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
-				; Not working as intended - revisit later
-				
-				;	Debug.MessageBox( "You are not allowed to pick something up yet. Your owner takes that away from you." )
-
-				;	kSlave.RemoveItem( akBaseItem, aiItemCount, False, kMaster )
- 
-			EndIf
-		EndIf
-	EndEvent
 
 EndState
 
@@ -1574,6 +1501,17 @@ bool function MariaEdenEnslave(Actor newMaster) global
 	endif
 	return false
 endfunction
+
+bool function RedWaveEnslave( )  
+
+	IF (StorageUtil.GetIntValue(none, "_SLS_iStories")==1)
+		SendModEvent("_SLS_PCStartRedWave")
+		return True
+	Else
+		return False
+	Endif
+
+EndFunction
 
 function UpdateSlaveArousal()
 

@@ -5,6 +5,7 @@ Import SKSE
 zadLibs Property libs Auto
 SexLabFrameWork Property SexLab Auto
 
+_SDQS_fcts_factions Property fctFactions  Auto
 
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
@@ -193,7 +194,7 @@ Function initSlaveryGearByRace (  )
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
 			; Falmer   
 			If (StringUtil.Find(sRaceName, "Falmer")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Crawling", raceSlaveTat="FalmerGlow", raceSlaveTatDuration=2 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="FalmerGlow", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazFalmerCollar, deviceRendered=zazFalmerCollarRendered  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazFalmerCuffs, deviceRendered=zazFalmerCuffsRendered   )
 				; registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
@@ -248,9 +249,15 @@ Function initSlaveryGearByRace (  )
 
 			; Draugr    
 			ElseIf (StringUtil.Find(sRaceName, "Draugr")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="AncientNordRunes" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="AncientNordRunes" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Draugr ancient collar later
-
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
 			endif
 		endIf
 
@@ -405,10 +412,13 @@ Function setMasterGearByRace ( Actor kMaster, Actor kSlave  )
 ;	Set enslavement options + default slavery gear items based on race
 ;	If race not listed and actorNPC keyword is found, use default gear
 	ActorBase akActorBase = kMaster.GetLeveledActorBase() as ActorBase
+	form masterRace
 
 	if (kMaster != none)
 
-		Form masterRace = akActorBase.GetRace() as Form
+		; Form masterRace = akActorBase.GetRace() as Form
+		masterRace = fctFactions.findMatchingRace( kMaster )
+
 		Debug.Trace("[SD] setMasterGearByRace -- Setting race to " + masterRace)
 
 		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", masterRace)

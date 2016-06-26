@@ -136,6 +136,12 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.SetIntValue(kSlave, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 	; Tracking also _SD_iSub and _SD_iDom (through the player's answers to Resist or Submit menus
 
+	If (fctFactions.checkIfSlaverCreatureRace( kMaster))
+		StorageUtil.SetIntValue(kMaster, "_SD_iMasterIsCreature", 1)
+	else
+		StorageUtil.SetIntValue(kMaster, "_SD_iMasterIsCreature", 0)
+	endif
+
 	; - Master personality profile
 	; 0 - Simple profile. No additional constraints
 	;				Endgame: Sell slave to slave trader.
@@ -294,12 +300,6 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	; Outfit selection - Commoner by default
 	int outfitID = 0
 	ActorBase PlayerBase = Game.GetPlayer().GetActorBase()
-
-	If (fctFactions.checkIfSlaverCreatureRace( kMaster))
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterIsCreature", 1)
-	else
-		StorageUtil.SetIntValue(kMaster, "_SD_iMasterIsCreature", 0)
-	endif
 
 	fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
 
@@ -1066,9 +1066,16 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 
 	iTrust = iTrust + iModValue
-	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
 
 	Debug.Notification("[SD] Trust pool: " + iTrust)
+
+	if (iTrust>10)
+		iTrust = 10
+	elseif (iTrust<-10)
+		iTrust = -10
+	EndIf
+
+	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
 
 	Return iTrust
 EndFunction

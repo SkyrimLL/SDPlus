@@ -28,6 +28,27 @@ Race Property  FrostTrollRace  Auto
 Race Property  DraugrRace  Auto
 Race Property  DraugrMagicRace  Auto
 
+Faction Property  HagravenFaction   Auto   	; HagravenFaction 
+Faction Property  WolfFaction  Auto			; WolfFaction
+Faction Property  DogFaction  Auto 			; DogFaction
+Faction Property  GiantFaction  Auto		; GiantFaction
+Faction Property  ChaurusFaction   Auto		; ChaurusFaction
+Faction Property  SpiderFaction   Auto		; SpiderFaction
+Faction Property  TrollFaction  Auto 		; TrollFaction
+Faction Property  DraugrFaction  Auto 		; DraugrFaction
+Faction Property  FalmerFaction  Auto 		; FalmerFaction
+
+Faction Property  NordFaction  Auto 		; CWSonsAlly
+Faction Property  BretonFaction  Auto 		; ForswornFaction
+Faction Property  ImperialFaction  Auto 	; CWImperialAlly
+Faction Property  OrcFaction  Auto 			; OrcFriendFaction
+Faction Property  ElfFaction  Auto 			; ThalmorFaction
+Faction Property  RedguardFaction  Auto 	; HunterFaction
+Faction Property  KhajiitFaction  Auto 		; KhajiitCaravanFaction
+Faction Property  ArgonianFaction  Auto 	; HunterFaction
+Faction Property  DremoraFaction  Auto 		; DremoraFaction
+
+
 int TYPE_FACTION = 11
 
 ;---------------------------------------------------
@@ -90,7 +111,7 @@ Function initBeastMastersList (  )
 
 			StorageUtil.SetIntValue(kForm, "_SD_iSlaveryRace", 1)
 			StorageUtil.SetStringValue( kForm, "_SD_sRaceType", "Beast")  
-			StorageUtil.SetStringValue( kForm, "_SD_sRaceName", kForm.GetName())  
+			StorageUtil.SetStringValue( kForm, "_SD_sRaceName", kForm.GetName())   
 			Debug.Trace("		Form " + iIndex + " is " + kForm)
 		endif
 	EndWhile
@@ -99,56 +120,167 @@ Function initBeastMastersList (  )
 
 EndFunction
 
+Function initSlaveryFactionByRace (  )
+; 	For each race in master races storageUtil
+;		registerSlaveryOptions( Race, allowCollar, allowArmbinders, allowPunishmentDevice, allowPunishmentScene, allowWhippingScene, defaultStance )
+; 		Register devices for slavery gear - collar, armbinders, leg cuffs, belt, vaginal plug, anal plug
+;			registerSlaveryGearDevice( Race, deviceString, deviceKeyword, deviceInventory, deviceRendered )
+
+	Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
+	int i = 0
+	Form thisRace
+	String sRaceName
+ 
+ 	Debug.Trace("[SD] Registering race factions")
+
+	while(i < valueCount)
+		thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+		sRaceName = thisRace.GetName()
+		Debug.Trace("	Race [" + i + "] = " + sRaceName)
+
+		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
+			; Falmer   
+			If (StringUtil.Find(sRaceName, "Falmer")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", FalmerFaction) 
+
+			; Hagraven    
+			ElseIf (StringUtil.Find(sRaceName, "Hagraven")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", HagravenFaction) 
+
+			; Wolf   
+			ElseIf (StringUtil.Find(sRaceName, "Wolf")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", WolfFaction) 
+
+			; Dog    
+			ElseIf (StringUtil.Find(sRaceName, "Dog")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", DogFaction) 
+
+			; Giant   
+			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", GiantFaction) 
+
+			; Chaurus   
+			ElseIf (StringUtil.Find(sRaceName, "Chaurus")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", FalmerFaction) 
+
+			; Spider    
+			ElseIf (StringUtil.Find(sRaceName, "Spider")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", SpiderFaction) 
+
+			; Troll   
+			ElseIf (StringUtil.Find(sRaceName, "Troll")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", TrollFaction) 
+
+			; Draugr    
+			ElseIf (StringUtil.Find(sRaceName, "Draugr")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", DraugrFaction) 
+
+			endif
+		endIf
+
+		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Humanoid"  )
+			; Nord  
+			If (StringUtil.Find(sRaceName, "Nord")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", NordFaction) 
+
+			; Breton
+			ElseIf (StringUtil.Find(sRaceName, "Breton")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", BretonFaction) 
+
+			; Imperial
+			ElseIf (StringUtil.Find(sRaceName, "Imperial")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", ImperialFaction) 
+
+			; Redguard
+			ElseIf (StringUtil.Find(sRaceName, "Redguard")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", RedguardFaction) 
+
+			; Orc
+			ElseIf (StringUtil.Find(sRaceName, "Orc")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", OrcFaction) 
+
+			; Elf
+			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", ElfFaction) 
+
+			; Khajit
+			ElseIf (StringUtil.Find(sRaceName, "Khajiit")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", KhajiitFaction) 
+
+			; Argonian
+			ElseIf (StringUtil.Find(sRaceName, "Argonian")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", ArgonianFaction) 
+
+			; Dremora
+			ElseIf (StringUtil.Find(sRaceName, "Dremora")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", DremoraFaction) 
+
+			endif
+		endif
+
+		i += 1
+	endwhile
+EndFunction
+
 ;---------------------------------------------------
 
 
 Bool Function checkIfSlaver ( Actor akActor )
 	Actor akPlayer = Game.getPlayer() as Actor
 	Int  playerGender =akPlayer.GetLeveledActorBase().GetSex() as Int
+	Bool isSlaver
 
-	If (akActor == akPlayer)
+	; If (akActor == akPlayer)
 		; Debug.Notification("[SD] Slaver is Player!" )
 		; return False
-	EndIf
+	; EndIf
 
-	Bool isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
+	if (StorageUtil.GetIntValue( akActor, "_SD_iDateSlaverChecked")==0)
+		StorageUtil.SetIntValue( akActor, "_SD_iDateSlaverChecked", Game.QueryStat("Days Passed"))
 
-	If (checkIfSpriggan ( akPlayer )) 
-		isSlaver = False
-	Endif
-	
-	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
-		isSlaver = False
-	Endif
+		isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 
-	if (!isSlaver)
-		Debug.Trace("[SD] Humanoid Enslavement check with actor [ " + akActor + " ] - FAILED")
+		If (checkIfSpriggan ( akPlayer )) 
+			isSlaver = False
+		Endif
+		
+		If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
+			isSlaver = False
+		Endif
+
+		if (!isSlaver)
+			Debug.Trace("[SD] Humanoid Enslavement check with actor [ " + akActor + " ] - FAILED")
+		else
+			Debug.Trace("[SD] Humanoid Enslavement check with actor [ " + akActor + " ] - SUCCEEDED")
+		EndIf
+		if (!akActor.HasKeyword( _SDKP_actorTypeNPC ))
+			Debug.Trace("[SD] 		Actor is not an NPC - " )
+		endif
+		if (!funct.checkGenderRestriction( akActor, akPlayer ))
+			Debug.Trace("[SD] 		Gender restriction failed" )
+		endif
+		if (akActor.IsGhost())
+			Debug.Trace("[SD] 		Actor is Ghost" )
+		endif
+		; Debug.Trace("[SD] Actor is Player - " + (akActor != Game.GetPlayer()))
+		if (actorFactionInList( akActor, _SDFLP_banned_factions ))
+			Debug.Trace("[SD] 		Actor is Member of banned faction " )
+		EndIf
+		if (actorInList(_SDFLP_banned_actors , akActor))
+			Debug.Trace("[SD] 		Actor is Member of banned actors " )
+		endif
+		If ((checkIfSpriggan ( akActor ))  || (StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
+			Debug.Trace("[SD] 		Actor is Spriggan - aborting normal enslavement")
+		Endif
+		If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
+			; Prevent new enslavement by current master
+			Debug.Trace("[SD] 		Actor is already an owner")
+		Endif	
+
+		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
 	else
-		Debug.Trace("[SD] Humanoid Enslavement check with actor [ " + akActor + " ] - SUCCEEDED")
-	EndIf
-	if (!akActor.HasKeyword( _SDKP_actorTypeNPC ))
-		Debug.Trace("[SD] 		Actor is not an NPC - " )
-	endif
-	if (!funct.checkGenderRestriction( akActor, akPlayer ))
-		Debug.Trace("[SD] 		Gender restriction failed" )
-	endif
-	if (akActor.IsGhost())
-		Debug.Trace("[SD] 		Actor is Ghost" )
-	endif
-	; Debug.Trace("[SD] Actor is Player - " + (akActor != Game.GetPlayer()))
-	if (actorFactionInList( akActor, _SDFLP_banned_factions ))
-		Debug.Trace("[SD] 		Actor is Member of banned faction " )
-	EndIf
-	if (actorInList(_SDFLP_banned_actors , akActor))
-		Debug.Trace("[SD] 		Actor is Member of banned actors " )
-	endif
-	If ((checkIfSpriggan ( akActor ))  || (StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
-		Debug.Trace("[SD] 		Actor is Spriggan - aborting normal enslavement")
-	Endif
-	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
-		; Prevent new enslavement by current master
-		Debug.Trace("[SD] 		Actor is already an owner")
-	Endif	
+		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaver") as Bool
+	endIf
 
 	return isSlaver
 EndFunction
@@ -156,44 +288,52 @@ EndFunction
 Bool Function checkIfSlaverCreature ( Actor akActor )
 	Actor akPlayer = Game.getPlayer() as Actor
 	Int  playerGender = akPlayer.GetLeveledActorBase().GetSex() as Int
+	Bool isSlaver
 
-	If (akActor == akPlayer)
-		Debug.Notification("[SD] Slaver is Player!" )
-		return False
-	EndIf
+	; If (akActor == akPlayer)
+	;	Debug.Notification("[SD] Slaver is Player!" )
+	;	return False
+	; EndIf
 
-	Bool isSlaver = ( (   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )) && !checkIfSpriggan ( akActor ) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
-	
-	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
-		isSlaver = False
-	Endif
+	if (StorageUtil.GetIntValue( akActor, "_SD_iDateBeastSlaverChecked")==0)
+		StorageUtil.SetIntValue( akActor, "_SD_iDateBeastSlaverChecked", Game.QueryStat("Days Passed"))
 
-	if (!isSlaver)
-		Debug.Trace("[SD] Creature Enslavement check with actor [ " + akActor + " ] - FAILED")
+		isSlaver = ( (   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )) && !checkIfSpriggan ( akActor ) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
+		
+		If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
+			isSlaver = False
+		Endif
+
+		if (!isSlaver)
+			Debug.Trace("[SD] Creature Enslavement check with actor [ " + akActor + " ] - FAILED")
+		else
+			Debug.Trace("[SD] Creature Enslavement check with actor [ " + akActor + " ] - SUCCEEDED")
+		EndIf
+
+	 	if !(   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )
+	 		Debug.Trace("[SD] 		Player is male or creature is not eligible.")
+	 	EndIf
+		if (akActor.IsGhost())
+			Debug.Trace("[SD] 		Actor is Ghost" )
+		endif
+		if (actorFactionInList( akActor, _SDFLP_banned_factions ))
+			Debug.Trace("[SD] 		Actor is Member of banned faction " )
+		EndIf
+		if (actorInList(_SDFLP_banned_actors , akActor))
+			Debug.Trace("[SD] 		Actor is Member of banned actors " )
+		endif
+		If ((checkIfSpriggan ( akActor )) || ( StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
+			Debug.Trace("[SD] 		Actor is Spriggan - aborting normal enslavement")
+		Endif
+		If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
+			; Prevent new enslavement by current master
+			Debug.Trace("[SD] 		Actor is already an owner")
+		Endif	
+
+		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
 	else
-		Debug.Trace("[SD] Creature Enslavement check with actor [ " + akActor + " ] - SUCCEEDED")
-	EndIf
-
- 	if !(   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )
- 		Debug.Trace("[SD] 		Player is male or creature is not eligible.")
- 	EndIf
-	if (akActor.IsGhost())
-		Debug.Trace("[SD] 		Actor is Ghost" )
-	endif
-	if (actorFactionInList( akActor, _SDFLP_banned_factions ))
-		Debug.Trace("[SD] 		Actor is Member of banned faction " )
-	EndIf
-	if (actorInList(_SDFLP_banned_actors , akActor))
-		Debug.Trace("[SD] 		Actor is Member of banned actors " )
-	endif
-	If ((checkIfSpriggan ( akActor )) || ( StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
-		Debug.Trace("[SD] 		Actor is Spriggan - aborting normal enslavement")
-	Endif
-	If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
-		; Prevent new enslavement by current master
-		Debug.Trace("[SD] 		Actor is already an owner")
-	Endif	
-
+		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaver") as Bool
+	endIf
 
 	return isSlaver
 EndFunction
@@ -215,15 +355,24 @@ Bool Function checkIfSpriggan ( Actor akActor )
 
 
 	if (akActor)
-		Int index = 0
-		Int size = _SDFLP_spriggan_factions.GetSize()
-		While ( !bIsSpriggan && index < size )
-			bIsSpriggan = (akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")) || (akActor.GetRace() == SprigganRace) || ( (_SD_Race_SprigganEarthMother!=None) && (akActor.GetRace() == _SD_Race_SprigganEarthMother)) || ( (_SD_Race_SprigganBurnt!=None) && (akActor.GetRace() == _SD_Race_SprigganBurnt))  && !actorFactionInList( akActor, _SDFLP_banned_factions )
+		if (StorageUtil.GetIntValue( akActor, "_SD_iDateSprigganChecked")==0)
+			StorageUtil.SetIntValue( akActor, "_SD_iDateSprigganChecked", Game.QueryStat("Days Passed"))
+
+			Int index = 0
+			Int size = _SDFLP_spriggan_factions.GetSize()
+			While ( !bIsSpriggan && index < size )
+				bIsSpriggan = (akActor.IsInFaction( _SDFLP_spriggan_factions.GetAt(index) as Faction ) && !(akActor as Form).HasKeywordString("_SD_infected")) || (akActor.GetRace() == SprigganRace) || ( (_SD_Race_SprigganEarthMother!=None) && (akActor.GetRace() == _SD_Race_SprigganEarthMother)) || ( (_SD_Race_SprigganBurnt!=None) && (akActor.GetRace() == _SD_Race_SprigganBurnt))  && !actorFactionInList( akActor, _SDFLP_banned_factions )
 
 
-			index += 1
-		EndWhile
+				index += 1
+			EndWhile
+
+			StorageUtil.SetIntValue( akActor, "_SD_bIsSpriggan", bIsSpriggan as Int) 
+		else
+			bIsSpriggan = StorageUtil.GetIntValue( akActor, "_SD_bIsSpriggan") as Bool
+		endIf
 	EndIf
+
 	
 	Return bIsSpriggan
 EndFunction
@@ -233,14 +382,22 @@ Bool Function checkIfFalmer ( Actor akActor )
 	Race _SD_Race_FalmerFrozen = StorageUtil.GetFormValue(None, "_SD_Race_FalmerFrozen") as Race
 
 	if (akActor)
-		Int index = 0
-		Int size = _SDFLP_falmer_factions.GetSize()
-		While ( !bIsFalmer && index < size )
-			bIsFalmer = akActor.IsInFaction( _SDFLP_falmer_factions.GetAt(index) as Faction ) || akActor.GetRace() == FalmerRace  || ( (_SD_Race_FalmerFrozen!=None) && (akActor.GetRace() == _SD_Race_FalmerFrozen)) && !actorFactionInList( akActor, _SDFLP_banned_factions )
+		if (StorageUtil.GetIntValue( akActor, "_SD_iDateFalmerChecked")==0)
+			StorageUtil.SetIntValue( akActor, "_SD_iDateFalmerChecked", Game.QueryStat("Days Passed"))
+
+			Int index = 0
+			Int size = _SDFLP_falmer_factions.GetSize()
+			While ( !bIsFalmer && index < size )
+				bIsFalmer = akActor.IsInFaction( _SDFLP_falmer_factions.GetAt(index) as Faction ) || akActor.GetRace() == FalmerRace  || ( (_SD_Race_FalmerFrozen!=None) && (akActor.GetRace() == _SD_Race_FalmerFrozen)) && !actorFactionInList( akActor, _SDFLP_banned_factions )
 
 
-			index += 1
-		EndWhile
+				index += 1
+			EndWhile
+
+			StorageUtil.SetIntValue( akActor, "_SD_bIsFalmer", bIsFalmer as Int) 
+		else
+			bIsFalmer = StorageUtil.GetIntValue( akActor, "_SD_bIsFalmer") as Bool
+		endIf
 	EndIf
 	
 	Return bIsFalmer
@@ -250,8 +407,53 @@ Bool Function checkIfSlaverCreatureRace ( Actor akActor )
 	Bool bIsSlaverCreature = False
 	ActorBase akActorBase = akActor.GetLeveledActorBase() as ActorBase
 	Race actorRace = akActorBase.GetRace()
+	String sMasterRaceName
+	String sRaceName
+	Form foundRace = none
 
-	bIsSlaverCreature = (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryRace") == 1)
+
+	If (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryRace") == 1)
+		bIsSlaverCreature = True
+	else
+
+		if (StorageUtil.GetFormValue( akActor, "_SD_sRaceMatch")==none)
+
+			Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
+			int i = 0
+			Form thisRace = None 
+
+			If (sMasterRaceName == "")
+				sMasterRaceName = actorRace as String
+			endif
+		 
+		 	Debug.Trace("[SD] Searching for a racial match for " + sMasterRaceName)
+
+			while(i < valueCount) && (foundRace==none)
+				thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+				sRaceName = thisRace.GetName()
+
+				If (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)
+					Debug.Trace("	Race [" + i + "] = " + sRaceName)
+					Debug.Trace("[SD] Master race match found - " + thisRace)
+					foundRace = thisRace
+				endIf
+
+				i += 1
+			EndWhile
+
+			if (foundRace!=none)
+				StorageUtil.SetFormValue( akActor, "_SD_sRaceMatch",foundRace)
+				If (StorageUtil.GetIntValue(foundRace, "_SD_iSlaveryRace") == 1)
+					bIsSlaverCreature = True
+				Endif
+			endif
+		else
+			If (StorageUtil.GetIntValue(StorageUtil.GetFormValue( akActor, "_SD_sRaceMatch"), "_SD_iSlaveryRace") == 1)
+				bIsSlaverCreature = True
+			Endif
+		endIf
+
+	endif
 
   	Return bIsSlaverCreature
 EndFunction
@@ -348,61 +550,6 @@ Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormLis
 EndFunction
 
 
-
-Function resetAllyToActor( Actor akSlave, FormList alFactionListIn )
-	Int index = 0
-	Int size = alFactionListIn.GetSize()
-
-	While ( index < size )
-		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
-		akSlave.RemoveFromFaction( nTHfaction )
-		index += 1
-	EndWhile
-
-	alFactionListIn.Revert()
-EndFunction
-
-
-Bool Function allyToActor( Actor akMaster, Actor akSlave, FormList alFactionListIn, FormList alFactionListOut = None )
-	Form nthForm
-	Int index = 0
-	Int size = alFactionListIn.GetSize()
-	Bool ret = False
-
-	If ( akMaster == None || akSlave == None )
-		Return ret
-	EndIf
-
-	If ( alFactionListOut != None && alFactionListOut.GetSize() > 0 )
-		resetAllyToActor( akSlave, alFactionListOut )
-	EndIf
-
-	If ( !qualifyActor( akMaster, False ) )
-		Return ret
-	EndIf
-
-	While ( index < size )
-		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
-		nthForm = nTHfaction as Form
-
-		If ( akMaster.IsInFaction( nTHfaction ) && !akSlave.IsInFaction( nTHfaction ) )
-			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
-			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
-			Debug.Notification("Slave faction joined: " + nthForm.GetName())
-
-			If ( alFactionListOut != None )
-				alFactionListOut.AddForm( nTHfaction )
-			EndIf
-
-			akSlave.AddToFaction( nTHfaction )
-			ret = True
-		EndIf
-		index += 1
-	EndWhile
-
-	Return ret
-EndFunction
-
 Bool Function qualifyActor( Actor akActor, Bool abCheckInScene = True )
 	Bool bOutOfScene = ( !abCheckInScene || ( abCheckInScene && akActor.GetCurrentScene() == None ) )
 	Return ( !akActor.IsDead() && !akActor.IsDisabled() && bOutOfScene )
@@ -412,31 +559,131 @@ EndFunction
 Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionListOut = None )
 	Form nthForm
 
+	Debug.Trace("[SD] Checking slave factions for " + akMaster)
+
 	Int iFormIndex = ( akMaster as ObjectReference ).GetNumItems()
 	While ( iFormIndex > 0 )
 		iFormIndex -= 1
 		nthForm = ( akMaster as ObjectReference ).GetNthForm(iFormIndex)
 		If ( nthForm )
 			If ( nthForm.GetType() == TYPE_FACTION )
+				Debug.Notification("	Master Faction: " + nthForm)
+				Debug.Trace("	Master Faction: " + nthForm)
 				if !akSlave.IsInFaction( nthForm as Faction )
 					; Only add slave to faction he/she is not member of yet
 
-					; TO DO: Add faction to list of temp joined factions + current game days to list of faction joined date
-
 					StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
 					StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
-					Debug.Notification("Slave faction joined: " + nthForm.GetName())
+					Debug.Notification("[SD] Slave faction joined: " + nthForm)
+					Debug.Trace("[SD]		- Slave faction joined: " + nthForm)
 
 					If ( alFactionListOut != None )
 						alFactionListOut.AddForm( nthForm as Faction )
 					EndIf
 
 					akSlave.AddToFaction( nthForm as Faction )
+				else
+					Debug.Trace("[SD]		- Slave already in faction: " + nthForm )
+
 				endif
 			Endif
 		EndIf
 	EndWhile
 
+EndFunction
+
+Form Function findMatchingRace( Actor akMaster )
+	ActorBase akActorBase = akMaster.GetLeveledActorBase() as ActorBase
+	Form masterRace = akActorBase.GetRace() as Form
+	String sMasterRaceName = masterRace.GetName()
+	Form foundRace = None
+
+	; check if storageutil for default faction is assigned for this master
+	; if it is, use it
+	; if not, calculate it
+
+	if (StorageUtil.GetFormValue( akMaster, "_SD_sRaceMatch")==none)
+
+		Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
+		int i = 0
+		Form thisRace = None
+		String sRaceName
+
+		If (sMasterRaceName == "")
+			sMasterRaceName = masterRace as String
+		endif
+	 
+	 	Debug.Trace("[SD] Searching for a racial match for " + sMasterRaceName)
+
+		while(i < valueCount) && (foundRace==none)
+			thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+			sRaceName = thisRace.GetName()
+
+			If (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)
+				Debug.Trace("	Race [" + i + "] = " + sRaceName)
+				Debug.Trace("[SD] Master race match found - " + thisRace)
+				foundRace = thisRace
+			endIf
+
+			i += 1
+		EndWhile
+
+		if (foundRace==none)
+			Debug.Trace("[SD] Master race match not found - using default")
+			foundRace = akActorBase.GetRace() as Form
+		endif
+
+		StorageUtil.SetFormValue( akMaster, "_SD_sRaceMatch", foundRace) 
+	else
+		foundRace = StorageUtil.GetFormValue( akMaster, "_SD_sRaceMatch") 
+	endIf
+
+	Return foundRace
+
+EndFunction
+
+Function syncActorFactionsByRace( Actor akMaster, Actor akSlave, FormList alFactionListOut = None )
+	ActorBase akActorBase = akMaster.GetLeveledActorBase() as ActorBase
+	Form nthForm
+	Form masterRace = None
+
+	if (akMaster != none)
+
+		Debug.Trace("[SD] Master Sync Faction by race: " + masterRace)
+
+		; Form masterRace = akActorBase.GetRace() as Form
+		masterRace = findMatchingRace( akMaster )
+ 
+		nthForm = StorageUtil.GetFormValue( masterRace, "_SD_sRaceFaction")
+
+		If ( nthForm == None )
+			Debug.Trace("[SD] Master Faction not found - using default: " + nthForm)
+			nthForm = RedguardFaction as Form
+		else
+			Debug.Trace("[SD] Master Faction found: " + nthForm)
+
+		endIf
+
+		Debug.Notification("[SD] Master Default Faction: " + nthForm)
+		Debug.Trace("[SD] Master Default Faction: " + nthForm)
+		if !akSlave.IsInFaction( nthForm as Faction )
+			; Only add slave to faction he/she is not member of yet
+
+			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
+			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
+			Debug.Notification("[SD] Slave faction joined: " + nthForm)
+			Debug.Trace("[SD]		- Slave faction joined: " + nthForm)
+
+			If ( alFactionListOut != None )
+				alFactionListOut.AddForm( nthForm as Faction )
+			EndIf
+
+			akSlave.AddToFaction( nthForm as Faction )
+		else
+			Debug.Trace("[SD]		- Slave already in faction: " + nthForm )
+
+		endif
+	endIf
 EndFunction
 
 ; TO DO: Create function to remove factions after certain date is passed
@@ -490,3 +737,61 @@ Function displaySlaveFactions( Actor akSlave )
 	endwhile
 EndFunction
 
+; ----------- Deprecated 
+
+
+Bool Function allyToActor( Actor akMaster, Actor akSlave, FormList alFactionListIn, FormList alFactionListOut = None )
+	Form nthForm
+	Int index = 0
+	Int size = alFactionListIn.GetSize()
+	Bool ret = False
+
+	If ( akMaster == None || akSlave == None )
+		Return ret
+	EndIf
+
+	; old faction system
+	; If ( alFactionListOut != None && alFactionListOut.GetSize() > 0 )
+	;	resetAllyToActor( akSlave, alFactionListOut )
+	; EndIf
+
+	If ( !qualifyActor( akMaster, False ) )
+		Return ret
+	EndIf
+
+	While ( index < size )
+		Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
+		nthForm = nTHfaction as Form
+
+		If ( akMaster.IsInFaction( nTHfaction ) && !akSlave.IsInFaction( nTHfaction ) )
+			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
+			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
+			Debug.Notification("Slave faction joined: " + nthForm.GetName())
+
+			If ( alFactionListOut != None )
+				alFactionListOut.AddForm( nTHfaction )
+			EndIf
+
+			akSlave.AddToFaction( nTHfaction )
+			ret = True
+		EndIf
+		index += 1
+	EndWhile
+
+	Return ret
+EndFunction
+
+
+
+Function resetAllyToActor( Actor akSlave, FormList alFactionListIn )
+	Int index = 0
+	; Int size = alFactionListIn.GetSize()
+
+	; While ( index < size )
+	; 	Faction nTHfaction = alFactionListIn.GetAt(index) as Faction
+	; 	akSlave.RemoveFromFaction( nTHfaction )
+	; 	index += 1
+	; EndWhile
+
+	; alFactionListIn.Revert()
+EndFunction

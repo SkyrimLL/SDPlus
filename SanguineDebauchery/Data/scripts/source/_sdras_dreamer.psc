@@ -50,7 +50,8 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Actor kPlayer = Game.GetPlayer() as Actor
 	Location kLocation = kPlayer.GetCurrentLocation()
 
-	CleanupSlaveDevices(kPlayer)
+	; Disabling for now - removes locked devices instead of cleaning up items in inventory that are not worn
+	; CleanupSlaveDevices(kPlayer)
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworld") == 1)
 		Debug.Trace("[_sdras_dreamer] Disabled by script")

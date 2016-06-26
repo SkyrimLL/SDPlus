@@ -108,11 +108,11 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 ; aHost.RemoveItem( oHostArmor.GetBaseObject(), aHost.GetItemCount( oHostArmor.GetBaseObject() )  )
 	
 	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Belt"  )
-		fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+		fctOutfit.clearDeviceSpriggan ( "Belt", "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
 	EndIf
 
 	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Blindfold"  )
-		fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
+		fctOutfit.clearDeviceSpriggan ( "Blindfold" )	
 	Endif
 
 ; _SD_sprigganHusk.Enable()
@@ -185,7 +185,7 @@ oHost = Alias__SDQA_host.GetReference() as ObjectReference
 _SD_host_flare.RemoteCast( oHost, aHost, aHost )
 Utility.Wait(0.5)
 
-fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
+; fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
 CompleteAllObjectives()
 
 Stop()

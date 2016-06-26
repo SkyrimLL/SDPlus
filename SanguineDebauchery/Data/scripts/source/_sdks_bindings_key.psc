@@ -18,7 +18,8 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 ;		funct.removeItemsInList( kContainer, _SDFLP_sex_items )
 ;		funct.removeItemsInList( kContainer, _SDFLP_punish_items )
 
-		Debug.Trace("[_sdks_bindings_key] Master key - Stop enslavement")
+		Debug.Trace("[_sdks_bindings_key] Master key in Slave - Stop enslavement")
+		Debug.MessageBox("You manage to get hold of your owner's key and break free of your chains.")
 		StorageUtil.SetIntValue(kContainer, "_SD_iHandsFree", 1)
 
 

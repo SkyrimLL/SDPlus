@@ -67,6 +67,7 @@ Function actorCombatShutdown( Actor akActor )
 	EndIf
 
 	; Debug.Notification("[_sdqs_functions] Actor ordered to stand down")
+	Debug.SendAnimationEvent(akActor, "Unequip")
 	Debug.SendAnimationEvent(akActor, "UnequipNoAnim")
 
 	If ( akActor.IsSneaking() )
@@ -171,13 +172,6 @@ EndFunction
 
 
 
-
-
-Function PlayIdleWrapper(actor akActor, idle theIdle)
-	If (!libs.IsAnimating(akActor))
-		akActor.PlayIdle(theIdle)
-	EndIf
-EndFunction
 
 
 
@@ -354,11 +348,9 @@ Function CollarUpdate()
 
 				If (kTarget == kPlayer) 
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
-						; SetAnimating(false)
+						CollarStand()
 
 					ElseIf ( iTrust < 0 ) && (iDisposition < 0)
-						; SetAnimating(true)
-
 						If  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kPlayer, _SDIAP_bound[4] )
 						ElseIf  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")
@@ -366,8 +358,6 @@ Function CollarUpdate()
 						EndIf
 
 					ElseIf ( iTrust >= 0 ) && (iDisposition < 0)
-						; SetAnimating(true)
-
 						If  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")
 							PlayIdleWrapper(kPlayer, _SDIAP_bound[2] )
 						ElseIf  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")
@@ -375,8 +365,6 @@ Function CollarUpdate()
 						EndIf
 
 					Else
-						; SetAnimating(true)
-						
 						If  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") 
 							PlayIdleWrapper(kPlayer, _SDIAP_bound[1] )
 						ElseIf  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")
@@ -386,30 +374,14 @@ Function CollarUpdate()
 
 				ElseIf !fctOutfit.isYokeEquipped( kPlayer) 
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
-						; SetAnimating(false)
-
+						CollarStand()
 					Else
-						; SetAnimating(true)
 						PlayIdleWrapper(kPlayer, _SDIAP_bound[1] )
 					EndIf
 				EndIf
 
-			Else ; If !fctOutfit.isYokeEquipped( kPlayer) 
-				; Debug.Notification("[SD] Turning DD animations on - 4");
-				;If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
-	
-				; SetAnimating(false)
-
-				;ElseIf  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") 
-				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[1] )
-				;ElseIf  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")
-				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[5] ) ; Crawling
-				;EndIf
-
-				;If  (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) )
-				; If fctOutfit.isCollarEquipped( kPlayer )
-				;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
-				; Endif
+			Else
+				CollarStand()
 			EndIf
 
 
@@ -417,3 +389,17 @@ Function CollarUpdate()
 	EndIf
 
 EndFunction
+
+Function CollarStand()
+	If fctOutfit.isArmbinderEquipped( kPlayer )
+		PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
+	Else
+		PlayIdleWrapper(kPlayer, _SDIAP_reset )
+	Endif
+
+EndFunction
+
+Function PlayIdleWrapper(actor akActor, idle theIdle)
+	akActor.PlayIdle(theIdle)
+EndFunction
+
