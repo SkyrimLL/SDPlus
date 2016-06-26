@@ -97,12 +97,14 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	ObjectReference bindings = _SDRAP_bindings.GetReference() as ObjectReference
 	ObjectReference collar = _SDRAP_collar.GetReference() as ObjectReference
 	ObjectReference kRags = _SDAP_clothing.GetReference() as  ObjectReference 
+	ActorBase akActorBase  
 
 	iGold = 0
 
 	kMaster = akRef1 as Actor
 	kSlave = akRef2 as Actor
 	kCrimeFaction = kMaster.GetCrimeFaction()
+	akActorBase = kMaster.GetLeveledActorBase() as ActorBase
 
 	Debug.Trace("[SD] Receiving enslavement story.")
 	
@@ -120,7 +122,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; a new slave into a slaver faction
 		; If ( aiValue2 == 1 )
 			; transfer of ownership
-		fctFactions.syncActorFactionsByRace( kMaster, kSlave, _SDFLP_allied )
+		fctFactions.syncActorFactionsByRace( kMaster, kSlave, _SDFLP_allied ) 
 		fctFactions.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
 		; Else
 		;	bOriginallyEnemies = fctFactions.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )

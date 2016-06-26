@@ -181,27 +181,34 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 		EndIf
 
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-			Debug.Notification( "You will regret attacking me!" )
-		EndIf
-		_SDSP_SelfShockEffect.Cast(kSlave as Actor)
-		
-		If (fctSlavery.ModMasterTrust( kMaster, -5)<0)
-			; Punishment
-			If (RandomInt(0,10)> 5)
-				; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-				kMaster.SendModEvent("PCSubPunish") 
-			Else
-				; Whipping
-				; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-				kMaster.SendModEvent("PCSubWhip") 
+		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+				Debug.Notification( "You will regret attacking me!" )
 			EndIf
-			Wait(1.0)
-		EndIf
+			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
+			
+			If (fctSlavery.ModMasterTrust( kMaster, -5)<0)
+				; Punishment
+				If (RandomInt(0,10)> 5) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+					kMaster.SendModEvent("PCSubPunish") 
+				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
+					; Whipping
+					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+					kMaster.SendModEvent("PCSubWhip") 
+				Else
+					kMaster.SendModEvent("PCSubSex","Rough") 
+				EndIf
+				Wait(1.0)
+			EndIf
 
-		; enslavement.PunishSlave(kMaster,kSlave, "Yoke")
-		kSlave.SendModEvent("SDPunishSlave", "Yoke")
-
+			; enslavement.PunishSlave(kMaster,kSlave, "Yoke")
+			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+				kSlave.SendModEvent("SDPunishSlave", "Yoke")
+			endif
+		else
+			kMaster.SendModEvent("PCSubSex","Rough") 
+		endif
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
 	Else
@@ -338,7 +345,7 @@ Event OnInit()
 	; Welcome scene to replace rape after defeat
 	Int iRandomNum = Utility.RandomInt(0,100)
 
-	if (iRandomNum > 85)
+	if (iRandomNum > 85) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 		; Punishment
 		; enslavement.PunishSlave(kMaster,kSlave,"Gag")
 		;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
@@ -556,10 +563,16 @@ State monitor
 				fctConstraints.actorCombatShutdown( kSlave )
 				fctConstraints.actorCombatShutdown( kMaster )
 				; enslavement.PunishSlave(kMaster,kSlave, "Gag")
-				kSlave.SendModEvent("SDPunishSlave", "Gag")
+				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+					kSlave.SendModEvent("SDPunishSlave", "Gag")
+				endif
 
-				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-					kMaster.SendModEvent("PCSubPunish") 
+				If (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
+					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+						kMaster.SendModEvent("PCSubPunish") 
+					else
+						kMaster.SendModEvent("PCSubSex","Rough") 
+					endif
 				Endif
 
 			ElseIf (Utility.RandomInt(0,100)>90) ; chance of attack failing and slave punished
@@ -575,10 +588,16 @@ State monitor
 					; Punish
 					;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 					; enslavement.PunishSlave(kMaster,kSlave, "Gag")
-					kSlave.SendModEvent("SDPunishSlave", "Gag")
+					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+						kSlave.SendModEvent("SDPunishSlave", "Gag")
+					EndIf
 
 					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-						kMaster.SendModEvent("PCSubPunish") 
+						If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+							kMaster.SendModEvent("PCSubPunish") 
+						else
+							kMaster.SendModEvent("PCSubSex","Rough") 
+						endif
 					Endif
 				EndIf
 
@@ -608,18 +627,22 @@ State monitor
 					Debug.Notification( "There you are Slave... get your punishment, over here!" )
 				endif
 				; enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
-				kSlave.SendModEvent("SDPunishSlave", "Blindfold")
+				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+					kSlave.SendModEvent("SDPunishSlave", "Blindfold")
+				Endif
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 					; add punishment
-					If ( _SDGVP_demerits.GetValueInt() > 20 )
+					If ( _SDGVP_demerits.GetValueInt() > 20 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 						; Whipping
 					 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 					 	kMaster.SendModEvent("PCSubWhip") 
-					Else
+					Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 						; Punishment
 					 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					 	kMaster.SendModEvent("PCSubPunish") 
+					Else
+						kMaster.SendModEvent("PCSubSex","Rough") 
 					EndIf
 				Endif
 			EndIf
@@ -644,7 +667,7 @@ State monitor
 	 
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 
-				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,10) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) 
+				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,10) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 					; Master is in a good mood - chance to remove punishment
 
 					; enslavement.RewardSlave(kMaster,kSlave,"Gag")
@@ -722,20 +745,25 @@ State monitor
 			EndIf
 
 			; enslavement.PunishSlave(kMaster,kSlave,"Yoke")
-			kSlave.SendModEvent("SDPunishSlave", "Yoke")
+			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+				kSlave.SendModEvent("SDPunishSlave", "Yoke")
+			endif
 
 			If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 				; add punishment
 				Int iRandomNum = Utility.RandomInt(0,100)
 
-				if (iRandomNum > 70)
+				if (iRandomNum > 70) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 					; Whipping
 				 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 				 	kMaster.SendModEvent("PCSubWhip") 
-				Else
+				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					; Punishment
 				 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 				 	kMaster.SendModEvent("PCSubPunish") 
+				Else
+				 	kMaster.SendModEvent("PCSubSex","Rough") 
+
 				EndIf
 			Endif
 		EndIf
