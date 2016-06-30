@@ -7,12 +7,13 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 ; Debug.Notification("SLD: Sending story event [3]")
+Actor kPlayer = Game.GetPlayer()
 
 Int randomNum = Utility.RandomInt(0, 100)
 ; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
-StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
+StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iDom") + 1)
 StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) - 1  )
-SendModEvent("SDPunishSlave","Gag")
+kPlayer.SendModEvent("SDPunishSlave","Gag")
 
 If (randomNum > 60)
 	akSpeaker.SendModEvent("PCSubPunish") ; Punishment
