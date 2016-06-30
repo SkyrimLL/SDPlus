@@ -1067,7 +1067,6 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 
 	iTrust = iTrust + iModValue
 
-	Debug.Notification("[SD] Trust pool: " + iTrust)
 
 	if (iTrust>10)
 		iTrust = 10
@@ -1076,6 +1075,7 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
+	Debug.Notification("[SD] Trust pool: " + iTrust)
 
 	Return iTrust
 EndFunction

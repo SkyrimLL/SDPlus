@@ -19,7 +19,7 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 
 	UnregisterForModEvent("da_PlayerRecovered")
 	
-	if (StorageUtil.GetIntValue(none, "_SD_iForcedDreamworld") ==1) || (_SD_dreamQuest.GetStage() != 0) 
+	if (StorageUtil.GetIntValue(thisPlayer, "_SD_iForcedDreamworld") ==1) || (_SD_dreamQuest.GetStage() != 0) 
 		return true
 	else
 		return false

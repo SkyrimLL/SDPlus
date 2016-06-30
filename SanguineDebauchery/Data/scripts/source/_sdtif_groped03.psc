@@ -21,7 +21,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 	; Aggressive sex
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
-		funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor )
+	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor )
+		akSpeaker.SendModEvent("PCSubSex", "Doggystyle")
 	EndIf
 ;END CODE
 EndFunction

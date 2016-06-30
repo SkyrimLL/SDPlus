@@ -295,14 +295,14 @@ Function CollarUpdate()
 	; Debug.Notification("[SD] AutoKneelingOff: " + StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling"))
 	; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 
-	If !(_SDGVP_ArmbinderKnee.GetValue()==0)
+	; If !(_SDGVP_ArmbinderKnee.GetValue()==0)
 	;	StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 1)
 	;	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
 	;	StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
 	;	StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
-	EndIf
+	; EndIf
 
-	If fctOutfit.isYokeEquipped( kPlayer ) && fctOutfit.isArmsEquipped( kPlayer ) 
+	If fctOutfit.isYokeEquipped( kPlayer ) && fctOutfit.isArmbinderEquipped( kPlayer ) 
 		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
 	Endif
 
@@ -313,7 +313,7 @@ Function CollarUpdate()
 		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
 		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
 		
-	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 1) && (fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousEnslaved", "Armbinder"  ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) ) && !fctOutfit.isYokeEquipped( kPlayer ) 
+	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 1) && (fctOutfit.isArmbinderEquipped( kPlayer ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) ) && !fctOutfit.isYokeEquipped( kPlayer ) 
 	;	Debug.Notification("[SD] SD cuffs detected" )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 0)
 		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 0)
@@ -346,11 +346,11 @@ Function CollarUpdate()
 
 			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) && fctOutfit.isCollarEquipped( kPlayer )
 
-				If ( (Utility.RandomInt( 0, 200 ) == 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
+				If ( (Utility.RandomInt( 0, 200 ) == 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")
 					Debug.Notification( "The collar forces you down on your knees." )
 				EndIf
 
-				If !fctOutfit.isYokeEquipped( kPlayer)  
+				If !fctOutfit.isYokeEquipped( kPlayer) && !fctOutfit.hasTagByString ( kPlayer, "Armbinder", "leather")
 					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
 						CollarStand()
 
@@ -376,12 +376,8 @@ Function CollarUpdate()
 						EndIf
 					EndIf
 
-				; ElseIf !fctOutfit.isYokeEquipped( kPlayer) 
-				;	If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") )
-				;		CollarStand()
-				;	Else
-				;		PlayIdleWrapper(kPlayer, _SDIAP_bound[1] )
-				;	EndIf
+				Else
+						CollarStand()
 				EndIf
 
 			Else

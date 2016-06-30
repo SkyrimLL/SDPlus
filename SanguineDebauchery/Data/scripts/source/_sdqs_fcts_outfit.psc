@@ -591,7 +591,10 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 	Form kForm	
 	Bool bDeviceEquipSuccess = False
 
- 
+ 	if (akActor == none)
+ 		Return
+ 	endif
+
 	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
 	aWornDevice = none
 	aRenderedDevice = none
@@ -897,6 +900,53 @@ Function clearDevicesForEnslavement()
 		clearDeviceByString ( sDeviceString = "LegCuffs", skipEvents = true, skipMutex = true )
 	EndIf
 
+EndFunction
+
+Bool Function hasTagByString ( Actor akActor, String sDeviceString = "", String sTag="")
+	Keyword kwDeviceKeyword = none 
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm 
+ 
+	; Debug.Trace("[SD] clearDeviceByString - NO override detected")  
+	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+ 
+	If (kwDeviceKeyword != None)
+
+		if akActor.WornHasKeyword(kwDeviceKeyword)
+			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
+
+			; Debug.Trace("[SD] clearing device string: " + sDeviceString)  
+			; Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
+
+			; generic device
+			; Debug.Trace("[SD] 		equipDeviceByString - generic: ")
+
+			aWornDevice = libs.GetWornDevice(akActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+
+				if (libs.HasTag(aWornDevice,sTag) )
+					; Debug.Notification("[SD] hasTagByString found for - " + sTag)  
+					Return true
+				else
+					; Debug.Notification("[SD] hasTagByString NOT found for - " + sTag)  
+
+				endif
+			else
+				; Debug.Trace("[SD]    Can't get worn device")
+			endif
+
+		else
+			; Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
+		endIf
+
+	else
+		; Debug.Trace("[SD] unknown device to clear " )  
+
+	endif
+
+	return False
 EndFunction
 
 
