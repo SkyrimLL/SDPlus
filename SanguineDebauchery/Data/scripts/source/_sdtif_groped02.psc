@@ -19,14 +19,16 @@ If (Utility.RandomInt(0,100) > 80)
 	; Aggressive sex
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
-		funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Aggressive")
+	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Aggressive")
+		akSpeaker.SendModEvent("PCSubSex", "Aggressive")
 	EndIf
 
 Else
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
  
 
-		funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Sex")
+	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Sex")
+		akSpeaker.SendModEvent("PCSubSex" )
 	EndIf
 
 EndIf

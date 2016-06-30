@@ -1,6 +1,8 @@
 Scriptname _SDRAS_companion extends ReferenceAlias Conditional
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_followers Property fctFollowers  Auto
+_SDQS_fcts_factions Property fctFactions Auto
+_SDQS_fcts_outfit Property fctOutfit Auto
 
 ReferenceAlias Property _SDRAP_master  Auto
 
@@ -95,9 +97,11 @@ State monitor
 EndState
 
 Function enslaveCompanion( Actor kActor)
-	Debug.Notification("Your follower has been enslaved!")
 		bEnslaved = True
 		kPlayer = Game.GetPlayer()
+
+		fctFactions.syncActorFactionsByRace( kMaster, kCompanion ) 
+		fctFactions.syncActorFactions( kMaster, kCompanion )
 
 		kActor.RemoveFromFaction( _SDFP_slaverResistance )
 		kActor.StopCombat()
@@ -105,17 +109,40 @@ Function enslaveCompanion( Actor kActor)
 
 		if (kActor.HasKeyword( _SDKP_actorTypeNPC ))
 			; Humanoid followers
+			If (Utility.RandomInt(0,100)>80)
+				Debug.MessageBox("Your follower is dragged away in bondage...") 
+				fctFollowers.sendCaptiveFollowerAway(kActor)
+				;kActor.SendModEvent("SDEquipDevice","Yoke")
+				;kActor.SendModEvent("SDClearDevice","Armbinder")
+				fctOutfit.equipDeviceNPCByString ( kActor, "Yoke", "", false, false, "")
+				fctOutfit.clearDeviceNPCByString ( kActor, "Armbinder") 
 
-			If !(StorageUtil.HasIntValue(kActor, "_SD_iCanBeStripped") )
+			Else
+				; kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
+				Debug.Notification("Your follower has been enslaved!")
+				fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
+				int index = StorageUtil.FormListFind(kPlayer, "_SD_lEnslavedFollower", kActor)
+				if (index < 0)
+					; Debug.Notification("Not found!")
+					StorageUtil.FormListAdd( kPlayer, "_SD_lEnslavedFollower", kActor)
+				else
+					; Debug.Notification("Element 183 is at index " + index)
+				endif
+			EndIf
+
+			Utility.Wait(1.0)
+
+
+			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped")!=-1 )
 				StorageUtil.SetIntValue(kActor, "_SD_iCanBeStripped", 1)
 			EndIf
 
 			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") != 0 )
+				funct.sexlabStripActor( kActor )
 				kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 
 				; kActor.SetOutfit( _SDOP_naked )
 				; kActor.SetOutfit( _SDOP_naked, True )
-				funct.sexlabStripActor( kActor )
 			EndIf
 			
 			; idx = 0
@@ -126,26 +153,14 @@ Function enslaveCompanion( Actor kActor)
 			; 	idx += 1
 			; EndWhile
 
-			kActor.SendModEvent("SDEquipDevice","Collar:zap")
-			kActor.SendModEvent("SDEquipDevice","Gag:zap")
-			kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
-
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
 			;kActor.playIdle(OffsetBoundStandingStart)
+			;kActor.SendModEvent("SDEquipDevice","Collar:zap")
+			;kActor.SendModEvent("SDEquipDevice","Gag:zap")
+			fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
+			fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 
-			If (Utility.RandomInt(0,100)>80)
-				fctFollowers.sendCaptiveFollowerAway(kActor)
 
-				Debug.MessageBox("Your follower is dragged away in bondage...")
-			Else
-				int index = StorageUtil.FormListFind(kPlayer, "_SD_lEnslavedFollower", kActor)
-				if (index < 0)
-					; Debug.Notification("Not found!")
-					StorageUtil.FormListAdd( kPlayer, "_SD_lEnslavedFollower", kActor)
-				else
-					; Debug.Notification("Element 183 is at index " + index)
-				endif
-			EndIf
 
 			kActor.EvaluatePackage()
 		Else

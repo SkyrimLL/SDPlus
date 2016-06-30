@@ -6,6 +6,9 @@ FormList Property _SDFLP_punish_items  Auto
 FormList Property _SDFLP_sex_items  Auto  
 FormList Property _SDFLP_master_items  Auto  
 
+; =============================================
+; Deprecated
+
 ; This spell is now useless but it is called in many places related to slavery
 ; Keeping it in place for now in case we need to cast a spell after enslavement later on
 

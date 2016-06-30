@@ -119,11 +119,20 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		fEnslavementStart = GetCurrentGameTime()
 		; fctConstraints.actorCombatShutdown( kMaster )
 
+		; Drop current weapon - Do this first to prevent camera stuck in combat mode
+		if(kSlave.IsWeaponDrawn())
+			kSlave.SheatheWeapon()
+			Utility.Wait(1.0)
+		endif
+
 		; a new slave into a slaver faction
 		; If ( aiValue2 == 1 )
 			; transfer of ownership
 		fctFactions.syncActorFactionsByRace( kMaster, kSlave, _SDFLP_allied ) 
 		fctFactions.syncActorFactions( kMaster, kSlave, _SDFLP_allied )
+
+		; Force enslavement of followers - Sync factions
+
 		; Else
 		;	bOriginallyEnemies = fctFactions.allyToActor( kMaster, kSlave, _SDFLP_slaver, _SDFLP_allied )
 		; EndIf
@@ -139,48 +148,6 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		fctConstraints.actorCombatShutdown( kSlave )
 		fctConstraints.togglePlayerControlsOff( )
-		; Debug.SendAnimationEvent(kSlave, "Unequip")
-		; Debug.SendAnimationEvent(kSlave, "UnequipNoAnim")
-
-		; Drop current weapon 
-		if(kSlave.IsWeaponDrawn())
-			kSlave.SheatheWeapon()
-			Utility.Wait(2.0)
-		endif
-
-		; ---
-		; If ( kSlave.IsSneaking() )
-		; 	kSlave.StartSneaking()
-		; EndIf
-
-		; Utility.Wait(1.0)
-
-		; Debug.Trace("[SD] enslavement Zaz animation goes here.")
-		; Debug.SendAnimationEvent(Game.GetPlayer(), "Unequip")
-		; Debug.SendAnimationEvent(Game.GetPlayer(), "ZazAPC057")
-	
-		; Testing - stop combat should happen outside of enslavement, to allow for fight between old and new master on transfer of ownership
-		; Still needed after all. Weird things happen if new master is killed before enslavement fully starts.
-		; Keeping the attempt at fighting for the atmosphere and role play for now
-		; kSlave.StopCombatAlarm()
-		; kSlave.StopCombat()
-
-
-		; StorageUtil.SetIntValue(kSlave, "_SD_iForcedSurrender",0)
-
-		; Unclear why this was set - disabling for now
-		; if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") != 1)		
-		;	StorageUtil.SetIntValue(kMaster, "_SD_iForcedSlavery", 0)
-		; EndIf
-		; if (StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC") != 1)		
-		;	StorageUtil.SetIntValue(kMaster, "_SD_iSpeakingNPC", 0)
-		; EndIf
-
-	    ; Fade to black
-	    ; Game.FadeOutGame(true, true, 0.5, 15)
-		; Utility.Wait(5.0)
-		; ---
-
 
 		Debug.Trace("[SD] Your new owner strips you naked.")
 		Debug.Notification("Your new owner strips you naked.")
@@ -260,31 +227,31 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; fctOutfit.toggleActorClothing (  kSlave,  bStrip = True,  bDrop = False )
 
 		; Transfer of inventory
-		If ( aiValue2 == 0 )
-			If ( _SDGVP_config[3].GetValue() as Bool )
-				fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
+		; If ( aiValue2 == 0 )
+		If ( _SDGVP_config[3].GetValue() as Bool )
+			fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
 
-				If ( kSlave.GetItemCount( kRags ) == 0 )
-					; kSlave.AddItem( kRags, 1, True)
-					kMaster.AddItem( kRags, 1, True)
-				Else
-					kSlave.RemoveItem( kRags, 1, False, kMaster)
-				EndIf
-				kSlave.EquipItem( kRags.GetBaseObject() ) ;Inte
+			If ( kSlave.GetItemCount( kRags ) == 0 )
+				; kSlave.AddItem( kRags, 1, True)
+				kMaster.AddItem( kRags, 1, True)
 			Else
-				; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
-				; fctInventory.limitedRemoveAllItems ( kSlave, kMaster, True )
-				; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
-
-				; Disabled for now
-				; Try a different approach to prevent issues with Devious Items being forcibly removed just as they are added
-
-				; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
-
-				kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
-
+				kSlave.RemoveItem( kRags, 1, False, kMaster)
 			EndIf
+			kSlave.EquipItem( kRags.GetBaseObject() ) ;Inte
+		Else
+			; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
+			; fctInventory.limitedRemoveAllItems ( kSlave, kMaster, True )
+			; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
+
+			; Disabled for now
+			; Try a different approach to prevent issues with Devious Items being forcibly removed just as they are added
+
+			; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+
+			kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+
 		EndIf
+		; EndIf
 
 		Debug.Notification("You are chained and collared.")
 
@@ -584,8 +551,9 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 			; 	StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
 			; endif
 
-			If (!nthActor.WornHasKeyword(_SDKP_wrists)) && (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) && (!nthActor.IsEquipped(_SDA_bindings))
-				nthActor.EquipItem(  _SDA_bindings , True, True )
+			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isYokeEquipped( nthActor) &&  !fctOutfit.isArmbinderEquipped( nthActor)
+				; nthActor.EquipItem(  _SDA_bindings , True, True )
+				nthActor.SendModEvent("SDEquipDevice","Armbinder:zap")
 			EndIf
 
 			; Force follower to kneel down
@@ -593,16 +561,18 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 				trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 				kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
 
-				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") != "Standing") && !nthActor.GetCurrentScene()
+				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") != "Standing") && !nthActor.GetCurrentScene() &&  !fctOutfit.isYokeEquipped( nthActor)
 
 					Debug.SendAnimationEvent(nthActor, "ZazAPC018")
 
-				ElseIf !nthActor.GetCurrentScene()
+				ElseIf !nthActor.GetCurrentScene() &&  !fctOutfit.isYokeEquipped( nthActor)
 
 					Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
 
 				EndIf
 			EndIf
+
+			nthActor.EvaluatePackage()
 
 		EndIf
 		idx += 1

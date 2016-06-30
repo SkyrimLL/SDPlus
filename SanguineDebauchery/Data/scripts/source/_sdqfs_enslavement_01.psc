@@ -631,6 +631,7 @@ Function questShutdown()
 			EndIf
 			nthActor.EvaluatePackage()
 			Debug.SendAnimationEvent( nthActor, "IdleForceDefaultState" )
+			fctFactions.clearSlaveFactions( nthActor )
 		EndIf
 		idx += 1
 	EndWhile
@@ -674,7 +675,16 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 		While idx < _SDRAP_companions.Length
 			nthActor = _SDRAP_companions[idx].GetReference() as Actor
 			If ( nthActor )
-				funct.removeItemsInList( nthActor, _SDFLP_companion_items )
+				; funct.removeItemsInList( nthActor, _SDFLP_companion_items )
+				If (bCollar)
+					nthActor.SendModEvent("SDClearDevice","Collar:zap")
+				Endif
+				If (bBindings )
+					nthActor.SendModEvent("SDClearDevice","Armbinder:zap")
+				Endif
+				If (bPunish )
+					nthActor.SendModEvent("SDClearDevice","Gag:zap")
+				Endif
 			EndIf
 			idx += 1
 		EndWhile

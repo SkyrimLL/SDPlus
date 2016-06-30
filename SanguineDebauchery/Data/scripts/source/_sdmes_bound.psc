@@ -29,6 +29,8 @@ Float fKneelingDistance
 Float fRFSU = 0.1
 int throttle = 0 
 
+; =============================================
+; Deprecated - effect moved into fct_constraints script and called from sdras_slave script
 
 Event OnUpdate()
 	; fctConstraints.CollarUpdate()

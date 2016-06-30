@@ -693,7 +693,7 @@ EndFunction
 
 Function expireSlaveFactions( Actor akSlave )
 	; // iterate list from first added to last added
-	Debug.Trace("[SD] Expire Slave Factions")
+	Debug.Trace("[SD] Expire Slave Factions for " + akSlave)
 
 	int currentDaysPassed = Game.QueryStat("Days Passed")
 	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
@@ -705,7 +705,7 @@ Function expireSlaveFactions( Actor akSlave )
 		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
 		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
 
-		if (daysJoined > StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") )
+		if (daysJoined > StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") ) || !akSlave.IsInFaction( slaveFaction as Faction )
 			Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
 
 			StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
@@ -719,6 +719,33 @@ Function expireSlaveFactions( Actor akSlave )
 		i += 1
 	endwhile
 EndFunction
+
+Function clearSlaveFactions( Actor akSlave )
+	; // iterate list from first added to last added
+	Debug.Trace("[SD] Clear Slave Factions for " + akSlave)
+
+	int currentDaysPassed = Game.QueryStat("Days Passed")
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
+	int i = 0
+	int daysJoined 
+	Form slaveFaction 
+
+	while(i < valueCount)
+		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+
+		Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+
+		StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
+		StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
+		Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+
+		akSlave.RemoveFromFaction( slaveFaction as Faction )
+
+		i += 1
+	endwhile
+EndFunction
+
 
 Function displaySlaveFactions( Actor akSlave )
 	; // iterate list from first added to last added

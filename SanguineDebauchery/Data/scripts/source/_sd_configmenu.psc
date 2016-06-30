@@ -569,9 +569,14 @@ event OnPageReset(string a_page)
 				daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
 
 				;	Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+				if (daysJoined > StorageUtil.GetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction") ) || !kPlayer.IsInFaction( slaveFaction as Faction )
+					kPlayer.RemoveFromFaction( slaveFaction as Faction )
+				else
+					AddTextOption(" Faction[" + slaveFaction.GetFormID() as String + "] : " + slaveFaction.GetName() , OPTION_FLAG_DISABLED)
+					AddTextOption("     Days Since Joined: " + daysJoined, "", OPTION_FLAG_DISABLED)
+				
+				Endif
 
-				AddTextOption(" Faction[" + slaveFaction.GetFormID() + "] : " + slaveFaction.GetName() , OPTION_FLAG_DISABLED)
-				AddTextOption("     Days Since Joined: " + daysJoined, "", OPTION_FLAG_DISABLED)
 
 
 				i += 1
