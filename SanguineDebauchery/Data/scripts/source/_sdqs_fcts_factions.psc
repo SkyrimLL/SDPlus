@@ -560,6 +560,7 @@ Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionLis
 	Faction nthFaction
 	Form nthForm
 	Faction[] MasterFactions = akMaster.GetFactions(-128, 127);The maximum range allowed.
+	String sFactionName
 
 	Debug.Trace("[SD] Checking slave factions for " + akMaster)
 	Debug.Trace("[SD] Master is a part of the following factions: " + MasterFactions)
@@ -572,7 +573,8 @@ Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionLis
 		If ( nthFaction )
 			; Debug.Notification("	Master Faction: " + nthFaction)
 			Debug.Trace("	Master Faction: " + nthFaction)
-			if !akSlave.IsInFaction( nthFaction )
+			sFactionName = nthForm.GetName()
+			if !akSlave.IsInFaction( nthFaction ) && (StringUtil.Find(sFactionName, "SexLab")== -1) && (StringUtil.Find(sFactionName, "SOS")== -1) && (StringUtil.Find(sFactionName, "Dialogue Disable")== -1)
 				; Only add slave to faction he/she is not member of yet
 
 				StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
@@ -649,6 +651,8 @@ Function syncActorFactionsByRace( Actor akMaster, Actor akSlave, FormList alFact
 	ActorBase akActorBase = akMaster.GetLeveledActorBase() as ActorBase
 	Form nthForm
 	Form masterRace = None
+	String sFactionName
+	Faction slaveFaction
 
 	if (akMaster != none)
 
@@ -667,10 +671,13 @@ Function syncActorFactionsByRace( Actor akMaster, Actor akSlave, FormList alFact
 
 		endIf
 
+		slaveFaction = nthForm as Faction
+
 		Debug.Notification("[SD] Master Default Faction: " + nthForm)
 		Debug.Trace("[SD] Master Default Faction: " + nthForm)
-		if !akSlave.IsInFaction( nthForm as Faction )
+		if (!akSlave.IsInFaction( slaveFaction ) && (StringUtil.Find(sFactionName, "SexLab")== -1)  && (StringUtil.Find(sFactionName, "SOS")== -1)  && (StringUtil.Find(sFactionName, "Schlong")== -1) && (StringUtil.Find(sFactionName, "Dialogue Disable")== -1) )
 			; Only add slave to faction he/she is not member of yet
+			sFactionName = slaveFaction.GetName()
 
 			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
 			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
@@ -703,18 +710,26 @@ Function expireSlaveFactions( Actor akSlave )
 
 	while(i < valueCount)
 		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
-		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+		If (slaveFaction != none)
 
-		if (daysJoined > StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") ) || !akSlave.IsInFaction( slaveFaction as Faction )
-			Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
 
-			StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
-			StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
-			Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+			If !akSlave.IsInFaction( slaveFaction as Faction ) && (StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction" )!=-1)
+				StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
+			Endif
 
-			akSlave.RemoveFromFaction( slaveFaction as Faction )
+			if akSlave.IsInFaction( slaveFaction as Faction ) && (daysJoined > StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") )  && (StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction" )!=-1)
 
-		EndIf
+				Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+
+				; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
+				StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
+				Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+
+				akSlave.RemoveFromFaction( slaveFaction as Faction )
+
+			EndIf
+		Endif
 
 		i += 1
 	endwhile
@@ -732,15 +747,17 @@ Function clearSlaveFactions( Actor akSlave )
 
 	while(i < valueCount)
 		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
-		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+		If (slaveFaction != none)
+			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
 
-		Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+			Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
 
-		StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
-		StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
-		Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+			; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
+			StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
+			Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
 
-		akSlave.RemoveFromFaction( slaveFaction as Faction )
+			akSlave.RemoveFromFaction( slaveFaction as Faction )
+		Endif
 
 		i += 1
 	endwhile

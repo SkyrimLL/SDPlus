@@ -563,20 +563,23 @@ event OnPageReset(string a_page)
 			int i = 0
 			int daysJoined 
 			Form slaveFaction 
+			String sFactionName
 
 			while(i < valueCount)
 				slaveFaction = StorageUtil.FormListGet(kPlayer, "_SD_lSlaveFactions", i)
-				daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+				If (slaveFaction!=None)
+					daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
+					sFactionName = slaveFaction.GetName()
 
-				;	Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
-				if (daysJoined > StorageUtil.GetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction") ) || !kPlayer.IsInFaction( slaveFaction as Faction )
-					kPlayer.RemoveFromFaction( slaveFaction as Faction )
-				else
-					AddTextOption(" Faction[" + slaveFaction.GetFormID() as String + "] : " + slaveFaction.GetName() , OPTION_FLAG_DISABLED)
-					AddTextOption("     Days Since Joined: " + daysJoined, "", OPTION_FLAG_DISABLED)
-				
+					;	Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
+					if ( (daysJoined > StorageUtil.GetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction") ) || (!kPlayer.IsInFaction( slaveFaction as Faction )) || (StringUtil.Find(sFactionName, "SexLab")!= -1)  || (StringUtil.Find(sFactionName, "SOS")!= -1)  || (StringUtil.Find(sFactionName, "Schlong")!= -1) || (StringUtil.Find(sFactionName, "Dialogue Disable")!= -1) )
+						kPlayer.RemoveFromFaction( slaveFaction as Faction )
+					else
+						AddTextOption(" Faction[" + i + "] : " + slaveFaction.GetName() , OPTION_FLAG_DISABLED)
+						AddTextOption("     Days Since Joined: " + daysJoined, "", OPTION_FLAG_DISABLED)
+					
+					Endif
 				Endif
-
 
 
 				i += 1

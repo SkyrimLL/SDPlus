@@ -211,6 +211,10 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		endif
 	EndIf
 
+	If (kMaster.GetActorValue("Aggression")==3)
+		kMaster.SetActorValue("Aggression",2)
+	Endif
+
 	; Master satisfaction - negative = angry / positive = happy
 	If (!StorageUtil.HasIntValue(kMaster, "_SD_iNPCDisposition"))
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
@@ -306,7 +310,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	Form masterRace = StorageUtil.GetFormValue(kSlave, "_SD_fSlaveryGearRace")
 
 	; Set slave constraints based on master's race
-	if (masterRace!= none)
+	if (masterRace!= none) && ((StorageUtil.GetStringValue( masterRace, "_SD_sRaceType") == "Beast"  ) || (StorageUtil.GetStringValue( masterRace, "_SD_sRaceType") == "Humanoid"  ))
 		Debug.Trace("[SD] Master race found - using racial settings for " + masterRace)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryCollarOn") )
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryBindingsOn"))

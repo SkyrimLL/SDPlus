@@ -24,27 +24,27 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 
 		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuff"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
-			fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
-			fctOutfit.setDeviceArmCuffs ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.clearDeviceByString ( "ArmCuff" )
+			fctOutfit.clearDeviceByString ( "Armbinder" )
 		EndIf
 
 		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "LegCuff" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "LegCuff"  )
-			fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.clearDeviceByString ( "LegCuff" )
 		EndIf
 
 		If fctOutfit.isBlindfoldEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "Blindfold"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Blindfold" )
-			fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.clearDeviceByString ( "Blindfold" )
 		EndIf
 
 		If fctOutfit.isGagEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "Gag" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine" , "Gag" )
-			fctOutfit.setDeviceGag ( bDevEquip = False, sDevMessage = "")
+			fctOutfit.clearDeviceByString ( "Gag" )
 		EndIf
 
 
 		If fctOutfit.isCollarEquipped( kContainer  )
 			fctOutfit.unLockDeviceByString( kContainer,  "Collar")
 			if (Utility.RandomInt(0,100) < 77)
-				fctOutfit.setDeviceCollar ( bDevEquip = False, sDevMessage = "")
+				fctOutfit.clearDeviceByString ( "Collar" )
 				Debug.Messagebox("Your Master's Key helps you break free of your chains and immediately crumbles into dust.")
 			Else
 				Debug.MessageBox("Your Master's Key helps you break free of your chains but the key crumbles into dust before you can try to force your collar open.")

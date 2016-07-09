@@ -15,12 +15,14 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 					breastMod = 0.5
 					weightMod = 15.0
 					StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
+					akTarget.SendModEvent("SLHShaveHead")
 
 				ElseIf (randomNum>60)
 					Debug.MessageBox("The purpose of the glowing substance is clear to you now, fattening you up for breeding and turning you into an irresistible beacon for the Falmers and their pets.")
 					breastMod = 0.25
 					weightMod = 10.0
 					StorageUtil.SetIntValue(none, "_SLH_iForcedHairLoss", 1)
+					akTarget.SendModEvent("SLHShaveHead")
 
 				ElseIf (randomNum>40)
 					Debug.Notification("Your skin burns under glowing droplets.")
@@ -40,6 +42,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			StorageUtil.SetFloatValue(akTarget, "_SLH_fBreast", StorageUtil.GetFloatValue(akTarget, "_SLH_fBreast" ) + breastMod ) 
 			StorageUtil.SetFloatValue(akTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(akTarget, "_SLH_fWeight" ) + weightMod ) 
 			akTarget.SendModEvent("SLHRefresh")
+			akTarget.SendModEvent("SLHRefreshColor")
 		EndIf
 EndEvent
 

@@ -190,26 +190,11 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		Wait( fRFSU * 5.0 )
 	EndIf
 EndEvent
-
-Event OnAnimationEvent(ObjectReference akSource, string asEventName)
-	; If ( akSource == Self.GetReference() && asEventName == "weaponDraw" && Self.GetOwningQuest().GetStage() >= 90 )
-	; 	Debug.Trace("[_sdras_slave] Weapon draw - Stop enslavement")
-	; 	Self.GetOwningQuest().Stop()			
-	; EndIf
-
-EndEvent
-
-Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
-	; If ( aeCombatState == 0 )
-	; 	GoToState("monitor")
-	; Else
-	; 	GoToState("escape_shock")
-	; EndIf
-EndEvent
+ 
 
 Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 
-	If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) ) || kSlave.GetCurrentScene()
+	If ( Self.GetOwningQuest().GetStage() >= 90 ) || ( akBaseItem.HasKeyword(_SDKP_noenchant) || akBaseItem.HasKeyword(_SDKP_nosale) ) || kSlave.GetCurrentScene() || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		Return
 	EndIf
 
@@ -259,10 +244,10 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				If ( _SDFP_bindings_health < 0.0 )
 					Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
 					Debug.Messagebox("You manage to break your chains with a weapon.")
-
-					fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
-					fctOutfit.setDeviceLegs ( bDevEquip = False, sDevMessage = "")
-					fctOutfit.setDeviceBlindfold ( bDevEquip = False, sDevMessage = "")
+ 
+					fctOutfit.clearDeviceByString ( "Armbinder" )
+					fctOutfit.clearDeviceByString ( "LegCuffs" )
+					fctOutfit.clearDeviceByString ( "Blindfold" )
 
 					SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 					Return
@@ -357,7 +342,7 @@ State monitor
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() ) 
+		While ( !Game.GetPlayer().Is3DLoaded() )  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		EndWhile
 
 		fctConstraints.CollarUpdate()
@@ -422,24 +407,18 @@ State monitor
 
 			; Safety - removal of punishments after one day
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
-				; enslavement.RewardSlave(kMaster,kSlave,"Gag")
-				; enslavement.RewardSlave(kMaster,kSlave,"Yoke")
-				kSlave.SendModEvent("SDRewardSlave", "Gag")
-				kSlave.SendModEvent("SDRewardSlave", "Yoke")
+				enslavement.RewardSlave(kMaster,kSlave,"Gag")
+				enslavement.RewardSlave(kMaster,kSlave,"Yoke")
 			endIf
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2) 
-				; enslavement.RewardSlave(kMaster,kSlave,"Belt")
-				; enslavement.RewardSlave(kMaster,kSlave,"Bra")
-				kSlave.SendModEvent("SDRewardSlave", "Belt")
-				kSlave.SendModEvent("SDRewardSlave", "Bra")
+				enslavement.RewardSlave(kMaster,kSlave,"Belt")
+				enslavement.RewardSlave(kMaster,kSlave,"Bra")
 			endIf
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 0)
-				; enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
-				; enslavement.RewardSlave(kMaster,kSlave,"Armbinder")
-				kSlave.SendModEvent("SDRewardSlave", "Blindfold")
-				kSlave.SendModEvent("SDRewardSlave", "Armbinder")
+				enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
+				enslavement.RewardSlave(kMaster,kSlave,"Armbinder")
 			endif
 
 			If (StorageUtil.GetIntValue( kSlave  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kSlave  , "_SD_iEnableAction") == 1) 
@@ -838,18 +817,18 @@ State monitor
 
 						if (iRandomNum > 90) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 							; Punishment
-							; enslavement.PunishSlave(kMaster,kSlave,"Bra")
+							; 
 							If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-								kSlave.SendModEvent("SDPunishSlave", "Bra")
+								enslavement.PunishSlave(kMaster,kSlave,"Bra")
 							endif
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 							kMaster.SendModEvent("PCSubPunish")
 
 						ElseIf (iRandomNum > 80) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 							; Whipping
-							; enslavement.PunishSlave(kMaster,kSlave, "Belt")
+							; 
 							If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-								kSlave.SendModEvent("SDPunishSlave", "Belt")
+								enslavement.PunishSlave(kMaster,kSlave, "Belt")
 							endif
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 							kMaster.SendModEvent("PCSubWhip")
@@ -865,7 +844,7 @@ State monitor
 				If (fMasterDistance < fKneelingDistance) && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
 					fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
-					fctOutfit.setDeviceArmbinder ( bDevEquip = True, sDevMessage = "")
+					fctOutfit.equipDeviceByString ( "Armbinder" )
 
 					StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 
@@ -877,7 +856,7 @@ State monitor
 
 				ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
-					fctOutfit.setDeviceArmbinder ( bDevEquip = False, sDevMessage = "")
+					fctOutfit.clearDeviceByString ( "Armbinder" )
 					; Debug.Notification("Your owner releases your hands.")
 
 				EndIf
@@ -914,9 +893,9 @@ State monitor
 
 						if (iRandomNum > 70) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 							; Punishment
-							; enslavement.PunishSlave(kMaster,kSlave, "Gag")
+							; 
 							if (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-								kSlave.SendModEvent("SDPunishSlave", "Gag")
+								enslavement.PunishSlave(kMaster,kSlave, "Gag")
 							endif
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 							kMaster.SendModEvent("PCSubPunish")
@@ -955,7 +934,7 @@ State monitor
 			Return
 		EndIf
 		
-		If ( akAggressor != kMaster ) && (Self.GetOwningQuest().GetStage() < 90)
+		If ( akAggressor != kMaster ) && (Self.GetOwningQuest().GetStage() < 90) && kMaster.HasLOS( kSlave )
 			; Start combat between master and NPC when the slave is hit by someone other than Master
 
 			kSlave.StopCombatAlarm()
@@ -1027,9 +1006,9 @@ State escape_choking
 				
 				if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					; Punishment
-					; enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
+					; 
 					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-						kSlave.SendModEvent("SDPunishSlave", "Blindfold")
+						enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 					endif
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					kMaster.SendModEvent("PCSubPunish")
@@ -1228,11 +1207,11 @@ State escape_choking
 
 
 						If (!kMaster.IsDead()) && (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-							; enslavement.PunishSlave(kMaster,kSlave,"Gag")
-							; enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
+							; 
+							; 
 							If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-								kSlave.SendModEvent("SDPunishSlave", "Gag")
-								kSlave.SendModEvent("SDPunishSlave", "Blindfold")
+								enslavement.PunishSlave(kMaster,kSlave,"Gag")
+								enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 							endif
 
 							if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
@@ -1340,9 +1319,9 @@ State escape_shock
 
 				if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					; Punishment
-					; enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
+					; 
 					if (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-						kSlave.SendModEvent("SDPunishSlave", "Blindfold")
+						enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 					endif
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					kMaster.SendModEvent("PCSubPunish")

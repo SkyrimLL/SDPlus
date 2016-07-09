@@ -351,7 +351,7 @@ Function CollarUpdate()
 				EndIf
 
 				If !fctOutfit.isYokeEquipped( kPlayer) && !fctOutfit.hasTagByString ( kPlayer, "Armbinder", "leather")
-					If ( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
+					If (( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")) || ((!fctOutfit.isArmbinderEquipped( kPlayer))  && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") )
 						CollarStand()
 
 					ElseIf ( iTrust < 0 ) && (iDisposition < 0)
