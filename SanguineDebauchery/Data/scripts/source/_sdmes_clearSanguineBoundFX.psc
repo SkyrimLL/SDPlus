@@ -17,17 +17,18 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; 7 - Belt
 	; 8 - Harness
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Collar"  )) && (Utility.RandomInt(0, 100) > 40)
-		Debug.Trace("[SD] Removing Sanguine Collar")
-		fctOutfit.clearDeviceByString ( sDeviceString = "Collar", sOutfitString = "", skipEvents = true, skipMutex = true )
-		Utility.Wait(1.0)
-	EndIf
+	; Collars and armbinders do not expire - compatibility with dremora race enslavement
+	; if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Collar"  )) && (Utility.RandomInt(0, 100) > 40)
+	;	Debug.Trace("[SD] Removing Sanguine Collar")
+	;	fctOutfit.clearDeviceByString ( sDeviceString = "Collar", sOutfitString = "", skipEvents = true, skipMutex = true )
+	;	Utility.Wait(1.0)
+	;EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Armbinder"  )) && (Utility.RandomInt(0, 100) > 40)
-		Debug.Trace("[SD] Removing Sanguine Cuffs")
-		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder", sOutfitString = "", skipEvents = true, skipMutex = true )
-		Utility.Wait(1.0)
-	EndIf
+	; if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Armbinder"  )) && (Utility.RandomInt(0, 100) > 40)
+	;	Debug.Trace("[SD] Removing Sanguine Cuffs")
+	;	fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder", sOutfitString = "", skipEvents = true, skipMutex = true )
+	;	Utility.Wait(1.0)
+	; EndIf
 
 	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "LegCuffs"  ))  && (Utility.RandomInt(0, 100) > 40)
 		Debug.Trace("[SD] Removing Sanguine Shackles")

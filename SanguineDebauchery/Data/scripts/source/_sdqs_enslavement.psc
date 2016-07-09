@@ -253,18 +253,19 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		EndIf
 		; EndIf
 
+		Debug.Trace("[SD] You are chained and collared.")
 		Debug.Notification("You are chained and collared.")
 
 		if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
-			fctOutfit.setDeviceCollar ( bDevEquip = True )
+			fctOutfit.equipDeviceByString ( "Collar" )
 			fctOutfit.lockDeviceByString( kSlave,  "Collar")
 		EndIf
 
 		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
-			fctOutfit.setDeviceArmbinder( bDevEquip = True )
+			fctOutfit.equipDeviceByString ( "Armbinder" )
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
-			fctOutfit.setDeviceLegs ( bDevEquip = True )
+			fctOutfit.equipDeviceByString ( "LegCuffs" )
 		EndIf
 
 		if  (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
@@ -275,6 +276,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		Debug.Trace("[SD] You are marked as your owner's property.")
 		Debug.Notification("You are marked as your owner's property.")
 		fctOutfit.sendSlaveTatModEvent(kSlave, "SD+","Slavers Hand (back)" )
+
+		; Clear surrounding pacify effect
+		SendModEvent("da_PacifyNearbyEnemies","Restore")
 
 		If ( Self )
 			RegisterForSingleUpdate( fRFSU )
@@ -445,7 +449,7 @@ Function AddSlavePunishment(Actor kActor , String sDevice)
 	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
 
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		fPunishmentsLength = (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
+		fPunishmentsLength = 2.0 + (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
 		uiPunishmentsEarned = uiPunishmentsEarned + 1
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
@@ -474,7 +478,7 @@ Function ScanSlavePunishment(Actor kActor  )
 	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
 
 	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		fPunishmentsLength = (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
+		fPunishmentsLength = 2.0 + (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
 		uiPunishmentsEarned = fctOutfit.countPunishmentEquipped(kActor)
 
 		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
@@ -553,7 +557,9 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 
 			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isYokeEquipped( nthActor) &&  !fctOutfit.isArmbinderEquipped( nthActor)
 				; nthActor.EquipItem(  _SDA_bindings , True, True )
-				nthActor.SendModEvent("SDEquipDevice","Armbinder:zap")
+				; nthActor.SendModEvent("SDEquipDevice","Armbinder:zap")
+				fctOutfit.equipDeviceNPCByString (nthActor, sDeviceString = "Armbinder", sDeviceTags = "zap" )
+
 			EndIf
 
 			; Force follower to kneel down

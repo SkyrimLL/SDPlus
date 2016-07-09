@@ -949,118 +949,6 @@ Bool Function hasTagByString ( Actor akActor, String sDeviceString = "", String 
 	return False
 EndFunction
 
-
-Function setDeviceCollar ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Collar", sDevMessage )
-	else
-		clearDeviceByString ( "Collar", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceArmbinder ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Armbinder", sDevMessage )
-	else
-		clearDeviceByString ( "Armbinder", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceArmCuffs ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "ArmCuffs", sDevMessage )
-	else
-		clearDeviceByString ( "ArmCuffs", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceLegs (  Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "LegCuffs", sDevMessage )
-	else
-		clearDeviceByString ( "LegCuffs", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceBelt ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Belt", sDevMessage )
-	else
-		clearDeviceByString ( "Belt", sDevMessage )
-	endif
-
-EndFunction
-
-Function setDeviceGag ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Gag", sDevMessage )
-	else
-		clearDeviceByString ( "Gag", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceBlindfold ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Blindfold", sDevMessage )
-	else
-		clearDeviceByString ( "Blindfold", sDevMessage )
-	endif
-EndFunction
-
-Function setDevicePlugAnal ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "PlugAnal", sDevMessage )
-	else
-		clearDeviceByString ( "PlugAnal", sDevMessage )
-	endif
-EndFunction
-
-Function setDevicePlugVaginal ( Bool bDevEquip = True, String sDevMessage = "")	
-	If (bDevEquip)
-		equipDeviceByString ( "PlugVaginal", sDevMessage )
-	else
-		clearDeviceByString ( "PlugVaginal", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceBra ( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Bra", sDevMessage )
-	else
-		clearDeviceByString ( "Bra", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceBoots( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Boots", sDevMessage )
-	else
-		clearDeviceByString ( "Boots", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceHarness( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Harness", sDevMessage )
-	else
-		clearDeviceByString ( "Harness", sDevMessage )
-	endif
-EndFunction
-
-Function setDeviceYoke( Bool bDevEquip = True, String sDevMessage = "")
-	If (bDevEquip)
-		equipDeviceByString ( "Yoke", sDevMessage )
-	else
-		clearDeviceByString ( "Yoke", sDevMessage )
-	endif
-EndFunction
-
-
-
-Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
-	return libs.ActorHasKeyword(akActor, getDeviousKeywordByString( deviousKeyword ))
-EndFunction
-
 Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	Keyword thisKeyword = None
  
@@ -1171,6 +1059,9 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	return thisKeyword
 EndFunction
 
+Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
+	return libs.ActorHasKeyword(akActor, getDeviousKeywordByString( deviousKeyword ))
+EndFunction
 
 Bool Function isDeviceEquippedString( Actor akActor,  String sDeviceString  )
 
@@ -1491,6 +1382,8 @@ Function addPunishmentDevice(String sDevice)
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
 	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
+ 	setMasterGearByRace ( kMaster, kPlayer  )
+
 	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
@@ -1544,6 +1437,19 @@ Function addPunishmentDevice(String sDevice)
 
 	EndIf
 
+	; Yoke
+
+	If (sDevice == "Yoke") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("'Put this on for a while. That will teach you to keep your hands to yourself." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Armbinder")
+		equipDeviceByString ( sDeviceString = "Yoke")
+
+	EndIf
+
+
 EndFunction
 
 
@@ -1552,6 +1458,8 @@ Function removePunishmentDevice(String sDevice)
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
 	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
+
+ 	setMasterGearByRace ( kMaster, kPlayer  )
 
 	If (sDevice == "PlugAnal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )

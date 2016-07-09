@@ -149,7 +149,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		StorageUtil.SetFloatValue(akSlave, "_SLH_fBreast", 0.8 ) 
 		StorageUtil.SetFloatValue(akSlave, "_SLH_fWeight", 20.0 ) 
 		StorageUtil.SetIntValue(akSlave, "_SLH_iForcedHairLoss", 1)
+		akSlave.SendModEvent("SLHShaveHead")
 		akSlave.SendModEvent("SLHRefresh")
+		akSlave.SendModEvent("SLHRefreshColors")
 			
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
@@ -318,7 +320,10 @@ Event OnUpdateGameTime()
 			StorageUtil.SetFloatValue(kPlayer, "_SLH_fBelly", Utility.RandomFloat(0.8, 2.0) ) 
 			StorageUtil.SetFloatValue(kPlayer, "_SLH_fWeight", Utility.RandomFloat(0.0, 50.0) ) 
 			StorageUtil.SetIntValue(kPlayer, "_SLH_iForcedHairLoss", 1)
+			kPlayer.SendModEvent("SLHShaveHead")
 			kPlayer.SendModEvent("SLHRefresh")
+			kPlayer.SendModEvent("SLHRefreshColors")
+		
 		EndIf
 
 		SprigganFX.Play( kSlave, 30 )

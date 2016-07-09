@@ -218,7 +218,7 @@ If ( _SDGVP_state_joined.GetValueInt() >= 1 )
 	_SDGVP_state_joined.SetValue( 0 )
 
 	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
-	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+	; Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
 ; fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
@@ -287,7 +287,7 @@ If ( _SDGVP_state_joined.GetValueInt() >= 1 )
 	_SDGVP_state_joined.SetValue( 0 )
 
 	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
-	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+	; Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
 ; fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
@@ -363,7 +363,7 @@ If ( _SDGVP_state_joined.GetValueInt() >= 1 )
 	_SDGVP_state_joined.SetValue( 0 )
 
 	funct.transferFormListContents( _SDFLP_forced_allied, _SDFLP_forced_joined )
-	Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
+	; Debug.Trace( "Joined faction count: " + _SDFLP_forced_joined.GetSize() )
 EndIf
 
 If( kSlave.IsInFaction( _SDFP_mistwatch ) )
@@ -613,7 +613,10 @@ Function questShutdown()
 	_SDKP_trust_hands.SetValue(1)
 	_SDKP_trust_feet.SetValue(1)
 
-	
+
+	If (_SDGVP_state_joined.GetValue()==0)
+		fctFactions.clearSlaveFactions( slave )
+	EndIf
 	; kill sub quests
 	idx = 0
 	While idx < _SDQP_subquests.Length
@@ -644,23 +647,23 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 
 	; Collar
 	If (bCollar)
-		fctOutfit.setDeviceCollar (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( "Collar" )
 	Endif
 
 	; Bindings items
 	If (bBindings )
-		fctOutfit.setDeviceArmbinder (  bDevEquip = False, sDevMessage = "You have been released from your chains")
-		fctOutfit.setDeviceLegs (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviceBlindfold (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviceGag (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( "Collar" )
+		fctOutfit.clearDeviceByString ( "LegCuffs" )
+		fctOutfit.clearDeviceByString ( "Blindfold" )
+		fctOutfit.clearDeviceByString ( "Gag" )
 		Utility.Wait(2.0)
 	Endif
 
 	; Punishment items
 	If (bPunish )
-		fctOutfit.setDevicePlugAnal (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDevicePlugVaginal (  bDevEquip = False, sDevMessage = "")
-		fctOutfit.setDeviceBelt (  bDevEquip = False, sDevMessage = "")
+		fctOutfit.clearDeviceByString ( "Belt" )
+		fctOutfit.clearDeviceByString ( "PlugAnal" )
+		fctOutfit.clearDeviceByString ( "PlugVaginal" )
 		Utility.Wait(2.0)
 	EndIf
 
@@ -711,6 +714,7 @@ GlobalVariable Property _SDGVP_state_fasttravel  Auto
 GlobalVariable Property _SDGVP_state_joined  Auto  
 GlobalVariable[] Property _SDGVP_config  Auto   
 GlobalVariable Property _SDGVP_positions  Auto  
+
 
 Keyword Property _SDKP_thugs  Auto  
 Keyword Property _SDKP_bounty  Auto  
