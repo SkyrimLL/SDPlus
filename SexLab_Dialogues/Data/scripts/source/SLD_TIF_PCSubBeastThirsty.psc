@@ -14,7 +14,7 @@ Actor kSlave = game.GetPlayer()
 	If (randomVar >=9 )
 		Debug.Notification( ".. pees in front of you!" )
 		kSlave.AddItem( Skooma, 1, True )
-		kSlave.EquipItem( Skooma, True, True )
+		kSlave.EquipItem( Skooma, True )
 
 		If (Utility.RandomInt( 0, 100 ) > 95)
 			DruggedEffect.Cast( kSlave, kSlave)
@@ -23,7 +23,7 @@ Actor kSlave = game.GetPlayer()
 	ElseIf (randomVar >= 2  )
 		Debug.Notification( "., licks your face!" )
 		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True, True )
+		kSlave.EquipItem( Ale, True)
 
 		Utility.Wait(3.0)
 
