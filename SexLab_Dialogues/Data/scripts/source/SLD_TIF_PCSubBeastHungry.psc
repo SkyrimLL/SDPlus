@@ -14,7 +14,7 @@ Actor kSlave = game.GetPlayer()
 	If (randomVar >= 9  )
 		Debug.Notification( "..some mushroom." )
 		kSlave.AddItem( Skooma, 1, True )
-		kSlave.EquipItem( Skooma  )
+		kSlave.EquipItem( Skooma, True  )
 
 		If (Utility.RandomInt( 0, 100 ) > 95)
 	 		DruggedEffect.Cast( kSlave, kSlave)
@@ -34,11 +34,11 @@ Actor kSlave = game.GetPlayer()
 		If (StorageUtil.GetIntValue( kSlave, "_SD_iSlaveryLevel") <=3 )
 			Debug.Notification( ".. some bloody organs." )
 			kSlave.AddItem( Potato, 1, True )
-			kSlave.EquipItem( Potato )
+			kSlave.EquipItem( Potato, True )
 		else
 			Debug.Notification( ".. a piece of raw meat." )
 			kSlave.AddItem( Beef, 1, True )
-			kSlave.EquipItem( Beef )
+			kSlave.EquipItem( Beef, True )
 		endif
 
 	EndIf
