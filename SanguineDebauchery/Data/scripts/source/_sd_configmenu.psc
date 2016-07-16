@@ -29,6 +29,7 @@ GlobalVariable Property _SDGVP_config_enableTrainRun  Auto
 GlobalVariable Property _SDGVP_config_blindnessLevel  Auto
 GlobalVariable Property _SDGVP_config_hardcore  Auto
 
+GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 GlobalVariable Property _SDGVP_config_ArmbinderKnee  Auto
 GlobalVariable Property _SDGVP_config_SlaveOnKnees  Auto
 GlobalVariable Property _SDGVP_config_RemoveArmBinder  Auto
@@ -475,8 +476,8 @@ event OnPageReset(string a_page)
 		;# SDpatch #
 		;###############################################################################################
 		AddHeaderOption("Slave Options")
-		_SDOID_config_B10 = AddToggleOption("Armbinder Kneeling ON/OFF", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
-		; _SDOID_config_B11 = AddToggleOption("Remove Armbinder During Punishments", _SDGVP_config_RemoveArmBinder.GetValue() as Bool) ;
+		_SDOID_config_B10 = AddToggleOption("Enable Armbinder Kneeling", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
+		_SDOID_config_B11 = AddToggleOption("Enable Beast Enslavement", _SDGVP_config_enable_beast_master.GetValue() as Bool) ;
 		; _SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
 		; _SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
 		_SDOID_config_S8 = AddSliderOption("Min slavery level", _SDGVP_config_min_slavery_level.GetValue() as Float)
@@ -734,7 +735,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_B10 )
 		SetInfoText("Toggle this ON to kneel before your Master while wearing an armbinder. ")
 	ElseIf ( a_option == _SDOID_config_B11 )
-		SetInfoText("Toggle this ON to remove armbinder during punishments. ")
+		SetInfoText("Toggle this ON to enable enslavement attempts from beasts (wolf, trols, draugr, etc). ")
 	ElseIf ( a_option == _SDOID_config_B12 )
 		SetInfoText("Toggle this ON to remove punishing items (i.e. belt) during punishments. ")
 	ElseIf ( a_option == _SDOID_config_B13 )
@@ -841,8 +842,10 @@ event OnOptionSelect(int a_option)
 		SetToggleOptionValue(a_option, _SDGVP_config_ArmBinderKnee.GetValue() as Bool )
 		;_SDGVP_config_SlaveOnKnees.SetValue(1)
 	ElseIf ( a_option == _SDOID_config_B11 )
-		_SDGVP_config_RemoveArmBinder.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemoveArmBinder.GetValueInt() ) )
-		SetToggleOptionValue(a_option, _SDGVP_config_RemoveArmBinder.GetValue() as Bool )
+		_SDGVP_config_enable_beast_master.SetValue( Math.LogicalXor( 1, _SDGVP_config_enable_beast_master.GetValueInt() ) )
+		SetToggleOptionValue(a_option, _SDGVP_config_enable_beast_master.GetValue() as Bool )
+ 		StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iEnableBeastMaster",  _SDGVP_config_enable_beast_master.GetValueInt() )
+
 	ElseIf ( a_option == _SDOID_config_B12 )
 		_SDGVP_config_RemovePunishment.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemovePunishment.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_RemovePunishment.GetValue() as Bool )

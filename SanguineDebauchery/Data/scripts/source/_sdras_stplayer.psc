@@ -111,8 +111,8 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Float fBreastScale 
 
  
-	if !Self || !SexLab 
-		Debug.Trace("SexLab Stories: Critical error on SexLab Start")
+	if !Self || !SexLab || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==0)
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab Start")
 		Return
 	EndIf
 
@@ -155,7 +155,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
     Float fBreastScale 
 
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==0)
-		Debug.Trace("SexLab Stories: Critical error on SexLab End")
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab End")
 		Return
 	EndIf
 
@@ -182,7 +182,7 @@ Event OnSexLabOrgasm(String _eventName, String _args, Float _argc, Form _sender)
 	Float fBreastScale 
 
 	if !Self || !SexLab  || (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==0)
-		Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
+	;	Debug.Trace("SexLab Stories: Critical error on SexLab Orgasm")
 		Return
 	EndIf
 

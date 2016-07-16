@@ -1,5 +1,23 @@
 [
 {"name": "Slavers Hand (back)", "section":"SD+", "texture":"sdplus\\hand1.dds", "area":"Body"},
 {"name": "Rose Stamp 1 (butt)", "section":"SD+", "texture":"sdplus\\rose.dds", "area":"Body"},
-{"name": "Rose Stamp 2 (butt)", "section":"SD+", "texture":"sdplus\\rose2.dds", "area":"Body"}
+{"name": "Rose Stamp 2 (butt)", "section":"SD+", "texture":"sdplus\\rose2.dds", "area":"Body"},
+{"name": "Imperial Stamp (butt)", "section":"SD+", "texture":"sdplus\\imperial_ass_right.dds", "area":"Body"},
+{"name": "Hagraven Tribal (breast)", "section":"SD+", "texture":"sdplus\\boob_tribal_1.dds", "area":"Body"},
+{"name": "Draugr Runes (breast)", "section":"SD+", "texture":"sdplus\\Norse-Chest-Runes.dds", "area":"Body"},
+{"name": "Wolf scratches (back)", "section":"SD+", "texture":"sdplus\\back_werewolf.dds", "area":"Body"},
+{"name": "Dog scratches (breast)", "section":"SD+", "texture":"sdplus\\breasts_horny_bitch_raz.dds", "area":"Body"},
+{"name": "Chaurus Vaginal (body)", "section":"SD+", "texture":"sdplus\\belly_werewolf.dds", "area":"Body"},
+{"name": "Spider Anal (butt)", "section":"SD+", "texture":"sdplus\\butt_butt_slut_zqzqz.dds", "area":"Body"},
+{"name": "Troll Bites (body)", "section":"SD+", "texture":"sdplus\\Scar_08.dds", "area":"Body"},
+{"name": "Redguard Scrawl (belly)", "section":"SD+", "texture":"sdplus\\belly_scrawl_anyone.dds", "area":"Body"},
+{"name": "Giant Paint (body)", "section":"SD+", "texture":"sdplus\\Woad.dds", "area":"Body"},
+{"name": "Dremora Mark (body)", "section":"SD+", "texture":"sdplus\\Daedric.dds", "area":"Body"},
+{"name": "Elf Slavers Hand (back)", "section":"SD+", "texture":"sdplus\\hand1.dds", "area":"Body"},
+{"name": "Nord Ankle (leg)", "section":"SD+", "texture":"sdplus\\Norse-AnkleLeft-Band.dds", "area":"Body"},
+{"name": "Breton Wheel (belly)", "section":"SD+", "texture":"sdplus\\Norse-Abs-Vegvisir.dds", "area":"Body"},
+{"name": "Argonian Slavers Hand (belly)", "section":"SD+", "texture":"sdplus\\belly_preg_HATCHERY.dds", "area":"Body"},
+{"name": "Khajiit Slavers Hand (back)", "section":"SD+", "texture":"sdplus\\hand1.dds", "area":"Body"},
+{"name": "Orc Scrawl (head)", "section":"SD+", "texture":"sdplus\\forehead_bitch.dds", "area":"Face"},
+{"name": "Falmer Glow (body)", "section":"SD+", "texture":"sdplus\\falmerglow01.dds", "area":"Body"}
 ]

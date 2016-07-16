@@ -25,6 +25,30 @@ Quest Property HaelgaQuest  Auto
 _sdqs_dream_destinations property dreamDest Auto
 SexLabFrameWork Property SexLab Auto
 
+; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
+string                   Property SD_KEY               = "sanguinesDebauchery.esp" AutoReadOnly
+String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST    = "NPC L Breast" AutoReadOnly
+String                   Property NINODE_LEFT_BREAST01  = "NPC L Breast01" AutoReadOnly
+String                   Property NINODE_LEFT_BUTT      = "NPC L Butt" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST   = "NPC R Breast" AutoReadOnly
+String                   Property NINODE_RIGHT_BREAST01 = "NPC R Breast01" AutoReadOnly
+String                   Property NINODE_RIGHT_BUTT     = "NPC R Butt" AutoReadOnly
+String                   Property NINODE_SKIRT02        = "SkirtBBone02" AutoReadOnly
+String                   Property NINODE_SKIRT03        = "SkirtBBone03" AutoReadOnly
+String                   Property NINODE_BELLY          = "NPC Belly" AutoReadOnly
+Float                    Property NINODE_MAX_SCALE      = 4.0 AutoReadOnly
+Float                    Property NINODE_MIN_SCALE      = 0.1 AutoReadOnly
+
+; NiOverride version data
+int                      Property NIOVERRIDE_VERSION    = 4 AutoReadOnly
+int                      Property NIOVERRIDE_SCRIPT_VERSION = 4 AutoReadOnly
+
+; XPMSE version data
+float                    Property XPMSE_VERSION         = 3.0 AutoReadOnly
+float                    Property XPMSELIB_VERSION      = 3.0 AutoReadOnly
+
+
 Int    iPlayerGender
 Actor kDreamer
 ObjectReference kSafeHarbor 
@@ -319,8 +343,10 @@ Function positionVictims( Int aiStage )
 	; sanguineActorBase.SetWeight(fWeight) 
 	; kSanguine.UpdateWeight(NeckDelta) ;Apply the changes.
 
-
-	fctOutfit.sendSlaveTatModEvent(kDreamer, "SD+","Rose Stamp 1 (butt)" )
+	fctOutfit.setMasterGearByRace ( kSanguine, kDreamer  )
+	StorageUtil.SetStringValue(kSanguine as Form, "_SD_sSlaveryTat", "Rose Stamp 1 (butt)" )
+	StorageUtil.SetStringValue(kSanguine as Form, "_SD_sSlaveryTatType", "SD+" )
+	fctOutfit.sendSlaveTatModEvent(kSanguine, "SD+","Rose Stamp 1 (butt)" )
 	
 	Float fBreast  = 0.0
 	Float fSchlong = 0.0
@@ -329,14 +355,14 @@ Function positionVictims( Int aiStage )
 
 	Bool bBreastEnabled     = ( bEnableBreast as bool )
 	Bool bSchlongEnabled     = ( bEnableSchlong as bool )
+	Bool isSanguineFemale = kSanguine.GetLeveledActorBase().GetSex()
+	Bool isNiOInstalled = CheckXPMSERequirements(kSanguine, isSanguineFemale)
 
-	if ( bBreastEnabled && kSanguine.GetLeveledActorBase().GetSex() == 1 )
+	if ( bBreastEnabled && isSanguineFemale && isNiOInstalled  )
 		fBreast  = Utility.RandomFloat(0.5, 3.0) ; NetImmerse.GetNodeScale(kSanguine, "NPC L Breast", false)
 
-		NetImmerse.SetNodeScale(kSanguine, "NPC L Breast", fBreast  , false)
-		NetImmerse.SetNodeScale(kSanguine, "NPC R Breast", fBreast  , false)
-		NetImmerse.SetNodeScale(kSanguine, "NPC L Breast", fBreast  , true)
-		NetImmerse.SetNodeScale(kSanguine, "NPC R Breast", fBreast  , true)
+		XPMSELib.SetNodeScale(kSanguine, true, NINODE_LEFT_BREAST, fBreast, SD_KEY)
+		XPMSELib.SetNodeScale(kSanguine, true, NINODE_RIGHT_BREAST, fBreast, SD_KEY)
 
 		; Attempt at randomly giving a schlong to female sanguine - abandonned for now
 		; Issues with getting a schlong when sanguine is back in male form
@@ -349,17 +375,12 @@ Function positionVictims( Int aiStage )
 	    endif		
 	EndIf
 
-	if ( bSchlongEnabled && kSanguine.GetLeveledActorBase().GetSex() == 0 )
+	if ( bSchlongEnabled && !isSanguineFemale && isNiOInstalled )
 		fSchlong = Utility.RandomFloat(1.2, 2.0) ; NetImmerse.GetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", false)
 		; kSanguine.SendModEvent("SLHSetSchlong", "")
 
-		NetImmerse.SetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", fSchlong , false)
-		NetImmerse.SetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", fSchlong , true)
-	EndIf
-
-	Utility.Wait(2.0)
-	kSanguine.QueueNiNodeUpdate()
-	Utility.Wait(2.0)	
+		XPMSELib.SetNodeScale(kSanguine, false,  NINODE_SCHLONG, fSchlong, SD_KEY)  
+	EndIf	
 
 	; Random welcome scene
 	Int randomNum = Utility.RandomInt(0, 100)
@@ -374,6 +395,9 @@ Function positionVictims( Int aiStage )
 
 EndFunction
  
+bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
+	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
+EndFunction
 
 ObjectReference Property _SD_SafetyDest  Auto  
 
@@ -410,3 +434,5 @@ GlobalVariable Property _SDGVP_sanguine_blessing auto
 
 
 Cell Property _SD_SanguineDreamworld  Auto  
+
+

@@ -8,12 +8,11 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
-Game.GetPlayer().RemoveItem(Gold, 100 )
+kPlayer.RemoveItem(Gold, 100 )
 
 fctOutfit.clearDeviceByString ( sDeviceString = "ParasiteVaginal"  )
 
-
-funct.SanguineRape(  akSpeaker, Game.GetPlayer() , SexLabInTags = "Fisting")
+funct.SanguineRape(  akSpeaker, kPlayer, SexLabInTags = "Fisting")
 ;END CODE
 EndFunction
 ;END FRAGMENT
