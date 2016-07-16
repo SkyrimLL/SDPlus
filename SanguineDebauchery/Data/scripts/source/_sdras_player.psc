@@ -424,7 +424,7 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 
 		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
  
-	Else
+	Elseif  (kNewMaster == None)
 		Debug.Trace("[_sdras_player] Attempted spriggan enslavement to empty master " )
 		_SD_SprigganSwarm.MoveTo( kPlayer  as ObjectReference)
 
@@ -1277,6 +1277,7 @@ State monitor
 
 				StorageUtil.SetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction", _SDGVP_slave_days_max.GetValue() as Int)
 				fctFactions.expireSlaveFactions( kPlayer )
+				fctOutfit.expireSlaveTats( kPlayer )
 				; fctFactions.displaySlaveFactions( kPlayer )
 				Utility.Wait(2.0)
 			else

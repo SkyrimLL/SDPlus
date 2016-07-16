@@ -295,6 +295,10 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	;	return False
 	; EndIf
 
+	If (StorageUtil.GetIntValue(akPlayer, "_SD_iEnableBeastMaster") == 0)
+		return False
+	Endif
+
 	if (StorageUtil.GetIntValue( akActor, "_SD_iDateBeastSlaverChecked")==0)
 		StorageUtil.SetIntValue( akActor, "_SD_iDateBeastSlaverChecked", Game.QueryStat("Days Passed"))
 

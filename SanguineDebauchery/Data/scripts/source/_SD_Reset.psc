@@ -23,6 +23,7 @@ GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_naked_rape_delay Auto
 GlobalVariable Property GameDaysPassed Auto
 ReferenceAlias Property Alias__SDRA_master  Auto
+GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 
 Float fVersion = 0.0
 
@@ -56,16 +57,16 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2016062400 ; <--- Edit this value when updating
-		fVersion = 2016062400; and this
+	If fVersion < 2016071400 ; <--- Edit this value when updating
+		fVersion = 2016071400; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
 		StorageUtil.SetIntValue( none, "_SD_version", fVersion as Int)
 
-		If (!StorageUtil.HasIntValue(none, "_SD_iSanguine"))
-			StorageUtil.SetIntValue(none, "_SD_iSanguine", 1)
-		EndIf
+		StorageUtil.SetIntValue(none, "_SD_iSanguine", 1)
+		
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableBeastMaster", _SDGVP_config_enable_beast_master.GetValue() as Int)
 		; Update Code
 
 		fctFactions.initHumanoidMastersList (  )

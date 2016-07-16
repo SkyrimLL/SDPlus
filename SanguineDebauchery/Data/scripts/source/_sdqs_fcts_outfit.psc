@@ -77,7 +77,8 @@ Armor Property SDEggVaginal Auto        	       ; Inventory Device
 Armor Property SDEggAnalRendered Auto         ; Internal Device
 Armor Property SDEggAnal Auto        	       ; Inventory Device
 
- 
+GlobalVariable Property _SDGVP_gametime  Auto  
+
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
 ;
 ;  This is the list of the body parts used by Bethesda and named in the Creation Kit:
@@ -181,6 +182,7 @@ Function initSlaveryGearByRace (  )
 
 	Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
 	int i = 0
+	Int slaveTatColor = 0 
 	Form thisRace
 	String sRaceName
  
@@ -194,7 +196,7 @@ Function initSlaveryGearByRace (  )
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
 			; Falmer   
 			If (StringUtil.Find(sRaceName, "Falmer")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="FalmerGlow", raceSlaveTatDuration=2 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Falmer Glow (body)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazFalmerCollar, deviceRendered=zazFalmerCollarRendered  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazFalmerCuffs, deviceRendered=zazFalmerCuffsRendered   )
 				; registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
@@ -206,7 +208,7 @@ Function initSlaveryGearByRace (  )
 
 			; Hagraven    
 			ElseIf (StringUtil.Find(sRaceName, "Hagraven")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="MysticalSymbols", raceSlaveTatDuration=8 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -218,38 +220,38 @@ Function initSlaveryGearByRace (  )
 
 			; Wolf   
 			ElseIf (StringUtil.Find(sRaceName, "Wolf")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesBack", raceSlaveTatDuration=5 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Wolf scratches (back)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
 
 			; Dog    
 			ElseIf (StringUtil.Find(sRaceName, "Dog")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesBack", raceSlaveTatDuration=5 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Dog scratches (breast)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
 
 			; Giant   
 			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Standing", raceSlaveTat="GiantsRunes", raceSlaveTatDuration=20 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Standing", raceSlaveTat="Giant Paint (body)", raceSlaveTatDuration=20 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 			; Chaurus   
 			ElseIf (StringUtil.Find(sRaceName, "Chaurus")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesVaginal", raceSlaveTatDuration=2 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Chaurus Vaginal (body)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )  ; ADD Chaurus slimy collar later
 
 			; Spider    
 			ElseIf (StringUtil.Find(sRaceName, "Spider")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesAnal", raceSlaveTatDuration=2 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Spider Anal (butt)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazWebCuffs, deviceRendered=zazWebCuffsRendered   )
 
 			; Troll   
 			ElseIf (StringUtil.Find(sRaceName, "Troll")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="ScratchesChest", raceSlaveTatDuration=3 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Troll Bites (body)", raceSlaveTatDuration=3 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Troll rusted collar later
 
 			; Draugr    
 			ElseIf (StringUtil.Find(sRaceName, "Draugr")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="AncientNordRunes" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Draugr Runes (breast)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Draugr ancient collar later
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -264,7 +266,7 @@ Function initSlaveryGearByRace (  )
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Humanoid"  )
 			; Nord  
 			If (StringUtil.Find(sRaceName, "Nord")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="NordPaint", raceSlaveTatDuration=10 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Nord Ankle (leg)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -276,7 +278,7 @@ Function initSlaveryGearByRace (  )
 
 			; Breton
 			ElseIf (StringUtil.Find(sRaceName, "Breton")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Breton Wheel (belly)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -288,7 +290,7 @@ Function initSlaveryGearByRace (  )
 
 			; Imperial
 			ElseIf (StringUtil.Find(sRaceName, "Imperial")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="ImperialStamp" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Imperial Stamp (butt)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,harness,leather" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,leather"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,leather" )
@@ -300,7 +302,7 @@ Function initSlaveryGearByRace (  )
 
 			; Redguard
 			ElseIf (StringUtil.Find(sRaceName, "Redguard")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Redguard Scrawl (belly)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,padded,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,padded,zap" )
@@ -312,7 +314,7 @@ Function initSlaveryGearByRace (  )
 
 			; Orc
 			ElseIf (StringUtil.Find(sRaceName, "Orc")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Orc Scrawl (head)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -324,7 +326,7 @@ Function initSlaveryGearByRace (  )
 
 			; Elf
 			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Elf Slavers Hand (back)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,posture,leather" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,leather"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,leather" )
@@ -336,7 +338,7 @@ Function initSlaveryGearByRace (  )
 
 			; Khajit
 			ElseIf (StringUtil.Find(sRaceName, "Khajiit")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Khajiit Slavers Hand (back)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,leather,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -348,7 +350,7 @@ Function initSlaveryGearByRace (  )
 
 			; Argonian
 			ElseIf (StringUtil.Find(sRaceName, "Argonian")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="SlaveShoulder" )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Argonian Slavers Hand (belly)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
@@ -360,7 +362,9 @@ Function initSlaveryGearByRace (  )
 
 			; Dremora
 			ElseIf (StringUtil.Find(sRaceName, "Dremora")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="DaedricRunes" )
+				slaveTatColor = Math.LeftShift(255, 24) + Math.LeftShift(255, 16) + Math.LeftShift(0, 8) + 0
+
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Dremora Mark (body)", raceSlaveTatDuration=10, raceSlaveTatColor = slaveTatColor, raceSlaveTatGlow = 1 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="", deviceInventory=zazSanguineCuffs, deviceRendered=zazSanguineCuffsRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="", deviceInventory=zazSanguineShackles, deviceRendered=zazSanguineShacklesRendered )
@@ -377,7 +381,7 @@ Function initSlaveryGearByRace (  )
 	endwhile
 EndFunction
 
-Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbinders, Bool allowPunishmentDevice, Bool allowPunishmentScene, Bool allowWhippingScene, String defaultStance, String raceSlaveTat, Int raceSlaveTatDuration = 0 )
+Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbinders, Bool allowPunishmentDevice, Bool allowPunishmentScene, Bool allowWhippingScene, String defaultStance, String raceSlaveTat, Int raceSlaveTatDuration = 0 , Int raceSlaveTatColor = 0, Int raceSlaveTatGlow = 0 )
 ; 	For this Race
 ;		Set options: allowCollar, allowArmbinders, allowPunishmentDevice, allowPunishmentScene, allowWhippingScene, defaultStance, raceSlaveTat
 ;			
@@ -390,8 +394,11 @@ Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbin
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryPunishmentSceneOn", allowPunishmentDevice as Int)
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryWhippingSceneOn", allowPunishmentDevice as Int)
 	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryDefaultStance", defaultStance)
-	StorageUtil.SetStringValue(fRace, "_SD_sSlaverySlaveTat", raceSlaveTat)
-	StorageUtil.SetIntValue(fRace, "_SD_iSlaverySlaveTatDuration", raceSlaveTatDuration)
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTat", raceSlaveTat)
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTatType", "SD+")
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatDuration", raceSlaveTatDuration )
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatColor", raceSlaveTatColor )
+	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatGlow", raceSlaveTatGlow )
 
 EndFunction
 
@@ -413,16 +420,19 @@ Function setMasterGearByRace ( Actor kMaster, Actor kSlave  )
 ;	If race not listed and actorNPC keyword is found, use default gear
 	ActorBase akActorBase = kMaster.GetLeveledActorBase() as ActorBase
 	form masterRace
+	Actor slaveryGearActor = StorageUtil.GetFormValue(kSlave, "_SD_fSlaveryGearActor") as Actor
 
-	if (kMaster != none)
+	if (kMaster != none) 
 
-		; Form masterRace = akActorBase.GetRace() as Form
-		masterRace = fctFactions.findMatchingRace( kMaster )
+		if (slaveryGearActor != kMaster)
+			; Form masterRace = akActorBase.GetRace() as Form
+			masterRace = fctFactions.findMatchingRace( kMaster )
 
-		Debug.Trace("[SD] setMasterGearByRace -- Setting race to " + masterRace)
+			Debug.Trace("[SD] setMasterGearByRace -- Setting race to " + masterRace)
 
-		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", masterRace)
-		StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearActor", kMaster)
+			StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", masterRace)
+			StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearActor", kMaster)
+		endif
 	else
 		; Use this to force default set if necessary later - for now, going with 'none' to force generic devices instead
 		; StorageUtil.SetFormValue(kSlave, "_SD_fSlaveryGearRace", StorageUtil.GetFormValue(none, "_SD_fDefaultSlaveryRace") )
@@ -1356,30 +1366,140 @@ EndFunction
 
 ; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
 
-function sendSlaveTatModEvent(actor akActor, string sType, string sTatooName, int iColor = 0x99000000)
+function sendSlaveTatModEvent(actor akActor, string sType = "SD+", string sTatooName = "Slavers Hand (back)", int iColor = 0x99000000)
 	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
   	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+  	Actor PlayerActor = Game.GetPlayer()
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Form fOverride
+	Bool bTatOverride = False 
+	string tatooType  
+	string tatooName  
+	int tatooColor 
+	int tatooGlow
+
+	; If master Race is set, check if override device is set for this race and use it first
+	Debug.Trace("[SD] sendSlaveTatModEvent - fRaceOverride: " + fRaceOverride )  
+	Debug.Trace("[SD] sendSlaveTatModEvent - fActorOverride: " + fActorOverride )  
+
+	If ( fActorOverride!= none)
+		Debug.Trace("[SD] sendSlaveTatModEvent - Actor override detected: " + StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat"))  
+		if (StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat")!= "")
+			Debug.Trace("[SD] 	- Override detected for tattoo" )  
+			bTatOverride = True
+			tatooName = StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat" )
+			tatooType = StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTatType" )
+			tatooColor = StorageUtil.GetIntValue(fActorOverride, "_SD_iSlaveryTatColor" )
+			tatooGlow = StorageUtil.GetIntValue(fActorOverride, "_SD_iSlaveryTatGlow" )
+			fOverride = fActorOverride
+		else
+			Debug.Trace("[SD] 	- Override not found for tattoo" )  
+		endIf
+	EndIf
+	
+	If ( fRaceOverride!= none) && (!bTatOverride)
+		Debug.Trace("[SD] sendSlaveTatModEvent - Race override detected: " + StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat" ))  
+		if (StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat")!= "")
+			Debug.Trace("[SD] 	- Override detected for tattoo" )  
+			bTatOverride = True
+			tatooName = StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat" )
+			tatooType = StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTatType" )
+			tatooColor = StorageUtil.GetIntValue(fRaceOverride, "_SD_iSlaveryTatColor" )
+			tatooGlow = StorageUtil.GetIntValue(fRaceOverride, "_SD_iSlaveryTatGlow" )
+			fOverride = fRaceOverride
+		else
+			Debug.Trace("[SD] 	- Override not found for tattoo" )  
+		endIf
+	EndIf
+	
+	If (!bTatOverride) ; generic item
+		Debug.Trace("[SD] sendSlaveTatModEvent - NO override detected")  
+		StorageUtil.SetStringValue(akActor as Form, "_SD_sSlaveryTat", sTatooName )
+		StorageUtil.SetStringValue(akActor as Form, "_SD_sSlaveryTatType", sType )
+		tatooName = sTatooName
+		tatooType = sType
+		tatooColor = 0
+		tatooGlow = 0
+		fOverride = akActor as Form
+	endIf
+
+	If (tatooColor == 0)
+		tatooColor = Math.LeftShift(128, 24) + Math.LeftShift(128, 16) + Math.LeftShift(64, 8) + 64
+	endif
 
   	if (STevent) 
-        ModEvent.PushForm(STevent, akActor)      	; Form - actor
-        ModEvent.PushString(STevent, sType)    	; String - type of tattoo?
-        ModEvent.PushString(STevent, sTatooName)  	; String - name of tattoo
-        ModEvent.PushInt(STevent, iColor)  			; Int - color
-        ModEvent.PushBool(STevent, false)        	; Bool - last = false
+        ModEvent.PushForm(STevent, PlayerActor)      	; Form - actor
+        ModEvent.PushString(STevent, tatooType)    		; String - type of tattoo?
+        ModEvent.PushString(STevent, tatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, tatooColor)  			; Int - color
+        ModEvent.PushBool(STevent, true)        	; Bool - last = false
         ModEvent.PushBool(STevent, true)         	; Bool - silent = true
 
         ModEvent.Send(STevent)
+
+        ; if tat is not in list, add it
+        ; add application time - _SDGVP_gametime.GetValue() - and duration time
+        StorageUtil.SetIntValue(fOverride, "_SD_iSlaveryTatDay", Game.QueryStat("Days Passed") )
+ 
+		if (StorageUtil.FormListFind( none, "_SD_lSlaveryTatList", fOverride) <0)
+			StorageUtil.FormListAdd( none, "_SD_lSlaveryTatList", fOverride)  
+		endif
+
+
   	else
   		Debug.Trace("[_sdqs_fcts_outfit]  Send slave tat event failed.")
 	endIf
 endfunction
 
+Function expireSlaveTats( Actor akSlave )
+	; // iterate list from first added to last added
+	Debug.Trace("[SD] Expire Slave Tats for " + akSlave)
 
+	int currentDaysPassed = Game.QueryStat("Days Passed")
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveryTatList")
+	int i = 0
+	int daysJoined 
+	Form fOverride 
+	Actor PlayerActor = Game.GetPlayer()
+
+	while(i < valueCount)
+		fOverride = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+		If (fOverride != none)
+
+			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay")
+
+			if (daysJoined > StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDuration") )  && (StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay" )!=-1)
+
+				Debug.Trace("[SD]      Slave Tats[" + i + "] expired: " + fOverride.GetName() + " " + fOverride + " Days Since Marked: " + daysJoined )
+
+				; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
+				StorageUtil.SetIntValue( fOverride, "_SD_iSlaveryTatDay",  -1 )
+				Debug.Notification("Slave Tat removed: " + fOverride.GetName())
+
+				Debug.Trace("[SD] Slave Tat removed: " + fOverride.GetName())
+
+				; akSlave.RemoveFromFaction( slaveFaction as Faction )
+				int STevent = ModEvent.Create("STSimpleRemoveTattoo") 
+				if (STevent)
+				    ModEvent.PushForm(STevent, PlayerActor)        ; Form - actor
+				    ModEvent.PushString(STevent, StorageUtil.GetStringValue(fOverride, "_SD_sSlaveryTatType" ))     	; String - tattoo section (the folder name)
+				    ModEvent.PushString(STevent, StorageUtil.GetStringValue(fOverride, "_SD_sSlaveryTat" ))    ; String - name of tattoo
+				    ModEvent.PushBool(STevent, true)            ; Bool - last = false (the tattoos are only removed when last = true, use it on batches)
+				    ModEvent.PushBool(STevent, true)            ; Bool - silent = true (do not show a message)
+				    ModEvent.Send(STevent)
+				endif
+			EndIf
+		Endif
+
+		i += 1
+	endwhile
+EndFunction
 
 Function addPunishmentDevice(String sDevice)
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Actor kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
  	setMasterGearByRace ( kMaster, kPlayer  )
@@ -1456,7 +1576,7 @@ EndFunction
 Function removePunishmentDevice(String sDevice)
 	Actor kPlayer = Game.getPlayer() as Actor
 	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-	Actor kMaster = StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as Actor
+	Actor kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
 
  	setMasterGearByRace ( kMaster, kPlayer  )

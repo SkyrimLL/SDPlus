@@ -275,7 +275,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Test slaver tattoo
 		Debug.Trace("[SD] You are marked as your owner's property.")
 		Debug.Notification("You are marked as your owner's property.")
-		fctOutfit.sendSlaveTatModEvent(kSlave, "SD+","Slavers Hand (back)" )
+		fctOutfit.sendSlaveTatModEvent(kMaster, "SD+","Slavers Hand (back)" )
 
 		; Clear surrounding pacify effect
 		SendModEvent("da_PacifyNearbyEnemies","Restore")
