@@ -26,6 +26,7 @@ endFunction
 
 
 float	_CommentProbability		= 30.0
+float	_AttackProbability		= 30.0
 float	_BeggingProbability		= 30.0
 bool	_BeastDialogueON		= true
 bool	_PCDomDialogueON		= true
@@ -85,6 +86,7 @@ event OnPageReset(string a_page)
 	endIf
 
 	_CommentProbability			= fMin( fMax( (_SLD_CommentProbability.GetValue() as Float) , 0.0), 100.0 )
+	_AttackProbability			= fMin( fMax( (_SLD_AttackProbability.GetValue() as Float) , 0.0), 100.0 )
 	_BeggingProbability			= fMin( fMax( (_SLD_BeggingProbability.GetValue() as Float) , 0.0), 100.0 )
  
 	_BeastDialogueON		= _SLD_BeastDialogueON.GetValue() as Int
@@ -125,6 +127,7 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Shared settings")
 		AddSliderOptionST("STATE_CommentProbability","Comment Probability",  _CommentProbability	 as Float,"{0} %")
+		AddSliderOptionST("STATE_AttackProbability","Attack Probability",  _AttackProbability	 as Float,"{0} %")
 
 		AddHeaderOption(" Compatibility settings")
 		AddToggleOptionST("STATE_RegisterCustomRaces","Register custom races", _RegisterCustomRaces	 as Float) 
@@ -325,6 +328,32 @@ state STATE_CommentProbability ; SLIDER
 	endEvent
 endState
 
+; AddSliderOptionST("STATE_AttackProbability","Comment Probability",  _AttackProbability	 as Float,"{0} %")
+state STATE_AttackProbability ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _SLD_AttackProbability.GetValue() )
+		SetSliderDialogDefaultValue( 10.0 )
+		SetSliderDialogRange( 0.0, 100.0 )
+		SetSliderDialogInterval( 1.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		float thisValue = value 
+		_SLD_AttackProbability.SetValue( thisValue  )
+		SetSliderOptionValueST( thisValue,"{0} %" )
+	endEvent
+
+	event OnDefaultST()
+		_SLD_AttackProbability.SetValue( 30.0 )
+		SetSliderOptionValueST( 30.0,"{0} %" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Controls random attacks from NPCs and creatures based on the player's current status (Sub, Dom, Lover, etc)")
+	endEvent
+endState
+
+
 ; AddSliderOptionST("STATE_BeggingProbability","Begging Probability",  _BeggingProbability	 as Float,"{0} %")
 state STATE_BeggingProbability ; SLIDER
 	event OnSliderOpenST()
@@ -508,6 +537,7 @@ endFunction
 
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
 GlobalVariable Property _SLD_CommentProbability Auto  
+GlobalVariable Property _SLD_AttackProbability Auto  
 GlobalVariable Property _SLD_BeggingProbability Auto
 GlobalVariable Property _SLD_BeastDialogueON Auto  
 GlobalVariable Property _SLD_PCDomDialogueON Auto  

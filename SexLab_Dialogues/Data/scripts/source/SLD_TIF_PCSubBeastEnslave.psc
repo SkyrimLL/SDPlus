@@ -19,27 +19,30 @@ String sMasterRaceName = speakerRaceForm.GetName()
 String sRaceName
 Bool bRaceMatch = False
 
-while(i < valueCount) && (!bRaceMatch)
-	thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
-	sRaceName = thisRace.GetName()
+If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnableBeastMaster") != 0)
 
-	If (sMasterRaceName == "")
-		sMasterRaceName = speakerRaceForm as String
-	endif
+	while(i < valueCount) && (!bRaceMatch)
+		thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+		sRaceName = thisRace.GetName()
 
-	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && ((thisRace == speakerRaceForm) || (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
-		Debug.Trace("	Race [" + i + "] = " + sRaceName + " Race formID: " + thisRace + " FormID to match: " + speakerRaceForm)
-		bRaceMatch = True
-		Debug.Notification(" (tries to overpower you) ")
+		If (sMasterRaceName == "")
+			sMasterRaceName = speakerRaceForm as String
+		endif
 
-		fctDialogue.SetNPCDialogueState ( akSpeaker )
-	 
-		fctDialogue.StartPlayerClaimedBeast( akSpeaker)
-	endif
+		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && ((thisRace == speakerRaceForm) || (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
+			Debug.Trace("	Race [" + i + "] = " + sRaceName + " Race formID: " + thisRace + " FormID to match: " + speakerRaceForm)
+			bRaceMatch = True
+			Debug.Notification(" (tries to overpower you) ")
 
-	i += 1
-EndWhile
+			fctDialogue.SetNPCDialogueState ( akSpeaker )
+		 
+			fctDialogue.StartPlayerClaimedBeast( akSpeaker)
+		endif
 
+		i += 1
+	EndWhile
+
+endIf
 
 if  (!bRaceMatch)
 	; Debug.Notification("[SD] beast enslavement attempt failed")
