@@ -405,6 +405,7 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset
+	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Standing")
 
 	StorageUtil.FormListClear(kMaster, "_SD_lEnslavedFollower")
 

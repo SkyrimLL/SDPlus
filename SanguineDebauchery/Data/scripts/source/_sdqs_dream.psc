@@ -50,6 +50,7 @@ float                    Property XPMSELIB_VERSION      = 3.0 AutoReadOnly
 
 
 Int    iPlayerGender
+Int    iSanguineGender
 Actor kDreamer
 ObjectReference kSafeHarbor 
 ObjectReference kEnter
@@ -179,6 +180,7 @@ Function positionVictims( Int aiStage )
 	; EndIf
 
 	iPlayerGender  = kDreamer.GetLeveledActorBase().GetSex() as Int
+	kSanguine = none
 
 	; Necessary to catch upgrades without a ref alias already initalized
 	If (kSanguine_svana==None)
@@ -203,7 +205,7 @@ Function positionVictims( Int aiStage )
 		EndIf
 	EndIf
  
-	If (iPlayerGender  == 0)
+	If (iPlayerGender  == 0) && (kSanguine == none)
 		; iPlayerGender = 0 - male
 		if (iGenderRestrictions == 1) 
 			If (Utility.RandomInt(0,100)>70) && SamQuest.IsCompleted()
@@ -219,7 +221,7 @@ Function positionVictims( Int aiStage )
 			EndIf
 		endif
 			
-	Else
+	Elseif (kSanguine == none)
 		; iPlayerGender = 1 - female
 		if (iGenderRestrictions == 1)
 			If (Utility.RandomInt(0,100)>70) && HaelgaQuest.IsCompleted() && (kSanguine_svana!=None)
@@ -238,6 +240,19 @@ Function positionVictims( Int aiStage )
 		endif
 		
 	EndIf
+
+	If (kSanguine == none)
+		kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+	Endif
+
+	iSanguineGender  = kSanguine.GetLeveledActorBase().GetSex() as Int
+
+	If (iSanguineGender==0) && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Female" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
+		kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
+	Endif
+	If (iSanguineGender==1)  && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Male" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
+		kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+	endif
 
 	_SDRAP_sanguine.ForceRefTo( kSanguine as ObjectReference )
 
@@ -358,7 +373,7 @@ Function positionVictims( Int aiStage )
 	Bool isSanguineFemale = kSanguine.GetLeveledActorBase().GetSex()
 	Bool isNiOInstalled = CheckXPMSERequirements(kSanguine, isSanguineFemale)
 
-	if ( bBreastEnabled && isSanguineFemale && isNiOInstalled  )
+	if ( bBreastEnabled && isSanguineFemale && isNiOInstalled  ) && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Female" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
 		fBreast  = Utility.RandomFloat(0.5, 3.0) ; NetImmerse.GetNodeScale(kSanguine, "NPC L Breast", false)
 
 		XPMSELib.SetNodeScale(kSanguine, true, NINODE_LEFT_BREAST, fBreast, SD_KEY)
@@ -375,7 +390,7 @@ Function positionVictims( Int aiStage )
 	    endif		
 	EndIf
 
-	if ( bSchlongEnabled && !isSanguineFemale && isNiOInstalled )
+	if ( bSchlongEnabled && !isSanguineFemale && isNiOInstalled ) && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Male" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
 		fSchlong = Utility.RandomFloat(1.2, 2.0) ; NetImmerse.GetNodeScale(kSanguine, "NPC GenitalsBase [GenBase]", false)
 		; kSanguine.SendModEvent("SLHSetSchlong", "")
 

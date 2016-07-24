@@ -30,6 +30,7 @@ GlobalVariable Property _SDGVP_punishments  Auto
 
 SexLabFramework Property SexLab  Auto  
 
+
 ReferenceAlias Property _SDRAP_master  Auto
 ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_bindings Auto

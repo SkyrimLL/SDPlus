@@ -118,21 +118,10 @@ s -a SD_DanceAnim1Begin SnakeDance.hkx
 + -a SD_DanceAnim1End Belly.hkx
 
 
-' b crawl_sneakmtidle.hkx
-' b crawl_sneakrun_backward.hkx
-' b crawl_sneakrun_bckwrdleft.hkx
-' b crawl_sneakrun_bckwrdright.hkx
-' b crawl_sneakrun_forward.hkx
-' b crawl_sneakrun_frwrdleft.hkx
-' b crawl_sneakrun_frwrdright.hkx
-' b crawl_sneakrun_left.hkx
-' b crawl_sneakrun_right.hkx
+AAprefix sdc
 
-b crawlMoveBackward crawl_sneakwalk_bckward.hkx
-b crawlStrafeBackLeft crawl_sneakwalk_bckwrdleft.hkx
-b crawlStrafeBackRight crawl_sneakwalk_bckwrdright.hkx
-b crawlMoveForward crawl_sneakwalk_forward.hkx
-b crawlStrafeStartRight crawl_sneakwalk_frwrdright.hkx
-b crawlStrafeStartLeft crawl_sneakwalk_fwrwrdleft.hkx
-b crawlTurnLeft crawl_sneakwalk_left.hkx
-b crawlTurnRight crawl_sneakwalk_right.hkx
+AAset _mt 1
+AAset _mtx 1
+AAset _mtidle 5
+AAset _sneakidle 1
+AAset _sneakmt 1

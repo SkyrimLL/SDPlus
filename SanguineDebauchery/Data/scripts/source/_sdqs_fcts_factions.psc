@@ -18,6 +18,8 @@ FormList Property _SDFLP_spriggan_factions  Auto
  
 Race Property  HagravenRace   Auto
 Race Property  WolfRace  Auto
+Race Property  SaberCatRace  Auto
+Race Property  BearRace  Auto
 Race Property  DogRace  Auto
 Race Property  DogCompanionRace  Auto
 Race Property  GiantRace  Auto
@@ -31,6 +33,8 @@ Race Property  DraugrMagicRace  Auto
 Faction Property  HagravenFaction   Auto   	; HagravenFaction 
 Faction Property  WolfFaction  Auto			; WolfFaction
 Faction Property  DogFaction  Auto 			; DogFaction
+Faction Property  SaberCatFaction  Auto 	; DogFaction
+Faction Property  BearFaction  Auto 		; DogFaction
 Faction Property  GiantFaction  Auto		; GiantFaction
 Faction Property  ChaurusFaction   Auto		; ChaurusFaction
 Faction Property  SpiderFaction   Auto		; SpiderFaction
@@ -154,6 +158,14 @@ Function initSlaveryFactionByRace (  )
 			; Dog    
 			ElseIf (StringUtil.Find(sRaceName, "Dog")!= -1)
 				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", DogFaction) 
+
+			; SaberCat    
+			ElseIf (StringUtil.Find(sRaceName, "Cat")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", SaberCatFaction) 
+
+			; Bear    
+			ElseIf (StringUtil.Find(sRaceName, "Bear")!= -1)
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", BearFaction) 
 
 			; Giant   
 			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
@@ -314,9 +326,9 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 			Debug.Trace("[SD] Creature Enslavement check with actor [ " + akActor + " ] - SUCCEEDED")
 		EndIf
 
-	 	if !(   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )
-	 		Debug.Trace("[SD] 		Player is male or creature is not eligible.")
-	 	EndIf
+	 	; if !(   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )
+	 	;	Debug.Trace("[SD] 		Player is male or creature is not eligible.")
+	 	; EndIf
 		if (akActor.IsGhost())
 			Debug.Trace("[SD] 		Actor is Ghost" )
 		endif
