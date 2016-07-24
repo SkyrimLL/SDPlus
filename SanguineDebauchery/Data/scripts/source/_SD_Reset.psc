@@ -57,8 +57,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2016071400 ; <--- Edit this value when updating
-		fVersion = 2016071400; and this
+	If fVersion < 2016072300 ; <--- Edit this value when updating
+		fVersion = 2016072300; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -87,6 +87,11 @@ Function Maintenance()
 			StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1 )
 			StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1 )			
 		Endif
+
+		If (!StorageUtil.HasStringValue(kPlayer, "_SD_sSanguineGender"))
+			StorageUtil.SetStringValue(kPlayer, "_SD_sSanguineGender","Both")
+		Endif
+
 		
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )
 		_SDGVP_naked_rape_delay.SetValue( fNext )

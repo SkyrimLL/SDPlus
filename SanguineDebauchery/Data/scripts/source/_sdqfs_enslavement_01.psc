@@ -597,6 +597,7 @@ EndFunction
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_snp Property snp Auto
+ImageSpaceModifier Property _SD_CollarStrangleImod  Auto  
 
 Function questShutdown()
 	Actor master = Alias__SDRA_master.GetReference() as Actor
@@ -613,6 +614,7 @@ Function questShutdown()
 	_SDKP_trust_hands.SetValue(1)
 	_SDKP_trust_feet.SetValue(1)
 
+	_SD_CollarStrangleImod.Remove()
 
 	If (_SDGVP_state_joined.GetValue()==0)
 		fctFactions.clearSlaveFactions( slave )
