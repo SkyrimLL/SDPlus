@@ -146,8 +146,10 @@ function startDreamworld()
 		kConfig._SDQP_quests_primary[2].Start()
 	EndIf
 			
-	_SDGVP_sanguine_blessing.SetValue( 1 )
-	StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSanguineBlessings", _SDGVP_sanguine_blessing.GetValue() as Int )
+	if ((_SDGVP_sanguine_blessing.GetValue() as Int)<=0)
+		_SDGVP_sanguine_blessing.SetValue( 1 )
+		StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSanguineBlessings", _SDGVP_sanguine_blessing.GetValue() as Int )
+	endif
 
 	_SD_dreamQuest.SetStage(10)
 

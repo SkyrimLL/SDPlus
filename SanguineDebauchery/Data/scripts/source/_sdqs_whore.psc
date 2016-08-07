@@ -20,6 +20,7 @@ SPELL Property _SDSP_Weak Auto
 ; ragdolling
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto  
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
+Message Property _SD_whoreQueueMenu Auto
 
 ObjectReference whore
 Float fRegForUpdate = 5.0
@@ -28,8 +29,8 @@ Bool Function addToQueue( ObjectReference akObject )
 	Bool bAdded = False
 	Actor akActor = akObject as Actor
 	
-	If ( akObject != None ) 
-		If (!akActor.IsGhost())
+	If ( akObject != None ) && ( akActor != None )
+		If (!akActor.IsGhost()) && (!akObject.IsDisabled()) &&  (SexLab.ValidateActor( akActor ) > 0) 
 			Int iIdx = 0
 			While ( !bAdded && iIdx < _SDORP_queue.Length )
 				If ( _SDORP_queue[iIdx] == None )
@@ -52,6 +53,7 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 	Int iIdx = 0
 	Int iThreesome = 0
 	Int iRandomNum 
+	Int IButton  
 	; Debug.SendAnimationEvent(akWhore, "ZazAPC205")
 
 	While ( !bRemoved && iIdx < _SDORP_queue.Length )
@@ -99,15 +101,24 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 								Debug.Notification("You feel helpless as they take turns on you.")
 							EndIf
 
-							actor[] sexActors = new actor[3]
-							sexActors[0] = akWhore as actor
-							sexActors[1] = _SDORP_queue[iIdx]  as actor
-							sexActors[2] = _SDORP_queue[iIdx+1]  as actor
- 
-						    sslBaseAnimation[] anims
-						    anims = SexLab.GetAnimationsByTags(3,"Orgy" )
- 
-						    SexLab.StartSex(sexActors, anims, victim=akWhore as actor  )
+							IButton = _SD_whoreQueueMenu.Show()
+							If IButton == 0 ; Undress
+								StorageUtil.SetIntValue( akWhore as actor , "_SD_iSub", StorageUtil.GetIntValue( akWhore as actor, "_SD_iSub") + 1)
+								actor[] sexActors = new actor[3]
+								sexActors[0] = akWhore as actor
+								sexActors[1] = _SDORP_queue[iIdx]  as actor
+								sexActors[2] = _SDORP_queue[iIdx+1]  as actor
+	 
+							    sslBaseAnimation[] anims
+							    anims = SexLab.GetAnimationsByTags(3,"Orgy" )
+	 
+							    SexLab.StartSex(sexActors, anims, victim=akWhore as actor  )
+
+							else
+								StorageUtil.SetIntValue( akWhore as actor , "_SD_iDom", StorageUtil.GetIntValue( akWhore as actor, "_SD_iDom") + 1)
+
+							EndIf
+
 
 						Else 
 							If (iRandomNum>80)
@@ -118,11 +129,20 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 								Debug.Notification("You feel weak as another one grabs you.")
 							EndIf
 
-							actor[] sexActors = new actor[2]
-							sexActors[0] = akWhore as actor
-							sexActors[1] = _SDORP_queue[iIdx]  as actor
-							
-							funct.SanguineRape( _SDORP_queue[iIdx]  as actor,  akWhore as actor  , "Sex")
+							; actor[] sexActors = new actor[2]
+							; sexActors[0] = akWhore as actor
+							; sexActors[1] = _SDORP_queue[iIdx]  as actor
+
+							IButton = _SD_whoreQueueMenu.Show()
+							If IButton == 0 ; Undress
+								StorageUtil.SetIntValue( akWhore as actor , "_SD_iSub", StorageUtil.GetIntValue( akWhore as actor, "_SD_iSub") + 1)
+
+								funct.SanguineRape( _SDORP_queue[iIdx]  as actor,  akWhore as actor  , "Sex")
+
+							else
+								StorageUtil.SetIntValue( akWhore as actor , "_SD_iDom", StorageUtil.GetIntValue( akWhore as actor, "_SD_iDom") + 1)
+
+							EndIf							
 						EndIf
 					EndIf
 

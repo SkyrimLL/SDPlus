@@ -10,7 +10,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
 	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Doggystyle")
-		akSpeaker.SendModEvent("PCSubSex", "Doggystyle")
+		akSpeaker.SendModEvent("PCSubSex", "Doggystyle", 1.0 )
 	EndIf
 ;END CODE
 EndFunction

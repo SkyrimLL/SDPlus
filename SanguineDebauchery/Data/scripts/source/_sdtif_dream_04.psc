@@ -6,7 +6,8 @@ Scriptname _sdtif_dream_04 Extends TopicInfo Hidden
 Function Fragment_3(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-_SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
+; _SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
+SendModEvent("SDSanguineBlessingMod", "", 1) 
 ;END CODE
 EndFunction
 ;END FRAGMENT

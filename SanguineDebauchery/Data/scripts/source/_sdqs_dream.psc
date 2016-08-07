@@ -259,7 +259,7 @@ Function positionVictims( Int aiStage )
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 
 	SendModEvent("SDInDreamworld") 
-	SendModEvent("SDSanguineBlessingMod", 1)  
+	SendModEvent("SDSanguineBlessingMod", "", 1)  
 
 	kNaamah.EvaluatePackage()
 	kMeridiana.EvaluatePackage()

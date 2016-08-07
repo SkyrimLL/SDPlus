@@ -39,6 +39,8 @@ Message Property _SDMP_scene_stalled  Auto
 Message Property _SDMP_scene_stop  Auto
 Keyword Property _SDKP_actorTypeNPC  Auto
 
+Message Property _SDMP_rape_menu  Auto
+
 ; spriggan enslavement
 Keyword Property _SDKP_spriggan  Auto
 Keyword Property _SDKP_spriggan_infected  Auto
@@ -125,12 +127,13 @@ bool bOk
 
 Event OnInit()
 	Debug.Trace("_SDRAS_player.OnInit()")
+	kPlayer = Self.GetReference() as Actor
+
+	keys = New Int[4]
+
 	_maintenance()
 
 	GoToState("waiting")
-
-	kPlayer = Self.GetReference() as Actor
-	keys = New Int[2]
 	
 	If ( Self.GetOwningQuest() )
 		RegisterForSingleUpdate( 0.1 )
@@ -468,7 +471,15 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 		
 	Debug.Trace("[_sdras_player] Receiving 'surrender' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
+	If (kNewMaster != None)  &&  (fctFactions.checkIfSpriggan (  kNewMaster ) )
+		; if already enslaved, transfer of ownership
+		SendModEvent("da_PacifyNearbyEnemies")
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+
+		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+ 
+
+	ElseIf (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
 		SendModEvent("da_PacifyNearbyEnemies")
 
@@ -503,11 +514,23 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 		EndIf
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
-	Else
-		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
+		Int IButton = _SD_enslaveMenu.Show()
+
+		If IButton == 0 ; Undress
+			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
+
+		else
+			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
+			funct.SanguineRape( kNewMaster, kPlayer)
+
+		EndIf
+
+	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
 		funct.SanguineRape( kNewMaster, kPlayer)
+	Else
+		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
 	EndIf
 EndEvent
 
@@ -524,7 +547,15 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		
 	Debug.Trace("[_sdras_player] Receiving 'enslave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
+	If (kNewMaster != None)  &&  (fctFactions.checkIfSpriggan (  kNewMaster ) )
+		; if already enslaved, transfer of ownership
+		SendModEvent("da_PacifyNearbyEnemies")
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+
+		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+ 
+
+	ElseIf (kNewMaster != None)  &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
 		SendModEvent("da_PacifyNearbyEnemies")
 
@@ -559,11 +590,23 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		EndIf
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
-	Else
-		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
+		Int IButton = _SD_enslaveMenu.Show()
+
+		If IButton == 0 ; Undress
+			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
+
+		else
+			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
+			funct.SanguineRape( kNewMaster, kPlayer)
+
+		EndIf
+
+	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
 		funct.SanguineRape( kNewMaster, kPlayer)
+	Else
+		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
 	EndIf
 EndEvent
 
@@ -585,7 +628,15 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		Debug.Trace("[_sdras_player] Faction check: " + fctFactions.checkIfSlaver (  kNewMaster ) )
 	EndIf
 
-	If (kNewMaster != None)   &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
+	If (kNewMaster != None)  &&  (fctFactions.checkIfSpriggan (  kNewMaster ) )
+		; if already enslaved, transfer of ownership
+		SendModEvent("da_PacifyNearbyEnemies")
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+
+		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+ 
+
+	ElseIf (kNewMaster != None)   &&  (fctFactions.checkIfSlaver (  kNewMaster ) || fctFactions.checkIfSlaverCreature (  kNewMaster ) )
 		SendModEvent("da_PacifyNearbyEnemies")
 
 
@@ -623,11 +674,23 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0, aiValue2 = 2)
-	Else
-		Debug.Trace("[_sdras_player] Attempted transfer to an empty or invalid master - Actor: " + kNewMaster)
+		Int IButton = _SD_enslaveMenu.Show()
+
+		If IButton == 0 ; Undress
+			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
+
+		else
+			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
+			funct.SanguineRape( kNewMaster, kPlayer)
+
+		EndIf
+
+	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
 		funct.SanguineRape( kNewMaster, kPlayer)
+	Else
+		Debug.Trace("[_sdras_player] Attempted enslavement to empty master " )
 	EndIf
 EndEvent
 
@@ -656,17 +719,18 @@ Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form 
 EndEvent
 
 Event OnSDDreamworldStart(String _eventName, String _args, Float _argc = 0.0, Form _sender)
-	int stageID 
 	int blessingsStart = _argc as Int
 	; Dreamworld has to be visited at least once for this event to work
 	Debug.Trace("[_sdras_player] Receiving dreamworld start story event [" + _args  + "] [" + _argc as Int + "]")
-	Debug.Trace("[_sdras_player] StageID: " + stageID)
+ 
+	If (blessingsStart<0)
+		blessingsStart = 0
+	EndIf
 
-	stageID = 10
-
-	_SDGVP_sanguine_blessing.SetValue(0)
-	_SD_dreamerScript.startDreamworld()
 	_SDGVP_sanguine_blessing.SetValue(blessingsStart)
+	StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
+
+	_SD_dreamerScript.startDreamworld()
 
 EndEvent
 
@@ -698,7 +762,25 @@ Event OnSDDreamworldResume(String _eventName, String _args, Float _argc = 15.0, 
 	StorageUtil.SetIntValue(kPlayer, "_SD_iDisableDreamworld", 0)
 EndEvent
 
-Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+Event OnSDSanguineBlessingMod(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving sanguine blessing mod story event [" + _args  + "] [" + _argc as Int + "]")
+	if (iEventCode<=0)
+		iEventCode=1
+	endIf
+
+	; if (_SDGVP_sanguine_blessings.GetValue() > 0 )
+		_SDGVP_sanguine_blessings.SetValue( _SDGVP_sanguine_blessings.GetValue() + iEventCode)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
+	; endif
+
+	Debug.Trace("[SD] 	- Sanguine blessings: " + _SDGVP_sanguine_blessings.GetValue() )
+EndEvent
+
+Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
 	; int storyID = _argc as Int
@@ -741,7 +823,27 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		endif
 
 		; _SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0 )
-		funct.SanguineRape( kTempAggressor, kPlayer, _args)
+		if (_argc==0.0)
+			funct.SanguineRape( kTempAggressor, kPlayer, _args)
+		else
+			Int IButton = _SDMP_rape_menu.Show()
+
+			If IButton == 0 ; Show the thing.
+
+				; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+					; Debug.Notification( "[Resists weakly]" )
+				;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+				; EndIf
+				StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+
+				funct.SanguineRape( kTempAggressor, kPlayer, _args)
+
+			Else
+				StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
+
+			EndIf
+	
+		endIf
 
 	EndIf
 EndEvent
@@ -802,11 +904,14 @@ Event OnSDStoryWhip(String _eventName, String _args, Float _argc = 1.0, Form _se
 
 	Debug.Trace("[_sdras_player] Receiving whip story event [" + _args  + "] [" + _argc as Int + "]")
 
-	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
-
-	If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+	EndIf
+	If (kTempAggressor != None)
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
 	Endif
+
+	funct.SanguineWhip( kTempAggressor )
 EndEvent
 
 Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -821,19 +926,14 @@ Event OnSDStoryPunish(String _eventName, String _args, Float _argc = 1.0, Form _
 
 	Debug.Trace("[_sdras_player] Receiving punish story event [" + _args  + "] [" + _argc as Int + "]")
 
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+	EndIf
 	If (kTempAggressor != None)
 		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
-	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
-	Else
-		Return
-	EndIf
+	Endif
 
-	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
- 
-	If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-	endif
+	funct.SanguinePunishment( kTempAggressor )
 EndEvent
 
 Event OnSDEmancipateSlave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -1012,9 +1112,18 @@ Event OnSDStance(String _eventName, String _args, Float _argc = -1.0, Form _send
 
 	if (iEventString == "Standing")
 		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 1 )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 1 )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
 
-	elseif  (iEventString == "Kneeling") || (iEventString == "Crawling")
+	elseif (iEventString == "Kneeling")
 		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 1 )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
+
+	elseif (iEventString == "Crawling")
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 0 )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
 	endif
 
 EndEvent
@@ -1144,19 +1253,6 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 
 EndEvent
 
-Event OnSDSanguineBlessingMod(String _eventName, String _args, Float _argc = -1.0, Form _sender)
- 	Actor kActor = _sender as Actor
-	Int iEventCode = _argc as Int
-	String iEventString = _args
-
-	Debug.Trace("[_sdras_player] Receiving sanguine blessing mod story event [" + _args  + "] [" + _argc as Int + "]")
-
-	; if (_SDGVP_sanguine_blessings.GetValue() > 0 )
-		_SDGVP_sanguine_blessings.SetValue( _SDGVP_sanguine_blessings.GetValue() + iEventCode)
-		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
-	; endif
-EndEvent
-
 Event OnCrosshairRefChange(ObjectReference ref)
 
 	If  (ref != none) && ( (ref as Actor) != none)
@@ -1172,6 +1268,8 @@ EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	kCrosshairTarget = none ; reset target
+
+	fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
 EndEvent
 
@@ -1199,8 +1297,12 @@ State monitor
 
 		keys[0] = config._SDUIP_keys[1]
 		keys[1] = config._SDUIP_keys[6]
+		keys[2] = config._SDUIP_keys[2]
+		keys[3] = config._SDUIP_keys[5]
 		RegisterForKey( keys[0] )
 		RegisterForKey( keys[1] )
+		RegisterForKey( keys[2] )
+		RegisterForKey( keys[3] )
 
 		; RegisterForMenu( "Crafting Menu" )
 		; RegisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
@@ -1208,10 +1310,18 @@ State monitor
 	EndEvent
 
 	Event OnPlayerLoadGame()
+		keys = New Int[4]
 		keys[0] = config._SDUIP_keys[1]
 		keys[1] = config._SDUIP_keys[6]
+		keys[2] = config._SDUIP_keys[2]
+		keys[3] = config._SDUIP_keys[5]
 		RegisterForKey( keys[0] )
 		RegisterForKey( keys[1] )
+		RegisterForKey( keys[2] )
+		RegisterForKey( keys[3] )
+
+		; Debug.Notification("[SD] Registering keys" + keys.Length)
+
 		if ( StorageUtil.GetIntValue( kPlayer, "_SD_iEnslaved") > 0 )
 			; Suspend Deviously Helpless attacks.
 			SendModEvent("dhlp-Suspend")
@@ -1250,6 +1360,8 @@ State monitor
 		; UnregisterForMenu( "Crafting Menu" )
 		UnregisterForKey( keys[0] )
 		UnregisterForKey( keys[1] )
+		UnregisterForKey( keys[2] )
+		UnregisterForKey( keys[3] )
 
 		; UnregisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
 		; UnregisterForAnimationEvent(kPlayer, "GetUpEnd")
@@ -1325,13 +1437,19 @@ State monitor
 
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 		
-		If ( keys[0] != config._SDUIP_keys[1] || keys[1] != config._SDUIP_keys[6] )
+		If ( keys[0] != config._SDUIP_keys[1] || keys[1] != config._SDUIP_keys[6] || keys[2] != config._SDUIP_keys[2] || keys[3] != config._SDUIP_keys[5] )
 			UnregisterForKey( keys[0] )
 			UnregisterForKey( keys[1] )
+			UnregisterForKey( keys[2] )
+			UnregisterForKey( keys[3] )
 			keys[0] = config._SDUIP_keys[1]
 			keys[1] = config._SDUIP_keys[6]
+			keys[2] = config._SDUIP_keys[2]
+			keys[3] = config._SDUIP_keys[5]
 			RegisterForKey( keys[0] )
 			RegisterForKey( keys[1] )
+			RegisterForKey( keys[2] )
+			RegisterForKey( keys[3] )
 		EndIf
 
 		; Detect change of stance and apply new idles if needed
@@ -1374,13 +1492,14 @@ State monitor
 		EndIf
 	EndEvent
 
+	; See codes here - http://minecraft.gamepedia.com/Key_codes
 	;0xC7 config._SDUIP_keys[0]  199  Home
 	;0xCF config._SDUIP_keys[1]  207  End
-	;0xC8 config._SDUIP_keys[2]  200  Up Arrow
+	;0xC8 config._SDUIP_keys[2]  201  Page Up
 	;0xCB config._SDUIP_keys[3]  203  Left Arrow
 	;0xCD config._SDUIP_keys[4]  205  Right Arrow
-	;0xD0 config._SDUIP_keys[5]  208  Down Arrow
-	;0x25 config._SDUIP_keys[6]  37   K
+	;0xD0 config._SDUIP_keys[5]  209  Page Down
+	;0x25 config._SDUIP_keys[6]  49   /
 
 	;0x2A    42  Left Shift
 	;0x36    54  Right Shift
@@ -1491,6 +1610,56 @@ State monitor
 			EndIf
  
 		EndIf
+		If ( aiKeyCode == keys[2] )
+			
+			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") 
+				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Kneeling")
+					Debug.Notification("Kneeling...")
+				Else
+					Debug.Notification("You are not allowed to kneel")
+				Endif
+
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") 
+				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+					Debug.Notification("Standing...")
+				Else
+					Debug.Notification("You are not allowed to stand")
+				Endif
+
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")  
+				fctConstraints.UpdateStanceOverrides()
+				Debug.Notification("Already standing...")
+
+			endif
+			; Debug.Notification("New stance: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
+		endif
+		If ( aiKeyCode == keys[3] )
+ 			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")  
+				fctConstraints.UpdateStanceOverrides()
+				Debug.Notification("Already crawling...")
+
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") 
+				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableCrawl") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Crawling")
+					Debug.Notification("Crawling...")
+				Else
+					Debug.Notification("You are not allowed to crawl")
+				Endif
+
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing") 
+				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Kneeling")
+					Debug.Notification("Kneeling...")
+				Else
+					Debug.Notification("You are not allowed to kneel")
+				Endif
+
+			endif
+			; Debug.Notification("New stance: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
+
+		endif
 
 	EndEvent
 
@@ -1620,6 +1789,7 @@ FormList Property _SDFL_allowed_creature_sex  Auto
 SPELL Property Calm  Auto  
 daymoyl_MonitorScript 		Property Monitor 		Auto
 Message Property _SD_safetyMenu  Auto  
+Message Property _SD_enslaveMenu Auto
 
 GlobalVariable Property _SDGVP_sanguine_blessing auto
 

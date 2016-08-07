@@ -202,12 +202,14 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 				; Punishment
 				If (RandomInt(0,10)> 5) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					kMaster.SendModEvent("PCSubPunish") 
+					; kMaster.SendModEvent("PCSubPunish") 
+					funct.SanguinePunishment( kMaster )
 
 				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 					; Whipping
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					kMaster.SendModEvent("PCSubWhip") 
+					; kMaster.SendModEvent("PCSubWhip") 
+					funct.SanguineWhip( kMaster )
 
 				Else
 					kMaster.SendModEvent("PCSubSex","Rough") 
@@ -564,7 +566,9 @@ State monitor
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
 					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
-						kMaster.SendModEvent("PCSubPunish") 
+					;	kMaster.SendModEvent("PCSubPunish") 
+					funct.SanguinePunishment( kMaster )
+
 					else
 						kMaster.SendModEvent("PCSubSex","Rough") 
 					endif
@@ -590,7 +594,9 @@ State monitor
 
 					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 						If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
-							kMaster.SendModEvent("PCSubPunish") 
+						;	kMaster.SendModEvent("PCSubPunish") 
+						funct.SanguinePunishment( kMaster )
+
 						else
 							kMaster.SendModEvent("PCSubSex","Rough") 
 						endif
@@ -605,7 +611,8 @@ State monitor
 					; _SDKP_sex.SendStoryEvent(akRef1 = kCombatTarget, akRef2 = kSlave, aiValue1 = 5 )
 
 					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-						kMaster.SendModEvent("PCSubWhip") 
+						; kMaster.SendModEvent("PCSubWhip") 
+						funct.SanguineWhip( kMaster )
 					Endif
 				EndIf
 			EndIf
@@ -632,11 +639,15 @@ State monitor
 					If ( _SDGVP_demerits.GetValueInt() > 20 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 						; Whipping
 					 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					 	kMaster.SendModEvent("PCSubWhip") 
+					 	; kMaster.SendModEvent("PCSubWhip") 
+						funct.SanguineWhip( kMaster )
+
 					Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 						; Punishment
 					 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					 	kMaster.SendModEvent("PCSubPunish") 
+					 	; kMaster.SendModEvent("PCSubPunish") 
+						funct.SanguinePunishment( kMaster )
+
 					Else
 						kMaster.SendModEvent("PCSubSex","Rough") 
 					EndIf
@@ -750,11 +761,15 @@ State monitor
 					if (iRandomNum > 70) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 						; Whipping
 					 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					 	kMaster.SendModEvent("PCSubWhip") 
+					 	; kMaster.SendModEvent("PCSubWhip") 
+						funct.SanguineWhip( kMaster )
+
 					Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 						; Punishment
 					 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					 	kMaster.SendModEvent("PCSubPunish") 
+					 	; kMaster.SendModEvent("PCSubPunish") 
+						funct.SanguinePunishment( kMaster )
+
 					Else
 					 	kMaster.SendModEvent("PCSubSex","Rough") 
 

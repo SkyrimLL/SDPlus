@@ -433,136 +433,143 @@ State monitor
 				; Debug.Notification("[SD] Endgame: " + kSlaver )
 				; Debug.Notification("[SD] Buyout: " + fBuyout)
 
-				; genderRestrictions = 0 - any / 1 - same / 2 - opposite
-
-				if (Utility.RandomInt(0,100)>50)
-					kSlaverDest = kSlaver
-				else
-					kSlaverDest = kSlaver2_m
-				Endif
-			
-				Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
-
-				If (iPlayerGender  == 0)
-					; iPlayerGender = 0 - male
-					if (genderRestrictions == 2)
-						kSlaverDest = kSlaver2_f
-					endif
-						
-				Else
-					; iPlayerGender = 1 - female
-					if (genderRestrictions == 1)
-						kSlaverDest = kSlaver2_f
-					endif
-					
-				EndIf
-
-				; Debug.MessageBox("[SD] PlayerGender: " + iPlayerGender + "\n Restrictions: " + genderRestrictions)
-
-				If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest) || (kMaster == kSlaverDest) )
-					; Player saved by Sanguine
-					Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
-					_SD_dreamQuest.SetStage(20)
-				
-				ElseIf (_SD_dreamQuest.GetStage() == 0) && (!kSlaverDest)
-					; Player saved by Sanguine
-					; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
-					_SD_dreamQuest.SetStage(10)
-
-				ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
-					; Master made profit - slave can be sold
-					if (iPlayerGender==0)
-						_SDSMP_choke_m.Play( Game.GetPlayer() )
-					else
-						_SDSMP_choke.Play( Game.GetPlayer() )
-					endif
-
-					Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
-					; Reset to 0 to avoid loop with endgame situations
-					StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
-					fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
-
-					; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
-					; Bool bMariaEden = False
-
-					; If (Utility.RandomInt(0,100) > 70) 
-					; 	bMariaEden = MariaEdenEnslave() 
-					; EndIf
-
-					; If (!bMariaEden)
-					; Endif
-
-
-	                ; Game.FadeOutGame(true, true, 0.5, 5)
-					; (kSlave as ObjectReference).MoveTo( kSlaverDest )
-					; Replace by code to dreamDestination
-					Bool bMariaEden = False
-					Bool bWolfClub = False
-					Bool bSimpleSlavery = False
-					Bool bRedWave = False
-
-					If (Utility.RandomInt(0,100) > 70) 
-						bWolfClub = WolfClubEnslave() 
-						
-					ElseIf (Utility.RandomInt(0,100) > 40) 
-						bSimpleSlavery = SimpleSlaveryEnslave() 
-
-					ElseIf (Utility.RandomInt(0,100) > 50) 
-						bRedWave = RedWaveEnslave()
-
-					ElseIf (Utility.RandomInt(0,100) > 70) 
-					 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
-					EndIf
-
-					If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
-
-		                Game.FadeOutGame(true, true, 0.5, 5)
-						(kSlave as ObjectReference).MoveTo( kSlaverDest )
-						kActor = kSlaverDest as Actor
-						kActor.SendModEvent("PCSubTransfer")
-						Game.FadeOutGame(false, true, 2.0, 20)
-					Else
-						SendModEvent("PCSubFree")
-					Endif
-
-
-					Utility.Wait( 1.0 )
-
-
-				ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
-					; Master lost money - get rid of slave
-					if (iPlayerGender==0)
-						_SDSMP_choke_m.Play( Game.GetPlayer() )
-					else
-						_SDSMP_choke.Play( Game.GetPlayer() )
-					endif
-
-					Debug.MessageBox( "Your owner is tired of your attitude and suddenly hits the back of your head and renders you unconscious.\n When you come to your senses, you find yourself discarded in the wilderness like an old shoe." )
-					; Reset to 0 to avoid loop with endgame situations
-					StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
-
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
+					; Endgame for creatures
+					Debug.MessageBox( "Your owner is fed up with your resistance and turns against you." )
+					kMaster.StartCombat(kSlave)
 					SendModEvent("PCSubFree")
+				Else
+					; genderRestrictions = 0 - any / 1 - same / 2 - opposite
 
-	                ; Game.FadeOutGame(true, true, 0.5, 5)
-					; (kSlave as ObjectReference).MoveTo( kSlaverDest )
-					; Replace by code to dreamDestination
-					Bool bWolfClub = False
-
-					If (Utility.RandomInt(0,100) > 70) 
-						bWolfClub = WolfClubEnslave() 
-					EndIf
-
-					If (!bWolfClub)
-						dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
+					if (Utility.RandomInt(0,100)>50)
+						kSlaverDest = kSlaver
+					else
+						kSlaverDest = kSlaver2_m
 					Endif
-					; Game.FadeOutGame(false, true, 2.0, 20)
+				
+					Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
 
-					If (Utility.RandomInt(0,100) > 90) 
-						; Send PC some help
-						SendModEvent("da_StartSecondaryQuest", "Both")
+					If (iPlayerGender  == 0)
+						; iPlayerGender = 0 - male
+						if (genderRestrictions == 2)
+							kSlaverDest = kSlaver2_f
+						endif
+							
+					Else
+						; iPlayerGender = 1 - female
+						if (genderRestrictions == 1)
+							kSlaverDest = kSlaver2_f
+						endif
+						
 					EndIf
 
-				EndIf
+					; Debug.MessageBox("[SD] PlayerGender: " + iPlayerGender + "\n Restrictions: " + genderRestrictions)
+
+					If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest) || (kMaster == kSlaverDest) )
+						; Player saved by Sanguine
+						Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+						_SD_dreamQuest.SetStage(20)
+					
+					ElseIf (_SD_dreamQuest.GetStage() == 0) && (!kSlaverDest)
+						; Player saved by Sanguine
+						; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+						_SD_dreamQuest.SetStage(10)
+
+					ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
+						; Master made profit - slave can be sold
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( Game.GetPlayer() )
+						else
+							_SDSMP_choke.Play( Game.GetPlayer() )
+						endif
+
+						Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
+						; Reset to 0 to avoid loop with endgame situations
+						StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
+						fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
+
+						; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
+						; Bool bMariaEden = False
+
+						; If (Utility.RandomInt(0,100) > 70) 
+						; 	bMariaEden = MariaEdenEnslave() 
+						; EndIf
+
+						; If (!bMariaEden)
+						; Endif
+
+
+		                ; Game.FadeOutGame(true, true, 0.5, 5)
+						; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+						; Replace by code to dreamDestination
+						Bool bMariaEden = False
+						Bool bWolfClub = False
+						Bool bSimpleSlavery = False
+						Bool bRedWave = False
+
+						If (Utility.RandomInt(0,100) > 70) 
+							bWolfClub = WolfClubEnslave() 
+							
+						ElseIf (Utility.RandomInt(0,100) > 40) 
+							bSimpleSlavery = SimpleSlaveryEnslave() 
+
+						ElseIf (Utility.RandomInt(0,100) > 50) 
+							bRedWave = RedWaveEnslave()
+
+						ElseIf (Utility.RandomInt(0,100) > 70) 
+						 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
+						EndIf
+
+						If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
+
+			                Game.FadeOutGame(true, true, 0.5, 5)
+							(kSlave as ObjectReference).MoveTo( kSlaverDest )
+							kActor = kSlaverDest as Actor
+							kActor.SendModEvent("PCSubTransfer")
+							Game.FadeOutGame(false, true, 2.0, 20)
+						Else
+							SendModEvent("PCSubFree")
+						Endif
+
+
+						Utility.Wait( 1.0 )
+
+
+					ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
+						; Master lost money - get rid of slave
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( Game.GetPlayer() )
+						else
+							_SDSMP_choke.Play( Game.GetPlayer() )
+						endif
+
+						Debug.MessageBox( "Your owner is tired of your attitude and suddenly hits the back of your head and renders you unconscious.\n When you come to your senses, you find yourself discarded in the wilderness like an old shoe." )
+						; Reset to 0 to avoid loop with endgame situations
+						StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
+
+						SendModEvent("PCSubFree")
+
+		                ; Game.FadeOutGame(true, true, 0.5, 5)
+						; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+						; Replace by code to dreamDestination
+						Bool bWolfClub = False
+
+						If (Utility.RandomInt(0,100) > 70) 
+							bWolfClub = WolfClubEnslave() 
+						EndIf
+
+						If (!bWolfClub)
+							dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
+						Endif
+						; Game.FadeOutGame(false, true, 2.0, 20)
+
+						If (Utility.RandomInt(0,100) > 90) 
+							; Send PC some help
+							SendModEvent("da_StartSecondaryQuest", "Both")
+						EndIf
+
+					EndIf
+				Endif
 			Endif
 		EndIf
 
@@ -823,7 +830,8 @@ State monitor
 								enslavement.PunishSlave(kMaster,kSlave,"Bra")
 							endif
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-							kMaster.SendModEvent("PCSubPunish")
+							; kMaster.SendModEvent("PCSubPunish")
+							funct.SanguinePunishment( kMaster )
 
 						ElseIf (iRandomNum > 80) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 							; Whipping
@@ -832,7 +840,8 @@ State monitor
 								enslavement.PunishSlave(kMaster,kSlave, "Belt")
 							endif
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-							kMaster.SendModEvent("PCSubWhip")
+							; kMaster.SendModEvent("PCSubWhip")
+							funct.SanguineWhip( kMaster )
 
 						ElseIf (iRandomNum > 70)
 							; Sex
@@ -901,13 +910,16 @@ State monitor
 								enslavement.PunishSlave(kMaster,kSlave, "Gag")
 							endif
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-							kMaster.SendModEvent("PCSubPunish")
+							; kMaster.SendModEvent("PCSubPunish")
+							funct.SanguinePunishment( kMaster )
 
 						ElseIf (iRandomNum > 50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 							; Whipping
 							; enslavement.PunishSlave(kMaster,kSlave, "Yoke")
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-							kMaster.SendModEvent("PCSubWhip")
+							; kMaster.SendModEvent("PCSubWhip")
+							funct.SanguineWhip( kMaster )
+						
 						else
 							kMaster.SendModEvent("PCSubSex","Rough")
 
@@ -1014,11 +1026,15 @@ State escape_choking
 						enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 					endif
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					kMaster.SendModEvent("PCSubPunish")
+					; kMaster.SendModEvent("PCSubPunish")
+					funct.SanguinePunishment( kMaster )
+
 				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 					; Whipping
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					kMaster.SendModEvent("PCSubWhip")
+					; kMaster.SendModEvent("PCSubWhip")
+					funct.SanguineWhip( kMaster )
+
 				else
 					kMaster.SendModEvent("PCSubSex","Rough")
 				EndIf
@@ -1220,11 +1236,15 @@ State escape_choking
 							if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 								; Punishment
 								; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-								kMaster.SendModEvent("PCSubPunish")
+								; kMaster.SendModEvent("PCSubPunish")
+								funct.SanguinePunishment( kMaster )
+
 							Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 								; Whipping
 								; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-								kMaster.SendModEvent("PCSubWhip")
+								; kMaster.SendModEvent("PCSubWhip")
+								funct.SanguineWhip( kMaster )
+
 							else
 								kMaster.SendModEvent("PCSubSex","Rough")
 							EndIf
@@ -1327,11 +1347,15 @@ State escape_shock
 						enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
 					endif
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					kMaster.SendModEvent("PCSubPunish")
+					; kMaster.SendModEvent("PCSubPunish")
+					funct.SanguinePunishment( kMaster )
+
 				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 					; Whipping
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					kMaster.SendModEvent("PCSubWhip")
+					; kMaster.SendModEvent("PCSubWhip")
+					funct.SanguineWhip( kMaster )
+
 				else
 					kMaster.SendModEvent("PCSubSex","Rough")
 				EndIf

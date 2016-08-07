@@ -218,8 +218,6 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	
-		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",0)
-
 		; Remove current collar if already equipped
 		if ((fctOutfit.isCollarEquipped(kSlave)) || (fctOutfit.isCuffsEquipped(kSlave))) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 			fctOutfit.clearDevicesForEnslavement()
@@ -280,6 +278,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		; Clear surrounding pacify effect
 		SendModEvent("da_PacifyNearbyEnemies","Restore")
+		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",0)
+
+		fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
 		If ( Self )
 			RegisterForSingleUpdate( fRFSU )
@@ -564,7 +565,7 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 			EndIf
 
 			; Force follower to kneel down
-			If (StorageUtil.GetIntValue(kSlave, "_SD_iDisableFollowerAutoKneeling") == 0) && (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) 
+			If (StorageUtil.GetIntValue(kSlave, "_SD_iDisableFollowerAutoKneeling") == 0) && (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0)  && (SexLab.ValidateActor( nthActor ) > 0)
 				trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 				kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
 
