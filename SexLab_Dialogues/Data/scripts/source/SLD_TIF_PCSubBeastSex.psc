@@ -37,7 +37,7 @@ If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnableBeastMaster") != 0)
 			fctDialogue.SetNPCDialogueState ( akSpeaker )
 		 
 			; fctDialogue.StartPlayerClaimedBeast( akSpeaker)
-			akSpeaker.SendModEvent("PCSubSex")
+			fctDialogue.StartPlayerCreatureRape( akSpeaker, "Rough")
 		endif
 
 		i += 1

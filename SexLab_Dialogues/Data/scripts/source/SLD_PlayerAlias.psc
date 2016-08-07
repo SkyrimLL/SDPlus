@@ -39,7 +39,7 @@ Function _maintenance()
 	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
 
 	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) ; If Hormones isn't defined, create our own shave head event
-		RegisterForModEvent("SLHShaveHead",   "OnShaveHead")
+		RegisterForModEvent("SLHShaveHead",   "OnSDShaveHead")
 	Endif
 
 
