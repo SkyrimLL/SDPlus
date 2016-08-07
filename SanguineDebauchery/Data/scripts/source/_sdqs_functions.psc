@@ -3,6 +3,9 @@ Scriptname _SDQS_functions extends Quest Conditional
 Import Utility
 Import SKSE
 
+_SDQS_fcts_constraints Property fctConstraints  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
+
 Bool Property sdBleedout = False Auto Conditional
 
 ;Int[] uiSlotMask
@@ -387,12 +390,12 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 					SexLabInTags =  "Masturbation,F"
 				EndIf
 
-				; actor[] sexActors = new actor[1]
-				; sexActors[0] = akSpeaker
-				; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags)
-				; SexLab.StartSex(sexActors, animations)
+				actor[] sexActors = new actor[1]
+				sexActors[0] = akSpeaker
+				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags, "Estrus,Dwemer")
+				SexLab.StartSex(sexActors, animations)
 
-				SexLab.QuickStart(akSpeaker, AnimationTags = SexLabInTags)
+				; SexLab.QuickStart(akSpeaker, AnimationTags = SexLabInTags)
 
 			EndIf
 
@@ -403,12 +406,12 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 					SexLabInTags =  "Masturbation,F"
 				EndIf
 
-				; actor[] sexActors = new actor[1]
-				; sexActors[0] = akTarget
-				; sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags)
-				; SexLab.StartSex(sexActors, animations)
+				actor[] sexActors = new actor[1]
+				sexActors[0] = akTarget
+				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags, "Estrus,Dwemer")
+				SexLab.StartSex(sexActors, animations)
 
-				SexLab.QuickStart(akTarget, AnimationTags = SexLabInTags)
+				; SexLab.QuickStart(akTarget, AnimationTags = SexLabInTags)
 
 			EndIf
 
@@ -508,6 +511,39 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 
 EndFunction
 
+Function SanguineWhip( Actor akActor )
+	Actor kPlayer = Game.GetPlayer()
+
+	If (akActor == None)
+		Debug.Trace("[_sdqs_functions] 	Punishment attempt by empty aggressor")
+		Return
+	EndIf
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+		fctOutfit.setMasterGearByRace ( akActor, kPlayer  )
+		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
+	Endif
+EndFunction
+
+Function SanguinePunishment( Actor akActor )
+	Actor kPlayer = Game.GetPlayer()
+	
+	If (akActor == None)
+		Debug.Trace("[_sdqs_functions] 	Punishment attempt by empty aggressor")
+		Return
+	EndIf
+ 
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+		fctOutfit.setMasterGearByRace ( akActor, kPlayer  )
+		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+
+		fctOutfit.setMasterGearByRace ( None, kPlayer  )
+		fctOutfit.sendSlaveTatModEvent(kPlayer, "SD+","Slavery scars" )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iSlaveryTatDuration", 5)
+	endif
+EndFunction
+
+
 Function sexlabStripActor( Actor akActor )
 	SexLab.StripActor(akActor, DoAnimate= false) 
 EndFunction
@@ -552,11 +588,13 @@ EndFunction
 GlobalVariable Property _SDGVP_naked_rape_chance Auto
 GlobalVariable Property _SDGVP_naked_rape_delay Auto
 GlobalVariable Property _SDGVP_gender_restrictions Auto
+GlobalVariable Property _SDGVP_punishments  Auto  
 SexLabFrameWork Property SexLab Auto
 
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
 Keyword Property _SDKP_gagged Auto
+Keyword Property _SDKP_sex  Auto  
 
 ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
 _SDQS_whore Property whore  Auto  

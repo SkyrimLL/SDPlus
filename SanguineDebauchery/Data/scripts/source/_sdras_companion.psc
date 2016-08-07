@@ -52,7 +52,9 @@ Event OnInit()
 	kCompanion = Self.GetReference() as Actor
 	kMaster = _SDRAP_master.GetReference() as Actor
 	
+	Debug.Trace("[_sdras_companion]  Enslaving follower: ") 
 	If ( kCompanion )
+		Debug.Trace("[_sdras_companion]     Follower name is being enslaved : " + kCompanion.GetName()) 
 		GoToState("monitor")
 		bEnslaved = False
 		kCompanion.SetNoBleedoutRecovery( True )
@@ -64,6 +66,7 @@ Event OnInit()
 
 		RegisterForSingleUpdate( fRFSU )
 	Else
+		Debug.Trace("[_sdras_companion]     Follower isn't initialized") 
 		GoToState("null")
 	EndIf
 EndEvent
@@ -87,9 +90,10 @@ State monitor
 	
 	Event OnUpdate()
 		If ( !bEnslaved )
-			If ( !kMaster.IsDead() && kCompanion.GetCombatTarget() != kMaster )
-				kCompanion.StartCombat( kMaster )
-			EndIf
+			enslaveCompanion(  kCompanion )
+			; If ( !kMaster.IsDead() && kCompanion.GetCombatTarget() != kMaster )
+			;	kCompanion.StartCombat( kMaster )
+			; EndIf
 			RegisterForSingleUpdate( fRFSU )
 		EndIf
 	EndEvent
@@ -99,6 +103,8 @@ EndState
 Function enslaveCompanion( Actor kActor)
 		bEnslaved = True
 		kPlayer = Game.GetPlayer()
+
+		Debug.Trace("[_sdras_companion]       Enslavement starting for " + kActor.GetName()) 
 
 		fctFactions.syncActorFactionsByRace( kMaster, kCompanion ) 
 		fctFactions.syncActorFactions( kMaster, kCompanion )
@@ -174,6 +180,8 @@ Function enslaveCompanion( Actor kActor)
 			kActor.EvaluatePackage()
 
 		EndIf
+
+		Debug.Trace("[_sdras_companion]       Enslavement complete for " + kActor.GetName()) 
 
 EndFunction
 

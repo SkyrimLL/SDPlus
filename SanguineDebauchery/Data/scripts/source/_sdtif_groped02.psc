@@ -11,7 +11,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ; Debug.Notification("[Actor says hello]")
 
              GlowLight.Cast(SexLab.PlayerRef as Actor, SexLab.PlayerRef as Actor)
-             Utility.Wait(3.0)
+             Utility.Wait(1.0)
              Game.EnablePlayerControls( abMovement = True )
              Game.SetPlayerAIDriven( False )
 
@@ -20,7 +20,7 @@ If (Utility.RandomInt(0,100) > 80)
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
 	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Aggressive")
-		akSpeaker.SendModEvent("PCSubSex", "Aggressive")
+		akSpeaker.SendModEvent("PCSubSex", "Aggressive", 1.0 )
 	EndIf
 
 Else
@@ -28,7 +28,7 @@ Else
  
 
 	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Sex")
-		akSpeaker.SendModEvent("PCSubSex" )
+		akSpeaker.SendModEvent("PCSubSex", 1.0 )
 	EndIf
 
 EndIf

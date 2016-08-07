@@ -13,7 +13,6 @@ Actor akSpeaker = akSpeakerRef as Actor
              GlowLight.Cast(SexLab.PlayerRef as Actor, SexLab.PlayerRef as Actor)
              ChaurusSpit.Cast( akSpeaker , SexLab.PlayerRef as Actor)
 
-             Utility.Wait(3.0)
              Game.EnablePlayerControls( abMovement = True )
              Game.SetPlayerAIDriven( False )
 
@@ -22,7 +21,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
 	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor )
-		akSpeaker.SendModEvent("PCSubSex", "Doggystyle")
+		akSpeaker.SendModEvent("PCSubSex", "Doggystyle", 1.0 )
 	EndIf
 ;END CODE
 EndFunction

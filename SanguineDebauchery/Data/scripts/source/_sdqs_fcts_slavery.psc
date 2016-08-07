@@ -258,6 +258,9 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") + 10)
 	EndIf
 
+	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", 2 - Utility.RandomInt(0, 5))  
+	StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", 2 - Utility.RandomInt(0, 5))  
+
 	; Slave privileges
 	StorageUtil.SetIntValue(kSlave, "_SD_iMeritPoints", 0)  ; Trust earned by slave
 
@@ -268,6 +271,8 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableStand", 0)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableStand", False)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableKneel", True)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableCrawl", True)
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableMovement", 0)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableMovement", False)
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableAction", 0)
@@ -405,7 +410,8 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset
-	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Standing")
+	; StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Standing")
+	kSlave.SendModEvent( "PCSubStance" , "Standing")
 
 	StorageUtil.FormListClear(kMaster, "_SD_lEnslavedFollower")
 

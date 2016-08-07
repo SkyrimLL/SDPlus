@@ -8,7 +8,8 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 _SDQS_dream dream = Self.GetOwningQuest() as _SDQS_dream
 
-_SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
+; _SDGV_SanguineBlessing.SetValue(_SDGV_SanguineBlessing.GetValue() + 1)
+SendModEvent("SDSanguineBlessingMod", "", 1)  
 
 Utility.wait( 5.0 )
 
