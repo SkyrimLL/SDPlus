@@ -11,7 +11,7 @@ fctDialogue.SetNPCDialogueState ( akSpeaker )
 
 ; Debug.Messagebox("You are pushed down before you get a chance to say a word.")
  
-fctDialogue.StartPlayerRape( akSpeaker, "Rough")
+fctDialogue.StartPlayerCreatureRape( akSpeaker, "Rough")
 ;END CODE
 EndFunction
 ;END FRAGMENT

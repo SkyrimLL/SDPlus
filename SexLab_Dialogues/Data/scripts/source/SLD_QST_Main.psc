@@ -233,8 +233,35 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
 
 		If (Utility.RandomInt(0, 100)>40)
-			SendModEvent("PCSubWhip")
+			akSpeaker.SendModEvent("PCSubWhip")
 		EndIf
+	EndIf
+
+EndFunction
+
+Function StartPlayerCreatureRape ( Actor akSpeaker, string tags = "Sex" )
+	Actor Player = Game.GetPlayer()
+	Game.ForceThirdPerson()
+;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
+
+	Int IButton = _SLD_rapeMenu.Show()
+
+	If IButton == 0 ; Show the thing.
+
+		; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+			; Debug.Notification( "[Resists weakly]" )
+		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+		; EndIf
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+
+		Int randomNum = Utility.RandomInt(0, 100)
+		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
+
+		akSpeaker.SendModEvent("PCSubSex") ; Sex
+
+	Else
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+
 	EndIf
 
 EndFunction
