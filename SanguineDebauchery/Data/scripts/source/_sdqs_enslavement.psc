@@ -114,6 +114,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	If ( !bQuestActive )
 		; Debug.Trace("[SD] Starting enslavement story.")
 		bQuestActive = True
+		SendModEvent("dhlp-Suspend")
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",1)
 		_SDGVP_stats_enslaved.Mod( 1.0 )
 		_SDGVP_enslaved.SetValue(1)	    					
@@ -283,8 +284,8 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
 		If ( Self )
-			RegisterForSingleUpdate( fRFSU )
-			RegisterForSingleUpdateGameTime( fRFSUGT )
+		;	RegisterForSingleUpdate( fRFSU )
+		;	RegisterForSingleUpdateGameTime( fRFSUGT )
 		EndIf
 	ElseIf ( _SDGVP_config[0].GetValue() )
 ;		kSlave.GetActorBase().SetEssential( False )
@@ -313,9 +314,21 @@ ObjectReference Function GetMaster()
 EndFunction
 
 Auto State enslaved
-	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
+;	Event OnUpdate()
+;		While ( !Game.GetPlayer().Is3DLoaded() )
+;		EndWhile
+
+;		If ( Self.IsRunning() )
+;			RegisterForSingleUpdate( fRFSU )
+;		EndIf
+;	EndEvent
+
+EndState
+
+Function UpdateSlaveState(Actor akMaster, Actor akSlave)
+
+	If (akSlave == Game.GetPlayer()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
+
 		fTimeEnslaved = GetCurrentGameTime() - fEnslavementStart
 		
 		If ( _SDGVP_demerits.GetValueInt() < uiLowestDemerits )
@@ -326,29 +339,6 @@ Auto State enslaved
 		EndIf
 		ufMedianDemerits = ( uiHighestDemerits + uiLowestDemerits ) / 2
 		
-		If ( Self.IsRunning() )
-			RegisterForSingleUpdate( fRFSU )
-		EndIf
-	EndEvent
-
-	Event OnUpdateGameTime()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
-		
-		If ( ufMedianDemerits < 256.0 )
-		;	Self.ModObjectiveGlobal( -2.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config[4].GetValueInt() as Bool )
-		EndIf
-
-		If ( Self.IsRunning() )
-			RegisterForSingleUpdateGameTime( fRFSUGT )			
-		EndIf
-	EndEvent
-EndState
-
-Function UpdateSlaveState(Actor akMaster, Actor akSlave)
-
-	If (akSlave == Game.GetPlayer()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
-
 		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
 		Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)

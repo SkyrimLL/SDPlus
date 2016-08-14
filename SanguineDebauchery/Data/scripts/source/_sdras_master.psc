@@ -691,20 +691,6 @@ State monitor
         EndIf
 	EndEvent
 
-	Event OnUpdateGameTime()
-		kMaster.EvaluatePackage()
-		
-		; If ( distanceAverage < 256 )
-			; Slave remainse close to master on average
-			; TO DO - Add bonus to master disposition?
-		; EndIf
-		
-		If ( Self.GetOwningQuest() )
-			RegisterForSingleUpdateGameTime( fRFSUGT )
-		EndIf
-	EndEvent	
-	
-
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
 
 		ObjectReference PlayerRef = Game.GetPlayer()
@@ -843,6 +829,7 @@ State combat
 	EndEvent
 	
 	Event OnEndState()
+		kMaster.EvaluatePackage()
 	EndEvent
 
 	Event OnUpdate()
@@ -856,10 +843,11 @@ State combat
 			SendModEvent("PCSubFree") 
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
+			kMaster.EvaluatePackage()
 			GoToState("waiting")
 
 		ElseIf ( !kMaster.IsInCombat() && !kSlave.IsInCombat() )
-			GoToState("monitor")
+			; GoToState("monitor")
 			enslavement.bSearchForSlave = True
 			GoToState("search")
 		EndIf
@@ -875,6 +863,7 @@ State caged
 	EndEvent
 	
 	Event OnEndState()
+		kMaster.EvaluatePackage()
 	EndEvent
 
 	Event OnUpdate()
@@ -888,6 +877,7 @@ State caged
 			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 		ElseIf ( !_SDGVP_state_caged.GetValueInt() )
+			kMaster.EvaluatePackage()
 			GoToState("monitor")
 		EndIf
 

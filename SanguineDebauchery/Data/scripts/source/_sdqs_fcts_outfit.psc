@@ -941,8 +941,8 @@ Bool Function hasTagByString ( Actor akActor, String sDeviceString = "", String 
 		if akActor.WornHasKeyword(kwDeviceKeyword)
 			; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
 
-			Debug.Trace("[SD] hasTagByString device string: " + sDeviceString)  
-			Debug.Trace("[SD] hasTagByString device keyword: " + kwDeviceKeyword)  
+			; Debug.Trace("[SD] hasTagByString device string: " + sDeviceString)  
+			; Debug.Trace("[SD] hasTagByString device keyword: " + kwDeviceKeyword)  
 
 			; generic device
 			; Debug.Trace("[SD] 		equipDeviceByString - generic: ")
@@ -1520,7 +1520,7 @@ Function addPunishmentDevice(String sDevice)
  	setMasterGearByRace ( kMaster, kPlayer  )
 
 	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Your ass is still too tight for my taste slave... this will teach you to disobey me.'\n Your owner viciously inserts a cold plug inside your ass." )
+		Debug.MessageBox("Your owner viciously inserts a cold plug inside your ass." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
 			
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
@@ -1532,7 +1532,7 @@ Function addPunishmentDevice(String sDevice)
 	EndIf
 
 	If (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Your are a cunt and need to be treated like one.'\n Your owner smiles wickedly and shoves a cold plug into your abused womb." )
+		Debug.MessageBox("Your owner smiles wickedly and shoves a cold plug into your abused womb." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 		
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
@@ -1545,7 +1545,7 @@ Function addPunishmentDevice(String sDevice)
 
 	; Belt
 	If (sDevice == "Belt")  ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Let's watch you squirm... that will change me from your attitude.'\n Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
+		Debug.MessageBox("Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
@@ -1564,7 +1564,7 @@ Function addPunishmentDevice(String sDevice)
 	; Gag
 
 	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'I don't want to hear one more word from you!'\n Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
+		Debug.MessageBox("Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
@@ -1575,7 +1575,7 @@ Function addPunishmentDevice(String sDevice)
 	; Yoke
 
 	If (sDevice == "Yoke") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("'Put this on for a while. That will teach you to keep your hands to yourself." )
+		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")

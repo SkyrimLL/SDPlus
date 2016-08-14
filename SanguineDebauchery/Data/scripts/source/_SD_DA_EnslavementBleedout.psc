@@ -20,11 +20,12 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 
 	UnregisterForModEvent("da_PlayerRecovered")
 	
-	if (Utility.RandomInt(0,100)> 80 ) 
-		return true
-	else
+	; Event is always false for now - disabled and obsolete code in event section	
+	; if (Utility.RandomInt(0,100)> 80 ) 
+	;	return true
+	; else
 		return false
-	endif
+	; endif
 EndFunction
  
  

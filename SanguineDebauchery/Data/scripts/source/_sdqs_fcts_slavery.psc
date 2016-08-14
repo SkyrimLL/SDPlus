@@ -253,9 +253,9 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; Master trust - number of merit points necessary for master to trust slave
 	If (!StorageUtil.HasIntValue(kMaster, "_SD_iTrustThreshold"))
-		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", 20 )
+		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", 10 )
 	else
-		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") + 10)
+		StorageUtil.SetIntValue(kMaster, "_SD_iTrustThreshold", StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") + 3)
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", 2 - Utility.RandomInt(0, 5))  
@@ -888,8 +888,8 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
 	EndIf
 
-	If fctFactions.checkIfFalmer (  kMaster ) 
-		; Falmers follow slave by default
+	If fctFactions.checkIfSlaverCreature (  kMaster ) 
+		; Creatures follow slave by default
 		StorageUtil.SetIntValue(kSlave,"_SD_iEnableLeash", 1)
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTimeBuffer", 10 + slaveryLevel * 10)  
@@ -1075,6 +1075,7 @@ EndFunction
 
 Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+	Debug.Trace("[SD] Trust pool before update: " + iTrust)
 
 	iTrust = iTrust + iModValue
 
@@ -1087,6 +1088,7 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
 	Debug.Notification("[SD] Trust pool: " + iTrust)
+	Debug.Trace("[SD] Trust pool after update: " + iTrust)
 
 	Return iTrust
 EndFunction

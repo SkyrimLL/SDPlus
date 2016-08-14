@@ -1495,10 +1495,10 @@ State monitor
 	; See codes here - http://minecraft.gamepedia.com/Key_codes
 	;0xC7 config._SDUIP_keys[0]  199  Home
 	;0xCF config._SDUIP_keys[1]  207  End
-	;0xC8 config._SDUIP_keys[2]  201  Page Up
+	;0xC8 config._SDUIP_keys[2]  200   Up
 	;0xCB config._SDUIP_keys[3]  203  Left Arrow
 	;0xCD config._SDUIP_keys[4]  205  Right Arrow
-	;0xD0 config._SDUIP_keys[5]  209  Page Down
+	;0xD0 config._SDUIP_keys[5]  208   Down
 	;0x25 config._SDUIP_keys[6]  49   /
 
 	;0x2A    42  Left Shift

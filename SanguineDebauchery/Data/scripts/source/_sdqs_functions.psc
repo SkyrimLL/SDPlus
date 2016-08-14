@@ -321,6 +321,67 @@ Bool Function checkGenderRestriction(Actor akSpeaker, Actor akTarget)
 
 EndFunction
 
+
+Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex" )
+	Actor Player = Game.GetPlayer()
+	Game.ForceThirdPerson()
+;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
+
+	Int IButton = _SD_rapeMenu.Show()
+
+	If IButton == 0 ; Show the thing.
+
+		; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+			; Debug.Notification( "[Resists weakly]" )
+		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+		; EndIf
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+
+		Int randomNum = Utility.RandomInt(0, 100)
+		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
+
+		SanguineRape( akSpeaker, Player , "Rough")
+
+	Else
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		SendModEvent("PCSubStripped")
+
+		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
+
+		If (Utility.RandomInt(0, 100)>40)
+			akSpeaker.SendModEvent("PCSubWhip")
+		EndIf
+	EndIf
+
+EndFunction
+
+Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex" )
+	Actor Player = Game.GetPlayer()
+	Game.ForceThirdPerson()
+;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
+
+	Int IButton = _SD_rapeMenu.Show()
+
+	If IButton == 0 ; Show the thing.
+
+		; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+			; Debug.Notification( "[Resists weakly]" )
+		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+		; EndIf
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+
+		Int randomNum = Utility.RandomInt(0, 100)
+		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
+
+		SanguineRape( akSpeaker, Player , "Sex")
+
+	Else
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+
+	EndIf
+
+EndFunction
+
 Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
 
 
@@ -538,8 +599,11 @@ Function SanguinePunishment( Actor akActor )
 		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 
 		fctOutfit.setMasterGearByRace ( None, kPlayer  )
+		StorageUtil.SetStringValue(kPlayer, "_SD_sSlaveryTat", "Slavery scars")
+		StorageUtil.SetStringValue(kPlayer, "_SD_sSlaveryTatType", "SD+")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryTatDuration", 5 )
 		fctOutfit.sendSlaveTatModEvent(kPlayer, "SD+","Slavery scars" )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iSlaveryTatDuration", 5)
+
 	endif
 EndFunction
 
@@ -583,7 +647,7 @@ Function transferFormListContents( FormList alFactionListIn, FormList alFactionL
 EndFunction
 
 
-
+Message Property _SD_rapeMenu Auto
 
 GlobalVariable Property _SDGVP_naked_rape_chance Auto
 GlobalVariable Property _SDGVP_naked_rape_delay Auto

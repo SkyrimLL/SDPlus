@@ -9,10 +9,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 ;
 
-	If ( Self )
-		RegisterForSingleUpdateGameTime( 0.125 )
-		RegisterForSingleUpdate( 0.1 )
-	EndIf
+	; If ( Self )
+	;	RegisterForSingleUpdateGameTime( 0.125 )
+	;	RegisterForSingleUpdate( 0.1 )
+	; EndIf
 
 EndEvent
 
@@ -29,19 +29,19 @@ Event OnUpdateGameTime()
 	EndIf
 
 	If ( Self &&  !(kRef1 as Actor).IsDead())
-		RegisterForSingleUpdateGameTime( 0.25 )
+	;	RegisterForSingleUpdateGameTime( 0.25 )
 	EndIf
 EndEvent
 
 Event OnUpdate()
 	if (kRef2)
-		While ( !kRef2.Is3DLoaded() )
-		EndWhile
+	;	While ( !kRef2.Is3DLoaded() )
+	;	EndWhile
 
 	EndIf
 
 	If ( Self )
-		RegisterForSingleUpdate( 0.1 )
+	;	RegisterForSingleUpdate( 0.1 )
 	EndIf
 EndEvent
 
