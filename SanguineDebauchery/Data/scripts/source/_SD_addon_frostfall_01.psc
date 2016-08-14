@@ -5,7 +5,6 @@ Scriptname _SD_addon_frostfall_01 Extends Quest Hidden
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
-GoToState("monitor")
 
 ; Exposure variable disabled for Frostfall 3.0 compatibility
 
@@ -32,7 +31,9 @@ If (heatsources != None) && (exposure != None)
 	EndWhile
 Endif
 
-RegisterForSingleUpdate( 1.0 )
+; RegisterForSingleUpdate( 1.0 )
+GoToState("monitor")
+
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -40,7 +41,6 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_2
 Function Fragment_2()
 ;BEGIN CODE
-GoToState("null")
 
 ; Frostfall 3.0 doesn't handle armor as heat source in the same way. Using modExposure instead.
 If (heatsources != None) && (exposure != None)
@@ -58,6 +58,8 @@ EndIf
 _SDGVP_mirror_frostfallMortality.SetValue( -1 )
 ; _SDGVP_mirror_frostfallExposure.SetValue( -1 )
 mortality.SetValue( 0 )
+GoToState("null")
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

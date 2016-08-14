@@ -29,7 +29,7 @@ Float fVersion = 0.0
 
 Event OnInit()
 	_doInit()
-	RegisterForSingleUpdate(5)
+	; RegisterForSingleUpdate(5)
 EndEvent
 
 Function _doInit()
@@ -168,11 +168,7 @@ Function Maintenance()
 	EndIf
 EndFunction
 
-
-Event OnUpdate()
-;
-EndEvent
-
+ 
 
 GlobalVariable Property _SDGVP_naked_rape_chance  Auto  
 GlobalVariable Property _SDGVP_version  Auto  

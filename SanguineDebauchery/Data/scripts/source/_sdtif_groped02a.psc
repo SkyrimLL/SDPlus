@@ -6,6 +6,7 @@ Scriptname _sdtif_groped02a Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 ; akSpeaker.Say(_SDTP_joined)
 
 ; Debug.Notification("[Actor says hello]")
@@ -15,10 +16,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 
 
 	; Aggressive sex
-	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
+	If  (SexLab.ValidateActor( kPlayer ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
 
-	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor )
-		akSpeaker.SendModEvent("PCSubSex", "Doggystyle", 1.0 )
+		funct.SanguineRapeCreatureMenu( akSpeaker, kPlayer ,  "Doggystyle")
 	EndIf
 ;END CODE
 EndFunction

@@ -6,29 +6,30 @@ Scriptname _sdtif_join34f Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 ; akSpeaker.Say(_SDTP_joined)
 
 ; Debug.Notification("[Actor says hello]")
 
-             GlowLight.Cast(SexLab.PlayerRef as Actor, SexLab.PlayerRef as Actor)
+             GlowLight.Cast(kPlayer , kPlayer )
              Utility.Wait(3.0)
              Game.EnablePlayerControls( abMovement = True )
              Game.SetPlayerAIDriven( False )
 
 If (Utility.RandomInt(0,100) > 80)
 	; Aggressive sex
-	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
+	If  (SexLab.ValidateActor( kPlayer  ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
  
 
-	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Sex")
-		akSpeaker.SendModEvent("PCSubSex" )
+		funct.SanguineRapeCreatureMenu( akSpeaker, kPlayer  , "Sex")
+
 	EndIf
 Else
-	If  (SexLab.ValidateActor( SexLab.PlayerRef as actor ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
+	If  (SexLab.ValidateActor( kPlayer  ) > 0) &&  (SexLab.ValidateActor( akSpeaker ) > 0) 
  
 
-	;	funct.SanguineRape( akSpeaker, SexLab.PlayerRef as Actor , "Rough")
-		akSpeaker.SendModEvent("PCSubSex", "Rough")
+		funct.SanguineRapeCreatureMenu( akSpeaker, kPlayer , "Rough")
+
 	EndIf
 EndIf
 ;END CODE

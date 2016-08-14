@@ -307,10 +307,18 @@ Function CollarUpdate()
 		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
 	Endif
 
-	If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") && ( fctOutfit.isYokeEquipped( kPlayer ) || fctOutfit.isArmbinderEquipped( kPlayer ) )
-		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
-		fctOutfit.clearDeviceByString ( sDeviceString = "Yoke" )
-	Endif
+	If ( fctOutfit.isYokeEquipped( kPlayer ) || fctOutfit.isArmbinderEquipped( kPlayer ) )
+		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") 
+			fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
+			fctOutfit.clearDeviceByString ( sDeviceString = "Yoke" )
+		Endif
+
+		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") && ( fctOutfit.isYokeEquipped( kPlayer ) || fctOutfit.hasTagByString ( kPlayer, "Armbinders", "leather") )
+			StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+			StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
+			StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 1)
+		Endif
+	EndIf
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 0) && fctOutfit.isYokeEquipped( kPlayer ) 
 	;	Debug.Notification("[SD] Yoke detected" )
@@ -392,11 +400,17 @@ Function CollarStand()
 	If fctOutfit.isArmbinderEquipped( kPlayer )  ;  fctOutfit.isDeviceEquippedKeyword( kPlayer, "zap","Armbinder") ; reset to zaz pose only for iron cuffs
 	;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
 		zadOverrideIndex = 0 ;   0 - bound hands in back / 1 - yoke
-		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", true)   
+		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
+		; Debug.Notification("[SD] Standing bound override ON")
+
+	ElseIf  fctOutfit.isYokeEquipped( kPlayer ) ;  fctOutfit.isDeviceEquippedKeyword( kPlayer, "zap","Armbinder") ; reset to zaz pose only for iron cuffs
+	;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
+		zadOverrideIndex = 1 ;   0 - bound hands in back / 1 - yoke
+		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 		; Debug.Notification("[SD] Standing bound override ON")
 
 	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") && (iOverride != 6)
-		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", true)  
+		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
   		iOverride = 6
 		; Debug.Notification("[SD] Standing hands free override ON")
 	;	PlayIdleWrapper(kPlayer, _SDIAP_reset )
@@ -436,15 +450,15 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 		StorageUtil.SetStringValue( kPlayer, "_SD_sDefaultStance", "Standing")
 	EndIf
 
-	If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != sPlayerLastStance) || (bForceRefresh)
+	; If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != sPlayerLastStance) || (bForceRefresh)
   		; if player is enslaved, has a collar and is forced to crawl
 	  	if  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") ;&& fctOutfit.isCollarEquipped( kPlayer ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", mt_base, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", mtx_base, 0, "sanguinesDebauchery", true)  
+	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 0, "sanguinesDebauchery", false)  
+	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", mt_base, 0, "sanguinesDebauchery", false)  
+	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", mtx_base, 0, "sanguinesDebauchery", false)  
 	  		; bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", sneakidle_base, 0, "sanguinesDebauchery", true) 
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", sneakmt_base, 0, "sanguinesDebauchery", true)  
+	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", false)  
+	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", sneakmt_base, 0, "sanguinesDebauchery", false)  
 			; Debug.Notification("[SD] Crawl override ON")
 			
 	  	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") ; && fctOutfit.isCollarEquipped( kPlayer ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) 
@@ -453,15 +467,15 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 			; 	CollarStand()
 
 			If ( iTrust < 0 ) && (iDisposition < 0) 
-	  			bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 4, "sanguinesDebauchery", true) 
+	  			bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 4, "sanguinesDebauchery", false) 
 				; Debug.Notification("[SD] Kneel ground override ON")
 
 			ElseIf ( iTrust >= 0 ) && (iDisposition < 0) 
-	  			bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 2, "sanguinesDebauchery", true)
+	  			bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 2, "sanguinesDebauchery", false)
 				; Debug.Notification("[SD] Kneel submissive override ON")
 
 			Else
-	  			bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 1, "sanguinesDebauchery", true) 
+	  			bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", mtidle_base, 1, "sanguinesDebauchery", false) 
 				; Debug.Notification("[SD] Kneel proud override ON")
 			EndIf
 
@@ -472,14 +486,18 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	  		; bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", sneakmt_base, 0, "sanguinesDebauchery", true)  
 			
 	  	else ; set vanilla     
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", 0, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", true)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", 0, 0, "sanguinesDebauchery", true)
+	  		If fctOutfit.isArmbinderEquipped( kPlayer ) || fctOutfit.isYokeEquipped( kPlayer )
+	  			CollarStand()
+	  		else
+		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
+		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "sanguinesDebauchery", false)  
+		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", 0, 0, "sanguinesDebauchery", false)  
+		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", false)  
+		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", 0, 0, "sanguinesDebauchery", false)
+		  	Endif
 			; Debug.Notification("[SD] Stance override OFF")
 	  	endif 
-	Endif
+	; Endif
 
 	sPlayerLastStance = StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance")
 EndFunction

@@ -2,13 +2,13 @@ ScriptName _SDMES_ARMBINDER extends zadArmbinderEffect
 
 ; SD handles bound animations behavior through _sdmes_bound, rather than on the enchantment itself. Thus, remove that behavior.
 Function DoRegister() 
-	RegisterForSingleUpdate(5.0)
+;	RegisterForSingleUpdate(5.0)
 EndFunction
 
 Event OnUpdate()
-	If !libs.IsAnimating(target)
-		libs.UpdateControls() ; TODO: Replace with call to centralized SD function.
-	EndIf
+	; If !libs.IsAnimating(target)
+	;	libs.UpdateControls() ; TODO: Replace with call to centralized SD function.
+	; EndIf
 	DoRegister()
 EndEvent
 
@@ -26,7 +26,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		RegisterForKey(TweenMenuKey)
 	EndIf
 	if target == libs.PlayerRef
-		libs.UpdateControls()
+		; libs.UpdateControls()
 	Endif
 	DoRegister()
 EndEvent
@@ -34,20 +34,20 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	if (akTarget == libs.PlayerRef)
-		libs.UpdateControls()
+		; libs.UpdateControls()
 	EndIf
 EndEvent
 
-Function PlayBoundIdle(idle theIdle)
+; Function PlayBoundIdle(idle theIdle)
 
-EndFunction
+; EndFunction
 
 
 
 Event OnKeyDown(Int KeyCode) 
-	if !Game.IsMenuControlsEnabled() && KeyCode == TweenMenuKey && !UI.IsMenuOpen("Dialogue Menu") && !UI.IsMenuOpen("BarterMenu") && !UI.IsMenuOpen("ContainerMenu") && !UI.IsMenuOpen("Sleep/Wait Menu")
-		abq.ShowArmbinderMenu()
-	EndIf
+	; if !Game.IsMenuControlsEnabled() && KeyCode == TweenMenuKey && !UI.IsMenuOpen("Dialogue Menu") && !UI.IsMenuOpen("BarterMenu") && !UI.IsMenuOpen("ContainerMenu") && !UI.IsMenuOpen("Sleep/Wait Menu")
+	;	abq.ShowArmbinderMenu()
+	; EndIf
 EndEvent
 
 

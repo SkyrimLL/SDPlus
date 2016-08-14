@@ -1548,7 +1548,8 @@ EndFunction
 function UpdateSlaveArousal()
 
 	if (slaUtil != None)
-		slaUtil.UpdateActorExposureRate(kSlave as Actor, 2.0)
+		; slaUtil.UpdateActorExposureRate(kSlave as Actor, 2.0)
+		slaUtil.SetActorExposure(kSlave as Actor, slaUtil.GetActorExposure(kSlave as Actor) + 5)
 		Debug.Notification("The shocks are making ou hornier." )
 	endIf
 
