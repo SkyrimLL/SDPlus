@@ -192,6 +192,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 
 	Debug.Trace("[SLD] " + akSpeaker + " sex: " + _SLD_NPCSexCount.GetValue( ) + " - Rel: " +  _SLD_NPCRelationshipType.GetValue() + " - Slavery: " +  _SLD_PCSubSlaveryLevel.GetValue() )
 	Debug.Trace("[SLD] Human speaker: " + isSpeakerHuman )
+	Debug.Trace("[SLD] Master beast speaker: " + isSpeakerMasterBeast )
 	Debug.Trace("[SLD] _SLD_speakerAlias: " + _SLD_speakerAlias.GetReference() as Actor)
 	Debug.Trace("[SLD] _SLD_humanLoverAlias: " + _SLD_humanLoverAlias.GetReference() as Actor) 
 	Debug.Trace("[SLD] _SLD_beastLoverAlias: " + _SLD_beastLoverAlias.GetReference() as Actor)  
@@ -384,15 +385,15 @@ Function StartPlayerClaimed ( Actor akSpeaker, string tags = "" )
  	Actor Player = Game.GetPlayer()
 	Int IButton = _SLD_claimMenu.Show()
 
-	If IButton == 0 ; Undress
-		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+	; If IButton == 0 ; Undress
+	;	StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 		akSpeaker.SendModEvent("PCSubEnslave")
 
-	else
-		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
-		akSpeaker.SendModEvent("PCSubSex")
+	; else
+	;	StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+	;	akSpeaker.SendModEvent("PCSubSex")
 
-	EndIf
+	; EndIf
 
 EndFunction
 
@@ -400,15 +401,15 @@ Function StartPlayerClaimedBeast ( Actor akSpeaker, string tags = "" )
  	Actor Player = Game.GetPlayer()
 	Int IButton = _SLD_claimBeastMenu.Show()
 
-	If IButton == 0 ; Undress
-		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+	; If IButton == 0 ; Undress
+	;	StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 		akSpeaker.SendModEvent("PCSubEnslave")
 
-	else
-		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
-		akSpeaker.SendModEvent("PCSubSex")
+	; else
+	;	StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+	;	akSpeaker.SendModEvent("PCSubSex")
 
-	EndIf
+	; EndIf
 
 EndFunction
 
