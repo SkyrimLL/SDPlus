@@ -57,8 +57,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2016080600 ; <--- Edit this value when updating
-		fVersion = 2016080600; and this
+	If fVersion < 2016082100 ; <--- Edit this value when updating
+		fVersion = 2016082100; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -92,7 +92,7 @@ Function Maintenance()
 			StorageUtil.SetStringValue(kPlayer, "_SD_sSanguineGender","Both")
 		Endif
 
-		kPlayer.SendModEvent( "PCSubStance" , "Standing")
+		; kPlayer.SendModEvent( "PCSubStance" , "Standing")
 
 		
 		Float fNext = GameDaysPassed.GetValue() + Utility.RandomFloat( 0.125, 0.25 )

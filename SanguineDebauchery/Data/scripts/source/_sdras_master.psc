@@ -714,6 +714,9 @@ State monitor
 			ELSEIF (kSlave.GetEquippedItemType(0) == 7) && (kSlave.IsWeaponDrawn()) && (krHand || klHand)
 				boHitByRanged = TRUE
 
+			ELSE
+				boHitByMelee = TRUE ; Hit by hand to hand / unarmed
+
 			ENDIF
 
 			If  ((boHitByMelee) || (boHitByRanged)) && (!boHitByMagic) ; (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))

@@ -820,7 +820,8 @@ State monitor
 					SexLab.ActorLib.StripActor(kSlave, VictimRef = kSlave, DoAnimate= false)
 
 
-					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+					If (fctSlavery.ModMasterTrust( kMaster, -1)<0) || (StorageUtil.GetIntValue( kSlave , "_SD_iDom") > StorageUtil.GetIntValue( kSlave, "_SD_iSub") )
+
 						Int iRandomNum = Utility.RandomInt(0,100)
 
 						if (iRandomNum > 90) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
@@ -848,6 +849,7 @@ State monitor
 							; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 							kMaster.SendModEvent("PCSubSex", "Rough")
 						EndIf
+ 
 					EndIf
 				EndIf
 

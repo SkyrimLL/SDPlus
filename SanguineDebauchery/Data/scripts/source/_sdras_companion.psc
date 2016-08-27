@@ -117,16 +117,14 @@ Function enslaveCompanion( Actor kActor)
 			; Humanoid followers
 			If (Utility.RandomInt(0,100)>80)
 				Debug.MessageBox("Your follower is dragged away in bondage...") 
-				fctFollowers.sendCaptiveFollowerAway(kActor)
-				;kActor.SendModEvent("SDEquipDevice","Yoke")
-				;kActor.SendModEvent("SDClearDevice","Armbinder")
-				fctOutfit.equipDeviceNPCByString ( kActor, "Yoke", "", false, false, "")
-				fctOutfit.clearDeviceNPCByString ( kActor, "Armbinder") 
+				fctFollowers.sendCaptiveFollowerAway(kActor) 
+				; fctOutfit.equipDeviceNPCByString ( kActor, "Yoke", "", false, false, "")
+				; fctOutfit.clearDeviceNPCByString ( kActor, "Armbinder") 
 
 			Else
 				; kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
 				Debug.Notification("Your follower has been enslaved!")
-				fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
+				; fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
 				int index = StorageUtil.FormListFind(kPlayer, "_SD_lEnslavedFollower", kActor)
 				if (index < 0)
 					; Debug.Notification("Not found!")
@@ -151,22 +149,19 @@ Function enslaveCompanion( Actor kActor)
 				; kActor.SetOutfit( _SDOP_naked, True )
 			EndIf
 			
-			; idx = 0
-			; While idx < _SDFLP_companion_items.GetSize()
-			; 	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
-			; 	kActor.AddItem( nthArmor, 1 )
-			; 	kActor.EquipItem( nthArmor, True, True )
-			; 	idx += 1
-			; EndWhile
+			idx = 0
+			While idx < _SDFLP_companion_items.GetSize()
+			 	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
+			 	kActor.AddItem( nthArmor, 1 )
+			 	kActor.EquipItem( nthArmor, True, True )
+			 	idx += 1
+			EndWhile
 
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
-			;kActor.playIdle(OffsetBoundStandingStart)
-			;kActor.SendModEvent("SDEquipDevice","Collar:zap")
-			;kActor.SendModEvent("SDEquipDevice","Gag:zap")
-			fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
-			fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
+			kActor.playIdle(OffsetBoundStandingStart) 
 
-
+			; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
+			; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 
 			kActor.EvaluatePackage()
 		Else

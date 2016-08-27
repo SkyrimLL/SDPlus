@@ -383,6 +383,7 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 EndFunction
 
 Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
+	Actor Player = Game.GetPlayer()
 
 
 	If (!akSpeaker)
@@ -399,8 +400,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	Int 	IButton = 0
 
 	; Handling of enslaved followers
-	If (StorageUtil.GetIntValue(Game.getPlayer(), "_SD_iEnslaved") ==1)
-		Actor kMaster = StorageUtil.GetFormValue(Game.getPlayer(), "_SD_CurrentOwner") as Actor 
+	If (StorageUtil.GetIntValue(Player, "_SD_iEnslaved") ==1)
+		Actor kMaster = StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as Actor 
 		Int valueCount = StorageUtil.FormListCount(kMaster, "_SD_lEnslavedFollower")
 		int i = 0
 		Actor thisActor = None
@@ -482,18 +483,19 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			; SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
 		
 			; Testing sexlab 1.6 - disabling gender restrictions for now / testing new 'gay filter' from sexlab
-			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) )
+			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) && (Utility.RandomInt(0,100)>50)
 				If (speakerGender  == 0)
-				;	SexLabInTags = SexLabInTags + ",MM"
+					SexLabInTags = "Anal"
 				Else
-				;	SexLabInTags = SexLabInTags + ",FF"
+					SexLabInTags = "Lesbian"
 				EndIf
-			ElseIf ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
+			ElseIf ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) && (Utility.RandomInt(0,100)>50)
 					
 					If (speakerGender == 1) ; Mistress and Male slave
-					;	SexLabInTags = SexLabInTags + ",Cowgirl"
+						SexLabInTags = "Cowgirl"
+
 					ElseIf  (speakerGender == 0) ; Master and Female slave
-					;	SexLabInTags = SexLabInTags + ",Doggystyle"
+						SexLabInTags = "Doggystyle"
 					EndIf
 			EndIf
 
@@ -581,6 +583,8 @@ Function SanguineWhip( Actor akActor )
 	EndIf
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer , "_SD_iSub") + 1 )
+
 		fctOutfit.setMasterGearByRace ( akActor, kPlayer  )
 		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
 	Endif
@@ -595,14 +599,13 @@ Function SanguinePunishment( Actor akActor )
 	EndIf
  
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
+		; If (StorageUtil.GetIntValue( kPlayer , "_SD_iDom") > StorageUtil.GetIntValue( kPlayer, "_SD_iSub") )
+			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer , "_SD_iDom") - 1 )
+			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer , "_SD_iSub") + 1 )
+		; endIf
+
 		fctOutfit.setMasterGearByRace ( akActor, kPlayer  )
 		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-
-		fctOutfit.setMasterGearByRace ( None, kPlayer  )
-		StorageUtil.SetStringValue(kPlayer, "_SD_sSlaveryTat", "Slavery scars")
-		StorageUtil.SetStringValue(kPlayer, "_SD_sSlaveryTatType", "SD+")
-		StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryTatDuration", 5 )
-		fctOutfit.sendSlaveTatModEvent(kPlayer, "SD+","Slavery scars" )
 
 	endif
 EndFunction

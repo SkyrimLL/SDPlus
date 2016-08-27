@@ -20,8 +20,10 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	UnregisterForModEvent("da_PlayerRecovered")
 
 	; StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount")
-
-	If    (Utility.RandomInt(1,100)<=_SDGVP_config_healthMult.GetValue())  && ( !(thisPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected") != 1) )  && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslavementInitSequenceOn")!=1)  ; Simplified check for DA only - SD mod event will handle complex faction checks
+	Debug.Trace("SD Blackout start infection attempt (Spriggan):" + thisAggressor)
+	Debug.Trace("	start master is Spriggan:" + StorageUtil.GetIntValue( thisAggressor, "_SD_bIsSpriggan"))
+	
+	If    (Utility.RandomInt(1,100)<=_SDGVP_config_healthMult.GetValue())  && ( !(thisPlayer as Form).HasKeywordString("_SD_infected") && ( StorageUtil.GetIntValue(thisPlayer, "_SD_iSprigganInfected") != 1) )  && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslavementInitSequenceOn")!=1)   && (StorageUtil.GetIntValue( thisAggressor, "_SD_bIsSpriggan") == 1)  ; Simplified check for DA only - SD mod event will handle complex faction checks
 		Debug.Trace("[SD DA integration] QuestCondition - Spriggan - Passed")
 		return true
 	else
@@ -32,41 +34,18 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 EndFunction
 
 bool Function QuestStart(Location akLocation, Actor akAggressor, Actor akFollower)
-	Debug.Trace("SD DA spriggan: selected")
+	Debug.Trace("SD DA Spriggan : selected")
 
 	thisLocation = akLocation
 	thisPlayer = Game.GetPlayer()
 	thisAggressor = akAggressor
+
+	SendModEvent("da_StartRecoverSequence", numArg = 100, strArg = "KeepBlackScreen") ;Without this the "fall through floor bug occurs"
 	
-	Util.WaitGameHours(Variables.BlackoutTimeLapse * 24.0)
-	; if you need to move the player, do it here
-	
-	bFirstUpdate = true
-	RegisterForSingleUpdate(Variables.BlackoutRealTimeLapse)
-		; this is necessary because we need to wait a few sec for a nice transition but this function needs to return asap.
-	return true
-endFunction
+	registerforsingleupdate(4)
 
-
-Event OnUpdate()
-	if(bFirstUpdate)
-		RegisterForModEvent("da_PlayerRecovered", "EnslaveAtEndOfBleedout")
-		SendModEvent("da_StartRecoverSequence", numArg = 9999.0)		
-		RegisterForSingleUpdate(10.0)
-		bFirstUpdate = false
-	else
-		Debug.Trace("SD DA spriggan failed: Timeout")
-		UnregisterForModEvent("da_PlayerRecovered")	
-		
-		; what to do? do we risk starting enslavement anyway?
-	endif
-endEvent
-
-Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form sender) ; player has finished ragdolling/animating and controls are all back
-
-	Debug.Trace("SD DA spriggan end")
-	UnregisterForUpdate()
-	UnregisterForModEvent("da_PlayerRecovered")
+	Debug.Trace("SD DA Spriggan end master:" + thisAggressor)
+	; Debug.Notification("SD DA Spriggan end master:" + thisAggressor)
 
 	; _SDKP_spriggan.SendStoryEvent(akRef1 = thisAggressor, akRef2 = thisPlayer, aiValue1 = 0, aiValue2 = 0)
   	if (thisAggressor)
@@ -77,8 +56,19 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	else
 		Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_spriggan.")
 	EndIf
+	utility.wait(3)
 
-endEvent 
+	SendModEvent("da_StartRecoverSequence") ;The earlier call doesn't seem to clear the bleedout state so repeat the call
+	
+	return true
+endFunction
+
+Event OnUpdate()
+	; Game.getplayer().moveto(SSLV_CageMark) 
+	; SSLV_CageMark.Activate(Game.GetPlayer())
+	; GameHour.Mod(1.0) ; wait 8 hours game time 
+endevent
+ 
 
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_factions Property fctFactions  Auto

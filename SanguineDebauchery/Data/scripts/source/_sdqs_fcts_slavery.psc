@@ -3,6 +3,7 @@ Scriptname _sdqs_fcts_slavery extends Quest
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 _SDQS_fcts_factions Property fctFactions  Auto
+zbfSlaveControl Property ZazSlaveControl Auto
 
 ; Properties redefined to allow upgrade to SD+ V3 without a need for a new save game
 ; Older properties may have None value baked into save game at this point
@@ -378,6 +379,8 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
+	ZazSlaveControl.EnslaveActor(kSlave,"SD")
+	ZazSlaveControl.SetPlayerMaster(kMaster,"SD")
 
 	UpdateStatusDaily(  kMaster,  kSlave, false)
 
@@ -407,6 +410,7 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	_SDGVP_enslaved.SetValue( 0 )
 
 	; Compatibility with other mods
+	ZazSlaveControl.ReleaseSlave(kSlave,"SD")
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset
