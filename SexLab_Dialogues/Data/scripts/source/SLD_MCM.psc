@@ -500,6 +500,7 @@ function _RegisterRaces()
 
 	; AddRaceID("Spriggans", "SprigganRace")
 
+	AddRaceID("Spriggans", "00TreeSpiritRacesmm")
 	AddRaceID("FlameAtronach", "00AtronachSpiritRacesmm")
 
 

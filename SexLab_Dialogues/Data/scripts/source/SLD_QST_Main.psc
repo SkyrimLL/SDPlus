@@ -383,11 +383,11 @@ EndFunction
 
 Function StartPlayerClaimed ( Actor akSpeaker, string tags = "" )
  	Actor Player = Game.GetPlayer()
-	Int IButton = _SLD_claimMenu.Show()
+	; Int IButton = _SLD_claimMenu.Show()
 
 	; If IButton == 0 ; Undress
 	;	StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
-		akSpeaker.SendModEvent("PCSubEnslave")
+		akSpeaker.SendModEvent("PCSubEnslaveMenu")
 
 	; else
 	;	StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
@@ -399,11 +399,11 @@ EndFunction
 
 Function StartPlayerClaimedBeast ( Actor akSpeaker, string tags = "" )
  	Actor Player = Game.GetPlayer()
-	Int IButton = _SLD_claimBeastMenu.Show()
+	; Int IButton = _SLD_claimBeastMenu.Show()
 
 	; If IButton == 0 ; Undress
 	;	StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
-		akSpeaker.SendModEvent("PCSubEnslave")
+		akSpeaker.SendModEvent("PCSubEnslaveMenu")
 
 	; else
 	;	StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
