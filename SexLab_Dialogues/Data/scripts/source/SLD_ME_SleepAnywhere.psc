@@ -92,6 +92,7 @@ Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	Game.EnablePlayerControls(1, 1, 1, 0, 0, 0, 0, 0, 0)
 	; Debug.Notification("[SLD] Rest anywhere stop")
 	StorageUtil.SetIntValue(akTarget, "_SD_iSleepAnywhereON",0)
+	Debug.SendAnimationEvent(Target, "IdleForceDefaultState")		
 
 	self.GoToState("")	
 endEvent
@@ -202,7 +203,7 @@ State SleepingSideway
 		FadeOut.Apply()
 		Utility.Wait(2.5) ; since Fadeout lasts exactly 3.0s, we need to allow some script delay
 		FadeOut.PopTo(BlackScreen)
-		Debug.SendAnimationEvent(Target, "IdleForceDefaultState")		
+		; Debug.SendAnimationEvent(Target, "IdleForceDefaultState")		
 		Utility.Wait(0.3)
 		BedRef.Activate(Target, true) ; this spawns the sleep menu of the befref but it wouldn't work if called while the laying anim is playing.
 		self.RegisterForSingleUpdate(0.1)

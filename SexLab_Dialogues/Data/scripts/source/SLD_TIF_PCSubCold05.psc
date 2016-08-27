@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kSlave = Game.GetPlayer()
 
-StorageUtil.SetIntValue( Game.GetPlayer(), "_SD_iEnableClothingEquip", 1)
+StorageUtil.SetIntValue(kSlave , "_SD_iEnableClothingEquip", 1)
 
 		; kSlave.AddItem( _SD_SlaveRags, 1, True )
 		; kSlave.EquipItem( _SD_SlaveRags, True, True )
