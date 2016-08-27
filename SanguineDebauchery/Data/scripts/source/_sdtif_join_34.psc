@@ -6,7 +6,7 @@ Scriptname _sdtif_join_34 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-akSpeaker.SetRelationshipRank(_SDRAP_slave.GetReference() as Actor, -3)
+; akSpeaker.SetRelationshipRank(_SDRAP_slave.GetReference() as Actor, -3)
 _SDGVP_state_joined.SetValue( 0 )
 _SDKP_trust_hands.SetValue( 1 )
 _SDKP_trust_feet.SetValue( 1 )

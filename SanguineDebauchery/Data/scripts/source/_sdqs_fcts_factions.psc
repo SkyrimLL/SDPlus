@@ -4,6 +4,7 @@ Import Utility
 Import SKSE
 
 _SDQS_functions Property funct  Auto
+zbfSlaveControl Property ZazSlaveControl Auto
 
 Keyword Property _SDKP_actorTypeNPC  Auto
 FormList Property _SDFLP_banned_factions  Auto
@@ -241,6 +242,8 @@ Bool Function checkIfSlaver ( Actor akActor )
 	Actor akPlayer = Game.getPlayer() as Actor
 	Int  playerGender =akPlayer.GetLeveledActorBase().GetSex() as Int
 	Bool isSlaver
+	Bool isActorAlreadySlaver
+	Bool isPlayerAlreadyOwned
 
 	; If (akActor == akPlayer)
 		; Debug.Notification("[SD] Slaver is Player!" )
@@ -252,7 +255,7 @@ Bool Function checkIfSlaver ( Actor akActor )
 
 		isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 
-		If (checkIfSpriggan ( akPlayer )) 
+		If ((checkIfSpriggan ( akActor )) || ( StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
 			isSlaver = False
 		Endif
 		
@@ -289,9 +292,19 @@ Bool Function checkIfSlaver ( Actor akActor )
 			Debug.Trace("[SD] 		Actor is already an owner")
 		Endif	
 
+		isActorAlreadySlaver = ZazSlaveControl.IsMaster(akActor)
+		isPlayerAlreadyOwned = ZazSlaveControl.IsOwnedByMod(akPlayer)  
+		
+		If (isActorAlreadySlaver || isPlayerAlreadyOwned )
+			Debug.Trace("[SD] 		Actor is already an slaver in another ZAP compatible mod - aborting")
+			isSlaver = False
+		Endif
+
+
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
+		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverHumanoid", isSlaver as Int) 
 	else
-		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaver") as Bool
+		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverHumanoid") as Bool
 	endIf
 
 	return isSlaver
@@ -314,11 +327,16 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	if (StorageUtil.GetIntValue( akActor, "_SD_iDateBeastSlaverChecked")==0)
 		StorageUtil.SetIntValue( akActor, "_SD_iDateBeastSlaverChecked", Game.QueryStat("Days Passed"))
 
-		isSlaver = ( (   ( checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && (playerGender == 1) )) && !checkIfSpriggan ( akActor ) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
+		isSlaver = (   checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && !checkIfSpriggan ( akActor ) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 		
 		If (akActor == ( StorageUtil.GetFormValue(akPlayer, "_SD_CurrentOwner") as Actor) ) 
 			isSlaver = False
 		Endif
+
+		If (StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverHumanoid") == 1)
+			Debug.Trace("[SD] 		Actor is already an humanoid slaver")
+			isSlaver = False
+		Endif	
 
 		if (!isSlaver)
 			Debug.Trace("[SD] Creature Enslavement check with actor [ " + akActor + " ] - FAILED")
@@ -346,9 +364,12 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 			Debug.Trace("[SD] 		Actor is already an owner")
 		Endif	
 
+
+
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
+		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverCreature", isSlaver as Int) 
 	else
-		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaver") as Bool
+		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverCreature") as Bool
 	endIf
 
 	return isSlaver
@@ -428,8 +449,10 @@ Bool Function checkIfSlaverCreatureRace ( Actor akActor )
 	Form foundRace = none
 
 
-	If (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryRace") == 1)
-		bIsSlaverCreature = True
+	If (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryRace") == 1) 
+		If (StorageUtil.GetStringValue( actorRace as Form, "_SD_sRaceType") == "Beast"  )
+			bIsSlaverCreature = True
+		Endif
 	else
 
 		if (StorageUtil.GetFormValue( akActor, "_SD_sRaceMatch")==none)

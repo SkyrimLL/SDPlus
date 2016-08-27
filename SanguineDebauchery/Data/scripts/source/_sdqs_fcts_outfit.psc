@@ -1479,7 +1479,7 @@ Function expireSlaveTats( Actor akSlave )
 	Actor PlayerActor = Game.GetPlayer()
 
 	while(i < valueCount)
-		fOverride = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+		fOverride = StorageUtil.FormListGet(akSlave, "_SD_lSlaveryTatList", i)
 		If (fOverride != none)
 
 			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay")

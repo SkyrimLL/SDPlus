@@ -17,7 +17,7 @@
 {"name": "Nord Ankle (leg)", "section":"SD+", "texture":"sdplus\\Norse-AnkleLeft-Band.dds", "area":"Body"},
 {"name": "Breton Wheel (belly)", "section":"SD+", "texture":"sdplus\\Norse-Abs-Vegvisir.dds", "area":"Body"},
 {"name": "Argonian Slavers Hand (belly)", "section":"SD+", "texture":"sdplus\\argonian.dds", "area":"Body"},
-{"name": "Khajiit Slavers Hand (back)", "section":"SD+", "texture":"sdplus\\khajiit.dds", "area":"Hand"},
+{"name": "Khajiit Slavers Hand (back)", "section":"SD+", "texture":"sdplus\\khajiit.dds", "area":"Hands"},
 {"name": "Orc Scrawl (head)", "section":"SD+", "texture":"sdplus\\forehead_bitch.dds", "area":"Face"},
 {"name": "Falmer Glow (body)", "section":"SD+", "texture":"sdplus\\falmer.dds", "area":"Body"},
 {"name": "Slavery scars", "section":"SD+", "texture":"sdplus\\Scar_10.dds", "area":"Body"}

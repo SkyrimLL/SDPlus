@@ -2,65 +2,6 @@
 ;NEXT FRAGMENT INDEX 115
 Scriptname _sdsf_snp_03 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_32
-Function Fragment_32()
-;BEGIN CODE
-snp._SDUIP_phase = -1
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-
-Debug.Notification("The worst is over... for now..")
-Actor kMaster = StorageUtil.GetFormValue( Game.getPlayer(), "_SD_CurrentOwner") as Actor
-Actor male = _SDRAP_male.GetReference() as Actor
-Actor female = _SDRAP_female.GetReference() as Actor
-
-_SDGVP_trust_hands.SetValue(0)
-_SDGVP_trust_feet.SetValue(0)
-
-; Game.FadeOutGame(True, True, 3.0, 2.0)
-
-;funct.toggleActorClothing ( male, False )
-; funct.toggleActorClothing ( female, False )
-
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
-
-		if(female.IsWeaponDrawn())
-			female.SheatheWeapon()
-			Utility.Wait(2.0)
-		endif
-
- Debug.SendAnimationEvent(female , "IdleForceDefaultState")
-
-_SDGVP_snp_busy.SetValue(-1)
-; libs.SetAnimating(Game.GetPlayer(), true)
-
-
-; Self.GetowningQuest().Stop()
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
-
-Utility.Wait(2)
-; Game.FadeOutGame(False, True, 15.0, 5.0)
-
-	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
-		; Keep hands free by accident
-		If (Utility.RandomInt(0,100) > 70) 
-			female.SendModEvent("da_ForceBleedout")
-		EndIf
-
-	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
-		fctOutfit.setMasterGearByRace( male, female )
-		fctOutfit.equipDeviceByString( sDeviceString = "Armbinders" )
-	EndIf
-
-
-; female.SendModEvent("da_ForceBlackout")
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_95
 Function Fragment_95()
 ;BEGIN CODE
@@ -85,15 +26,6 @@ fctSlavery.PlayPunishmentIdle(  )
 
 
 Utility.Wait(1.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_68
-Function Fragment_68()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -131,27 +63,6 @@ Game.SetPlayerAIDriven()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18(ReferenceAlias akAlias)
-;BEGIN CODE
-; Game.FadeOutGame(True, True, 3.0, 2.0)
-; Utility.Wait(2)
-; Actor female = _SDRAP_female.GetReference() as Actor
-; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
-;female.PushActorAway(female, 0.1)
-; Game.FadeOutGame(False, True, 15.0, 5.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_94
-Function Fragment_94()
-;BEGIN CODE
-snp._SDUIP_phase = 3
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_87
 Function Fragment_87()
 ;BEGIN CODE
@@ -165,6 +76,101 @@ Utility.Wait(4.0)
 
 ; Game.DisablePlayerControls( abMovement = true )
 ; Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_68
+Function Fragment_68()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_94
+Function Fragment_94()
+;BEGIN CODE
+snp._SDUIP_phase = 3
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18(ReferenceAlias akAlias)
+;BEGIN CODE
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+; Utility.Wait(2)
+; Actor female = _SDRAP_female.GetReference() as Actor
+; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
+;female.PushActorAway(female, 0.1)
+; Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_32
+Function Fragment_32()
+;BEGIN CODE
+snp._SDUIP_phase = -1
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+
+Debug.Notification("The worst is over... for now..")
+Actor kPlayer = Game.getPlayer()
+Actor kMaster = StorageUtil.GetFormValue( kPlayer , "_SD_CurrentOwner") as Actor
+Actor male = _SDRAP_male.GetReference() as Actor
+Actor female = _SDRAP_female.GetReference() as Actor
+
+_SDGVP_trust_hands.SetValue(0)
+_SDGVP_trust_feet.SetValue(0)
+
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+
+;funct.toggleActorClothing ( male, False )
+; funct.toggleActorClothing ( female, False )
+
+Game.EnablePlayerControls( abMovement = True )
+Game.SetPlayerAIDriven( False )
+
+		if(female.IsWeaponDrawn())
+			female.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+
+ Debug.SendAnimationEvent(female , "IdleForceDefaultState")
+
+_SDGVP_snp_busy.SetValue(-1)
+; libs.SetAnimating(Game.GetPlayer(), true)
+
+		fctOutfit.setMasterGearByRace ( None, kPlayer  )
+		StorageUtil.SetStringValue(kPlayer, "_SD_sSlaveryTat", "Slavery scars")
+		StorageUtil.SetStringValue(kPlayer, "_SD_sSlaveryTatType", "SD+")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryTatDuration", 5 )
+		fctOutfit.sendSlaveTatModEvent(kPlayer, "SD+","Slavery scars" )
+
+; Self.GetowningQuest().Stop()
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
+fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
+
+Utility.Wait(2)
+; Game.FadeOutGame(False, True, 15.0, 5.0)
+
+	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
+		; Keep hands free by accident
+		If (Utility.RandomInt(0,100) > 70) 
+			female.SendModEvent("da_ForceBleedout")
+		EndIf
+
+	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
+		fctOutfit.setMasterGearByRace( male, female )
+		fctOutfit.equipDeviceByString( sDeviceString = "Armbinders" )
+	EndIf
+
+
+; female.SendModEvent("da_ForceBlackout")
 ;END CODE
 EndFunction
 ;END FRAGMENT

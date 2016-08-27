@@ -21,10 +21,11 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	thisPlayer = Game.GetPlayer()
 	thisAggressor = akAggressor
 
-	Debug.Trace("SD Blackout start master:" + thisAggressor)
+	Debug.Trace("SD Blackout start enslavement attempt (Humanoid):" + thisAggressor)
+	Debug.Trace("	start master is Humanoid:" + StorageUtil.GetIntValue( thisAggressor, "_SD_bIsSlaverHumanoid"))
 	; Debug.Notification("SD Blackout start master:" + thisAggressor)
 	
-	if (Utility.RandomInt(1,100)<=_SDGVP_health_threshold.GetValue()) && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslavementInitSequenceOn")!=1)  ; Simplified check for DA only - SD mod event will handle complex faction checks
+	if (Utility.RandomInt(1,100)<=_SDGVP_health_threshold.GetValue()) && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslavementInitSequenceOn")!=1) && (StorageUtil.GetIntValue( thisAggressor, "_SD_bIsSlaverHumanoid") == 1)  ; Simplified check for DA only - SD mod event will handle complex faction checks
 		return true
 	else
 		return false
@@ -39,58 +40,9 @@ bool Function QuestStart(Location akLocation, Actor akAggressor, Actor akFollowe
 	thisPlayer = Game.GetPlayer()
 	thisAggressor = akAggressor
 
-	Util.WaitGameHours(Variables.BlackoutTimeLapse * 24.0)
-	; if you need to move the player, do it here
+	SendModEvent("da_StartRecoverSequence", numArg = 100, strArg = "KeepBlackScreen") ;Without this the "fall through floor bug occurs"
 	
-	bFirstUpdate = true
-	RegisterForSingleUpdate(Variables.BlackoutRealTimeLapse)
-		; this is necessary because we need to wait a few sec for a nice transition but this function needs to return asap.
-	return true
-endFunction
-
-
-Event OnUpdate()
-	if(bFirstUpdate)
-		RegisterForModEvent("da_PlayerRecovered", "EnslaveAtEndOfBleedout")
-		SendModEvent("da_StartRecoverSequence", numArg = 9999.0)		
-		RegisterForSingleUpdate(10.0)
-		bFirstUpdate = false
-	else
-		Debug.Trace("SD Blackout failed: Timeout")
-		UnregisterForModEvent("da_PlayerRecovered")	
-		
-		; what to do? do we risk starting enslavement anyway?
-		; Debug.Trace("SD Blackout end after timeout")
-		; UnregisterForUpdate()
-		; UnregisterForModEvent("da_PlayerRecovered")
-
-			; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
-			; _SDGV_leash_length.SetValue(400)
-
-		Debug.Trace("SD Blackout end master:" + thisAggressor)
-		; Debug.Notification("Blackout end master:" + thisAggressor)
-
-		if (thisAggressor)
-			; Debug.Trace("[SD] Sending enslavement story.")
-			StorageUtil.SetIntValue(thisAggressor, "_SD_iForcedSlavery", 1)
-			StorageUtil.SetIntValue(thisAggressor, "_SD_iSpeakingNPC", 1)
-			thisAggressor.SendModEvent("PCSubEnslave")
-		else
-			Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")
-		EndIf
-
-	endif
-endEvent
-
-
-Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form sender) ; player has finished ragdolling/animating and controls are all back
-
-	Debug.Trace("SD Blackout end")
-	UnregisterForUpdate()
-	UnregisterForModEvent("da_PlayerRecovered")
-
-		; Debug.SendAnimationEvent(akPlayer , "ZazAPC057")
-		; _SDGV_leash_length.SetValue(400)
+	registerforsingleupdate(4)
 
 	Debug.Trace("SD Blackout end master:" + thisAggressor)
 	; Debug.Notification("Blackout end master:" + thisAggressor)
@@ -103,8 +55,19 @@ Event EnslaveAtEndOfBleedout(string eventName, string strArg, float numArg, Form
 	else
 		Debug.Trace("[SD] Problem - Aggressor was reset before enslavement in _sd_da_enslavement.")
 	EndIf
+	utility.wait(3)
 
-endEvent
+	SendModEvent("da_StartRecoverSequence") ;The earlier call doesn't seem to clear the bleedout state so repeat the call
+	
+	return true
+endFunction
+
+Event OnUpdate()
+	; Game.getplayer().moveto(SSLV_CageMark) 
+	; SSLV_CageMark.Activate(Game.GetPlayer())
+	; GameHour.Mod(1.0) ; wait 8 hours game time 
+endevent
+
 
 
 

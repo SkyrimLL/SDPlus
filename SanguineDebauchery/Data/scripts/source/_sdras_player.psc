@@ -149,6 +149,7 @@ Function _Maintenance()
  	UnregisterForAllModEvents()
 	Debug.Trace("[_sdras_player] Register events")
 	RegisterForModEvent("PCSubEnslave",   "OnSDEnslave")
+	RegisterForModEvent("PCSubEnslaveMenu",   "OnSDEnslaveMenu")
 	RegisterForModEvent("PCSubSurrender",   "OnSDSurrender")
 	RegisterForModEvent("PCSubSex",   "OnSDStorySex")
 	RegisterForModEvent("PCSubEntertain",   "OnSDStoryEntertain")
@@ -457,6 +458,38 @@ Event SDSprigganPunish(String _eventName, String _args, Float _argc = 1.0, Form 
 	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 8, aiValue2 = 0 )
 EndEvent
 
+Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+ 
+	if (kActor != None)
+		; StorageUtil _SD_TempAggressor is deprecated
+		; Use _sender through kActor.SendModEvent("") in priority instead 
+		kTempAggressor = kActor
+	EndIf
+
+	Debug.Trace("[_sdras_player] Receiving enslavement menu story event [" + _args  + "] [" + _argc as Int + "]")
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+	EndIf
+	If (kTempAggressor != None)
+		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+	Endif
+
+	; New enslavement - changing ownership
+	Int IButton = _SD_enslaveMenu.Show()
+
+	If IButton == 0 ; Undress
+		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+		kTempAggressor.SendModEvent("PCSubEnslave")
+
+	else
+		StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
+		funct.SanguineRape( kTempAggressor, kPlayer)
+
+	EndIf
+EndEvent
 
 Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
@@ -514,17 +547,8 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 		EndIf
 
 		; New enslavement - changing ownership
-		Int IButton = _SD_enslaveMenu.Show()
-
-		If IButton == 0 ; Undress
-			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
-			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
-
-		else
-			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
-			funct.SanguineRape( kNewMaster, kPlayer)
-
-		EndIf
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
+ 
 
 	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
@@ -590,17 +614,8 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		EndIf
 
 		; New enslavement - changing ownership
-		Int IButton = _SD_enslaveMenu.Show()
-
-		If IButton == 0 ; Undress
-			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
-			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
-
-		else
-			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
-			funct.SanguineRape( kNewMaster, kPlayer)
-
-		EndIf
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
+ 
 
 	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
@@ -674,17 +689,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )
 
 		; New enslavement - changing ownership
-		Int IButton = _SD_enslaveMenu.Show()
-
-		If IButton == 0 ; Undress
-			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
-			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
-
-		else
-			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
-			funct.SanguineRape( kNewMaster, kPlayer)
-
-		EndIf
+		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
 
 	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
@@ -1349,10 +1354,10 @@ State monitor
 
 	    ; endIf
 
-	     if ( current_crc == fctConstraints.ModCRC )
+	    ; if ( current_crc == fctConstraints.ModCRC )
  			fctConstraints.UpdateStanceOverrides() 
 
-	    endif 
+	    ;endif 
 
 	EndEvent
 
@@ -1507,7 +1512,7 @@ State monitor
 		shiftPress = ( Input.IsKeyPressed( 42 ) || Input.IsKeyPressed( 54 ) )
 		altPress = ( Input.IsKeyPressed( 56 ) || Input.IsKeyPressed( 184 ) )
 
-		If (UI.IsTextInputEnabled())
+		If (UI.IsTextInputEnabled() || Utility.IsInMenuMode() )
 			Return
 		EndIf
 
@@ -1663,7 +1668,17 @@ State monitor
 
 	EndEvent
 
+	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, Bool abPowerAttack, Bool abSneakAttack, Bool abBashAttack, Bool abHitBlocked)
+		Actor akActor = akAggressor as Actor
 
+		If (akActor != None)
+			If (!akActor.IsDead())
+				fctFactions.checkIfSlaver ( akActor )
+				fctFactions.checkIfSlaverCreature ( akActor )
+			Endif
+		Endif
+	EndEvent
+	
 	Event OnTrapHit(ObjectReference akTarget, float afXVel, float afYVel, float afZVel, float afXPos, float afYPos, float afZPos, int aeMaterial, bool abInitialHit, int aeMotionType)
 
 		If (_SD_dreamQuest.GetStage() != 0)

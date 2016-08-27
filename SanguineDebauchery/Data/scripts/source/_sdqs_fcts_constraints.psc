@@ -250,7 +250,7 @@ Function CollarUpdate()
 
 			endif
 			
-		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")
+		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") && ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.isArmbinderEquipped( kPlayer ) )
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC020") ; 		HandsBehindKneelBowDown
@@ -269,7 +269,7 @@ Function CollarUpdate()
 
 			endif
 
-		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")
+		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing") && ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.hasTagByString ( kPlayer, "Armbinders", "leather") )
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO023") ;   AnimObjectZazAPCAO023		Vertical Pillory
@@ -288,7 +288,7 @@ Function CollarUpdate()
 
 			endif
 
-		Else
+		ElseIf ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.isArmbinderEquipped( kPlayer ) )
 			StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
 		EndIf
 	EndIf
@@ -409,19 +409,17 @@ Function CollarStand()
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 		; Debug.Notification("[SD] Standing bound override ON")
 
-	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") && (iOverride != 6)
+	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") ; && (iOverride != 6)
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
-  		iOverride = 6
+
+		if (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")	
+			ResetStanceOverrides()
+		EndIf		
+  		; iOverride = 6
 		; Debug.Notification("[SD] Standing hands free override ON")
 	;	PlayIdleWrapper(kPlayer, _SDIAP_reset )
 	Endif
-
 EndFunction
-
-Function PlayIdleWrapper(actor akActor, idle theIdle)
-	akActor.PlayIdle(theIdle)
-EndFunction
-
 
 Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	Bool bOk
@@ -489,11 +487,7 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	  		If fctOutfit.isArmbinderEquipped( kPlayer ) || fctOutfit.isYokeEquipped( kPlayer )
 	  			CollarStand()
 	  		else
-		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
-		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "sanguinesDebauchery", false)  
-		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", 0, 0, "sanguinesDebauchery", false)  
-		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", false)  
-		  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", 0, 0, "sanguinesDebauchery", false)
+	  			ResetStanceOverrides()
 		  	Endif
 			; Debug.Notification("[SD] Stance override OFF")
 	  	endif 
@@ -501,3 +495,36 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 
 	sPlayerLastStance = StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance")
 EndFunction
+
+Function ResetStanceOverrides()
+	Bool bOk
+
+	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
+	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "sanguinesDebauchery", false)  
+	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", 0, 0, "sanguinesDebauchery", false)  
+	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", false)  
+	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", 0, 0, "sanguinesDebauchery", false)
+
+	; try to reset FNIS mods if they are installed, as the AA will not get reset back to using the ones picked in FNIS otherwise.
+	if Game.GetModByName("FNIS_PCEA2.esp") != 255
+		SendModEvent("PCEA2Task", "refresh")
+	Endif
+	if Game.GetModByName("FNISSexyMove.esp") != 255
+		; nothing to do for guy characters
+		If kPlayer.GetLeveledActorBase().GetSex() != 1
+			return
+		Endif
+		FNISSMConfigMenu FNISSM = Game.GetFormFromFile(0x000012C7, "FNISSexyMove.esp") As FNISSMConfigMenu			
+		int SM = FNISSM.FNISSMquest.iSMplayer 						
+		if SM == 0
+			FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "FNIS Sexy Move", false)
+		else
+			FNIS_aa.SetAnimGroup(kPlayer, "_mt", FNISSM.FNISSMQuest.FNISsmMtBase, SM - 1, "FNIS Sexy Move", false)
+		endif					
+	Endif
+EndFunction
+
+Function PlayIdleWrapper(actor akActor, idle theIdle)
+	akActor.PlayIdle(theIdle)
+EndFunction
+
