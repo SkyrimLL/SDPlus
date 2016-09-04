@@ -1343,7 +1343,7 @@ State monitor
 			fctConstraints.mt_base=FNIS_aa.GetGroupBaseValue(fctConstraints.ModID,FNIS_aa._mt(),"sanguinesDebauchery",true) 
 			fctConstraints.mtx_base=FNIS_aa.GetGroupBaseValue(fctConstraints.ModID,FNIS_aa._mtx(),"sanguinesDebauchery",true) 
 			; fctConstraints.sneakidle_base=FNIS_aa.GetGroupBaseValue(fctConstraints.ModID,FNIS_aa._sneakidle(),"sanguinesDebauchery",true) 
-			fctConstraints.sneakmt_base=FNIS_aa.GetGroupBaseValue(fctConstraints.ModID,FNIS_aa._sneakmt(),"sanguinesDebauchery",true) 
+			; fctConstraints.sneakmt_base=FNIS_aa.GetGroupBaseValue(fctConstraints.ModID,FNIS_aa._sneakmt(),"sanguinesDebauchery",true) 
 	      	fctConstraints.ModCRC = current_crc  
 
 	      	fctConstraints.ABC_ModID = FNIS_aa.GetAAModID("abc", "DeviousDevices", true) 

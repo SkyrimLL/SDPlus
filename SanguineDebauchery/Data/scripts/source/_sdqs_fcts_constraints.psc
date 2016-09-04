@@ -456,7 +456,7 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", mtx_base, 0, "sanguinesDebauchery", false)  
 	  		; bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", sneakidle_base, 0, "sanguinesDebauchery", true) 
 	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", false)  
-	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", sneakmt_base, 0, "sanguinesDebauchery", false)  
+	  		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", 0, 0, "sanguinesDebauchery", false)  
 			; Debug.Notification("[SD] Crawl override ON")
 			
 	  	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") ; && fctOutfit.isCollarEquipped( kPlayer ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) 
