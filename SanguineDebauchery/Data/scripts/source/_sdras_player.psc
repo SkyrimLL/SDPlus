@@ -1414,9 +1414,9 @@ State monitor
 
 			If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
 				fOldExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float)
-				fExposureMultiplier = 1.0 - (_SDGVP_config_slavery_level_mult.GetValue() as Float) 
+				fExposureMultiplier =  (_SDGVP_config_slavery_level_mult.GetValue() as Float) 
 
-				if ( StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") > 0)
+				if ( StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") < 0)
 					fNewExposure =  fOldExposure * fExposureMultiplier 
 				Else
 					fNewExposure =  fOldExposure * fExposureMultiplier * ( ( (6 - StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
