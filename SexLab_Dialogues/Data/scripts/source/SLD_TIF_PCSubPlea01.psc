@@ -6,13 +6,14 @@ Scriptname SLD_TIF_PCSubPlea01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
 ; Debug.Notification("SLD: Sending story event [3]")
 
 Int randomNum = Utility.RandomInt(0, 100)
 ; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
-StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+StorageUtil.SetIntValue( kPlayer  , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
 StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) + 1  )
-SendModEvent("SDRewardSlave","Gag")
+kPlayer.SendModEvent("SDRewardSlave","Gag")
 
 If (randomNum > 50)
 	akSpeaker.SendModEvent("PCSubEntertain", "Gangbang") ; Gang Bang
