@@ -1,85 +1,10 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 28
+;NEXT FRAGMENT INDEX 31
 Scriptname _sdqfs_thugslave_01 Extends Quest Hidden
-
-;BEGIN ALIAS PROPERTY _SDLA_boss3
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss3 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_boss
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_mistwatch_door
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_mistwatch_door Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_thug_2
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_thug_2 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_mistwatch_christer
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_mistwatch_christer Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_dropoff
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_dropoff Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_boss1
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slave
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_boss
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_boss Auto
-;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_boss3
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_boss3 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_master
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_master Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_boss2
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss2 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_marker_capture
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_marker_capture Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_thug_1
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_thug_1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_mistwatch_bridge
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_mistwatch_bridge Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_note
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_note Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_boss1
@@ -87,9 +12,9 @@ ReferenceAlias Property Alias__SDRA_note Auto
 ReferenceAlias Property Alias__SDRA_boss1 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_boss2
+;BEGIN ALIAS PROPERTY _SDRA_note
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_boss2 Auto
+ReferenceAlias Property Alias__SDRA_note Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_dropoff_box
@@ -97,8 +22,83 @@ ReferenceAlias Property Alias__SDRA_boss2 Auto
 ReferenceAlias Property Alias__SDRA_dropoff_box Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_27
-Function Fragment_27()
+;BEGIN ALIAS PROPERTY _SDRA_boss
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_boss Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_boss3
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_boss3 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_boss2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_boss2 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_mistwatch_door
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_mistwatch_door Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_thug_1
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_thug_1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slave
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_boss1
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_boss1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_master
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_master Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_marker_capture
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_marker_capture Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_boss
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_boss Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_mistwatch_christer
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_mistwatch_christer Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_boss2
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_boss2 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_mistwatch_bridge
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_mistwatch_bridge Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_thug_2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_thug_2 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_dropoff
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_dropoff Auto
+;END ALIAS PROPERTY
+
+;BEGIN FRAGMENT Fragment_28
+Function Fragment_28()
 ;BEGIN CODE
 Game.EnablePlayerControls( abMovement = true )
 Game.SetPlayerAIDriven( False)
@@ -113,45 +113,19 @@ If ( kAThug_2 )
 	kAThug_2.RemoveFromFaction( _SDFP_wiplayerenemy )
 EndIf
 
-ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
-kDoor.Lock( False )
 
 _SDGVP_inTransit.SetValue(0)
 SendModEvent("SDThugTransitStop")
 
-If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
-                Actor PlayerRef = Game.GetPlayer()
-                Alias__SDRA_Master.GetReference().moveTo( kBoss )
-	
-                Game.FadeOutGame(true, true, 0.1, 15)
-                PlayerRef.moveTo( kBoss )
-	Game.FadeOutGame(false, true, 0.01, 10)
-
+	; Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
 	_SDQP_enslavement.Stop()
 
 	While ( !_SDQP_enslavement.IsStopped() )
 	EndWhile
-	Utility.Wait(5)
 
-	; _SDKP_enslave.SendStoryEvent( akLoc = kBoss.GetCurrentLocation(), akRef1 = kBoss, akRef2 = kSlave, aiValue1 = _SDGVP_demerits.GetValueInt(), aiValue2 = 1 )
-
-	StorageUtil.SetIntValue(kBoss, "_SD_iForcedSlavery", 1)
-	kBoss.SendModEvent("PCSubEnslave")
-
-	Debug.MessageBox( "You finish the march bound and gagged and eventually wake up in front of your new master.")
-	Utility.Wait(5)
-
+	; _SDQP_WIThugs.Stop()
+	; Stop()
 	SetStage(30)
-Else
-	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
-	_SDQP_enslavement.Stop()
-
-	While ( !_SDQP_enslavement.IsStopped() )
-	EndWhile
-
-	_SDQP_WIThugs.Stop()
-	Stop()
-EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -207,29 +181,63 @@ alignParties( )
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
+;BEGIN FRAGMENT Fragment_27
+Function Fragment_27()
 ;BEGIN CODE
-( Alias__SDRA_master.GetActorReference() as Actor).DeleteWhenAble()
-( Alias__SDRA_thug_1.GetActorReference() as Actor).DeleteWhenAble()
-( Alias__SDRA_thug_2.GetActorReference() as Actor).DeleteWhenAble()
+Game.EnablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven( False)
 
-Alias__SDRA_master.Clear()
-Alias__SDRA_thug_1.Clear()
-Alias__SDRA_thug_2.Clear()
-Alias__SDRA_boss.Clear()
-Alias__SDLA_boss.Clear()
-Alias__SDRA_marker_capture.Clear()
-
-CompleteAllObjectives()
-SetObjectiveDisplayed( 30, False )
-SetObjectiveDisplayed( 40, False )
-
-If ( _SDQP_WIThugs.IsRunning() )
-	_SDQP_WIThugs.Stop();
+If ( kAMaster )
+	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_1 )
+	kAThug_1.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_2 )
+	kAThug_2.RemoveFromFaction( _SDFP_wiplayerenemy )
 EndIf
 
-Reset()
+ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
+kDoor.Lock( False )
+
+_SDGVP_inTransit.SetValue(0)
+SendModEvent("SDThugTransitStop")
+
+If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
+                Actor PlayerRef = Game.GetPlayer()
+                Alias__SDRA_Master.GetReference().moveTo( kBoss )
+	
+                Game.FadeOutGame(true, true, 0.1, 15)
+                PlayerRef.moveTo( kBoss )
+	Game.FadeOutGame(false, true, 0.01, 10)
+
+	_SDQP_enslavement.Stop()
+
+	While ( !_SDQP_enslavement.IsStopped() )
+	EndWhile
+	Utility.Wait(5)
+
+	; _SDKP_enslave.SendStoryEvent( akLoc = kBoss.GetCurrentLocation(), akRef1 = kBoss, akRef2 = kSlave, aiValue1 = _SDGVP_demerits.GetValueInt(), aiValue2 = 1 )
+
+	StorageUtil.SetIntValue(kBoss, "_SD_iForcedSlavery", 1)
+	kBoss.SendModEvent("PCSubEnslave")
+
+	Debug.MessageBox( "You finish the march bound and gagged and eventually wake up in front of your new master.")
+	Utility.Wait(5)
+
+	SetStage(30)
+Else
+	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
+	_SDQP_enslavement.Stop()
+
+	While ( !_SDQP_enslavement.IsStopped() )
+	EndWhile
+
+	; _SDQP_WIThugs.Stop()
+	; Stop()
+	SetStage(30)
+
+EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -278,18 +286,6 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-Game.ForceThirdPerson()
-; Game.DisablePlayerControls( abMovement = true )
-; Game.SetPlayerAIDriven()
-
-_SDSP_thug_scene_02.Start()
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_15
 Function Fragment_15()
 ;BEGIN CODE
@@ -319,6 +315,45 @@ ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
 SetObjectiveDisplayed( 30, False )
 SetObjectiveDisplayed( 40 )
 _SDSP_thug_scene_04.Start()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
+;BEGIN CODE
+( Alias__SDRA_master.GetActorReference() as Actor).DeleteWhenAble()
+( Alias__SDRA_thug_1.GetActorReference() as Actor).DeleteWhenAble()
+( Alias__SDRA_thug_2.GetActorReference() as Actor).DeleteWhenAble()
+
+Alias__SDRA_master.Clear()
+Alias__SDRA_thug_1.Clear()
+Alias__SDRA_thug_2.Clear()
+Alias__SDRA_boss.Clear()
+Alias__SDLA_boss.Clear()
+Alias__SDRA_marker_capture.Clear()
+
+CompleteAllObjectives()
+SetObjectiveDisplayed( 30, False )
+SetObjectiveDisplayed( 40, False )
+
+If ( _SDQP_WIThugs.IsRunning() )
+	_SDQP_WIThugs.Stop();
+EndIf
+
+Reset()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+Game.ForceThirdPerson()
+; Game.DisablePlayerControls( abMovement = true )
+; Game.SetPlayerAIDriven()
+
+_SDSP_thug_scene_02.Start()
 ;END CODE
 EndFunction
 ;END FRAGMENT

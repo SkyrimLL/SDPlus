@@ -177,8 +177,8 @@ Event OnUpdateGameTime()
 		Return
 	EndIf
 	
-	While ( !kSlave.Is3DLoaded() )
-	EndWhile
+	; While ( !kSlave.Is3DLoaded() )
+	; EndWhile
 
 	; Workaround to fix issue with player stuck in place after sex with spriggan armor on - remove once real solution is found
 	; Issue is triggered a little after sex ends... 
@@ -370,8 +370,8 @@ EndEvent
 
 Event OnUpdate()
 	if (kSlave)
-		While ( !kSlave.Is3DLoaded() )
-		EndWhile
+		; While ( !kSlave.Is3DLoaded() )
+		; EndWhile
 
 		ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 		If ( marker && ( kSlave.GetDistance( marker ) < 500.0) && (GetStage() == 60) )

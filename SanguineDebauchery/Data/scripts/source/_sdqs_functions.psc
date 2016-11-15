@@ -554,7 +554,7 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 		EndIf
 
 		If (kPervert!=None) 
-			If (!kPervert.IsDead()) 
+			If (!kPervert.IsDead()) && (checkGenderRestriction( akSpeaker,  akTarget))
 				whore.addToQueue( kPervert as ObjectReference )
 				idx += 1
 			EndIf
@@ -567,7 +567,7 @@ Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker =
 		Debug.Trace("[_sdqs_functions] No actor found")
 	EndIf
 
-	If ( includeSpeaker )
+	If ( includeSpeaker )  
 		whore.addToQueue( akSpeaker as ObjectReference )
 	EndIf
 

@@ -53,7 +53,7 @@ Event OnInit()
 	kMaster = _SDRAP_master.GetReference() as Actor
 	
 	Debug.Trace("[_sdras_companion]  Enslaving follower: ") 
-	If ( kCompanion )
+	If ( kCompanion ) && (kCompanion!=kMaster)
 		Debug.Trace("[_sdras_companion]     Follower name is being enslaved : " + kCompanion.GetName()) 
 		GoToState("monitor")
 		bEnslaved = False
@@ -141,7 +141,7 @@ Function enslaveCompanion( Actor kActor)
 				StorageUtil.SetIntValue(kActor, "_SD_iCanBeStripped", 1)
 			EndIf
 
-			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") != 0 )
+			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") == 1 )
 				funct.sexlabStripActor( kActor )
 				kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 
@@ -160,8 +160,8 @@ Function enslaveCompanion( Actor kActor)
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
 			kActor.playIdle(OffsetBoundStandingStart) 
 
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
+			fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
+			fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 
 			kActor.EvaluatePackage()
 		Else

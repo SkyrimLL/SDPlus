@@ -2,44 +2,6 @@
 ;NEXT FRAGMENT INDEX 15
 Scriptname _sdsf_enslavement_00 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_7
-Function Fragment_7()
-;BEGIN CODE
-; Debug.Notification("[cage] phase = 5" )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-; Debug.Notification("[cage] phase = -1" )
-
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
-
-ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
-Actor slave = _SDRAP_slave.GetReference() as Actor
-
-cage.SetOpen( False )
-
-If ( !cage.IsLocked() )
-	cage.Lock( True )
-EndIf
-
-cage.SetLockLevel( slave.GetBaseAV("Lockpicking") as Int )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_8
-Function Fragment_8()
-;BEGIN CODE
-; Debug.Notification("[cage] phase = 6" )
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_4
 Function Fragment_4()
 ;BEGIN CODE
@@ -48,18 +10,18 @@ Function Fragment_4()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_5
-Function Fragment_5()
-;BEGIN CODE
-; Debug.Notification("[cage] phase =3" )
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_3
 Function Fragment_3()
 ;BEGIN CODE
 ; Debug.Notification("[cage] phase =1" )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_8
+Function Fragment_8()
+;BEGIN CODE
+; Debug.Notification("[cage] phase = 6" )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -90,10 +52,24 @@ EndIf
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_6
-Function Fragment_6()
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
 ;BEGIN CODE
-; Debug.Notification("[cage] phase = 4" )
+; Debug.Notification("[cage] phase = -1" )
+
+Game.EnablePlayerControls( abMovement = True )
+Game.SetPlayerAIDriven( False )
+
+ObjectReference cage = _SDRAP_cage.GetReference() as ObjectReference
+Actor slave = _SDRAP_slave.GetReference() as Actor
+
+cage.SetOpen( False )
+
+If ( !cage.IsLocked() )
+	cage.Lock( True )
+EndIf
+
+cage.SetLockLevel( slave.GetBaseAV("Lockpicking") as Int )
 ;END CODE
 EndFunction
 ;END FRAGMENT

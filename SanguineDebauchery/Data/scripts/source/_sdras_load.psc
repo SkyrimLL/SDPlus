@@ -11,8 +11,8 @@ Event OnPlayerLoadGame()
 	;	_SD_Enslavement._Maintenance()
 	; EndIf	
 
-	Debug.Trace("[_sdras_load] Calling _sd_player maintenance")
-	_SD_Player._Maintenance()
+	; Debug.Trace("[_sdras_load] Calling _sd_player maintenance")
+	; _SD_Player._Maintenance()
 
 	Debug.Trace("[_sdras_load] Calling version check")
 	_reset.Maintenance()

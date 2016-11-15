@@ -505,23 +505,7 @@ Function ResetStanceOverrides()
 	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakidle", 0, 0, "sanguinesDebauchery", false)  
 	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", 0, 0, "sanguinesDebauchery", false)
 
-	; try to reset FNIS mods if they are installed, as the AA will not get reset back to using the ones picked in FNIS otherwise.
-	if Game.GetModByName("FNIS_PCEA2.esp") != 255
-		SendModEvent("PCEA2Task", "refresh")
-	Endif
-	if Game.GetModByName("FNISSexyMove.esp") != 255
-		; nothing to do for guy characters
-		If kPlayer.GetLeveledActorBase().GetSex() != 1
-			return
-		Endif
-		FNISSMConfigMenu FNISSM = Game.GetFormFromFile(0x000012C7, "FNISSexyMove.esp") As FNISSMConfigMenu			
-		int SM = FNISSM.FNISSMquest.iSMplayer 						
-		if SM == 0
-			FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "FNIS Sexy Move", false)
-		else
-			FNIS_aa.SetAnimGroup(kPlayer, "_mt", FNISSM.FNISSMQuest.FNISsmMtBase, SM - 1, "FNIS Sexy Move", false)
-		endif					
-	Endif
+	libs.BoundCombat.Remove_ABC(kPlayer)
 EndFunction
 
 Function PlayIdleWrapper(actor akActor, idle theIdle)

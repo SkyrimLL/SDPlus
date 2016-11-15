@@ -224,21 +224,29 @@ Function initSlaveryGearByRace (  )
 			ElseIf (StringUtil.Find(sRaceName, "Wolf")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Wolf scratches (back)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Dog    
 			ElseIf (StringUtil.Find(sRaceName, "Dog")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Dog scratches (breast)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; SaberCat    
 			ElseIf (StringUtil.Find(sRaceName, "Cat")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Wolf scratches (breast)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Bear    
 			ElseIf (StringUtil.Find(sRaceName, "Bear")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Troll Bites (body)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Giant   
 			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
@@ -249,17 +257,22 @@ Function initSlaveryGearByRace (  )
 			ElseIf (StringUtil.Find(sRaceName, "Chaurus")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Chaurus Vaginal (body)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )  ; ADD Chaurus slimy collar later
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Spider    
 			ElseIf (StringUtil.Find(sRaceName, "Spider")!= -1)
-				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Spider Anal (butt)", raceSlaveTatDuration=2 )
+				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Spider Anal (butt)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazWebCuffs, deviceRendered=zazWebCuffsRendered   )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Troll   
 			ElseIf (StringUtil.Find(sRaceName, "Troll")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Troll Bites (body)", raceSlaveTatDuration=3 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Troll rusted collar later
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Draugr    
 			ElseIf (StringUtil.Find(sRaceName, "Draugr")!= -1)
@@ -518,12 +531,22 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
 		endIf
 	EndIf
+
+	; If player override is set, intercept selection with player override instead
+	if (StorageUtil.GetStringValue(PlayerActor, "_SD_" + sDeviceString + "_tags" )!="")
+		Debug.Trace("[SD] found player tag overrides - " + StorageUtil.GetStringValue(PlayerActor, "_SD_" + sDeviceString + "_tags" ))  
+		bDeviceOverride = false
+		sDeviceTags = StorageUtil.GetStringValue(PlayerActor, "_SD_" + sDeviceString + "_tags" )
+	endIf
 	
 	If (!bDeviceOverride) ; generic item
-		Debug.Trace("[SD] equipDeviceByString - NO override detected")  
+		Debug.Trace("[SD] equipDeviceByString - NO override detected - " + sDeviceTags)  
 			kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
 			aWornDevice = none
 			aRenderedDevice = none
+			if (sDeviceTags=="")
+				sDeviceTags = "zap"
+			endif
 			sGenericDeviceTags = sDeviceTags
 	endIf
 
@@ -534,6 +557,11 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
  	; If override forms are set, use them first
  	; ElseIf generic device tag is set, use it
  	; Else force random generic item
+
+ 	if (sGenericDeviceTags=="none")
+ 		Debug.Trace("[SD]   'none' generic tag detected - aborting device" )  
+		return
+ 	endif
 
 	If (kwDeviceKeyword != None)
 
@@ -1761,19 +1789,19 @@ Function toggleActorClothing ( Actor akActor, Bool bStrip = True, Bool bDrop = F
 	If ( bStrip || bDrop )
 		Int iFormIndex = 0 ; uiSlotMask.Length
 		; ---- Skip removal of items based on slots because of DD
-		While ( iFormIndex > 0 )
-			iFormIndex -= 1
-			Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
+		; While ( iFormIndex > 0 )
+		;	iFormIndex -= 1
+		;	Form kForm = akActor.GetWornForm( uiSlotMask[iFormIndex] ) 
 
-			Armor kArmor = kForm as Armor
-			If ( kArmor && isArmorRemovable( kForm ) )
-				If ( bDrop )
+		;	Armor kArmor = kForm as Armor
+		;	If ( kArmor && isArmorRemovable( kForm ) )
+		;		If ( bDrop )
 				;	akActor.DropObject(kArmor as Armor, 1 )
-				Else
+		;		Else
 				;	akActor.UnequipItem(kArmor as Armor, False, True )
-				EndIf
-			EndIf
-		EndWhile	
+		;		EndIf
+		;	EndIf
+		; EndWhile	
 		; ---- End skipped
 
 		Weapon krHand = akActor.getEquippedWeapon()

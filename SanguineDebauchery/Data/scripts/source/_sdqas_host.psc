@@ -14,9 +14,11 @@ Actor kCombatTarget
 Float fRFSU = 0.1
 
 Event OnInit()
-	If ( Self.GetOwningQuest() )
-		RegisterForSingleUpdate( fRFSU )
-	EndIf
+	; Do we need an update here? waiting state already has an update
+	
+	; If ( Self.GetOwningQuest() )
+	; 	RegisterForSingleUpdate( fRFSU )
+	; EndIf
 	GoToState("waiting")
 EndEvent
 

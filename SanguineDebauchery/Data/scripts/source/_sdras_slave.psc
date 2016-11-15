@@ -305,8 +305,8 @@ EndEvent
 
 State waiting
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsRunning() ) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
-			fctConstraints.CollarUpdate()
+		If ( Self.GetOwningQuest().IsRunning() ) ; && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+			; fctConstraints.CollarUpdate()
 			GoToState("monitor")
 		EndIf
 		If ( Self.GetOwningQuest() )
@@ -343,10 +343,12 @@ State monitor
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() )  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
+		; EndWhile
 
-		fctConstraints.CollarUpdate()
+		if (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0)
+			fctConstraints.CollarUpdate()
+		endIf
 
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
@@ -1047,8 +1049,8 @@ State escape_choking
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() )
+		; EndWhile
 
 		fctConstraints.CollarUpdate()
 
@@ -1368,8 +1370,8 @@ State escape_shock
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() )
+		; EndWhile
 
 		fctConstraints.CollarUpdate()
 
@@ -1479,8 +1481,8 @@ State caged
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() )
+		; EndWhile
 
 		fctConstraints.CollarUpdate()
 		

@@ -31,3 +31,5 @@ EndEvent
 Event OnClose(ObjectReference akActionRef)
 	_SDGVP_state_caged.SetValue( 1 )
 EndEvent
+
+GlobalVariable Property _SDGVP_enableCages  Auto  
