@@ -257,6 +257,14 @@ Function positionVictims( Int aiStage )
 	_SDRAP_sanguine.ForceRefTo( kSanguine as ObjectReference )
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
+	Utility.Wait(1.0)
+
+	(kSanguine as ObjectReference).Enable()
+
+	fctOutfit.setMasterGearByRace ( kSanguine, kDreamer  )
+	StorageUtil.SetStringValue(kSanguine as Form, "_SD_sSlaveryTat", "Rose Stamp 1 (butt)" )
+	StorageUtil.SetStringValue(kSanguine as Form, "_SD_sSlaveryTatType", "SD+" )
+	fctOutfit.sendSlaveTatModEvent(kSanguine, "SD+","Rose Stamp 1 (butt)" )
 
 	SendModEvent("SDInDreamworld") 
 	SendModEvent("SDSanguineBlessingMod", "", 1)  
@@ -316,7 +324,6 @@ Function positionVictims( Int aiStage )
 
 	; _SDSP_spent.Cast( kDreamer, kDreamer)
 
-	(kSanguine as ObjectReference).Enable()
 	StorageUtil.StringListAdd(kSanguine, "_DDR_DialogExclude", "SD+:Sanguine")
 	StorageUtil.StringListAdd(kNordGirl, "_DDR_DialogExclude", "SD+:Sanguine")
 	StorageUtil.StringListAdd(kRedguardGirl, "_DDR_DialogExclude", "SD+:Sanguine")
@@ -357,11 +364,6 @@ Function positionVictims( Int aiStage )
  
 	; sanguineActorBase.SetWeight(fWeight) 
 	; kSanguine.UpdateWeight(NeckDelta) ;Apply the changes.
-
-	fctOutfit.setMasterGearByRace ( kSanguine, kDreamer  )
-	StorageUtil.SetStringValue(kSanguine as Form, "_SD_sSlaveryTat", "Rose Stamp 1 (butt)" )
-	StorageUtil.SetStringValue(kSanguine as Form, "_SD_sSlaveryTatType", "SD+" )
-	fctOutfit.sendSlaveTatModEvent(kSanguine, "SD+","Rose Stamp 1 (butt)" )
 	
 	Float fBreast  = 0.0
 	Float fSchlong = 0.0

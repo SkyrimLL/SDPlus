@@ -251,7 +251,6 @@ Bool Function checkIfSlaver ( Actor akActor )
 	; EndIf
 
 	if (StorageUtil.GetIntValue( akActor, "_SD_iDateSlaverChecked")==0)
-		StorageUtil.SetIntValue( akActor, "_SD_iDateSlaverChecked", Game.QueryStat("Days Passed"))
 
 		isSlaver = ( (akActor.HasKeyword( _SDKP_actorTypeNPC ) && funct.checkGenderRestriction( akActor, Game.GetPlayer() ) )) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 
@@ -295,14 +294,22 @@ Bool Function checkIfSlaver ( Actor akActor )
 		isActorAlreadySlaver = ZazSlaveControl.IsMaster(akActor)
 		isPlayerAlreadyOwned = ZazSlaveControl.IsOwnedByMod(akPlayer)  
 		
-		If (isActorAlreadySlaver || isPlayerAlreadyOwned )
-			Debug.Trace("[SD] 		Actor is already an slaver in another ZAP compatible mod - aborting")
+		If (isActorAlreadySlaver)
+			Debug.Notification("Go away.. I already have enough slaves.")
+			Debug.Trace("[SD] 		Actor is already a slaver in another ZAP compatible mod - aborting")
+			isSlaver = False
+		Endif
+
+		If (isPlayerAlreadyOwned )
+			Debug.Notification("Go away.. Your master must be looking for you.")
+			Debug.Trace("[SD] 		Player is already owned by a ZAP compatible mod - aborting")
 			isSlaver = False
 		Endif
 
 
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverHumanoid", isSlaver as Int) 
+		StorageUtil.SetIntValue( akActor, "_SD_iDateSlaverChecked", Game.QueryStat("Days Passed"))
 	else
 		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverHumanoid") as Bool
 	endIf
@@ -325,7 +332,6 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	Endif
 
 	if (StorageUtil.GetIntValue( akActor, "_SD_iDateBeastSlaverChecked")==0)
-		StorageUtil.SetIntValue( akActor, "_SD_iDateBeastSlaverChecked", Game.QueryStat("Days Passed"))
 
 		isSlaver = (   checkIfFalmer ( akActor) || checkIfSlaverCreatureRace(akActor) ) && !checkIfSpriggan ( akActor ) && !akActor.IsGhost() && !actorFactionInList( akActor, _SDFLP_banned_factions ) && (!actorInList(_SDFLP_banned_actors, akActor))
 		
@@ -368,6 +374,7 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverCreature", isSlaver as Int) 
+		StorageUtil.SetIntValue( akActor, "_SD_iDateBeastSlaverChecked", Game.QueryStat("Days Passed"))
 	else
 		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverCreature") as Bool
 	endIf
@@ -393,7 +400,6 @@ Bool Function checkIfSpriggan ( Actor akActor )
 
 	if (akActor)
 		if (StorageUtil.GetIntValue( akActor, "_SD_iDateSprigganChecked")==0)
-			StorageUtil.SetIntValue( akActor, "_SD_iDateSprigganChecked", Game.QueryStat("Days Passed"))
 
 			Int index = 0
 			Int size = _SDFLP_spriggan_factions.GetSize()
@@ -405,6 +411,7 @@ Bool Function checkIfSpriggan ( Actor akActor )
 			EndWhile
 
 			StorageUtil.SetIntValue( akActor, "_SD_bIsSpriggan", bIsSpriggan as Int) 
+			StorageUtil.SetIntValue( akActor, "_SD_iDateSprigganChecked", Game.QueryStat("Days Passed"))
 		else
 			bIsSpriggan = StorageUtil.GetIntValue( akActor, "_SD_bIsSpriggan") as Bool
 		endIf
@@ -786,7 +793,7 @@ Function clearSlaveFactions( Actor akSlave )
 
 	while(i < valueCount)
 		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
-		If (slaveFaction != none)
+		If (slaveFaction != none) && (StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")!=  -1 )
 			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
 
 			Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )

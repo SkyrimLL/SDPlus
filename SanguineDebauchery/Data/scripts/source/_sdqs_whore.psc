@@ -28,6 +28,7 @@ Float fRegForUpdate = 5.0
 Bool Function addToQueue( ObjectReference akObject )
 	Bool bAdded = False
 	Actor akActor = akObject as Actor
+	Actor akPlayer = Game.GetPlayer()
 	
 	If ( akObject != None ) && ( akActor != None )
 		If (!akActor.IsGhost()) && (!akObject.IsDisabled()) &&  (SexLab.ValidateActor( akActor ) > 0) 
@@ -157,6 +158,10 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 			EndIf
 			_SDORP_queue[iIdx] = None
 			_SDORP_queueAliasRef[iIdx].ForceRefTo( akWhore )
+			If (iThreesome == 1) 
+				_SDORP_queue[iIdx+1] = None
+				_SDORP_queueAliasRef[iIdx+1].ForceRefTo( akWhore )
+			endif
 		Else
 			if  (_SDORP_queueAliasRef[iIdx].GetReference() != akWhore)			
 				_SDORP_queueAliasRef[iIdx].ForceRefTo( akWhore )
@@ -225,7 +230,7 @@ EndState
 State monitor
 	Event OnUpdate()
 		While( whore.GetCurrentScene() )
-			Utility.Wait( 5.0 )
+			Utility.Wait( 1.0 )
 		EndWhile
 
 		; checkQueue( )

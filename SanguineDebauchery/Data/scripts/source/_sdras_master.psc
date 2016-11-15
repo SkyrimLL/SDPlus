@@ -2,8 +2,7 @@ Scriptname _SDRAS_master extends ReferenceAlias Conditional
 { USED }
 Import Utility
 
-SexLabFramework Property SexLab  Auto  
-daymoyl_MonitorVariables 	Property Variables Auto
+SexLabFramework Property SexLab  Auto   
 _SDQS_functions Property funct  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_inventory Property fctInventory  Auto
@@ -142,15 +141,11 @@ Event OnDeath(Actor akKiller)
 EndEvent
 
 Event OnEnterBleedout()
-	if (kMaster.IsEssential()) && (Variables.FollowerSetting==0)
+	if (kMaster.IsEssential()) ; && (Variables.FollowerSetting==0)
 		Debug.Trace("[_sdras_master] Essential master bleeding out - Stop enslavement")
 		SendModEvent("PCSubFree")
 		; Self.GetOwningQuest().Stop()
 	EndIf
-EndEvent
-
-Event OnCellLoad()
-
 EndEvent
 
 Event OnPackageChange(Package akOldPackage)
@@ -233,7 +228,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 EndEvent
 
 Event OnLostLOS(Actor akViewer, ObjectReference akTarget)
-	If (kMaster) && (kSlave) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0)
+	If (kMaster) && (kSlave) 
 
 		If ( kMaster.GetDistance( kSlave ) > _SDGVP_escape_radius.GetValue() / 4.0 )
 			GoToState("search")
@@ -245,7 +240,7 @@ Event OnLostLOS(Actor akViewer, ObjectReference akTarget)
 EndEvent
 
 Event OnGainLOS(Actor akViewer, ObjectReference akTarget)
-	If (kMaster) && (kSlave) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0)
+	If (kMaster) && (kSlave)  
 		kMaster.ClearLookAt()
 		enslavement.bSearchForSlave = False
 
@@ -273,7 +268,7 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 		Return
 	EndIf
 
-	If (kSourceContainer == kSlave ) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0)
+	If (kSourceContainer == kSlave ) 
 		Debug.Trace( "[SD] Master receives an item from player" )
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 			Debug.Notification( "Good slave." )
@@ -360,14 +355,14 @@ Event OnInit()
 	Utility.Wait(5.0)
 		
 	If ( Self.GetOwningQuest() )
-		RegisterForSingleUpdate( fRFSU )
+	 	RegisterForSingleUpdate( fRFSU )
 	EndIf
 	GoToState("waiting")
 EndEvent
 
 State waiting
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsRunning() ) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+		If ( Self.GetOwningQuest().IsRunning() ) ; && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			distanceAverage = 0
 			GoToState("monitor")
 		EndIf
@@ -401,8 +396,8 @@ State monitor
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() )
+		; EndWhile
 
 		; Master variable updates
 		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") )
@@ -798,8 +793,8 @@ State search
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() )
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() )
+		; EndWhile
 		
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in search - Stop enslavement")
@@ -836,8 +831,8 @@ State combat
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
-		EndWhile
+		; While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
+		; EndWhile
 
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in combat- Stop enslavement")
@@ -870,8 +865,8 @@ State caged
 	EndEvent
 
 	Event OnUpdate()
-		While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
-		EndWhile
+	;	While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
+	;	EndWhile
 		
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in caged - Stop enslavement")

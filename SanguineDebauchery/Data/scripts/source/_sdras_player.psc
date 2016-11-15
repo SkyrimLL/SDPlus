@@ -139,7 +139,8 @@ Event OnInit()
 		RegisterForSingleUpdate( 0.1 )
 	EndIf
 EndEvent
- 
+
+
 
 Function _Maintenance()
 	If (!StorageUtil.HasIntValue(none, "_SD_iSD"))
@@ -182,13 +183,16 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubMasterFollow",   "OnSDMasterFollow")
 	RegisterForModEvent("PCSubMasterTravel",   "OnSDMasterTravel")
 	RegisterForModEvent("SDSanguineBlessingMod",   "OnSDSanguineBlessingMod")
-	RegisterForCrosshairRef()
 
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+
+	; Release player from enslavement if sent to Simple slavery cell
+	RegisterForModEvent("SSLV Entry",   "OnSDFree")
+	RegisterForCrosshairRef()
 
 	; Check for DLC Races
 	If (StorageUtil.GetFormValue(None, "_SD_Race_SprigganEarthMother") == none)
@@ -227,6 +231,22 @@ Function _Maintenance()
 	_SDGVP_isPlayerBimbo.SetValue(isPlayerBimbo as Int)
  
 EndFunction
+
+Event OnCrosshairRefChange(ObjectReference ref)
+	ObjectReference PlayerREF= kPlayer
+	Actor PlayerActor= PlayerREF as Actor
+
+	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iSurrenderOn")==1)
+		If  (ref != none) && ( (ref as Actor) != none)
+
+			if (ref.GetVoiceType() != none) && (!(ref as Actor).IsDead())  ;is this an actor?
+				kCrosshairTarget = ref 
+				; Debug.Notification("[SD] Looking at potential master")
+			endif
+
+		EndIf
+	Endif
+EndEvent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= kPlayer
@@ -532,8 +552,8 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
 
-			While ( _SDQP_enslavement.IsStopping() )
-			EndWhile
+			; While ( _SDQP_enslavement.IsStopping() )
+			; EndWhile
 
 		EndIf
 
@@ -599,8 +619,8 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
 
-			While ( _SDQP_enslavement.IsStopping() )
-			EndWhile
+			; While ( _SDQP_enslavement.IsStopping() )
+			; EndWhile
 
 		EndIf
 
@@ -672,8 +692,8 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
 			_SDQP_enslavement.Stop()
 
-			While ( _SDQP_enslavement.IsStopping() )
-			EndWhile
+			; While ( _SDQP_enslavement.IsStopping() )
+			; EndWhile
 
 			Debug.Trace("[_sdras_player] Slave transfer - enslavement stopped" )
 
@@ -1258,25 +1278,14 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 
 EndEvent
 
-Event OnCrosshairRefChange(ObjectReference ref)
-
-	If  (ref != none) && ( (ref as Actor) != none)
-
-		if (ref.GetVoiceType() != none) && (!(ref as Actor).IsDead())  ;is this an actor?
-			kCrosshairTarget = ref 
-			; Debug.Notification("[SD] Looking at potential master")
-		endif
-
-	EndIf
-EndEvent
 
 
-Event OnLocationChange(Location akOldLoc, Location akNewLoc)
-	kCrosshairTarget = none ; reset target
+; Event OnLocationChange(Location akOldLoc, Location akNewLoc)
+	; kCrosshairTarget = none ; reset target
 
-	fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
+	; fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
-EndEvent
+; EndEvent
 
 State waiting
 	Event OnUpdate()
@@ -1325,6 +1334,9 @@ State monitor
 		RegisterForKey( keys[2] )
 		RegisterForKey( keys[3] )
 
+		Debug.Trace("[_sdras_load] Calling _sd_player maintenance")
+		_Maintenance()
+
 		; Debug.Notification("[SD] Registering keys" + keys.Length)
 
 		if ( StorageUtil.GetIntValue( kPlayer, "_SD_iEnslaved") > 0 )
@@ -1358,6 +1370,9 @@ State monitor
  			fctConstraints.UpdateStanceOverrides() 
 
 	    ;endif 
+		If ( Self.GetOwningQuest() )
+			RegisterForSingleUpdate( 0.1 )
+		EndIf
 
 	EndEvent
 
@@ -1373,8 +1388,10 @@ State monitor
 	EndEvent
 
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslavementInitSequenceOn")==1) ; wait for end of enslavement sequence
+		If ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() ) ; wait for end of enslavement sequence
 			GoToState("waiting")
+
+			; Is this really necessary?  'waiting' state already has an update loop.
 
 			If ( Self.GetOwningQuest() )
 				RegisterForSingleUpdate( 0.1 )
@@ -1414,13 +1431,14 @@ State monitor
 
 			If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
 				fOldExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float)
-				fExposureMultiplier =  (_SDGVP_config_slavery_level_mult.GetValue() as Float) 
+				fExposureMultiplier = (_SDGVP_config_slavery_level_mult.GetValue() as Float) 
 
-				if ( StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") < 0)
-					fNewExposure =  fOldExposure * fExposureMultiplier 
-				Else
-					fNewExposure =  fOldExposure * fExposureMultiplier * ( ( (6 - StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
-				endif
+				; Ajusted proposed changes to cooldown and clarified intent in comments below
+				; Slower cooldown at high level of enslavement
+				; Slavery level = 0 - rapid cooldown (0.1 * normal rate)
+				; Slavery level = 6 - inverted cooldown (1.1 * normal rate) - sextoys don't get to cooldown
+				fNewExposure =  fOldExposure * fExposureMultiplier * ( ( (0.1 +  StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
+
 
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
@@ -1441,7 +1459,9 @@ State monitor
 		EndIf
 
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
-		
+		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceEnslavement",_SDGVP_health_threshold.GetValue() as Int )
+		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceSprigganInfection",_SDGVP_config_healthMult.GetValue() as Int )
+
 		If ( keys[0] != config._SDUIP_keys[1] || keys[1] != config._SDUIP_keys[6] || keys[2] != config._SDUIP_keys[2] || keys[3] != config._SDUIP_keys[5] )
 			UnregisterForKey( keys[0] )
 			UnregisterForKey( keys[1] )
@@ -1543,8 +1563,8 @@ State monitor
 				Int IButton = _SD_safetyMenu.Show()
 
 				Debug.Notification("You cling to your last breath...")
-				Monitor.SetBlackScreenEffect(false)
-				Monitor.SetPlayerControl(true)
+				; Monitor.SetBlackScreenEffect(false)
+				; Monitor.SetPlayerControl(true)
 
 				If (IButton == 0 ) 	
 					Debug.Trace("[SD] Surrender")
@@ -1577,7 +1597,7 @@ State monitor
 
 					ElseIf (Utility.RandomInt(0,100) > 30)	&& (isInKWeakenedState)
 						; restore all hp	
-						Monitor.BufferDamageReceived(9999.0)  	
+						; Monitor.BufferDamageReceived(9999.0)  	
 
 					Else
 						Debug.Notification("Your prayer goes unanswered...")
@@ -1700,6 +1720,7 @@ State surrender
 		; Key mapping reference - http://www.creationkit.com/Input_Script#DXScanCodes
 		; Drop current weapon - Do this first to prevent camera stuck in combat mode
  		Debug.Notification("[SD] Entering surrender state")
+ 		StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 1)
 
 		if(kPlayer.IsWeaponDrawn())
 			kPlayer.SheatheWeapon()
@@ -1713,22 +1734,27 @@ State surrender
 
 	EndEvent
 
+
+
 	Event OnUpdate()
 		Actor kCombatTarget = kPlayer.GetCombatTarget() as Actor
 		Actor kSubmitTarget = kCrosshairTarget as Actor
 
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslavementInitSequenceOn")==1)
  			Debug.Notification("[SD] Aborting surrender")
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 			GoToState("monitor")
 		Endif
 
 		if (kCombatTarget!=none)
 			Debug.Notification("[SD] Surrender to combat target")
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 			kCombatTarget.SendModEvent("PCSubSurrender")
 			GoToState("monitor")
 
 		elseif (kSubmitTarget!=none) && (!kPlayer.IsInCombat())
 			Debug.Notification("[SD] Surrender to crosshair target")
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 			kSubmitTarget.SendModEvent("PCSubSurrender")
 			GoToState("monitor")
 
@@ -1767,6 +1793,7 @@ State surrender
 
 		If ( aiKeyCode == keys[1] ) 
  			Debug.Notification("[SD] Aborting surrender")
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 			GoToState("monitor")
 		Endif
 	Endevent
@@ -1776,6 +1803,7 @@ State surrender
 
 		If (!akActor.IsDead())
 			Debug.Notification("[SD] Surrender to aggressor")
+			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 			akActor.SendModEvent("PCSubSurrender")
 			GoToState("monitor")
 
@@ -1802,7 +1830,6 @@ FormList Property _SDFL_banned_sex  Auto
 FormList Property _SDFL_allowed_creature_sex  Auto  
 
 SPELL Property Calm  Auto  
-daymoyl_MonitorScript 		Property Monitor 		Auto
 Message Property _SD_safetyMenu  Auto  
 Message Property _SD_enslaveMenu Auto
 
