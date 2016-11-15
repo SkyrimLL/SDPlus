@@ -485,8 +485,15 @@ function _RegisterRaces()
 	AddRaceID("Werewolves", "_00WerewolfKingBeastRace") 
 
 	AddRaceID("Wolves", "_00AspectRace")
+	AddRaceID("Wolves", "HyenaRaceSlice")
 
 	; AddRaceID("Dogs", "DogRace")
+
+	AddRaceID("SabreCats", "TigerRaceSlice")
+	AddRaceID("SabreCats", "PantherRaceSlice")
+	AddRaceID("SabreCats", "LionRaceSlice")
+	AddRaceID("SabreCats", "LynxRace")
+	AddRaceID("SabreCats", "CatRaceSlice")
 
 	; AddRaceID("VampireLords", "DLC1VampireBeastRace")
 

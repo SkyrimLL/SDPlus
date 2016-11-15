@@ -9,6 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor kPlayer = Game.GetPlayer() as Actor
 ObjectReference kPlayerRef = Game.GetPlayer()
 
+Self.GetOwningQuest().SetStage(410)
 Self.GetOwningQuest().SetStage(420)
 ;END CODE
 EndFunction

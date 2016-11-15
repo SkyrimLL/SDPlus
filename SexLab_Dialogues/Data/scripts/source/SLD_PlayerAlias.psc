@@ -157,6 +157,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	Actor   victim  = SexLab.HookVictim(_args)
 	Actor[] victims = new Actor[1]
 	victims[0] = victim
+	String actorName = ""
 	
 	; if config.bDebugMsg
 	; 	_listActors("End: ", actors)
@@ -267,6 +268,15 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				; -4: Archnemesis
 
 				iSexCount = SexLab.PlayerSexCount( actors[idx] )
+				ActorBase actBase = actors[idx].GetActorBase()
+
+				if ( (actors[idx] as Form).GetName()!="")
+					actorName = (actors[idx] as Form).GetName()
+				elseif (actBase.GetSex() ==0)
+					actorName = "He"
+				else
+					actorName = "She"
+				EndIf
 
 				If (iTrust >= 0 ) && (iDisposition >= 0) && !isPCVictim && !isPCRapist 
 					if isAnimSeduction
@@ -279,6 +289,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 						If (actors[idx].GetRelationshipRank(PlayerActor) == 0 )
 							actors[idx].SetRelationshipRank(PlayerActor, 1 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 1 )
+							Debug.Notification(actorName + " stretches with a satisfied grin.")
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
@@ -289,6 +300,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 1)
 							actors[idx].SetRelationshipRank(PlayerActor, 2 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 2 )
+							Debug.Notification(actorName + " sighs happily.")
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
@@ -304,6 +316,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 							actors[idx].SetFactionRank( CurrentFollowerFaction, -1)
 							actors[idx].SetAV( "Assistance", 2)
 							actors[idx].SetAV( "Confidence", 3)
+							Debug.Notification(actorName + " smiles and snuggles close to you.")
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
@@ -320,6 +333,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 							actors[idx].AddToFaction(PotentialMarriageFaction)
 							actors[idx].SetAV( "Assistance", 2)
 							actors[idx].SetAV( "Confidence", 3)
+							Debug.Notification(actorName + " holds you and looks at you lovingly.")
 
 						Elseif (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType") <= 4)
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType" , actors[idx].GetRelationshipRank(PlayerActor) )
@@ -331,28 +345,44 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 					; Enable PCSub topics
 					StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", -5 )
 
-				ElseIf isPCRapist && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 10)
+				ElseIf isPCRapist && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 1)
 					; Enable PCDom topics
 
-					StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 5 )
+					iF ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 10)
 
-					If ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") <= 20) && (Utility.RandomInt(0,100) >80)
-						actors[idx].SetRelationshipRank(PlayerActor, -2)
-						actors[idx].SetActorValue("Aggression", 1)
-						actors[idx].SetActorValue("Confidence", 3)
-						actors[idx].SetActorValue("Assistance", 0)
-						Debug.Notification("Get away from me!")
-					Else
-						Debug.Notification("Enough... please! I will do anything you want!")
-						actors[idx].SetRelationshipRank(PlayerActor, 1)
-						actors[idx].SetActorValue("Aggression", 0)
-						actors[idx].SetActorValue("Confidence", 0)
-						actors[idx].SetActorValue("Assistance", 0)
+						If ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") <= 20) && (Utility.RandomInt(0,100) >80) && (StorageUtil.GetIntValue(actors[idx], "_SD_iRelationshipType" )<5)
+							actors[idx].SetRelationshipRank(PlayerActor, -2)
+							actors[idx].SetActorValue("Aggression", 1)
+							actors[idx].SetActorValue("Confidence", 3)
+							actors[idx].SetActorValue("Assistance", 0)
+							Debug.Notification(actorName + " screams 'Get away from me!'")
+						Else
+							Debug.Notification(actorName + " pleads 'stop.. please! I will do anything you want!'")
+							actors[idx].SetRelationshipRank(PlayerActor, 1)
+							actors[idx].SetActorValue("Aggression", 0)
+							actors[idx].SetActorValue("Confidence", 0)
+							actors[idx].SetActorValue("Assistance", 0)
+							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 5 )
 
-						; Puppet master spell disabled here - making an NPC a slave opens up a manual Puppet Master topic
-						; StorageUtil.SetIntValue(PlayerActor, "Puppet_CastTarget", 1)
-						; StorageUtil.SetFormValue(PlayerActor, "Puppet_NewTarget", actors[idx] )
-					EndIf
+							; Puppet master spell disabled here - making an NPC a slave opens up a manual Puppet Master topic
+							; StorageUtil.SetIntValue(PlayerActor, "Puppet_CastTarget", 1)
+							; StorageUtil.SetFormValue(PlayerActor, "Puppet_NewTarget", actors[idx] )
+						EndIf
+					ElseIf ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") < 10) && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 9)
+						Debug.Notification(actorName + " stops fighting and stares at the floor in shock.")
+
+					ElseIf ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") < 9) && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 8)
+						Debug.Notification(actorName + " struggles weakly.")
+
+					ElseIf ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") < 8) && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 6)
+						Debug.Notification(actorName + " whimpers and squirms away from you.")
+
+					ElseIf ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") < 6) && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 3)
+						Debug.Notification(actorName + " cries out and pushes against you.")
+
+					ElseIf ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") < 3) && ( StorageUtil.GetIntValue( actors[idx] , "_SD_iRapeCountPCDom") >= 1)
+						Debug.Notification(actorName + " tries to claw at your face and bite you.")
+					Endif
 
 				EndIf	
 
