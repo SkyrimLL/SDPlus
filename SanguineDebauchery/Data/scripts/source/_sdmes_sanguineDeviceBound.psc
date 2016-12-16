@@ -23,7 +23,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	EndIf
 
 	if (!fctOutfit.isArmsEquipped (  akTarget ))  && !fctOutfit.isYokeEquipped( akTarget )  && (Utility.RandomInt(0,100) > 40)
-		fctOutfit.equipDeviceByString ( sDeviceString = "Armbinder")
+		fctOutfit.equipDeviceByString ( sDeviceString = "Armbinders")
 	Else
 		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
 	EndIf

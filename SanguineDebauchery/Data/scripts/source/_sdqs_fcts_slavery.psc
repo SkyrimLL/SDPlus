@@ -411,6 +411,7 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 
 	; Compatibility with other mods
 	ZazSlaveControl.ReleaseSlave(kSlave,"SD")
+	ZazSlaveControl.SetPlayerMaster(None,"SD")
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
 	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset

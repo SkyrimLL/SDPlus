@@ -229,6 +229,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; Transfer of inventory
 		; If ( aiValue2 == 0 )
 		If ( _SDGVP_config[3].GetValue() as Bool )
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 1)
 			fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
 
 			If ( kSlave.GetItemCount( kRags ) == 0 )
@@ -248,6 +249,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 			; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 
+			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 0)
 			kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
 		EndIf

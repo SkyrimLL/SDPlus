@@ -402,12 +402,12 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	; Handling of enslaved followers
 	If (StorageUtil.GetIntValue(Player, "_SD_iEnslaved") ==1)
 		Actor kMaster = StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as Actor 
-		Int valueCount = StorageUtil.FormListCount(kMaster, "_SD_lEnslavedFollower")
+		Int valueCount = StorageUtil.FormListCount(Player, "_SD_lEnslavedFollower")
 		int i = 0
 		Actor thisActor = None
 
 		while(i < valueCount) && (thisActor == None)
-			thisActor = StorageUtil.FormListGet(kMaster, "_SD_lEnslavedFollower", i) as Actor
+			thisActor = StorageUtil.FormListGet(Player, "_SD_lEnslavedFollower", i) as Actor
 
 			i += 1
 		endwhile
@@ -416,19 +416,26 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 		if (thisActor!=None) && !thisActor.IsDead()
 			; Pick the first available follower for now
-			if (Utility.RandomInt(0,100)>70)   ; chance the owner will prefer to use a follower
+			if (Utility.RandomInt(0,100)>(40 + StorageUtil.GetIntValue(Player, "_SD_iSlaveryLevel") * 5))   ; chance the owner will prefer to use a follower
 				Debug.Trace("[SD sex] Master using follower" )
 
 				if (Utility.RandomInt(0,100)>70) && (checkGenderRestriction(thisActor, akTarget))  ; chance of player + follower
 					akSpeaker = thisActor
-					Debug.Notification("Show me what you can do with your friend here...")
+					Debug.Notification("(Your follower is compelled to use you)")
 
 				elseif (checkGenderRestriction(akSpeaker, thisActor))  ; chance of master + follower
 					akTarget = thisActor
-					Debug.Notification("Let's see what your friend is capable of...")
+					Debug.Notification("(Your follower is used in front of you)")
 
+				else 
+					Debug.Trace("[SD]  Your follower is not compatible - " + thisActor)
 				endif
+			else 
+				Debug.Trace("[SD]  Your follower was ignored.")
+
 			endif
+		else 
+			Debug.Trace("[SD]   Follower actor is empty")
 		endif
 	Endif
 

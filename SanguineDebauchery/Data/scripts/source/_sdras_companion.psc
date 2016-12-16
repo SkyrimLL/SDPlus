@@ -3,7 +3,9 @@ _SDQS_functions Property funct  Auto
 _SDQS_fcts_followers Property fctFollowers  Auto
 _SDQS_fcts_factions Property fctFactions Auto
 _SDQS_fcts_outfit Property fctOutfit Auto
+_SDQS_fcts_inventory Property fctInventory  Auto
 
+ReferenceAlias Property _SDRAP_playerStorage  Auto  
 ReferenceAlias Property _SDRAP_master  Auto
 
 Faction Property _SDFP_slaverResistance  Auto
@@ -13,6 +15,7 @@ FormList Property _SDFLP_punish_items  Auto
 FormList Property _SDFLP_companion_items  Auto
 
 Outfit Property _SDOP_naked  Auto  
+Outfit Property _SDOP_gagged  Auto  
 Idle Property OffsetBoundStandingStart  Auto  
 
 Bool bEnslaved = False
@@ -119,7 +122,6 @@ Function enslaveCompanion( Actor kActor)
 				Debug.MessageBox("Your follower is dragged away in bondage...") 
 				fctFollowers.sendCaptiveFollowerAway(kActor) 
 				; fctOutfit.equipDeviceNPCByString ( kActor, "Yoke", "", false, false, "")
-				; fctOutfit.clearDeviceNPCByString ( kActor, "Armbinder") 
 
 			Else
 				; kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
@@ -136,32 +138,40 @@ Function enslaveCompanion( Actor kActor)
 
 			Utility.Wait(1.0)
 
-
+			; if (fctFactions.checkIfSlaverCreatureRace ( kMaster ))
 			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped")!=-1 )
 				StorageUtil.SetIntValue(kActor, "_SD_iCanBeStripped", 1)
 			EndIf
 
 			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") == 1 )
+				; fctOutfit.clearDeviceNPCByString ( kActor, "Gag") 
 				funct.sexlabStripActor( kActor )
-				kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
+				; kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
+				fctInventory.safeRemoveAllItems ( kActor, _SDRAP_playerStorage.GetReference() )
 
-				; kActor.SetOutfit( _SDOP_naked )
-				; kActor.SetOutfit( _SDOP_naked, True )
+				; kActor.SetOutfit( _SDOP_gagged )
+				; kActor.SetOutfit( _SDOP_gagged, True )
+
+				kActor.SetOutfit( _SDOP_naked )
+				kActor.SetOutfit( _SDOP_naked, True )
 			EndIf
 			
+			; Slave gear for Follower disabled for now ... potential issue with disabling all dialogues
+
 			idx = 0
 			While idx < _SDFLP_companion_items.GetSize()
-			 	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
-			 	kActor.AddItem( nthArmor, 1 )
-			 	kActor.EquipItem( nthArmor, True, True )
-			 	idx += 1
+			  	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
+			  	kActor.AddItem( nthArmor, 1 )
+			  	kActor.EquipItem( nthArmor, True, True )
+			  	idx += 1
 			EndWhile
 
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
-			kActor.playIdle(OffsetBoundStandingStart) 
+			; kActor.playIdle(OffsetBoundStandingStart) 
 
-			fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
-			fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
+			; fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
+			; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
+			; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 
 			kActor.EvaluatePackage()
 		Else

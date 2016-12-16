@@ -682,21 +682,27 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 			nthActor = _SDRAP_companions[idx].GetReference() as Actor
 			If ( nthActor )
 				funct.removeItemsInList( nthActor, _SDFLP_companion_items )
+
 				If (bCollar)
 					; nthActor.SendModEvent("SDClearDevice","Collar:zap")
 					fctOutfit.clearDeviceNPCByString ( nthActor, "Collar" )
 				Endif
-				; If (bBindings )
+				If (bBindings )
 					; nthActor.SendModEvent("SDClearDevice","Armbinder:zap")
-				;	fctOutfit.clearDeviceNPCByString ( nthActor, "Armbinder" )
-				; Endif
+					fctOutfit.clearDeviceNPCByString ( nthActor, "Armbinder" )
+				Endif
 				If (bPunish )
 					; nthActor.SendModEvent("SDClearDevice","Gag:zap")
 					fctOutfit.clearDeviceNPCByString ( nthActor, "Gag" )
 				Endif
+				
+				nthActor.SetOutfit( _SDOP_naked )
+				nthActor.SetOutfit( _SDOP_naked, True )
+
 			EndIf
 			idx += 1
 		EndWhile
+
 
 	EndIf
 EndFunction
@@ -738,6 +744,7 @@ FormList Property _SDFLP_companion_items  Auto
 Quest[] Property _SDQP_subquests  Auto  
 
 Faction Property _SDFP_mistwatch  Auto  
+Outfit Property _SDOP_naked  Auto  
 
 Actor nthActor
 Int itemCount
