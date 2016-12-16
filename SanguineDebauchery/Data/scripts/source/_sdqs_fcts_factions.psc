@@ -719,7 +719,7 @@ Function syncActorFactionsByRace( Actor akMaster, Actor akSlave, FormList alFact
 
 		slaveFaction = nthForm as Faction
 
-		Debug.Notification("[SD] Master Default Faction: " + nthForm)
+		; Debug.Notification("[SD] Master Default Faction: " + nthForm)
 		Debug.Trace("[SD] Master Default Faction: " + nthForm)
 		if (!akSlave.IsInFaction( slaveFaction ) && (StringUtil.Find(sFactionName, "SexLab")== -1)  && (StringUtil.Find(sFactionName, "SOS")== -1)  && (StringUtil.Find(sFactionName, "Schlong")== -1) && (StringUtil.Find(sFactionName, "Dialogue Disable")== -1) )
 			; Only add slave to faction he/she is not member of yet
@@ -727,7 +727,7 @@ Function syncActorFactionsByRace( Actor akMaster, Actor akSlave, FormList alFact
 
 			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
 			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
-			Debug.Notification("[SD] Slave faction joined: " + nthForm)
+			; Debug.Notification("[SD] Slave faction joined: " + nthForm)
 			Debug.Trace("[SD]		- Slave faction joined: " + nthForm)
 
 			If ( alFactionListOut != None )
@@ -770,7 +770,7 @@ Function expireSlaveFactions( Actor akSlave )
 
 				; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
 				StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
-				Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+				Debug.Trace("[SD]   Slave faction removed: " + slaveFaction.GetName())
 
 				akSlave.RemoveFromFaction( slaveFaction as Faction )
 
@@ -800,7 +800,7 @@ Function clearSlaveFactions( Actor akSlave )
 
 			; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
 			StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
-			Debug.Notification("Slave faction removed: " + slaveFaction.GetName())
+			Debug.Trace("[SD]    Slave faction removed: " + slaveFaction.GetName())
 
 			akSlave.RemoveFromFaction( slaveFaction as Faction )
 		Endif
@@ -859,7 +859,7 @@ Bool Function allyToActor( Actor akMaster, Actor akSlave, FormList alFactionList
 		If ( akMaster.IsInFaction( nTHfaction ) && !akSlave.IsInFaction( nTHfaction ) )
 			StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
 			StorageUtil.SetIntValue( nthForm, "_SD_iDaysPassedJoinedFaction",  Game.QueryStat("Days Passed") )
-			Debug.Notification("Slave faction joined: " + nthForm.GetName())
+			Debug.Trace("[SD]    Slave faction joined: " + nthForm.GetName())
 
 			If ( alFactionListOut != None )
 				alFactionListOut.AddForm( nTHfaction )

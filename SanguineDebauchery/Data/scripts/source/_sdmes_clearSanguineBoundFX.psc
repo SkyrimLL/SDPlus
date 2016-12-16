@@ -24,9 +24,9 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	;	Utility.Wait(1.0)
 	;EndIf
 
-	; if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Armbinder"  )) && (Utility.RandomInt(0, 100) > 40)
+	; if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Armbinders"  )) && (Utility.RandomInt(0, 100) > 40)
 	;	Debug.Trace("[SD] Removing Sanguine Cuffs")
-	;	fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder", sOutfitString = "", skipEvents = true, skipMutex = true )
+	;	fctOutfit.clearDeviceByString ( sDeviceString = "Armbinders", sOutfitString = "", skipEvents = true, skipMutex = true )
 	;	Utility.Wait(1.0)
 	; EndIf
 

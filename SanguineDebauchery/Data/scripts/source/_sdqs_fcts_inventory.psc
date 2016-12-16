@@ -8,10 +8,11 @@ Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference ak
 	Int iFormIndex = 0
 	Bool bDeviousDeviceEquipped = False
 	Actor kPlayer = Game.GetPlayer()
+	Actor kActor = akContainer as Actor
 
 	; First - limited removal of equipped items according to SexLab Consensual settings
 
-	form[] slaveEquipment = SexLab.StripActor(akContainer as Actor)
+	form[] slaveEquipment = SexLab.StripActor(kActor)
 
 	iFormIndex = slaveEquipment.Length
 
@@ -19,11 +20,11 @@ Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference ak
 		iFormIndex -= 1
 		Form kForm = slaveEquipment[iFormIndex]
 
-		bDeviousDeviceEquipped = ( kPlayer.isEquipped(kForm) && (!SexLab.IsStrippable(kForm) || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
+		bDeviousDeviceEquipped = ( kActor.isEquipped(kForm) && (!SexLab.IsStrippable(kForm) || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
 
 		If ( kForm && akIgnored && akIgnored.HasForm( kForm ) )
 			; continue
-		ElseIf ( kForm &&  uiTypes.Find( kForm.GetType() ) > -1 && !kForm.HasKeywordString("VendorNoSale") && !kForm.HasKeywordString("MagicDisallowEnchanting")  && !kForm.HasKeywordString("SOS_Underwear")  && !kForm.HasKeywordString("SOS_Genitals") && !kForm.HasKeywordString("_SLMC_MCDevice") && ( !bDeviousDeviceEquipped || !( kPlayer.isEquipped(kForm) && kForm.hasKeywordString("zad_DeviousGag")) ) ) 
+		ElseIf ( kForm &&  uiTypes.Find( kForm.GetType() ) > -1 && !kForm.HasKeywordString("VendorNoSale") && !kForm.HasKeywordString("MagicDisallowEnchanting")  && !kForm.HasKeywordString("SOS_Underwear")  && !kForm.HasKeywordString("SOS_Genitals") && !kForm.HasKeywordString("_SLMC_MCDevice") && ( !bDeviousDeviceEquipped || !( kActor.isEquipped(kForm) && kForm.hasKeywordString("zad_DeviousGag")) ) ) 
 			; akContainer.RemoveItem(kForm, akContainer.GetItemCount( kForm ), abSilent, akTransferTo)
 			akTransferTo.AddItem(kForm, akContainer.GetItemCount( kForm ))
 		EndIf
@@ -50,16 +51,43 @@ Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference ak
 		iFormIndex -= 1
 		Form kForm = akContainer.GetNthForm(iFormIndex)
 
-		bDeviousDeviceEquipped = ( kPlayer.isEquipped(kForm) && (!SexLab.IsStrippable(kForm) || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
+		bDeviousDeviceEquipped = ( kActor.isEquipped(kForm) && (!SexLab.IsStrippable(kForm) || kForm.hasKeywordString("zad_Lockable") || kForm.hasKeywordString("zad_deviousplug") || kForm.hasKeywordString("zad_DeviousArmbinder")) )
 
 		If ( kForm && akIgnored && akIgnored.HasForm( kForm ) ) || (uiTypes.Find( kForm.GetType() ) == 26)
 			; continue
-		ElseIf ( kForm &&  uiTypes.Find( kForm.GetType() ) > -1 && !kForm.HasKeywordString("VendorNoSale") && !kForm.HasKeywordString("MagicDisallowEnchanting")  && !kForm.HasKeywordString("_SLMC_MCDevice")  && !kForm.HasKeywordString("SOS_Underwear")  && !kForm.HasKeywordString("SOS_Genitals") && ( !bDeviousDeviceEquipped || !( kPlayer.isEquipped(kForm) && kForm.hasKeywordString("zad_DeviousGag")) ) ) 
+		ElseIf ( kForm &&  uiTypes.Find( kForm.GetType() ) > -1 && !kForm.HasKeywordString("VendorNoSale") && !kForm.HasKeywordString("MagicDisallowEnchanting")  && !kForm.HasKeywordString("_SLMC_MCDevice")  && !kForm.HasKeywordString("SOS_Underwear")  && !kForm.HasKeywordString("SOS_Genitals") && ( !bDeviousDeviceEquipped || !( kActor.isEquipped(kForm) && kForm.hasKeywordString("zad_DeviousGag")) ) ) 
 			akContainer.RemoveItem(kForm, akContainer.GetItemCount( kForm ), abSilent, akTransferTo)
 		EndIf
 	EndWhile
 EndFunction
 
+Function safeRemoveAllItems ( ObjectReference akContainer, ObjectReference akTransferTo = None)
+	Int iFormIndex = 0
+	Bool bIgnoreItem = False
+	Actor kPlayer = Game.GetPlayer()
+	Actor kActor = akContainer as Actor
+
+	; form[] slaveEquipment = SexLab.StripActor(kActor)
+	; iFormIndex = slaveEquipment.Length
+
+	iFormIndex = akContainer.GetNumItems()
+
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		; Form kForm = slaveEquipment[iFormIndex]
+		Form kForm = akContainer.GetNthForm(iFormIndex)
+
+		If ( kForm )
+			bIgnoreItem = ( kActor.isEquipped(kForm) && (!SexLab.IsStrippable(kForm)) && !kForm.hasKeywordString("zad_BlockGeneric") && !kForm.hasKeywordString("VendorNoSale") && !kForm.hasKeywordString("SexLabNoStrip") && !kForm.HasKeywordString("MagicDisallowEnchanting")  && !kForm.HasKeywordString("SOS_Underwear")  && !kForm.HasKeywordString("SOS_Genitals") && !kForm.HasKeywordString("_SLMC_MCDevice") ) 
+
+			If ( !bIgnoreItem  ) 
+				akContainer.RemoveItem(kForm, akContainer.GetItemCount( kForm ), True, akTransferTo)
+				; akTransferTo.AddItem(kForm, akContainer.GetItemCount( kForm ))
+			EndIf
+		Endif
+	EndWhile
+
+EndFunction
 
 
 
