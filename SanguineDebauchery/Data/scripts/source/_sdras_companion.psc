@@ -151,26 +151,22 @@ Function enslaveCompanion( Actor kActor)
 
 				; kActor.SetOutfit( _SDOP_gagged )
 				; kActor.SetOutfit( _SDOP_gagged, True )
-
 				kActor.SetOutfit( _SDOP_naked )
 				kActor.SetOutfit( _SDOP_naked, True )
 			EndIf
 			
-			; Slave gear for Follower disabled for now ... potential issue with disabling all dialogues
-
 			idx = 0
 			While idx < _SDFLP_companion_items.GetSize()
-			  	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
-			  	kActor.AddItem( nthArmor, 1 )
-			  	kActor.EquipItem( nthArmor, True, True )
-			  	idx += 1
+			 	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
+			 	kActor.AddItem( nthArmor, 1 )
+			 	kActor.EquipItem( nthArmor, True, True )
+			 	idx += 1
 			EndWhile
 
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
-			; kActor.playIdle(OffsetBoundStandingStart) 
+			kActor.playIdle(OffsetBoundStandingStart) 
 
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
+			fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
 			; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 
 			kActor.EvaluatePackage()
