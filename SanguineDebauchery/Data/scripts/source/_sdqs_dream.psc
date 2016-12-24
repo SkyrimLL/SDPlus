@@ -142,6 +142,7 @@ EndEvent
 
 Function positionVictims( Int aiStage )
 	Int    iGenderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+	Int sanguineGenderMenu = StorageUtil.GetIntValue( kDreamer  , "_SD_iGenderSanguine" )
 
 	; If (Game.GetPlayer().GetParentCell() == _SD_SanguineDreamworld)
 	;	Debug.Trace("[_SDRAS_dream] Player already in Dreamworld - abort.")
@@ -183,11 +184,11 @@ Function positionVictims( Int aiStage )
 	kSanguine = none
 
 	; Necessary to catch upgrades without a ref alias already initalized
-	If (kSanguine_svana==None)
+	If (kSanguine_svana==None) && (sanguineGenderMenu!=0)
 		_SDRAP_sanguine_svana = _SDRAP_sanguine_f
 	endIf
 
-	If (kSanguine_sam==None)
+	If (kSanguine_sam==None) && (sanguineGenderMenu!=1)
 		_SDRAP_sanguine_sam = _SDRAP_sanguine_m
 	endIf
 
@@ -241,19 +242,25 @@ Function positionVictims( Int aiStage )
 		
 	EndIf
 
+	iSanguineGender  = kSanguine.GetLeveledActorBase().GetSex() as Int
+
+	If (sanguineGenderMenu == 2)
+		If (iSanguineGender==0) && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Female" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
+			kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
+		Endif
+		If (iSanguineGender==1)  && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Male" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
+			kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+		endif
+
+	ElseIf (sanguineGenderMenu == 1)
+		kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
+	Else
+		kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
+	Endif
+
 	If (kSanguine == none)
 		kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
 	Endif
-
-	iSanguineGender  = kSanguine.GetLeveledActorBase().GetSex() as Int
-
-	If (iSanguineGender==0) && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Female" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
-		kSanguine = _SDRAP_sanguine_f.GetReference() as Actor
-	Endif
-	If (iSanguineGender==1)  && ( (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Male" ) || (	StorageUtil.GetStringValue(kDreamer, "_SD_sSanguineGender") == "Both" ) )
-		kSanguine = _SDRAP_sanguine_m.GetReference() as Actor
-	endif
-
 	_SDRAP_sanguine.ForceRefTo( kSanguine as ObjectReference )
 
 	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor

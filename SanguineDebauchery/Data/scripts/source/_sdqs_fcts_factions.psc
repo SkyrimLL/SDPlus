@@ -291,6 +291,11 @@ Bool Function checkIfSlaver ( Actor akActor )
 			Debug.Trace("[SD] 		Actor is already an owner")
 		Endif	
 
+		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
+		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverHumanoid", isSlaver as Int) 
+		StorageUtil.SetIntValue( akActor, "_SD_iDateSlaverChecked", Game.QueryStat("Days Passed"))
+
+		; These overrides should not impact the stored status of the NPC
 		isActorAlreadySlaver = ZazSlaveControl.IsMaster(akActor)
 		isPlayerAlreadyOwned = ZazSlaveControl.IsOwnedByMod(akPlayer)  
 		
@@ -305,11 +310,6 @@ Bool Function checkIfSlaver ( Actor akActor )
 			Debug.Trace("[SD] 		Player is already owned by a ZAP compatible mod - aborting")
 			isSlaver = False
 		Endif
-
-
-		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
-		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverHumanoid", isSlaver as Int) 
-		StorageUtil.SetIntValue( akActor, "_SD_iDateSlaverChecked", Game.QueryStat("Days Passed"))
 	else
 		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverHumanoid") as Bool
 	endIf
@@ -620,7 +620,7 @@ Function syncActorFactions( Actor akMaster, Actor akSlave, FormList alFactionLis
 			; Debug.Notification("	Master Faction: " + nthFaction)
 			Debug.Trace("	Master Faction: " + nthFaction)
 			sFactionName = nthForm.GetName()
-			if !akSlave.IsInFaction( nthFaction ) && (StringUtil.Find(sFactionName, "SexLab")== -1) && (StringUtil.Find(sFactionName, "SOS")== -1) && (StringUtil.Find(sFactionName, "Dialogue Disable")== -1)
+			if !akSlave.IsInFaction( nthFaction ) && (StringUtil.Find(sFactionName, "SexLab")== -1) && (StringUtil.Find(sFactionName, "SOS")== -1)&& (StringUtil.Find(sFactionName, "Schlongified")== -1) && (StringUtil.Find(sFactionName, "Dialogue Disable")== -1) && (StringUtil.Find(sFactionName, "zbf")== -1)
 				; Only add slave to faction he/she is not member of yet
 
 				StorageUtil.FormListAdd( akSlave, "_SD_lSlaveFactions", nthForm )
