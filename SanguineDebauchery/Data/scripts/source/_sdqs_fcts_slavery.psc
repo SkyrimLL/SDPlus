@@ -603,7 +603,7 @@ function SlaveryRefreshGlobalValues( Actor kMaster, Actor kSlave)
 	Int masterPunishNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunish") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunish")
 	Int masterFoodNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood")
 	Int masterGoldNeed = StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") - StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold")
-	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
+	; StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
 
 	_SDGVP_MasterDisposition.SetValue( masterDisposition ) 
 	_SDGVP_MasterDispositionOverall.SetValue( overallMasterDisposition ) 
@@ -719,8 +719,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	int iPunishComplete = 0
 	int iFoodComplete = 0
 	int iGoldComplete = 0
-
-	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
 
 	UpdateSlaveryLevel(kSlave)
 	UpdateSlaveryRelationshipType(kMaster, kSlave)
@@ -862,18 +860,15 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	Endif
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + iTrustBonus)
+	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold")
 
-	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") 
-
-	; Note for later - turn '10' limit into a Difficulty parameter
-	if (masterTrust>10)
-		masterTrust = 10
-	elseif (masterTrust<-10)
-		masterTrust = -10
-	EndIf
+	if (masterTrust>0)
+		ModMasterTrust(kMaster, 6)
+	else
+		ModMasterTrust(kMaster, -6)
+	endif
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
-	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", masterTrust)
 	StorageUtil.SetIntValue(kSlave, "_SD_iDominance", iDominance)
 
 	if (masterTrust > 0)
@@ -893,7 +888,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
 	EndIf
 
-	If fctFactions.checkIfSlaverCreature (  kMaster ) 
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 1) 
 		; Creatures follow slave by default
 		StorageUtil.SetIntValue(kSlave,"_SD_iEnableLeash", 1)
 		StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
@@ -918,10 +913,10 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	; Debug.Notification("[SD] Master: OverallDisposition: " + overallMasterDisposition + " - GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 	; Debug.Notification("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Type: " + masterPersonalityType)
 
-	String statusSex = "Horny - "
-	String statusPunishment = "Vicious \n"
-	String statusFood = "Hungry - "
-	String statusGold = "Greedy \n"
+	String statusSex = "Sex, "
+	String statusPunishment = "Beating you, \n"
+	String statusFood = "Food, "
+	String statusGold = "Gold, \n"
 	String statusMood = "Angry - "
 	String statusTrust = "Suspicious \n"
 	String statusDominance = "Submissive \n"
@@ -948,7 +943,13 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		statusDominance = "Defiant \n"
 	Endif
 
-	String statusMessage = "It's a new day as a slave.\n Today your owner is .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +")"+ "\nTrust: " + masterTrust
+	String statusMessage = "It's a new day as a slave.\n Today your owner needs .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +")"+ "\nTrust: " + masterTrust 
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")>0)
+		statusMessage =  statusMessage + "\nAllowance: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  + " hours free."
+	else
+		statusMessage =  statusMessage + "\nAllowance: " + -1 * StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  + " hours owed."
+	EndIf
+
 	If (bDisplayStatus)
 		Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + "\n (Exposure: " + exposure + ")")
 	Endif
@@ -1085,14 +1086,15 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	iTrust = iTrust + iModValue
 
 
-	if (iTrust>10)
-		iTrust = 10
-	elseif (iTrust<-10)
-		iTrust = -10
+	if (iTrust>120) ; 5 days * 24 hours = 120 points
+		iTrust = 120
+	elseif (iTrust<-120)
+		iTrust = -120
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
-	Debug.Notification("[SD] Trust pool: " + iTrust)
+	Debug.Notification("Slave allowance points: " + iTrust)
+
 	Debug.Trace("[SD] Trust pool after update: " + iTrust)
 
 	Return iTrust

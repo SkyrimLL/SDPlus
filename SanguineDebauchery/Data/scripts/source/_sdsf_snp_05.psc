@@ -7,7 +7,8 @@ Function Fragment_0()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
 Debug.Notification("The whip leaves your skin on fire.")
-
+Actor kPlayer = Game.getPlayer()
+Actor kMaster = StorageUtil.GetFormValue( kPlayer, "_SD_CurrentOwner") as Actor
 Actor female = _SDRAP_female.GetReference() as Actor
 
 
@@ -20,10 +21,14 @@ EndIf
 
 _SDGVP_snp_busy.SetValue(-1)
 ; Self.GetowningQuest().Stop()
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountToday", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iPunishmentCountTotal", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iGoalPunishment", modValue = 1)
-fctSlavery.UpdateSlaveStatus( Game.GetPlayer(), "_SD_iSlaveryExposure", modValue = 1)
+fctSlavery.UpdateSlaveStatus( kPlayer, "_SD_iPunishmentCountToday", modValue = 1)
+fctSlavery.UpdateSlaveStatus( kPlayer, "_SD_iPunishmentCountTotal", modValue = 1)
+fctSlavery.UpdateSlaveStatus( kPlayer, "_SD_iGoalPunishment", modValue = 1)
+fctSlavery.UpdateSlaveStatus( kPlayer, "_SD_iSlaveryExposure", modValue = 1)
+
+fctSlavery.ModMasterTrust( kMaster, -1 )
+
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

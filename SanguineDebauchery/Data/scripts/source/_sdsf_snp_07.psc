@@ -56,7 +56,13 @@ if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
 	fctSlavery.UpdateSlaveStatus( kPlayer , "_SD_iGoalPunishment", modValue = 1)
 	fctSlavery.UpdateSlaveStatus( kPlayer , "_SD_iSlaveryExposure", modValue = 1)
 
- 
+
+	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0 )
+		fctSlavery.ModMasterTrust( kMaster, 1 )
+	else
+		fctSlavery.ModMasterTrust( kMaster, -1 )
+	endif 
+
 	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
 		; Keep hands free by accident
 	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
@@ -194,6 +200,8 @@ If (playerGender ==1)
 else
 	Debug.SendAnimationEvent(slaveREF , "SDFNISc502")
 Endif
+
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

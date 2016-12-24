@@ -641,6 +641,8 @@ Function questShutdown()
 		EndIf
 		idx += 1
 	EndWhile
+
+	StorageUtil.FormListClear(slave, "_SD_lEnslavedFollower")
 	Debug.SendAnimationEvent( slave, "IdleForceDefaultState" )
 EndFunction
 

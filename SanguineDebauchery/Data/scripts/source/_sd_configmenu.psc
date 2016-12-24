@@ -23,6 +23,7 @@ GlobalVariable Property _SDGVP_uninstall  Auto
 GlobalVariable Property _SDGVP_enslaved  Auto
 GlobalVariable Property _SDGVP_sprigganenslaved  Auto
 GlobalVariable Property _SDGVP_config_genderRestrictions  Auto
+GlobalVariable Property _SDGVP_config_genderSanguine  Auto
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
 GlobalVariable Property _SDGVP_state_mcm  Auto
 GlobalVariable Property _SDGVP_config_enableTrainRun  Auto
@@ -33,7 +34,7 @@ GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 GlobalVariable Property _SDGVP_config_ArmbinderKnee  Auto
 GlobalVariable Property _SDGVP_config_SlaveOnKnees  Auto
 GlobalVariable Property _SDGVP_config_RemoveArmBinder  Auto
-GlobalVariable Property _SDGVP_config_RemovePunishment  Auto
+GlobalVariable Property _SDGVP_config_RemovePunishment  Auto  ; mapped to _SDGVP_config_enable_cages
 GlobalVariable Property _SDGVP_config_GagType  Auto
 
 GlobalVariable Property _SDGVP_config_min_slavery_level Auto
@@ -42,6 +43,7 @@ GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
 GlobalVariable Property _SDGVP_config_disposition_threshold Auto
 
 String[] Property _SDSP_config_genderRestrictions  Auto
+String[] Property _SDSP_config_genderSanguine  Auto
 
 Quest Property WIAddItem03  Auto  
 ReferenceAlias Property pThug1  Auto  
@@ -81,6 +83,7 @@ Bool[] Property _SDBP_support_mods_installed  Auto
 ; OIDs (T:Text B:Toggle S:Slider M:Menu, C:Color, K:Key)
 Int _SDOID_config_T1
 Int _SDOID_config_T2
+Int _SDOID_config_T3
 Int _SDOID_config_B1
 Int _SDOID_config_B2
 Int _SDOID_config_B21
@@ -124,9 +127,9 @@ Float _SDOID_config_S5_default = 300.0
 Float _SDOID_config_S5_inc = 5.0
 Int _SDOID_config_S6
 Float _SDOID_config_S6_min = 0.0
-Float _SDOID_config_S6_max = 15.0
-Float _SDOID_config_S6_default = 0.125
-Float _SDOID_config_S6_inc = 0.125
+Float _SDOID_config_S6_max = 100.0
+Float _SDOID_config_S6_default = 5.0
+Float _SDOID_config_S6_inc = 1.0
 Int _SDOID_config_S7
 Float _SDOID_config_S7_min = 50.0
 Float _SDOID_config_S7_max = 100.0
@@ -369,6 +372,11 @@ Function initMod( Bool bResetGlobals = False )
 	_SDSP_config_genderRestrictions[2] = "$SD_GENDER_OPPOSITE"
 	_SDSP_config_genderRestrictions[3] = "SEXLAB"
 
+	_SDSP_config_genderSanguine = New String[3]
+	_SDSP_config_genderSanguine[0] = "Male"
+	_SDSP_config_genderSanguine[1] = "Female"
+	_SDSP_config_genderSanguine[2] = "Use gender restriction"
+
 	; primary
 	_SDOID_quests_p      = New Int[ 5 ]
 	_SDOID_quests_p[0]   = -1
@@ -469,6 +477,7 @@ event OnPageReset(string a_page)
 		_SDOID_config_B3 = AddToggleOption("$SD_OPTION_P0_LIMITED_REMOVAL", _SDGVP_config_itemRemovalType.GetValue() as Bool) ;10 - 6
 		AddHeaderOption("$SD_HEADER_P0_ORIENTATION") ;12 - 7
 		_SDOID_config_T2 = AddTextOption("$SD_OPTION_P0_GENDER_RESTRICTION", _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String ) ;14 - 8
+		_SDOID_config_T3 = AddTextOption("Sanguine gender", _SDSP_config_genderSanguine[ _SDGVP_config_genderSanguine.GetValueInt() ] as String ) ;14 - 8
 		; AddHeaderOption("$SD_HEADER_P0_NOTIFICATION") ;16 - 9
 		; _SDOID_config_B6 = AddToggleOption("$SD_OPTION_P0_SHOW_DEMERIT_CHANGES", _SDGVP_config_verboseMerits.GetValue() as Bool) ;18 - 10
 		AddHeaderOption("$SD_HEADER_P0_NPC_REACTION") ;20 - 11
@@ -478,7 +487,7 @@ event OnPageReset(string a_page)
 		AddHeaderOption("Slave Options")
 		_SDOID_config_B10 = AddToggleOption("Enable Armbinder Kneeling", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
 		_SDOID_config_B11 = AddToggleOption("Enable Beast Enslavement", _SDGVP_config_enable_beast_master.GetValue() as Bool) ;
-		; _SDOID_config_B12 = AddToggleOption("Remove Punishing Items During Punishments", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
+		_SDOID_config_B12 = AddToggleOption("Enable Cage scenes", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
 		; _SDOID_config_B13 = AddToggleOption("Harness Gag Instead of Strap Gag", _SDGVP_config_GagType.GetValue() as Bool) ;
 		_SDOID_config_S8 = AddSliderOption("Min slavery level", _SDGVP_config_min_slavery_level.GetValue() as Float)
 		_SDOID_config_S9 = AddSliderOption("Max slavery level", _SDGVP_config_max_slavery_level.GetValue() as Float)
@@ -493,7 +502,6 @@ event OnPageReset(string a_page)
 		_SDOID_config_S3 = AddSliderOption("$SD_SLIDER_P0_BYOUT_AMOUNT", _SDGVP_config_buyout.GetValue() as Float, "$SD_GOLD") ;11 - 6
 		_SDOID_config_S4 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_RADIUS", _SDGVP_config_escape_radius.GetValue() as Float, "$SD_UNITS") ;13 - 7
 		_SDOID_config_S5 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_TIMER", _SDGVP_config_escape_timer.GetValue() as Float, "$SD_SECONDS") ;15 - 8
-		; _SDOID_config_S6 = AddSliderOption("$SD_SLIDER_P0_DAYS_TO_START_TASKS", _SDGVP_config_work_start.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_S11 = AddSliderOption("Disposition threshold", _SDGVP_config_disposition_threshold.GetValue() as Float,"{1}")
 		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
@@ -708,6 +716,8 @@ event OnOptionHighlight(int a_option)
 		SetInfoText("$_SDOID_config_T1")
 	ElseIf ( a_option == _SDOID_config_T2 )
 		SetInfoText("$_SDOID_config_T2")
+	ElseIf ( a_option == _SDOID_config_T3 )
+		SetInfoText("Force gender of Sanguine in Dreamworld (or leave it to chance based on gender preferences)")
 	ElseIf ( a_option == _SDOID_config_B1 )
 		SetInfoText("$_SDOID_config_B1")
 	ElseIf ( a_option == _SDOID_config_B2 )
@@ -737,7 +747,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_B11 )
 		SetInfoText("Toggle this ON to enable enslavement attempts from beasts (wolf, trols, draugr, etc). ")
 	ElseIf ( a_option == _SDOID_config_B12 )
-		SetInfoText("Toggle this ON to remove punishing items (i.e. belt) during punishments. ")
+		SetInfoText("Toggle this ON to enable cage scenes at night (if a cage is nearby). ")
 	ElseIf ( a_option == _SDOID_config_B13 )
 		SetInfoText("Toggle this ON to equip harness gag instead of strap one. Make this selection before enslavement. ")
 	ElseIf ( a_option == _SDOID_config_S8 )
@@ -783,6 +793,10 @@ event OnOptionSelect(int a_option)
 		_SDGVP_config_genderRestrictions.SetValue( ( _SDGVP_config_genderRestrictions.GetValueInt() + 1 ) % _SDSP_config_genderRestrictions.Length )
 		StorageUtil.SetIntValue( Game.GetPlayer()  , "_SD_iGenderRestrictions",  _SDGVP_config_genderRestrictions.GetValueInt() )
 		SetTextOptionValue(a_option, _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String )
+	ElseIf ( a_option == _SDOID_config_T3 )
+		_SDGVP_config_genderSanguine.SetValue( ( _SDGVP_config_genderSanguine.GetValueInt() + 1 ) % _SDSP_config_genderSanguine.Length )
+		StorageUtil.SetIntValue( Game.GetPlayer()  , "_SD_iGenderSanguine",  _SDGVP_config_genderSanguine.GetValueInt() )
+		SetTextOptionValue(a_option, _SDSP_config_genderSanguine[ _SDGVP_config_genderSanguine.GetValueInt() ] as String )
 	ElseIf ( a_option == _SDOID_help_T1 )
 		ShowMessage("$_SDOID_help_T1_1" , False, "$SD_OK")
 	ElseIf ( a_option == _SDOID_help_T2 )
@@ -913,6 +927,11 @@ event OnOptionDefault(int a_option)
 	ElseIf ( a_option == _SDOID_config_T2 )
 		_SDGVP_config_genderRestrictions.SetValue( 0 )
 		SetTextOptionValue(a_option, _SDSP_config_genderRestrictions[ _SDGVP_config_genderRestrictions.GetValueInt() ] as String )
+		StorageUtil.SetIntValue( Game.GetPlayer()  , "_SD_iGenderRestrictions",  0 )
+	ElseIf ( a_option == _SDOID_config_T3 )
+		_SDGVP_config_genderSanguine.SetValue( 2 )
+		SetTextOptionValue(a_option, _SDSP_config_genderSanguine[ _SDGVP_config_genderSanguine.GetValueInt() ] as String )
+		StorageUtil.SetIntValue( Game.GetPlayer()  , "_SD_iGenderSanguine",  2 )
 	EndIf
 endEvent
 
@@ -955,8 +974,8 @@ event OnOptionSliderOpen(int a_option)
 	ElseIf ( a_option == _SDOID_config_S6 )
 		SetSliderDialogStartValue( _SDGVP_config_join_days.GetValue() as Float )
 		SetSliderDialogDefaultValue( _SDOID_config_S6_default )
-		SetSliderDialogRange( _SDOID_config_S6_min, _SDOID_config_S6_max )
-		SetSliderDialogInterval( _SDOID_config_S6_inc )
+		SetSliderDialogRange( _SDOID_config_S6_min, 100.0 ) ; _SDOID_config_S6_max )
+		SetSliderDialogInterval( 1.0 ) ; _SDOID_config_S6_inc )
 	ElseIf ( a_option == _SDOID_config_S7 )
 		SetSliderDialogStartValue( _SDGVP_config_blindnessLevel.GetValue() as Float )
 		SetSliderDialogDefaultValue( _SDOID_config_S7_default )

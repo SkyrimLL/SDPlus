@@ -104,10 +104,6 @@ Float fBlackoutRatio
 Float fEscapeTime
 Float fEscapeUpdateTime
 Float fOutOfCellTime
-int daysPassed
-int iGameDateLastCheck = -1
-int iDaysSinceLastCheck
-int iCountSinceLastCheck
 Float fEscapeLeashLength
 Float fEscapeTimer
 Float fBuyout
@@ -140,6 +136,16 @@ Int iuIdx
 Int iuCount
 Form kAtIdx
 Float fTime
+int daysPassed
+float timePassed
+int iGameDateLastCheck = -1
+int iDaysSinceLastCheck
+int iCountSinceLastCheck
+int iHoursLastCheck 
+float HourlyTickerLastCallTime = 0.0
+float property HourlyTickerPeriod = 0.05 autoreadonly ; ingame time (days) for Hourly ticker, about 0.04 is enough
+float DailyTickerLastCallTime = 0.0
+float property DailyTickerPeriod = 1.0 autoreadonly ; 1.0 autoreadonly ; ingame time (days) for daily ticker, normally 1.0
 
 Bool[] uiSlotDevice
 Int iWristsDevice = 0 ;59  Bindings
@@ -315,6 +321,7 @@ State waiting
 	EndEvent
 EndState
 
+
 State monitor
 	Event OnBeginState()
 
@@ -346,253 +353,11 @@ State monitor
 		; While ( !Game.GetPlayer().Is3DLoaded() )  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		; EndWhile
 
-		if (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0)
-			fctConstraints.CollarUpdate()
-		endIf
-
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
 		; Debug.Notification("[SD] Punishment: " + fctOutfit.isPunishmentEquipped (  kSlave ) )
 
-		; Update slave status if needed 
-	 	daysPassed = Game.QueryStat("Days Passed")
-
-	 	if (iGameDateLastCheck == -1)
-	 		iGameDateLastCheck = daysPassed
-	 	EndIf
-
-	 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
-
-		If (iDaysSinceLastCheck == 0) ; same day - incremental updates
-			iCountSinceLastCheck += 1
-
-			if (iCountSinceLastCheck >= 100)
-				; Debug.Notification( "[SD] Slavery status - hourly update")
-				iCountSinceLastCheck = 0
-				; Disabled for now - daily update makes more sense
-				; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
-			EndIf
-
-		Else ; day change - full update
-			Debug.Trace( "[SD] Slavery status - daily update")
-			iGameDateLastCheck = daysPassed
-			iCountSinceLastCheck = 0
-			; fctSlavery.UpdateStatusDaily( kMaster, kSlave)
-			kMaster.SendModEvent("PCSubStatus")
-
-			kMaster.SendModEvent("SLDRefreshNPCDialogues")
-
-			StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
-			StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
-			_SDGVP_config_min_days_before_master_travel.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iMasterTravelDelay"))
-
-			If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
-				Debug.Trace( "[SD] Master is bored - starting travel package")
-				_SDGVP_isMasterTraveller.SetValue(1)
-			endif
-
-			; Cooldown at end of day
-			If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") <= -2 )
-				StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 9 / 10 )
-			EndIf
-
-			If ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") <= -2 )
-				StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kMaster, "_SD_iTrust") * 9 / 10 )
-			EndIf
-
-			If ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") >= 2 ) || ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") <= -2 )
-				StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 9 / 10 )
-			EndIf
-
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
-			;	enslavement.PunishSlave( kMaster,  kSlave, "Gag")
-			EndIf
-
-			; Safety - removal of punishments after one day
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
-				enslavement.RewardSlave(kMaster,kSlave,"Gag")
-				enslavement.RewardSlave(kMaster,kSlave,"Yoke")
-			endIf
-
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2) 
-				enslavement.RewardSlave(kMaster,kSlave,"Belt")
-				enslavement.RewardSlave(kMaster,kSlave,"Bra")
-			endIf
-
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 0)
-				enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
-				enslavement.RewardSlave(kMaster,kSlave,"Armbinder")
-			endif
-
-			If (StorageUtil.GetIntValue( kSlave  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kSlave  , "_SD_iEnableAction") == 1) 
-					StorageUtil.SetIntValue( kSlave  , "_SD_iHandsFree", 1 )
-					StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
-			Endif
-
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene() && (Utility.RandomInt(0,100)>60)
-				; Slavery negative 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
-
-				; Debug.Notification("[SD] Endgame: " + kSlaver )
-				; Debug.Notification("[SD] Buyout: " + fBuyout)
-
-				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
-					; Endgame for creatures
-					Debug.MessageBox( "Your owner is fed up with your resistance and turns against you." )
-					kMaster.StartCombat(kSlave)
-					SendModEvent("PCSubFree")
-				Else
-					; genderRestrictions = 0 - any / 1 - same / 2 - opposite
-
-					if (Utility.RandomInt(0,100)>50)
-						kSlaverDest = kSlaver
-					else
-						kSlaverDest = kSlaver2_m
-					Endif
-				
-					Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
-
-					If (iPlayerGender  == 0)
-						; iPlayerGender = 0 - male
-						if (genderRestrictions == 2)
-							kSlaverDest = kSlaver2_f
-						endif
-							
-					Else
-						; iPlayerGender = 1 - female
-						if (genderRestrictions == 1)
-							kSlaverDest = kSlaver2_f
-						endif
-						
-					EndIf
-
-					; Debug.MessageBox("[SD] PlayerGender: " + iPlayerGender + "\n Restrictions: " + genderRestrictions)
-
-					If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest) || (kMaster == kSlaverDest) )
-						; Player saved by Sanguine
-						Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
-						_SD_dreamQuest.SetStage(20)
-					
-					ElseIf (_SD_dreamQuest.GetStage() == 0) && (!kSlaverDest)
-						; Player saved by Sanguine
-						; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
-						_SD_dreamQuest.SetStage(10)
-
-					ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
-						; Master made profit - slave can be sold
-						if (iPlayerGender==0)
-							_SDSMP_choke_m.Play( Game.GetPlayer() )
-						else
-							_SDSMP_choke.Play( Game.GetPlayer() )
-						endif
-
-						Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
-						; Reset to 0 to avoid loop with endgame situations
-						StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
-						fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
-
-						; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
-						; Bool bMariaEden = False
-
-						; If (Utility.RandomInt(0,100) > 70) 
-						; 	bMariaEden = MariaEdenEnslave() 
-						; EndIf
-
-						; If (!bMariaEden)
-						; Endif
-
-
-		                ; Game.FadeOutGame(true, true, 0.5, 5)
-						; (kSlave as ObjectReference).MoveTo( kSlaverDest )
-						; Replace by code to dreamDestination
-						Bool bMariaEden = False
-						Bool bWolfClub = False
-						Bool bSimpleSlavery = False
-						Bool bRedWave = False
-
-						If (Utility.RandomInt(0,100) > 70) 
-							bWolfClub = WolfClubEnslave() 
-							
-						ElseIf (Utility.RandomInt(0,100) > 40) 
-							bSimpleSlavery = SimpleSlaveryEnslave() 
-
-						ElseIf (Utility.RandomInt(0,100) > 50) 
-							bRedWave = RedWaveEnslave()
-
-						ElseIf (Utility.RandomInt(0,100) > 70) 
-						 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
-						EndIf
-
-						If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
-
-			                Game.FadeOutGame(true, true, 0.5, 5)
-							(kSlave as ObjectReference).MoveTo( kSlaverDest )
-							kActor = kSlaverDest as Actor
-							kActor.SendModEvent("PCSubTransfer")
-							Game.FadeOutGame(false, true, 2.0, 20)
-						Else
-							SendModEvent("PCSubFree")
-						Endif
-
-
-						Utility.Wait( 1.0 )
-
-
-					ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
-						; Master lost money - get rid of slave
-						if (iPlayerGender==0)
-							_SDSMP_choke_m.Play( Game.GetPlayer() )
-						else
-							_SDSMP_choke.Play( Game.GetPlayer() )
-						endif
-
-						Debug.MessageBox( "Your owner is tired of your attitude and suddenly hits the back of your head and renders you unconscious.\n When you come to your senses, you find yourself discarded in the wilderness like an old shoe." )
-						; Reset to 0 to avoid loop with endgame situations
-						StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
-
-						SendModEvent("PCSubFree")
-
-		                ; Game.FadeOutGame(true, true, 0.5, 5)
-						; (kSlave as ObjectReference).MoveTo( kSlaverDest )
-						; Replace by code to dreamDestination
-						Bool bWolfClub = False
-
-						If (Utility.RandomInt(0,100) > 70) 
-							bWolfClub = WolfClubEnslave() 
-						EndIf
-
-						If (!bWolfClub)
-							dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
-						Endif
-						; Game.FadeOutGame(false, true, 2.0, 20)
-
-						If (Utility.RandomInt(0,100) > 90) 
-							; Send PC some help
-							SendModEvent("da_StartSecondaryQuest", "Both")
-						EndIf
-
-					EndIf
-				Endif
-			Endif
-		EndIf
-
-		enslavement.UpdateSlaveState(kMaster ,kSlave)
-		enslavement.UpdateSlaveFollowerState(kSlave)
-
-		; Update GlobalVariables based on storageUtil values
-		if (( kMaster.GetSleepState() != 0 ) && (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0))
-			; Reduce leash length and escape time buffer by half if master is awake and angry
-			fEscapeLeashLength = funct.floatMin( _SDGV_leash_length.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2) as Float )
-			fEscapeLeashLength = funct.floatMin( _SDGVP_escape_timer.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer" ) / 2) as Float )
-		Else
-			fEscapeLeashLength = funct.floatMin( _SDGV_leash_length.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") ) as Float )
-			fEscapeLeashLength = funct.floatMin( _SDGVP_escape_timer.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer" ) ) as Float )
-		EndIf
-
-		fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
-		fEnslavementDuration = fctSlavery.GetEnslavementDuration( kSlave)
-		StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavementDuration", fEnslavementDuration ) 
-		_SDGVP_isLeashON.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iEnableLeash") as Int )
-		_SDGVP_state_SlaveDominance.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iDominance") as Int )
+		_slaveStatusTicker()
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -709,7 +474,7 @@ State monitor
 				EndIf
 			EndIf
 
-		ElseIf  (kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlaveCell != kMasterCell)  && (fctOutfit.isCollarEquipped ( kSlave ))
+		ElseIf  (kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 )   || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlaveCell != kMasterCell)  && (fctOutfit.isCollarEquipped ( kSlave ))  && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			; Special handling of interior cells (for large caves with connecting rooms)
 			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep or if master is following (prevent collar teleport when changing cells )
 
@@ -719,7 +484,7 @@ State monitor
  
 			GoToState("escape_shock")	
 
-		ElseIf  (kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 ) || ( kMaster.HasLOS( kSlave ))) && (kSlaveCell != kMasterCell) && (Utility.RandomInt(0,100) > 70)  && (fctOutfit.isCollarEquipped ( kSlave ))
+		ElseIf  (kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 ) || ( kMaster.HasLOS( kSlave ))) && (kSlaveCell != kMasterCell) && (Utility.RandomInt(0,100) > 70)  && (fctOutfit.isCollarEquipped ( kSlave ))  && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			; Special handling of of escape from master's cell while master is asleep or not paying attention
 
 			GoToState("escape_shock")	
@@ -728,14 +493,14 @@ State monitor
 			; Distance based leash - decrease field of view for the slave as distance increases until blackout and teleport back to master
 			; Enabled if Leash is On and master is not following slave
 
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0)
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
 
 				GoToState("escape_choking")	
 
  
 			Else
 				; If distance based leash is Off, switch to time buffer leash instead
-				if (fctOutfit.isCollarEquipped ( kSlave ))
+				if (fctOutfit.isCollarEquipped ( kSlave ))  && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 					GoToState("escape_shock")
 				endif
 			EndIf
@@ -743,7 +508,7 @@ State monitor
 		ElseIf ( fDistance > (_SDGVP_escape_radius.GetValue() * 0.7) ) && ( fDistance < _SDGVP_escape_radius.GetValue() )
 			; Display warning when slave is close to escape radius
 
-			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0)
+			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
 				Debug.Notification( "You are too far from your owner..." )
 
 				; Reset blackout effect if needed
@@ -1052,7 +817,8 @@ State escape_choking
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 
-		fctConstraints.CollarUpdate()
+
+		_slaveStatusTicker()
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -1373,7 +1139,7 @@ State escape_shock
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 
-		fctConstraints.CollarUpdate()
+		_slaveStatusTicker()
 
 		fMasterDistance = kSlave.GetDistance( kMaster )
  		kMasterCell = kMaster.GetParentCell()
@@ -1484,7 +1250,7 @@ State caged
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 
-		fctConstraints.CollarUpdate()
+		_slaveStatusTicker()
 		
 		If ( !_SDGVP_state_caged.GetValueInt() )
 			GoToState("monitor")
@@ -1503,6 +1269,267 @@ State caged
 		EndIf
 	EndEvent
 EndState
+
+Function _slaveStatusTicker()
+	; Update slave status if needed
+
+ 	daysPassed = Game.QueryStat("Days Passed")
+ 	timePassed = Utility.GetCurrentGameTime()
+
+ 	if (iGameDateLastCheck == -1)
+ 		iGameDateLastCheck = daysPassed
+ 	EndIf
+
+ 	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
+
+ 	if (iDaysSinceLastCheck==0)
+		if ((timePassed-HourlyTickerLastCallTime)>=HourlyTickerPeriod) ; same day - incremental updates
+			Debug.Notification( "[SD] Slavery status - hourly update")
+			; Disabled for now - daily update makes more sense
+			; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
+			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/HourlyTickerPeriod) as Int
+			if (iHoursLastCheck<1)
+				iHoursLastCheck = 1
+			EndIf
+
+			Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
+
+			fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
+			HourlyTickerLastCallTime = timePassed
+		endif
+	Else ; day change - full update
+		Debug.Trace( "[SD] Slavery status - daily update")
+		iGameDateLastCheck = daysPassed
+		iCountSinceLastCheck = 0
+		; fctSlavery.UpdateStatusDaily( kMaster, kSlave)
+		kMaster.SendModEvent("PCSubStatus")
+
+		kMaster.SendModEvent("SLDRefreshNPCDialogues")
+
+		StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
+		StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
+		_SDGVP_config_min_days_before_master_travel.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iMasterTravelDelay"))
+
+		If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
+			Debug.Trace( "[SD] Master is bored - starting travel package")
+			_SDGVP_isMasterTraveller.SetValue(1)
+		endif
+
+		; Cooldown at end of day
+		If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") <= -2 )
+			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 9 / 10 )
+		EndIf
+
+		If ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") <= -2 )
+			StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kMaster, "_SD_iTrust") * 9 / 10 )
+		EndIf
+
+		If ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") >= 2 ) || ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") <= -2 )
+			StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 9 / 10 )
+		EndIf
+
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
+		;	enslavement.PunishSlave( kMaster,  kSlave, "Gag")
+		EndIf
+
+		; Safety - removal of punishments after one day
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
+			enslavement.RewardSlave(kMaster,kSlave,"Gag")
+			enslavement.RewardSlave(kMaster,kSlave,"Yoke")
+		endIf
+
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2) 
+			enslavement.RewardSlave(kMaster,kSlave,"Belt")
+			enslavement.RewardSlave(kMaster,kSlave,"Bra")
+		endIf
+
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 0)
+			enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
+			enslavement.RewardSlave(kMaster,kSlave,"Armbinder")
+		endif
+
+		If (StorageUtil.GetIntValue( kSlave  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kSlave  , "_SD_iEnableAction") == 1) 
+				StorageUtil.SetIntValue( kSlave  , "_SD_iHandsFree", 1 )
+				StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
+		Endif
+
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene() && (Utility.RandomInt(0,100)>60)
+
+			_slaveEndGame()
+		Endif
+	EndIf
+
+	enslavement.UpdateSlaveState(kMaster ,kSlave)
+	enslavement.UpdateSlaveFollowerState(kSlave)
+
+	; Update GlobalVariables based on storageUtil values
+	if (( kMaster.GetSleepState() != 0 ) && (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0))
+		; Reduce leash length and escape time buffer by half if master is awake and angry
+		fEscapeLeashLength = funct.floatMin( _SDGV_leash_length.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2) as Float )
+		fEscapeLeashLength = funct.floatMin( _SDGVP_escape_timer.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer" ) / 2) as Float )
+	Else
+		fEscapeLeashLength = funct.floatMin( _SDGV_leash_length.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") ) as Float )
+		fEscapeLeashLength = funct.floatMin( _SDGVP_escape_timer.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer" ) ) as Float )
+	EndIf
+
+	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
+	fEnslavementDuration = fctSlavery.GetEnslavementDuration( kSlave)
+	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavementDuration", fEnslavementDuration ) 
+	_SDGVP_isLeashON.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iEnableLeash") as Int )
+	_SDGVP_state_SlaveDominance.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iDominance") as Int )
+
+	if (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0)
+		fctConstraints.CollarUpdate()
+	endIf
+
+EndFunction
+
+
+Function _slaveEndGame()
+	; Slavery negative 'endgame' - sell player to another NPC / left for dead somewhere / teleport to Dreamworld
+
+	; Debug.Notification("[SD] Endgame: " + kSlaver )
+	; Debug.Notification("[SD] Buyout: " + fBuyout)
+
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
+		; Endgame for creatures
+		Debug.MessageBox( "Your owner is fed up with your resistance and turns against you." )
+		kMaster.StartCombat(kSlave)
+		SendModEvent("PCSubFree")
+	Else
+		; genderRestrictions = 0 - any / 1 - same / 2 - opposite
+
+		if (Utility.RandomInt(0,100)>50)
+			kSlaverDest = kSlaver
+		else
+			kSlaverDest = kSlaver2_m
+		Endif
+	
+		Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
+
+		If (iPlayerGender  == 0)
+			; iPlayerGender = 0 - male
+			if (genderRestrictions == 2)
+				kSlaverDest = kSlaver2_f
+			endif
+				
+		Else
+			; iPlayerGender = 1 - female
+			if (genderRestrictions == 1)
+				kSlaverDest = kSlaver2_f
+			endif
+			
+		EndIf
+
+		; Debug.MessageBox("[SD] PlayerGender: " + iPlayerGender + "\n Restrictions: " + genderRestrictions)
+
+		If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest) || (kMaster == kSlaverDest) )
+			; Player saved by Sanguine
+			Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+			_SD_dreamQuest.SetStage(20)
+		
+		ElseIf (_SD_dreamQuest.GetStage() == 0) && (!kSlaverDest)
+			; Player saved by Sanguine
+			; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+			_SD_dreamQuest.SetStage(10)
+
+		ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
+			; Master made profit - slave can be sold
+			if (iPlayerGender==0)
+				_SDSMP_choke_m.Play( Game.GetPlayer() )
+			else
+				_SDSMP_choke.Play( Game.GetPlayer() )
+			endif
+
+			Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
+			; Reset to 0 to avoid loop with endgame situations
+			StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
+			fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
+
+			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", kSlaverDest as Actor)
+			; Bool bMariaEden = False
+
+			; If (Utility.RandomInt(0,100) > 70) 
+			; 	bMariaEden = MariaEdenEnslave() 
+			; EndIf
+
+			; If (!bMariaEden)
+			; Endif
+
+
+            ; Game.FadeOutGame(true, true, 0.5, 5)
+			; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+			; Replace by code to dreamDestination
+			Bool bMariaEden = False
+			Bool bWolfClub = False
+			Bool bSimpleSlavery = False
+			Bool bRedWave = False
+
+			If (Utility.RandomInt(0,100) > 70) 
+				bWolfClub = WolfClubEnslave() 
+				
+			ElseIf (Utility.RandomInt(0,100) > 40) 
+				bSimpleSlavery = SimpleSlaveryEnslave() 
+
+			ElseIf (Utility.RandomInt(0,100) > 50) 
+				bRedWave = RedWaveEnslave()
+
+			ElseIf (Utility.RandomInt(0,100) > 70) 
+			 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
+			EndIf
+
+			If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
+
+                Game.FadeOutGame(true, true, 0.5, 5)
+				(kSlave as ObjectReference).MoveTo( kSlaverDest )
+				kActor = kSlaverDest as Actor
+				kActor.SendModEvent("PCSubTransfer")
+				Game.FadeOutGame(false, true, 2.0, 20)
+			Else
+				SendModEvent("PCSubFree")
+			Endif
+
+
+			Utility.Wait( 1.0 )
+
+
+		ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
+			; Master lost money - get rid of slave
+			if (iPlayerGender==0)
+				_SDSMP_choke_m.Play( Game.GetPlayer() )
+			else
+				_SDSMP_choke.Play( Game.GetPlayer() )
+			endif
+
+			Debug.MessageBox( "Your owner is tired of your attitude and suddenly hits the back of your head and renders you unconscious.\n When you come to your senses, you find yourself discarded in the wilderness like an old shoe." )
+			; Reset to 0 to avoid loop with endgame situations
+			StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
+
+			SendModEvent("PCSubFree")
+
+            ; Game.FadeOutGame(true, true, 0.5, 5)
+			; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+			; Replace by code to dreamDestination
+			Bool bWolfClub = False
+
+			If (Utility.RandomInt(0,100) > 70) 
+				bWolfClub = WolfClubEnslave() 
+			EndIf
+
+			If (!bWolfClub)
+				dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
+			Endif
+			; Game.FadeOutGame(false, true, 2.0, 20)
+
+			If (Utility.RandomInt(0,100) > 90) 
+				; Send PC some help
+				SendModEvent("da_StartSecondaryQuest", "Both")
+			EndIf
+
+		EndIf
+	Endif
+
+EndFunction
 
 
 
