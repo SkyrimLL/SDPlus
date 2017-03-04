@@ -27,6 +27,7 @@ GlobalVariable Property _SDKP_trust_hands Auto
 GlobalVariable Property _SDKP_trust_feet Auto
 GlobalVariable Property _SDGV_leash_length Auto
 GlobalVariable Property _SDGVP_punishments  Auto  
+GlobalVariable Property GameHour Auto
 
 SexLabFramework Property SexLab  Auto  
 
@@ -120,6 +121,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		_SDGVP_enslaved.SetValue(1)	    					
 		fEnslavementStart = GetCurrentGameTime()
 		; fctConstraints.actorCombatShutdown( kMaster )
+
 
 		; Drop current weapon - Do this first to prevent camera stuck in combat mode
 		if(kSlave.IsWeaponDrawn())
@@ -285,10 +287,14 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
-		If ( Self )
+		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
+			GameHour.Mod(4.0)
+		endif
+
+		; If ( Self )
 		;	RegisterForSingleUpdate( fRFSU )
 		;	RegisterForSingleUpdateGameTime( fRFSUGT )
-		EndIf
+		; EndIf
 	ElseIf ( _SDGVP_config[0].GetValue() )
 ;		kSlave.GetActorBase().SetEssential( False )
 		Debug.Trace("[SD] Aborting enslavement story - already active.")

@@ -377,7 +377,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
-	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
+	StorageUtil.SetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 1)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
 	ZazSlaveControl.EnslaveActor(kSlave,"SD")
 	ZazSlaveControl.SetPlayerMaster(kMaster,"SD")
@@ -954,7 +954,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + "\n (Exposure: " + exposure + ")")
 	Endif
 
-	StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
+	; StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
 
 	Debug.Trace("[SD] --- Slavery update" )

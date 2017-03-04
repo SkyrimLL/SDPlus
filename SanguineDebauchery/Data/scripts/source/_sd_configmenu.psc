@@ -304,10 +304,12 @@ EndFunction
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;                 2147483647
-Int _SD_mcm_ver = 20150125
+Int _SD_mcm_ver = 20170303
 
 int function GetVersion()
 	; patch to fix a screw up
+	_SD_mcm_ver = StorageUtil.GetIntValue( none, "_SD_version")
+	
 	If ( CurrentVersion == 2147483647 )
 		CurrentVersion = _SD_mcm_ver
 		initMod()

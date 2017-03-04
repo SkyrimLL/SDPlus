@@ -56,6 +56,6 @@ Event OnUpdate()
 	; SSLV_CageMark.Activate(Game.GetPlayer())
 
 
-	GameHour.Mod(8.0) ; wait 8 hours game time 
+	; GameHour.Mod(8.0) ; wait 8 hours game time 
 endevent
 

@@ -27,16 +27,6 @@ GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 
 Float fVersion = 0.0
 
-Event OnInit()
-	_doInit()
-	; RegisterForSingleUpdate(5)
-EndEvent
-
-Function _doInit()
-;
-
-EndFunction
-
 Function Maintenance()
 	Actor kPlayer = Game.GetPlayer()
 
@@ -57,8 +47,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2016101000 ; <--- Edit this value when updating
-		fVersion = 2016101000; and this
+	If fVersion < 2017030300 ; <--- Edit this value when updating
+		fVersion = 2017030300; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -115,10 +105,10 @@ Function Maintenance()
 		; Maintenance code scaffold for now - not in use.
 		; Find better way to restart these quests safely
 
-		If ( _SD_enslavement_tasks.IsRunning() )
+		; If ( _SD_enslavement_tasks.IsRunning() )
 			; Debug.Notification("Shutting down Enslavement Tasks Quest" )
 			; _SD_enslavement_tasks.SetStage(1000)
-		EndIf
+		; EndIf
 
 		If ( _SD_enslavement.IsRunning() )
 			Debug.Messagebox("Enslavement Quest is running during an upgrade. Canceling enslavement to apply changes." )
@@ -131,7 +121,7 @@ Function Maintenance()
 			_SD_enslavement.Stop()
 		EndIf
 
-		If ( _SD_dream.IsRunning() )
+		; If ( _SD_dream.IsRunning() )
 			; Debug.Messagebox("Stopping dream quest for maintenance.\n Run 'startquest _sd_dream' in the console if you do not see 'Sanguine is watching' after this message." )
 
 			; Disabled for now
@@ -142,12 +132,12 @@ Function Maintenance()
 			; _SD_dream.Stop()
 			; Utility.Wait(2.0)
 			; _SD_dream.Start()
-		EndIf
+		; EndIf
 
 		; Init slavery API
-		;If (!StorageUtil.HasIntValue(game.getPlayer(), "_SD_iAPIInit"))
-			fctSlavery.InitSlaveryState( game.getPlayer() )
-		;EndIf
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iAPIInit")!=1)
+			fctSlavery.InitSlaveryState( kPlayer )
+		EndIf
 
 
 	EndIf

@@ -647,6 +647,9 @@ Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _send
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
 			kNewMaster.SendModEvent("PCSubSubmit")
+			Debug.MessageBox(" You submit to a new owner.\n [Give the game a few seconds to start the enslavement sequence. If it takes too long, open the console and wait for the sequence to start.]")
+		else
+			Debug.MessageBox(" You have been defeated and taken as a slave.\n [Give the game a few seconds to start the enslavement sequence. If it takes too long, open the console and wait for the sequence to start.]")
 		EndIf
 
 		; New enslavement - changing ownership
@@ -720,6 +723,9 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 		If (_args == "Consensual")
 			StorageUtil.SetIntValue(kNewMaster, "_SD_iForcedSlavery", 0) 
 			kNewMaster.SendModEvent("PCSubSubmit")
+			Debug.MessageBox(" You submit to a new owner.\n [Give the game a few seconds to start the enslavement sequence. If it takes too long, open the console and wait for the sequence to start.]")
+		else
+			Debug.MessageBox(" You have been defeated and taken as a slave.\n [Give the game a few seconds to start the enslavement sequence. If it takes too long, open the console and wait for the sequence to start.]")
 		EndIf
 
 		Debug.Trace("[_sdras_player] Slave transfer - starting enslavement" )

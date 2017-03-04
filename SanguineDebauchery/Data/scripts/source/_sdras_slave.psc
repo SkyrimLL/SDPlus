@@ -1278,6 +1278,7 @@ Function _slaveStatusTicker()
 
  	if (iGameDateLastCheck == -1)
  		iGameDateLastCheck = daysPassed
+ 		HourlyTickerLastCallTime = timePassed
  	EndIf
 
  	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
