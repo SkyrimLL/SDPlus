@@ -243,7 +243,7 @@ Function CollarUpdate()
 		; Debug.Notification("[_sdmes_bound.psc] Sleep type: " +  StorageUtil.GetIntValue(kPlayer, "_SD_iSleepType"))
 		; Debug.Notification("[_sdmes_bound.psc] Sleep pose: " +  StorageUtil.GetStringValue(kPlayer, "_SD_sSleepPose"))
 
-		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")
+		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") || (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 1)
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC011") ; HandsBehindLieFaceDown
@@ -262,7 +262,7 @@ Function CollarUpdate()
 
 			endif
 			
-		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") && ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.isArmbinderEquipped( kPlayer ) )
+		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") && ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.isArmbinderEquipped( kPlayer ) ) 
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC020") ; 		HandsBehindKneelBowDown

@@ -74,10 +74,10 @@ FormList heatsources
 Armor slaveArmor1
 Armor slaveArmor2
 Armor[] kArmor
-ObjectReference kPlayerStorageRef
-ObjectReference kPlayerRef
-Actor kPlayer
-Actor kMaster
+ObjectReference kPlayerStorageRef = None
+ObjectReference kPlayerRef = None
+Actor kPlayer = None
+Actor kMaster = None
 Float fMasterDistance
  
 Float frostfallColdLimit = 40.0
@@ -109,9 +109,15 @@ State monitor
 			bFrostFallInit = true
 		endIf
 
-		kPlayerStorageRef = Game.GetFormFromFile(0x00113D17, "sanguinesDebauchery.esp") as ObjectReference
-		kPlayerRef = Game.GetPlayer() 
-		kPlayer = Game.GetPlayer() as Actor
+		if (kPlayerStorageRef==None)
+			kPlayerStorageRef = Game.GetFormFromFile(0x00113D17, "sanguinesDebauchery.esp") as ObjectReference
+		Endif
+		if (kPlayerRef==None)
+			kPlayerRef = Game.GetPlayer() 
+		Endif
+		if (kPlayer==None)
+			kPlayer = Game.GetPlayer() as Actor
+		Endif
 
 		If bFrostFallInit
 
@@ -124,7 +130,7 @@ State monitor
 			If mortality.GetValueInt( ) == 1
 				If (FrostUtil.GetPlayerExposure() >= 100 )
 				;	Game.GetPlayer().EndDeferredKill()
-					If (StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSanguineBlessings") >= 1) && (kPlayerRef.GetParentCell() != kPlayerStorageRef.GetParentCell())
+					If (StorageUtil.GetIntValue( kPlayerRef, "_SD_iSanguineBlessings") >= 1) && (kPlayerRef.GetParentCell() != kPlayerStorageRef.GetParentCell())
 
 						Debug.Trace("[SD] Frostfall: Sending SD Dreamworld event " )
 						Debug.MessageBox("You collapse after nearly freezing to death and wake up back into Sanguine's lap." )

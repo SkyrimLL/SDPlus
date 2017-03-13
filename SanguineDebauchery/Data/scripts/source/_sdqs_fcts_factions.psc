@@ -300,13 +300,11 @@ Bool Function checkIfSlaver ( Actor akActor )
 		isPlayerAlreadyOwned = ZazSlaveControl.IsOwnedByMod(akPlayer)  
 		
 		If (isActorAlreadySlaver)
-			Debug.Notification("Go away.. I already have enough slaves.")
+			; Debug.Notification("Go away.. I already have enough slaves.")
 			Debug.Trace("[SD] 		Actor is already a slaver in another ZAP compatible mod - aborting")
 			isSlaver = False
-		Endif
-
-		If (isPlayerAlreadyOwned )
-			Debug.Notification("Go away.. Your master must be looking for you.")
+		ElseIf (isPlayerAlreadyOwned )
+			; Debug.Notification("Go away.. Your master must be looking for you.")
 			Debug.Trace("[SD] 		Player is already owned by a ZAP compatible mod - aborting")
 			isSlaver = False
 		Endif

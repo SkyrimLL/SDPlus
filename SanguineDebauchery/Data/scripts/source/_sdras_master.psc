@@ -313,10 +313,15 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 			If (fGoldEarned > 0) 
 				fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldEarned as Int)
 				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
+				_SDGVP_buyoutEarned.SetValue(fGoldEarned)
 
 				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
 				
-				fctSlavery.ModMasterTrust( kMaster, 1)
+				if (fGoldEarned>10)
+					fctSlavery.ModMasterTrust( kMaster, 2)
+				else
+					fctSlavery.ModMasterTrust( kMaster, 1)
+				endif
 
 				If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 					If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)

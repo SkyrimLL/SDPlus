@@ -90,6 +90,7 @@ Function Fragment_10()
 ; stage 70
 
 ; Fix end sequence with Matron
+Actor kPlayer = Game.GetPlayer()
 
 aHost = Alias__SDQA_host.GetReference() as Actor
 aSpriggan = Alias__SDQA_spriggan.GetReference() as Actor
@@ -107,12 +108,12 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 ; Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk...")
 ; aHost.RemoveItem( oHostArmor.GetBaseObject(), aHost.GetItemCount( oHostArmor.GetBaseObject() )  )
 	
-	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Belt"  )
-		fctOutfit.clearDeviceSpriggan ( "Belt", "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Harness"  )
+		fctOutfit.clearDeviceSpriggan ( "Harness", "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
 	EndIf
 
-	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Blindfold"  )
-		fctOutfit.clearDeviceSpriggan ( "Blindfold" )	
+	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Gag"  )
+		fctOutfit.clearDeviceSpriggan ( "Gag" )	
 	Endif
 
 ; _SD_sprigganHusk.Enable()
@@ -165,8 +166,8 @@ Function Fragment_21()
 Actor kSlave = Game.getPlayer()
 
 _SDGVP_sprigganEnslaved.SetValue(1)
-StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 1)
-StorageUtil.SetIntValue(Game.GetPlayer(),"_SD_iDisableDreamworldOnSleep", 1)
+StorageUtil.SetIntValue(kSlave, "_SD_iSprigganInfected", 1)
+StorageUtil.SetIntValue(kSlave,"_SD_iDisableDreamworldOnSleep", 1)
 
 SendModEvent("SDSprigganStart")
 
@@ -213,11 +214,8 @@ Game.GetPlayer().RemoveFromFaction(SprigganFaction)
 Game.GetPlayer().RemoveFromFaction(GiantFaction)
 StorageUtil.SetIntValue(Game.GetPlayer(),"_SD_iDisableDreamworldOnSleep", 0)
 
-; fctOutfit.setDeviousOutfitArms ( iDevOutfit = 7, bDevEquip = False, sDevMessage = "")	
-fctOutfit.clearDeviceByString ( sDeviceString = "ArmCuffs" )
-
-; fctOutfit.setDeviousOutfitLegs ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
-fctOutfit.clearDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "Spriggan" )
+fctOutfit.clearDeviceSpriggan ( sDeviceString = "Boots"  )
+fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gloves"  )
 
 SendModEvent("SDSprigganStop")
 
@@ -250,8 +248,9 @@ Function Fragment_24()
 
 ; Fix end sequence with Matron
 ObjectReference aHuskLocation = Alias__SDQA_safetysprigganmarker.GetReference() 
+Actor kPlayer = Game.GetPlayer()
 
-Game.GetPlayer().MoveTo( aHuskLocation  )
+kPlayer.MoveTo( aHuskLocation  )
 Game.ForceThirdPerson()
 Utility.Wait(1.0)
 
@@ -273,16 +272,16 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 
 	; fctOutfit.setDeviousOutfitID ( iOutfit = -1, sMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
 		
-	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Belt"  )
+	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Harness"  )
 		Debug.Messagebox("The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
 		; fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
-		fctOutfit.clearDeviceByString ( sDeviceString = "Belt", sOutfitString = "Spriggan" )
-	EndIf
+        fctOutfit.clearDeviceSpriggan ( sDeviceString = "Harness"  )
 
-	if fctOutfit.isDeviceEquippedKeyword( Game.GetPlayer(),  "_SD_DeviousSpriggan", "Blindfold"  )
+   	EndIf
+
+	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Gag"  )
 		; fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
-		fctOutfit.clearDeviceByString ( sDeviceString = "Blindfold", sOutfitString = "Spriggan" )
-
+        fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gag"  )
 	Endif
 
 ; _SD_sprigganHusk.Enable()

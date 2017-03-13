@@ -340,7 +340,7 @@ Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex"
 		Int randomNum = Utility.RandomInt(0, 100)
 		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
 
-		SanguineRape( akSpeaker, Player , "Rough")
+ 		SanguineRape( akSpeaker, Player , "Rough")
 
 	Else
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
@@ -372,8 +372,7 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 
 		Int randomNum = Utility.RandomInt(0, 100)
 		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
-
-		SanguineRape( akSpeaker, Player , "Sex")
+ 		SanguineRape( akSpeaker, Player , "Sex")
 
 	Else
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
@@ -448,6 +447,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		; uiSlotMask[6] = 0x00800000  ;53  DD Cuffs (Legs)
 		; uiSlotMask[7] = 0x04000000 ;56  DD Chastity Bra
 		; uiSlotMask[8] = 0x20000000  ;59  DD Cuffs (Arms)
+		SendModEvent("SDModMasterTrust","Recover", 1)
 
 		; Masturbation scenes
 		If (SexLabInTags == "Masturbation") && (SexLab.ValidateActor( akSpeaker ) > 0)
@@ -591,6 +591,7 @@ Function SanguineWhip( Actor akActor )
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
 		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer , "_SD_iSub") + 1 )
+		SendModEvent("SDModMasterTrust","Recover", 1)
 
 		fctOutfit.setMasterGearByRace ( akActor, kPlayer  )
 		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 5, aiValue2 = 0 )
@@ -610,6 +611,7 @@ Function SanguinePunishment( Actor akActor )
 			StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer , "_SD_iDom") - 1 )
 			StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer , "_SD_iSub") + 1 )
 		; endIf
+		SendModEvent("SDModMasterTrust","Recover", 1)
 
 		fctOutfit.setMasterGearByRace ( akActor, kPlayer  )
 		_SDKP_sex.SendStoryEvent(akRef1 = akActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )

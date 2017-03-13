@@ -78,6 +78,13 @@ Armor Property SDEggAnalRendered Auto         ; Internal Device
 Armor Property SDEggAnal Auto        	       ; Inventory Device
 
 GlobalVariable Property _SDGVP_gametime  Auto  
+Armor Property SDSlaveRags  Auto
+Armor Property SDSlaveRags1  Auto
+Armor Property SDSlaveRags2  Auto
+Armor Property SDSlaveRags3  Auto
+Armor Property SDSlaveRags4  Auto
+Armor Property SDSlaveRags5  Auto
+Armor Property SDSlaveRags6  Auto 
 
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
 ;
@@ -127,7 +134,7 @@ GlobalVariable Property _SDGVP_gametime  Auto
 ;    57   - shoulder
 ;    58   - arm secondary or undergarment or left arm
 ;    59   - arm primary or outergarment or right arm
-;    60   - misc/FX (use for anything that doesnt fit in the list)
+;    60   - misc/FX (use for anything that doesnt fit in the list) 
 
 
 
@@ -1891,6 +1898,40 @@ Int Function countDeviousSlotsByKeyword (  Actor akActor, String deviousKeyword 
 	Return devicesCount
 EndFunction
 
+
+Function EquipSlaveRags(Actor akSlave) 
+
+	If (StorageUtil.GetIntValue( akSlave  , "_SD_iCustomSlaveRags" ) == 0)
+	 	akSlave.AddItem( SDSlaveRags as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags as Form, True, True )
+
+	ElseIf (StorageUtil.GetIntValue(akSlave, "_SD_iEnslaved")==0) || (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryLevel")<=1)
+	 	akSlave.AddItem( SDSlaveRags1 as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags1 as Form, True, True )
+
+	ElseIf (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryLevel")==2)
+	 	akSlave.AddItem( SDSlaveRags2 as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags2 as Form, True, True )
+
+	ElseIf (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryLevel")==3)
+	 	akSlave.AddItem( SDSlaveRags3 as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags3 as Form, True, True )
+
+	ElseIf (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryLevel")==4)
+	 	akSlave.AddItem( SDSlaveRags4 as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags4 as Form, True, True )
+
+	ElseIf (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryLevel")==5)
+	 	akSlave.AddItem( SDSlaveRags5 as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags5 as Form, True, True )
+
+	ElseIf (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryLevel")==6)
+	 	akSlave.AddItem( SDSlaveRags6 as Form, 1, True )
+	 	akSlave.EquipItem( SDSlaveRags6 as Form, True, True )
+
+	Endif
+EndFunction
+
 ;------------------------- Special spriggan outfit / will be moved to parasite mod...  someday maybe
 
 Function equipDeviceSpriggan ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
@@ -1912,19 +1953,19 @@ Function equipDeviceSpriggan ( String sDeviceString = "", String sOutfitString =
 			Debug.Trace("[SD] equipDeviceSpriggan: " + sDeviceString)  
 			Debug.Trace("[SD] 		keyword: " + kwDeviceKeyword)  
 
-			If ( sDeviceString == "ArmCuffs" )
+			If ( sDeviceString == "Gloves" )
 				aRenderedDevice = zazSprigganHandsRendered 
 				aWornDevice = zazSprigganHands
 
-			ElseIf ( sDeviceString == "LegCuffs" )
+			ElseIf ( sDeviceString == "Boots" )
 				aRenderedDevice = zazSprigganFeetRendered 
 				aWornDevice = zazSprigganFeet
 			
-			ElseIf ( sDeviceString == "Blindfold" )
+			ElseIf ( sDeviceString == "Gag" )
 				aRenderedDevice = zazSprigganMaskRendered 
 				aWornDevice = zazSprigganMask
 			
-			ElseIf ( sDeviceString == "Belt" )
+			ElseIf ( sDeviceString == "Harness" )
 				aRenderedDevice = zazSprigganBodyRendered
 				aWornDevice = zazSprigganBody
 			EndIf
@@ -1986,19 +2027,19 @@ Function clearDeviceSpriggan ( String sDeviceString = "", String sOutfitString =
 			Debug.Trace("[SD] clearDeviceSpriggan: " + sDeviceString)  
 			Debug.Trace("[SD]  		keyword: " + kwDeviceKeyword)  
 
-			If ( sDeviceString == "ArmCuffs" )
+			If ( sDeviceString == "Gloves" )
 				aRenderedDevice = zazSprigganHandsRendered 
 				aWornDevice = zazSprigganHands
 
-			ElseIf ( sDeviceString == "LegCuffs" )
+			ElseIf ( sDeviceString == "Boots" )
 				aRenderedDevice = zazSprigganFeetRendered 
 				aWornDevice = zazSprigganFeet
 			
-			ElseIf ( sDeviceString == "Blidfold" )
+			ElseIf ( sDeviceString == "Gag" )
 				aRenderedDevice = zazSprigganMaskRendered 
 				aWornDevice = zazSprigganMask
 			
-			ElseIf ( sDeviceString == "Belt" )
+			ElseIf ( sDeviceString == "Harness" )
 				aRenderedDevice = zazSprigganBodyRendered
 				aWornDevice = zazSprigganBody
 			EndIf
@@ -2037,6 +2078,7 @@ Function clearDeviceSpriggan ( String sDeviceString = "", String sOutfitString =
 
 	endif
 EndFunction
+
 
 ;================================================================================
 

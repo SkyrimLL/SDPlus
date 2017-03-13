@@ -309,7 +309,7 @@ Int _SD_mcm_ver = 20170303
 int function GetVersion()
 	; patch to fix a screw up
 	_SD_mcm_ver = StorageUtil.GetIntValue( none, "_SD_version")
-	
+
 	If ( CurrentVersion == 2147483647 )
 		CurrentVersion = _SD_mcm_ver
 		initMod()
@@ -842,6 +842,7 @@ event OnOptionSelect(int a_option)
 	ElseIf ( a_option == _SDOID_config_B7 )
 		_SDGVP_config_custom_cloths.SetValue( Math.LogicalXor( 1, _SDGVP_config_custom_cloths.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_custom_cloths.GetValue() as Bool )
+		StorageUtil.SetIntValue( Game.GetPlayer()  , "_SD_iCustomSlaveRags",  _SDGVP_config_custom_cloths.GetValueInt() )
 		If ( _SDGVP_config_custom_cloths.GetValue() == 1 )
 			ShowMessage("$_SDOID_config_B7_MSG" , False, "$SD_OK")
 		EndIf
@@ -1011,7 +1012,8 @@ event OnOptionSliderAccept(int a_option, float a_value)
 	{Called when a new slider value has been accepted}
 	If ( a_option == _SDOID_config_S1 )
 		_SDGVP_config_healthMult.SetValue( a_value )
-		StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iChanceSprigganInfection",_SDGVP_config_healthMult.GetValue() as Int )		; SetSliderOptionValue(_SDOID_config_S1, a_value, "$SD_HEALTH")
+		StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iChanceSprigganInfection",_SDGVP_config_healthMult.GetValue() as Int )		
+		; SetSliderOptionValue(_SDOID_config_S1, a_value, "$SD_HEALTH")
 		SetSliderOptionValue(_SDOID_config_S1, a_value, "{1} %")
 	ElseIf ( a_option == _SDOID_config_S2 )
 		_SDGVP_config_healthThreshold.SetValue( a_value )

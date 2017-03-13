@@ -19,10 +19,10 @@ Event OnActivate(ObjectReference akActivator)
         If (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 0) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
             Debug.Messagebox("The spring waters wash away the residual roots clinging to your body.")
 
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "ArmCuffs"  )
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "LegCuffs"  )
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Belt"  )
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Blindfold"  )
+            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gloves"  )
+            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Boots"  )
+            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Harness"  )
+            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gag"  )
 
 
         ElseIf (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 1) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)

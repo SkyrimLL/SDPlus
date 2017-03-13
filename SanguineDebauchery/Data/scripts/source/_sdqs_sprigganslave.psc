@@ -30,6 +30,7 @@ FormList Property _SDFLP_slaver  Auto
 Keyword Property _SDKP_sex  Auto  
 
 Spell Property _SDSP_host_flare  Auto
+Spell Property _SDSP_heal  Auto
 Cell Property _SDLP_dream  Auto  
 
 Bool Property bQuestActive = False Auto Conditional
@@ -46,7 +47,7 @@ ObjectReference kMaster
 ObjectReference kSlave
 Bool bAllyToActor
 int randomVar
-
+float playersHealth 
 float fNext = 0.0
 float fNextAllowed = 0.02
 
@@ -135,10 +136,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		( kSlave as Actor ).RestoreAV("health", ( kSlave as Actor ).GetBaseAV("health") )
 
 		if (!fctOutfit.isArmsEquipped(kSlave as Actor))
-			fctOutfit.equipDeviceSpriggan ( "ArmCuffs", "Roots swarm around you.")	
+			fctOutfit.equipDeviceSpriggan ( "Gloves", "Roots swarm around you.")	
 		EndIf
 		if (!fctOutfit.isLegsEquipped(kSlave as Actor))
-			fctOutfit.equipDeviceSpriggan ( "LegCuffs")
+			fctOutfit.equipDeviceSpriggan ( "Boots")
 		EndIf	
 
 		Utility.Wait(1.0)
@@ -206,6 +207,11 @@ Event OnUpdateGameTime()
 
     randomVar = RandomInt( 0, 100 ) 
 
+	playersHealth = kPlayer.GetActorValuePercentage("health")
+	if ((playersHealth < 0.8) && kPlayer.IsSwimming())
+	  	; Debug.Trace("The player has over half their health left")
+		_SDSP_heal.RemoteCast(kPlayer, kPlayer, kPlayer)
+	endIf
 
 	If (_SDGVP_config_safeword.GetValue() as bool)
 		; Safeword - abort enslavement
@@ -283,19 +289,19 @@ Event OnUpdateGameTime()
 		Debug.Trace( "[SD] Spriggan punishment: " + _SD_spriggan_punishment.GetValue() )
 
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped (  kSlave as Actor ))
-			fctOutfit.equipDeviceSpriggan ( "ArmCuffs")
+			fctOutfit.equipDeviceSpriggan ( "Gloves")
  
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1 )
 			Debug.Trace("[SD] Skipping spriggan hands - slot in use")
 		EndIf
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isShacklesEquipped (  kSlave as Actor ))
-			fctOutfit.equipDeviceSpriggan ( "LegCuffs")	
+			fctOutfit.equipDeviceSpriggan ( "Boots")	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1)
 			Debug.Trace("[SD] Skipping spriggan feet - slot in use")
 		EndIf
 
 		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isBeltEquipped (  kSlave as Actor ))
-			fctOutfit.equipDeviceSpriggan ( "Belt", "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
+			fctOutfit.equipDeviceSpriggan ( "Harness", "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
 
 			; kPlayer.AddToFaction(SprigganFaction)
 			; kPlayer.AddToFaction(GiantFaction)
@@ -306,8 +312,8 @@ Event OnUpdateGameTime()
 			Debug.Trace("[SD] Skipping spriggan body - slot in use")
 		EndIf
 		
-		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isBlindfoldEquipped (  kSlave as Actor))
-			fctOutfit.equipDeviceSpriggan ( "Blindfold", "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
+		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isGagEquipped (  kSlave as Actor))
+			fctOutfit.equipDeviceSpriggan ( "Gag", "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 3 )
 			Debug.Trace("[SD] Skipping spriggan mask - slot in use")
 		EndIf
