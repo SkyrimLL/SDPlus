@@ -13,7 +13,9 @@ StorageUtil.SetIntValue(kSlave , "_SD_iEnableClothingEquip", 1)
 
 		; kSlave.AddItem( _SD_SlaveRags, 1, True )
 		; kSlave.EquipItem( _SD_SlaveRags, True, True )
-		kSlave.SendModEvent("SDEquipSlaveRags")
+	kSlave.SendModEvent("SDEquipSlaveRags")
+
+		SendModEvent("SDModMasterTrust", -1)
 ;END CODE
 EndFunction
 ;END FRAGMENT

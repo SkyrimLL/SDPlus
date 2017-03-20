@@ -422,25 +422,21 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 	If IButton == 0  ; Show the thing.
 		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 
-		Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+		If (type!="Racemenu") && (_SLD_PCSubShavedON.GetValue() ==1) && (Utility.RandomInt(0,100) > 30)  
+			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
+				SendModEvent("yps-OnHaircutEvent", "", 1) ; shaved - bald
 
-		If (iPlayerGender==0) 
-			If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
+			ElseIf (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) 
 				kPlayer.SendModEvent("SLHShaveHead")
 				Debug.Notification("Your head is shaved to remind you of your place.")
 			Else
 				Game.ShowLimitedRaceMenu()
-			EndIf
+			Endif
 
-		Else
-			If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (Utility.RandomInt(0,100) > 30) && (_SLD_PCSubShavedON.GetValue() ==1)
-				kPlayer.SendModEvent("SLHShaveHead")
-				Debug.Notification("Your head is shaved to remind you of your condition.")
-			Else
-				Game.ShowLimitedRaceMenu()
-			EndIf
-
+		ElseIf (type=="Racemenu") || (_SLD_PCSubShavedON.GetValue() ==0)
+			Game.ShowLimitedRaceMenu()
 		EndIf
+
 
 	Else
 		StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
@@ -450,47 +446,6 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 	EndIf
 
 	Utility.Wait(1.0)
-
-EndFunction
-
-Function ShaveHead ( Actor akSpeaker, string type = "Racemenu" )
- 	Actor kPlayer = Game.GetPlayer()
-	Utility.Wait(0.5)
-
-	Int   iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-
-	Int Hair = kPlayer.GetLeveledActorBase().GetNumHeadParts()
-	Int i = 0
-	While i < Hair
-		If kPlayer.GetLeveledActorBase().GetNthHeadPart(i).GetType() == 3
-			playerCurrentHair = kPlayer.GetLeveledActorBase().GetNthHeadPart(i)
-			i = Hair
-		EndIf
-		i += 1
-	EndWhile
-
-	If (playerOrigHair == None)
-		playerOrigHair = playerCurrentHair
-	EndIf
-
-	If (iPlayerGender==0) 
-		If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (_SLD_PCSubShavedON.GetValue() ==1)
-			kPlayer.ChangeHeadPart(_SLD_MaleSlaveHair)
-			; Debug.Notification("Your head is shaved to remind you of your place.")
-			StorageUtil.SetIntValue(kPlayer, "_SLH_iShavedHead", 1)
-
-		EndIf
-
-	Else
-		If (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) && (_SLD_PCSubShavedON.GetValue() ==1)
-			kPlayer.ChangeHeadPart(_SLD_FemaleSlaveHair)
-			; Debug.Notification("Your head is shaved to remind you of your condition.")
-			StorageUtil.SetIntValue(kPlayer, "_SLH_iShavedHead", 1)
-
-		EndIf
-
-	EndIf
-
 
 EndFunction
 

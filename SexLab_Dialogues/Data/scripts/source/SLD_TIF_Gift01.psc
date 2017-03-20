@@ -6,15 +6,17 @@ Scriptname SLD_TIF_Gift01 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
+
 If (Utility.RandomInt(0,100)>80)
-	CharitySpell.RemoteCast( Game.getPlayer() , Game.getPlayer(), Game.getPlayer() )
+	CharitySpell.RemoteCast( kPlayer , kPlayer, kPlayer )
 
 	Int randomNum = Utility.RandomInt(1, 3)
 
 	StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue(akSpeaker, "_SD_iDisposition") + randomNum )
 EndIf
 
-akSpeaker.ShowGiftMenu( True, _SLD_GiftFilter )
+akSpeaker.ShowGiftMenu( True, _SLD_GiftFilter, True )
 ;END CODE
 EndFunction
 ;END FRAGMENT

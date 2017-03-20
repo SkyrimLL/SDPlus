@@ -12,9 +12,9 @@ Int randomNum = Utility.RandomInt(0, 100)
 StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 
 If (randomNum > 70) && (StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") < 0 )
-	SendModEvent("PCSubWhip") ; Whipping
+	akSpeaker.SendModEvent("PCSubWhip") ; Whipping
 Else
-	SendModEvent("PCSubSex") ; Sex
+	akSpeaker.SendModEvent("PCSubSex") ; Sex
 EndIf
 ;END CODE
 EndFunction

@@ -11,7 +11,7 @@ Actor kSlave = game.GetPlayer()
 	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 	int randomVar = Utility.RandomInt( 0, 10 ) 
 	 
-	If (randomVar >= 5  )
+	If (randomVar >= 9  )
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
@@ -26,18 +26,7 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	ElseIf (randomVar >= 2  )
-		Debug.Notification( "..some Ale!" )
-		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True, True )
-
-		Utility.Wait(3.0)
-	 	DrunkEffect.Cast( kSlave, kSlave)
-
-		If (Utility.RandomInt( 0, 100 ) > 70)
-			Debug.Notification( "In a stupor you start dancing for no reason..." )
-			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
- 			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
- 		EndIf
+		_SLD_Player.GiftFromNPC(akSpeaker, "Thirsty")
 
 	ElseIf (randomVar >= 2  )
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
@@ -58,3 +47,4 @@ SPELL Property DrunkEffect  Auto
 Potion Property Ale  Auto  
 
 Potion Property Skooma  Auto  
+SLD_PlayerAlias Property _SLD_Player Auto

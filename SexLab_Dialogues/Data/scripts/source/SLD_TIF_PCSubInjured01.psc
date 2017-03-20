@@ -15,6 +15,7 @@ Actor kSlave = game.GetPlayer()
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
+		SendModEvent("SDModMasterTrust", 2)
 
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
@@ -25,27 +26,16 @@ Actor kSlave = game.GetPlayer()
  			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
  		EndIf
 
-	ElseIf (randomVar >= 2  )
+	Else 
 		Debug.Notification( "..some potion!" )
-		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True, True )
+		_SLD_Player.GiftFromNPC(akSpeaker, "Hurt")
 
-		If (Utility.RandomInt(0,100)>40)
-			kSlave.AddItem( CureDiseases, 1, True )
-			kSlave.EquipItem( CureDiseases, True, True )
-		Endif
 
 		If (Utility.RandomInt(0,100)>70)
 			kSlave.AddItem( CurePoison, 1, True )
 			kSlave.EquipItem( CurePoison, True, True )
 		endif
-
-	Else
-		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True, True )
-
-		akSpeaker.SendModEvent("PCSubSex") ; Sex
-
+ 
 	EndIf
 
 ;	While ( Utility.IsInMenuMode() )
@@ -66,3 +56,4 @@ Potion Property Skooma  Auto
 Potion Property CureDiseases  Auto  
 
 Potion Property CurePoison  Auto  
+SLD_PlayerAlias Property _SLD_Player Auto

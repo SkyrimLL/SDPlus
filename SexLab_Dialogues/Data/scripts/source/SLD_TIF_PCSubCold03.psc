@@ -15,6 +15,7 @@ Actor kSlave = game.GetPlayer()
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
+		SendModEvent("SDModMasterTrust", 2)
 
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
@@ -26,13 +27,8 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	ElseIf (randomVar >= 8  )
-		Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
-		Debug.Notification( "..some Mead!" )
-		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True, True )
+		_SLD_Player.GiftFromNPC(akSpeaker, "Cold")
 
-		Utility.Wait(3.0)
-	 	DruggedEffect.Cast( kSlave, kSlave)
 
 	ElseIf (randomVar >= 2  )
 		Debug.Notification( "Your owner hands you something to wear" )
@@ -62,3 +58,4 @@ Potion Property Ale  Auto
 Potion Property Skooma  Auto  
 
 Armor  Property _SD_SlaveRags  Auto  
+SLD_PlayerAlias Property _SLD_Player Auto

@@ -15,6 +15,7 @@ Actor kSlave = game.GetPlayer()
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
+		SendModEvent("SDModMasterTrust", 2)
 
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
@@ -27,8 +28,7 @@ Actor kSlave = game.GetPlayer()
 
 	Else
 		Debug.Notification( "..some potion!" )
-		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True, True )
+		_SLD_Player.GiftFromNPC(akSpeaker, "Hurt")
 
 		If (Utility.RandomInt(0,100)>40) 
 			kSlave.AddItem( CureDiseases, 1, True )
@@ -59,3 +59,4 @@ Potion Property Skooma  Auto
 Potion Property CureDiseases  Auto  
 
 Potion Property CurePoison  Auto  
+SLD_PlayerAlias Property _SLD_Player Auto

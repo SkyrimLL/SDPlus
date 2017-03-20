@@ -15,6 +15,7 @@ Actor kSlave = game.GetPlayer()
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma  )
+		SendModEvent("SDModMasterTrust", 2)
 
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
@@ -26,20 +27,9 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	Else 
-		If (StorageUtil.GetIntValue( kSlave, "_SD_iSlaveryLevel") <=3 )
-			Debug.Notification( "..a cold bowl of soup." )
-			kSlave.AddItem( Potato, 1, True )
-			kSlave.EquipItem( Potato )
-		else
-			Debug.Notification( "..a plate of greasy meat." )
-			kSlave.AddItem( Beef, 1, True )
-			kSlave.EquipItem( Beef )
-		endif
+		_SLD_Player.GiftFromNPC(akSpeaker, "Hungry")
 
 	EndIf
-
-;	While ( Utility.IsInMenuMode() )
-;	EndWhile
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -54,3 +44,5 @@ Potion Property Potato Auto
 Potion Property Skooma  Auto  
 
 Potion Property Beef  Auto  
+
+SLD_PlayerAlias Property _SLD_Player Auto

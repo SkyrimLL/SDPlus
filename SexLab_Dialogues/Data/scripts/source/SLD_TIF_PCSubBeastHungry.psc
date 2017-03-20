@@ -27,19 +27,7 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	Else 
-		If (Utility.RandomInt( 0, 100 ) > 95)
-	 		DrunkEffect.Cast( kSlave, kSlave)
-		Endif
-
-		If (StorageUtil.GetIntValue( kSlave, "_SD_iSlaveryLevel") <=3 )
-			Debug.Notification( ".. some bloody organs." )
-			kSlave.AddItem( Potato, 1, True )
-			kSlave.EquipItem( Potato, True )
-		else
-			Debug.Notification( ".. a piece of raw meat." )
-			kSlave.AddItem( Beef, 1, True )
-			kSlave.EquipItem( Beef, True )
-		endif
+		_SLD_Player.GiftFromNPC(akSpeaker, "Hungry")
 
 	EndIf
 ;END CODE
@@ -56,3 +44,4 @@ Potion Property Potato Auto
 Potion Property Skooma  Auto  
 
 Potion Property Beef  Auto  
+SLD_PlayerAlias Property _SLD_Player Auto

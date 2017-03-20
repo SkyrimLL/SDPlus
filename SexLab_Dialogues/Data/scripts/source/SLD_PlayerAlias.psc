@@ -6,6 +6,11 @@ SexLabFramework     property SexLab Auto
 SLD_QST_Reset Property _SLD_Reset Auto
 SLD_QST_Main Property _SLD_Main Auto
 
+FormList Property _SLD_GiftFilterThirsty  Auto  
+FormList Property _SLD_GiftFilterHungry  Auto  
+FormList Property _SLD_GiftFilterHurt  Auto  
+FormList Property _SLD_GiftFilterCold  Auto    
+
 Bool isPlayerEnslaved = False
 Bool isPlayerPregnant = False
 Bool isPlayerSuccubus = False
@@ -37,11 +42,6 @@ Function _maintenance()
 	RegisterForModEvent("SLDGiftPlayer",   "OnSLDGiftPlayer")
 
 	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
-
-	If (StorageUtil.GetIntValue(none, "_SLH_iHormones")!=1) ; If Hormones isn't defined, create our own shave head event
-		RegisterForModEvent("SLHShaveHead",   "OnSDShaveHead")
-	Endif
-
 
 	isPlayerEnslaved = StorageUtil.GetIntValue( PlayerActor, "_SD_iEnslaved") as Bool
 	isPlayerPregnant = StorageUtil.GetIntValue( PlayerActor, "_SLH_isPregnant") as Bool
@@ -112,6 +112,27 @@ Function _updateGlobals()
 		_SLD_PCSubDominance.SetValue( 0 )
 	EndIf
 
+EndFunction
+
+
+Function GiftFromNPC(Actor kActor, string sFilter)
+	If (sFIlter == "Thirsty")
+		AddInventoryEventFilter(_SLD_GiftFilterThirsty)
+		kActor.ShowGiftMenu( false, _SLD_GiftFilterThirsty, True )
+	ElseIf (sFIlter == "Hungry")
+		AddInventoryEventFilter(_SLD_GiftFilterHungry)
+		kActor.ShowGiftMenu( false, _SLD_GiftFilterHungry, True )
+	ElseIf (sFIlter == "Hurt")
+		AddInventoryEventFilter(_SLD_GiftFilterHurt)
+		kActor.ShowGiftMenu( false, _SLD_GiftFilterHurt, True )
+	ElseIf (sFIlter == "Cold")
+		AddInventoryEventFilter(_SLD_GiftFilterCold)
+		kActor.ShowGiftMenu( false, _SLD_GiftFilterCold, True )
+	EndIf
+
+	RemoveAllInventoryEventFilters()
+
+	SendModEvent("SDModMasterTrust", -1)
 EndFunction
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
@@ -476,17 +497,6 @@ Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _
  
  	; Event currently defined in SexLab Dialogues... change that later
 	_SLD_Main.ChangePlayerLook(kActor)
-EndEvent
-
-Event OnSDShaveHead(String _eventName, String _args, Float _argc = -1.0, Form _sender)
- 	Actor kActor = _sender as Actor
-	Int iEventCode = _argc as Int
-	String iEventString = _args
-
-	Debug.Trace("[_sdras_player] Receiving slave change look story event [" + _args  + "] [" + _argc as Int + "]")
- 
- 	; Event currently defined in SexLab Dialogues... change that later
-	_SLD_Main.ShaveHead(kActor)
 EndEvent
 
 

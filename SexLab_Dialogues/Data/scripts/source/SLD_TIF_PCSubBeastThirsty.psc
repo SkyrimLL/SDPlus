@@ -21,15 +21,7 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	ElseIf (randomVar >= 2  )
-		Debug.Notification( "., licks your face!" )
-		kSlave.AddItem( Ale, 1, True )
-		kSlave.EquipItem( Ale, True)
-
-		Utility.Wait(3.0)
-
-		If (Utility.RandomInt( 0, 100 ) > 95)
-			DrunkEffect.Cast( kSlave, kSlave)
- 		EndIf
+		_SLD_Player.GiftFromNPC(akSpeaker, "Thirsty")
 
 	Else
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
@@ -47,3 +39,4 @@ SPELL Property DrunkEffect  Auto
 Potion Property Ale  Auto  
 
 Potion Property Skooma  Auto  
+SLD_PlayerAlias Property _SLD_Player Auto
