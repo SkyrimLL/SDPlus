@@ -18,6 +18,8 @@ Quest Property _SDQP_enslavement_tasks  Auto
 Quest Property _SDQP_enslavement Auto
 Cell[] Property _SDCP_sanguines_realms  Auto  
 
+MiscObject Property Gold  Auto  
+
 GlobalVariable Property _SDGV_leash_length  Auto
 GlobalVariable Property _SDGV_free_time  Auto
 GlobalVariable Property _SDGVP_positions  Auto  
@@ -268,82 +270,17 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 		Return
 	EndIf
 
+	if !akSourceContainer
+		Debug.Trace("[SD] Master receives  " + aiItemCount + "x " + akBaseItem + " from the world")
+	elseif akSourceContainer == Game.GetPlayer()
+		Debug.Trace("[SD] Master receives  " + aiItemCount + "x " + akBaseItem)
+	else
+		Debug.Trace("[SD] Master receives  " + aiItemCount + "x " + akBaseItem + " from another container")
+	endIf
+
 	If (kSourceContainer == kSlave ) 
-		Debug.Trace( "[SD] Master receives an item from player" )
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-			Debug.Notification( "Good slave." )
-		else
-			Debug.Notification( "Your owner seems pleased." )
-		endif
+		fctInventory.ProcessItemAdded(kMaster, kSlave, akBaseItem)
 
-		If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || (iuType == 46) ) ; food or potion
-			; Master receives Food
-			fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalFood", modValue = 1)
-			fctSlavery.ModMasterTrust( kMaster, 1)
-
-			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification("Mmm.. that should hit the spot.")
-				endif
-			Else
-				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification("Well? What are you waiting for?.")
-					Debug.Notification("Get back to work slave!")
-				endif
-			EndIf
-
-		; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
-			; Weapon
-		
-		Else 
-			; Add code to match received items against Master's needs
-			; Update Master's mood and trust
-
-		 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
-		 		fGoldEarned = akBaseItem.GetGoldValue()
-			Else
-				fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
-			EndIf
-
-			Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
-			kSlave.RemoveItem(Gold, fGoldCoins as Int)
-
-			fGoldEarned = fGoldEarned + fGoldCoins
-
-			If (fGoldEarned > 0) 
-				fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldEarned as Int)
-				StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
-				_SDGVP_buyoutEarned.SetValue(fGoldEarned)
-
-				_SDQP_enslavement.ModObjectiveGlobal( fGoldEarned as Int, _SDGVP_buyoutEarned, 6, _SDGVP_buyout.GetValue() as Float, False, True, True )
-				
-				if (fGoldEarned>10)
-					fctSlavery.ModMasterTrust( kMaster, 2)
-				else
-					fctSlavery.ModMasterTrust( kMaster, 1)
-				endif
-
-				If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-					If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-						Debug.Notification("Good slave... keep it coming.")
-					endif
-
-				Else
-					If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-						Debug.Notification("That's right.")
-						Debug.Notification("You don't have a use for gold anymore.")
-					endif
-				Endif
-
-			ElseIf (fGoldEarned == 0)
-				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification("What is this junk!?.")
-				endif
-			EndIf
-
-			; TO DO - Master reaction if slave reaches buyout amount
-
-		EndIf
 	Else
 		; Debug.Notification( "New item for owner" )
 		Debug.Trace( "[SD] Master receives an item from " + kSourceContainer + " / " + kSlave )
@@ -891,4 +828,3 @@ State caged
 EndState
 
 
-MiscObject Property Gold  Auto  

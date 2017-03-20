@@ -5,6 +5,39 @@ _SDQS_fcts_outfit Property fctOutfit  Auto
 _SDQS_fcts_factions Property fctFactions  Auto
 zbfSlaveControl Property ZazSlaveControl Auto
 
+SexLabFrameWork Property SexLab Auto
+
+GlobalVariable Property _SDGVP_gametime  Auto  
+GlobalVariable Property _SDGVP_enslaved  Auto  
+GlobalVariable Property _SDGVP_can_join  Auto  
+GlobalVariable Property _SDGVP_sanguine_blessings Auto  
+GlobalVariable Property _SDGVP_enslavedCount  Auto  
+GlobalVariable Property _SDGVP_falmerEnslavedCount  Auto  
+GlobalVariable Property _SDGVP_CurrentTaskID  Auto  
+GlobalVariable Property _SDGVP_CurrentTaskStatus  Auto  
+
+ 
+GlobalVariable Property _SDGVP_config_min_slavery_level Auto
+GlobalVariable Property _SDGVP_config_max_slavery_level Auto
+GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+GlobalVariable Property _SDGVP_config_min_days_before_master_travel Auto
+GlobalVariable Property _SDGVP_isMasterTraveller  Auto  
+
+GlobalVariable Property _SDGVP_MasterDisposition  Auto  
+GlobalVariable Property _SDGVP_MasterDispositionOverall  Auto  
+GlobalVariable Property _SDGVP_MasterTrust  Auto  
+GlobalVariable Property _SDGVP_MasterPersonalityType  Auto  
+GlobalVariable Property _SDGVP_MasterNeedFood  Auto  
+GlobalVariable Property _SDGVP_MasterNeedGold  Auto  
+GlobalVariable Property _SDGVP_MasterNeedSex  Auto  
+GlobalVariable Property _SDGVP_MasterNeedPunishment  Auto  
+GlobalVariable Property _SDGVP_SlaveryLevel  Auto  
+
+
+ 
+
+Quest Property slaveryQuest  Auto  
+
 ; Properties redefined to allow upgrade to SD+ V3 without a need for a new save game
 ; Older properties may have None value baked into save game at this point
 ; _SDQS_fcts_constraints Property fctConstraintsV3  Auto
@@ -12,6 +45,8 @@ zbfSlaveControl Property ZazSlaveControl Auto
 ; _SDQS_fcts_factions Property fctFactionsV3  Auto
 
 Keyword Property ActorTypeNPC  Auto  
+
+Int iNumberTasks = 3
 
 function InitSlaveryState( Actor kSlave )
 	; Called during SD initialization - Sanguine is watching
@@ -144,6 +179,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	endif
 
 	; - Master personality profile
+	; StorageUtil.SetIntValue(kMaster, "_SD_iPersonalityProfile", 6 )
 	; 0 - Simple profile. No additional constraints
 	;				Endgame: Sell slave to slave trader.
 	; 1 - Comfortable - Must complete or exceed food goal
@@ -374,6 +410,8 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			_SDGVP_falmerEnslavedCount.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iFalmerEnslavedCount"))
 		EndIf
 	Endif
+
+	PickNextTask(kSlave)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
@@ -969,7 +1007,6 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	Debug.Trace("[SD] Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
-
 	; Reset daily counts for slave
 	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iPunishmentCountToday", 0)
@@ -1081,6 +1118,12 @@ EndFunction
 
 Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+
+	If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 0)
+		; Catch calls when slave has been released
+		Return iTrust
+	Endif
+
 	Debug.Trace("[SD] Trust pool before update: " + iTrust)
 
 	iTrust = iTrust + iModValue
@@ -1230,33 +1273,245 @@ Float Function GetEnslavementDuration(Actor kSlave)
 	Return ( _SDGVP_gametime.GetValue() -	StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavedGameTime" ) )
 EndFunction
 
-SexLabFrameWork Property SexLab Auto
+;----- Enslavement task system
 
-GlobalVariable Property _SDGVP_gametime  Auto  
-GlobalVariable Property _SDGVP_enslaved  Auto  
-GlobalVariable Property _SDGVP_can_join  Auto  
-GlobalVariable Property _SDGVP_sanguine_blessings Auto  
-GlobalVariable Property _SDGVP_enslavedCount  Auto  
-GlobalVariable Property _SDGVP_falmerEnslavedCount  Auto  
+; Create Modevents for PickNextTask and ModTaskAmount
+Function PickNextTask(Actor kSlave)
+	Int iNewTaskID 
+	Bool bForceStart = False
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Float fMasterDistance = kSlave.GetDistance( kMaster )
 
- 
-GlobalVariable Property _SDGVP_config_min_slavery_level Auto
-GlobalVariable Property _SDGVP_config_max_slavery_level Auto
-GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
-GlobalVariable Property _SDGVP_config_min_days_before_master_travel Auto
-GlobalVariable Property _SDGVP_isMasterTraveller  Auto  
+	If (fMasterDistance >= 900)
+		Debug.Notification("Your owner is too far to check in on you.")
+		ModMasterTrust(kMaster, -10) ; Master is disappointed
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  -1  )  
+		_SDGVP_CurrentTaskStatus.SetValue(-1)  ; -1 fail / 0 started / 1 completed
+		StorageUtil.SetFloatValue(kSlave, "_SD_fCurrentTaskStartDate",  Game.QueryStat("Days Passed")  )
+		Return
+	endif
 
-GlobalVariable Property _SDGVP_MasterDisposition  Auto  
-GlobalVariable Property _SDGVP_MasterDispositionOverall  Auto  
-GlobalVariable Property _SDGVP_MasterTrust  Auto  
-GlobalVariable Property _SDGVP_MasterPersonalityType  Auto  
-GlobalVariable Property _SDGVP_MasterNeedFood  Auto  
-GlobalVariable Property _SDGVP_MasterNeedGold  Auto  
-GlobalVariable Property _SDGVP_MasterNeedSex  Auto  
-GlobalVariable Property _SDGVP_MasterNeedPunishment  Auto  
-GlobalVariable Property _SDGVP_SlaveryLevel  Auto  
+	If (_SDGVP_CurrentTaskID.GetValue()==0)
+		bForceStart = True
+	Endif
+
+	If (StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskStatus")!=0) || (bForceStart); current task is completed - OK to start a new task
+		; Random selection for now - later use master trust/disposition to select more appropriate task
+
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+			iNewTaskID = Utility.RandomInt(1,iNumberTasks)
+		Else
+			If (Utility.RandomInt(0,100)>50)
+				iNewTaskID = 1
+			else
+				iNewTaskID = 3
+			endif
+		endif
 
 
- 
+		StartCurrentTask( kSlave, iNewTaskID)
+	Else
+		Debug.Trace("[SD] Pick a new task - Current task is not completed yet")
+	Endif
+EndFunction
 
-Quest Property slaveryQuest  Auto  
+Function ModTaskAmount(Actor kSlave, String sTaskTarget, int iAmount)
+	Int iCurrentAmount = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount" )
+
+	; Only update amount if task target matches current task target
+	If (sTaskTarget == StorageUtil.GetStringValue(kSlave, "_SD_sCurrentTaskTarget"))
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskAmount", iCurrentAmount + iAmount )
+
+		Debug.Trace("[SD]    Task update - Current amount: " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") )
+		Debug.Trace("[SD]    Task update - 	  % of target: " + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
+		Debug.Notification(" % of task completed: " + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
+
+	Endif
+EndFunction
+
+Function StartCurrentTask(Actor kSlave, Int iTaskID)
+	If ((iTaskID < 1) || (iTaskID > iNumberTasks))
+		Debug.Trace("[SD] Start a new task - bad task ID: " + iTaskID)
+		Return
+	endif
+
+	If (StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays")==0.0)
+		; No task on very first day
+		Debug.Trace("[SD] New task aborted - No task on first day: " + StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") as Int)
+		Return
+	Endif
+
+	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskID",  iTaskID )  
+	_SDGVP_CurrentTaskID.SetValue(iTaskID)
+	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  0  )  
+	_SDGVP_CurrentTaskStatus.SetValue(0)  ; -1 fail / 0 started / 1 completed
+	StorageUtil.SetFloatValue(kSlave, "_SD_fCurrentTaskStartDate",  Game.QueryStat("Days Passed")  )
+	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskAmount", 0 )  ; current amount for task
+
+	If (iTaskID == 1)  ; default task - bring food
+		Debug.Trace("[SD] Start a new task - ID = 1 (Find food)")
+
+		StorageUtil.SetStringValue(kSlave, "_SD_sCurrentTaskTarget", "Food" )
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount", Utility.RandomInt(5,10) ) ; target amount to complete task
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", 1 ) ; 1 means player needs to go over target amount to succeed, -1 means player needs to remain under target amount to succeed
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) ; in days
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  10  )
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  30  )  ; 30+ - used for tasks
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  30  ) 
+
+		Debug.MessageBox(" It's a new day.\n Your owner asks you to bring back at least " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") + " rations of food today.")
+
+	ElseIf (iTaskID == 2)  ; bring valuables
+		Debug.Trace("[SD] Start a new task - ID = 2 (Find valuables)")
+
+		StorageUtil.SetStringValue(kSlave, "_SD_sCurrentTaskTarget", "Valuables" )
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount", Utility.RandomInt(10,30) * 10) 
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", 1 )  
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) 
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  20  )
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  31  )  
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  31  ) 
+
+		Debug.MessageBox(" It's a new day.\n Your owner asks you to bring back at least " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") + " Gold worth of valuables today.")
+
+	ElseIf (iTaskID == 3)  ; Entertain master
+		Debug.Trace("[SD] Start a new task - ID = 3 (MasterOnly)")
+
+		StorageUtil.SetStringValue(kSlave, "_SD_sCurrentTaskTarget", "MasterOnly" )
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount", 1 ) 
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", -1 )  
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) 
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  30  )
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  32  )  
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  32  ) 
+
+		Debug.MessageBox(" It's a new day.\n Your owner asks you to entertain nobody else today.")
+	Endif
+
+	slaveryQuest.SetStage( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskQuestStage"))
+	slaveryQuest.SetObjectiveDisplayed( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective"), abDisplayed = true)
+
+EndFunction
+
+Function EvaluateCurrentTask(Actor kSlave)
+	Int iTaskID = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskID" )
+	; Int iTaskResult = 0 ; -1 fail / 0 started / 1 completed
+	Int iDaysPassed = Game.QueryStat("Days Passed") - (StorageUtil.GetFloatValue(kSlave, "_SD_fCurrentTaskStartDate")  as Int)
+
+	If (StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays")==0.0)
+		; No task on very first day
+		Debug.Trace("[SD] Evaluate task aborted - No task on first day: " + StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") as Int)
+		Return
+	Endif
+
+	If (iDaysPassed>= StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskDuration"))  ; task expired
+		slaveryQuest.SetObjectiveDisplayed( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective"), abDisplayed = false)
+
+		If ( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskImpact" ) == 1)
+			If (StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") >= StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount")); target amount is exceeded, task completed
+				CompleteCurrentTask( kSlave) 
+
+			else  ; task failed
+				FailCurrentTask( kSlave) 
+			EndIf
+		ElseIf ( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskImpact" ) == -1)
+			If (StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") < StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount")); target amount is exceeded, task completed
+				CompleteCurrentTask( kSlave) 
+
+			else  ; task failed
+				FailCurrentTask( kSlave) 
+			EndIf
+		EndIf
+	EndIf
+
+EndFunction
+
+	; - Master personality profile
+	; 
+	; 0 - Simple profile. No additional constraints
+	; 1 - Comfortable - Must complete or exceed food goal
+	; 2 - Horny - Must complete or exceed sex goal
+	; 3 - Sadistic - Must complete or exceed punishment goals
+	; 4 - Gambler - Must complete or exceed gold goals. 
+	; 5 - Caring - Seeks full compliance for one goal at least
+	; 6 - Perfectionist - Seeks full compliance for all goals
+
+Function CompleteCurrentTask(Actor kSlave) 
+	;-  Reward if succeed (remove punishment gear, add allowance, grant additional freedoms,heal,feed,make up, reward piercings)
+	Int iTaskID = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskID" )
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Int iSlaveExposure = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure")
+	Int iSlaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
+	Int iMasterPersonality = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile" )
+	Int iModTrust = 0
+
+	; slavery exposure increases for being a good slave
+	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryExposure", iSlaveExposure + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskExposureGain") )
+
+	If (iTaskID == 1)  ; default task - bring food
+		iModTrust = 1 + (((iMasterPersonality == 1) as Int) * 2) ; Master is happy
+		Debug.MessageBox("You succeeded your daily task. Your owner is happy with you and grants you some free time.")
+
+	ElseIf (iTaskID == 2)  ; bring valuables
+		iModTrust = 2  + (((iMasterPersonality == 4) as Int) * 2)  
+		Debug.MessageBox("You succeeded your daily task. Your owner is happy with you and grants you some free time.")
+
+	ElseIf (iTaskID == 3)  ; Entertain master
+		iModTrust = 3  + (((iMasterPersonality == 2) as Int) * 2)  
+		Debug.MessageBox("You succeeded your daily task. Your owner is happy with you and grants you some free time.")
+	EndIf
+
+	; Trust is harder to gain and easy to lose at low slavery levels
+	iModTrust = 1 + (iModTrust * 2 * ( (iSlaveryLevel>3) as Int)) + (iModTrust / 2 * ( (iSlaveryLevel<=3) as Int))
+	ModMasterTrust(kMaster, iModTrust)  
+
+
+	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  1  )   
+	_SDGVP_CurrentTaskStatus.SetValue(1)  ; -1 fail / 0 started / 1 completed
+
+EndFunction
+
+Function FailCurrentTask(Actor kSlave) 
+	;-  Punishment if fail (punishment scene, punishment gear, remove allowance, remove freedoms, shave head, punishment piercings)
+	Int iTaskID = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskID" )
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Int iSlaveExposure = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure")
+	Int iSlaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
+	Int iMasterPersonality = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile" )
+	Int iModTrust = 0
+
+	; slavery exposure increases faster for being a bad slave
+	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryExposure", iSlaveExposure + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskExposureGain") * 2 )
+
+	If (iTaskID == 1)  ; default task - bring food
+		iModTrust =  -2  - (((iMasterPersonality == 1) as Int) * 2) ; Master is disappointed
+		Debug.MessageBox("You failed your daily task. Your owner is disappointed and take some free time away from you.")
+	
+	ElseIf (iTaskID == 2)  ; bring valuables
+		iModTrust =  -4 -  (((iMasterPersonality == 4) as Int) * 2) 
+		Debug.MessageBox("You failed your daily task. Your owner is disappointed and take some free time away from you.")
+
+	ElseIf (iTaskID == 3)  ; Entertain master
+		iModTrust = -6  - (((iMasterPersonality == 2) as Int) * 2)  
+		Debug.MessageBox("You failed your daily task. Your owner is disappointed and take some free time away from you.")
+		kMaster.SendModEvent("PCSubWhip")
+	EndIf
+
+
+	; Trust is harder to gain and easy to lose at low slavery levels
+	iModTrust = -1 + (iModTrust * 2 * ( (iSlaveryLevel<=3) as Int)) + (iModTrust / 2 * ( (iSlaveryLevel>3) as Int))
+	ModMasterTrust(kMaster, iModTrust)  
+
+
+	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  -1  )   
+	_SDGVP_CurrentTaskStatus.SetValue(-1)  ; -1 fail / 0 started / 1 completed
+
+EndFunction
+
+

@@ -8,6 +8,23 @@ _SDQS_fcts_outfit Property fctOutfit  Auto
 
 Bool Property sdBleedout = False Auto Conditional
 
+
+Message Property _SD_rapeMenu Auto
+
+GlobalVariable Property _SDGVP_naked_rape_chance Auto
+GlobalVariable Property _SDGVP_naked_rape_delay Auto
+GlobalVariable Property _SDGVP_gender_restrictions Auto
+GlobalVariable Property _SDGVP_punishments  Auto  
+SexLabFrameWork Property SexLab Auto
+
+Keyword Property _SDKP_punish Auto
+Keyword Property _SDKP_bound Auto
+Keyword Property _SDKP_gagged Auto
+Keyword Property _SDKP_sex  Auto  
+
+ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
+_SDQS_whore Property whore  Auto  
+ 
 ;Int[] uiSlotMask
 
 Actor Function GetPlayerDialogueTarget()
@@ -309,6 +326,10 @@ Bool Function checkGenderRestriction(Actor akSpeaker, Actor akTarget)
 	Bool bGenderChecked = false;
 
 	; usually, 'akTarget' is the player
+	; 0 - both genders allowed
+	; 1 - same gender only
+	; 2 - opposite gender only
+	; 3 - use sexlab settings
 
 	if (genderRestrictions <= 2) ; SD+ gender restriction system
 		bGenderChecked = (genderRestrictions  == 0) || ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) || ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) 
@@ -496,7 +517,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				Else
 					SexLabInTags = "Lesbian"
 				EndIf
-			ElseIf ( (genderRestrictions  == 2) && (speakerGender  != targetGender ) ) && (Utility.RandomInt(0,100)>50)
+			ElseIf ( (genderRestrictions  != 1) && (speakerGender  != targetGender ) ) && (Utility.RandomInt(0,100)>30)
 					
 					If (speakerGender == 1) ; Mistress and Male slave
 						SexLabInTags = "Cowgirl"
@@ -658,20 +679,3 @@ Function transferFormListContents( FormList alFactionListIn, FormList alFactionL
 	alFactionListIn.Revert()
 EndFunction
 
-
-Message Property _SD_rapeMenu Auto
-
-GlobalVariable Property _SDGVP_naked_rape_chance Auto
-GlobalVariable Property _SDGVP_naked_rape_delay Auto
-GlobalVariable Property _SDGVP_gender_restrictions Auto
-GlobalVariable Property _SDGVP_punishments  Auto  
-SexLabFrameWork Property SexLab Auto
-
-Keyword Property _SDKP_punish Auto
-Keyword Property _SDKP_bound Auto
-Keyword Property _SDKP_gagged Auto
-Keyword Property _SDKP_sex  Auto  
-
-ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
-_SDQS_whore Property whore  Auto  
- 

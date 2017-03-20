@@ -47,8 +47,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2017030300 ; <--- Edit this value when updating
-		fVersion = 2017030300; and this
+	If fVersion < 2017031600 ; <--- Edit this value when updating
+		fVersion = 2017031600; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -80,6 +80,10 @@ Function Maintenance()
 
 		If (!StorageUtil.HasStringValue(kPlayer, "_SD_sSanguineGender"))
 			StorageUtil.SetStringValue(kPlayer, "_SD_sSanguineGender","Both")
+		Endif
+
+		If (!StorageUtil.HasIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep"))
+			StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", 20)
 		Endif
 
 		; kPlayer.SendModEvent( "PCSubStance" , "Standing")

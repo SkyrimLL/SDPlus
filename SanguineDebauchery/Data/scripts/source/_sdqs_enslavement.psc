@@ -37,6 +37,8 @@ ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_bindings Auto
 ReferenceAlias Property _SDRAP_shackles Auto
 ReferenceAlias Property _SDRAP_collar Auto
+ReferenceAlias Property _SDRAP_key Auto
+ReferenceAlias Property _SDRAP_crop Auto
 
 FormList Property _SDFLP_allied  Auto
 FormList Property _SDFLP_slaver  Auto
@@ -60,6 +62,18 @@ ActorBase Property _SDABP_sprigganhost  Auto
 Actor Property _SDAP_sanguine  Auto  
 
 GlobalVariable Property _SDGVP_state_housekeeping  Auto  
+
+
+
+Faction Property _SDFP_slaverCrimeFaction  Auto 
+GlobalVariable Property _SDGVP_config_verboseMerits  Auto
+GlobalVariable Property _SDGVP_trust_hands  Auto  
+GlobalVariable Property _SDGVP_trust_feet  Auto  
+ReferenceAlias[] Property _SDRAP_companions Auto
+Armor Property _SDA_bindings  Auto  
+
+ReferenceAlias Property _SDRAP_playerStorage  Auto  
+ReferenceAlias Property _SDAP_clothing  Auto  
 
 
 Bool Property bEscapedSlave = False Auto Conditional
@@ -109,20 +123,12 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		Debug.Trace("[SD] Starting enslavement story.")
 		bQuestActive = True		
 
-		_SDGVP_demerits.SetValueInt( aiValue1 )
-		_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  - 100 + Utility.RandomInt(0,500) )
-		_SDGVP_demerits_join.SetValue(  - 20 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) )
-		_SDGV_leash_length.SetValue(400)
-		_SDGVP_stats_enslaved.Mod( 1.0 )
-		_SDGVP_enslaved.SetValue(1)	   
-
-		fEnslavementStart = GetCurrentGameTime()
+		; _SDGVP_demerits.SetValueInt( aiValue1 )
 
 		; ---------------------------------------------------------------------------
 		EnslavePlayer(kMaster, kSlave, _SDGVP_config[3].GetValue() as Bool)
 		; ---------------------------------------------------------------------------
 
-		ScanSlavePunishment(kSlave)
 
 		SetObjectiveDisplayed( 0 )
 		if (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
@@ -154,6 +160,14 @@ EndFunction
 Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False)
 	ObjectReference kRags = _SDAP_clothing.GetReference() as  ObjectReference 
 	ActorBase akActorBase  
+
+	_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  - 100 + Utility.RandomInt(0,500) )
+	_SDGVP_demerits_join.SetValue(  - 20 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) )
+	_SDGV_leash_length.SetValue(400)
+	_SDGVP_stats_enslaved.Mod( 1.0 )
+	_SDGVP_enslaved.SetValue(1)	   
+
+	fEnslavementStart = GetCurrentGameTime()
 
 	kMaster = akMaster
 	kSlave = akSlave
@@ -316,6 +330,24 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	kMaster.SendModEvent("PCSubStatus")
 	kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
+	ScanSlavePunishment(kSlave)
+
+EndFunction
+
+Function TransferSlave(Actor akOldMaster, Actor akNewMaster, Actor akSlave)
+	ObjectReference keyRef = _SDRAP_key.GetReference() as  ObjectReference 
+	ObjectReference cropRef = _SDRAP_crop.GetReference() as  ObjectReference 
+	ObjectReference oldMasterRef = akOldMaster as ObjectReference
+
+	fctSlavery.StopSlavery( akOldMaster, akSlave)
+	fctFactions.clearSlaveFactions( akSlave )
+
+	_SDRAP_master.ForceRefTo(akNewMaster as ObjectReference)
+
+	EnslavePlayer(akNewMaster, akSlave, _SDGVP_config[3].GetValue() as Bool)
+
+	oldMasterRef.RemoveItem(keyRef as Form, 1, true, akNewMaster as ObjectReference)
+	oldMasterRef.RemoveItem(cropRef as Form, 1, true, akNewMaster as ObjectReference)
 EndFunction
 
 ; Auto State enslaved
@@ -623,15 +655,4 @@ Function EquipSlaveRags(Actor akSlave)
 	akSlave.EquipItem( kRags, True, True )
 EndFunction
 
-
-
-Faction Property _SDFP_slaverCrimeFaction  Auto 
-GlobalVariable Property _SDGVP_config_verboseMerits  Auto
-GlobalVariable Property _SDGVP_trust_hands  Auto  
-GlobalVariable Property _SDGVP_trust_feet  Auto  
-ReferenceAlias[] Property _SDRAP_companions Auto
-Armor Property _SDA_bindings  Auto  
-
-ReferenceAlias Property _SDRAP_playerStorage  Auto  
-ReferenceAlias Property _SDAP_clothing  Auto  
 

@@ -425,8 +425,9 @@ State monitor
 
 			GoToState("waiting")
  
-		ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") >  (_SDGVP_config_disposition_threshold.GetValue() as Int)) || (fBuyout >= 0)  ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (_SDGVP_can_join.GetValue() == 0)
+		ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") >  (_SDGVP_config_disposition_threshold.GetValue() as Int)) || (fBuyout >= 0)  ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (_SDGVP_can_join.GetValue() == 0) && (_SDGVP_join_days.GetValue() < 100)
 			; Slavery positive 'endgame' - player can join master or be cast away
+			; If number of days to join is set to maximum (100), slave will never be allowed to join
 
 	 		_SDGVP_can_join.SetValue(1) 
 
@@ -750,7 +751,9 @@ State escape_choking
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 				kCrimeFaction = kMaster.GetCrimeFaction()
-				kCrimeFaction.SetCrimeGold(100)
+				If (kCrimeFaction!=None)
+					kCrimeFaction.SetCrimeGold(100)
+				Endif
 			endif
 		Endif
 
@@ -783,9 +786,11 @@ State escape_choking
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 					Debug.Notification( "Where did you think you were going?" )
 
-					Int iGold = kCrimeFaction.GetCrimeGold()
-					kCrimeFaction.PlayerPayCrimeGold( True, False )	
-					_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
+					If (kCrimeFaction!=None)
+						Int iGold = kCrimeFaction.GetCrimeGold()
+						kCrimeFaction.PlayerPayCrimeGold( True, False )	
+						_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
+					Endif
 				endIf
 				
 				if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
@@ -1069,7 +1074,9 @@ State escape_shock
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 				kCrimeFaction = kMaster.GetCrimeFaction()
-				kCrimeFaction.SetCrimeGold(100)
+				If (kCrimeFaction!=None)
+					kCrimeFaction.SetCrimeGold(100)
+				Endif
 			endif
 		Endif
 
@@ -1104,9 +1111,11 @@ State escape_shock
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 					Debug.Notification( "Where did you think you were going?" )
 
-					Int iGold = kCrimeFaction.GetCrimeGold()
-					kCrimeFaction.PlayerPayCrimeGold( True, False )	
-					_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
+					If (kCrimeFaction!=None)
+						Int iGold = kCrimeFaction.GetCrimeGold()
+						kCrimeFaction.PlayerPayCrimeGold( True, False )	
+						_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
+					Endif
 
 				endIf
 
@@ -1354,10 +1363,23 @@ Function _slaveStatusTicker()
 				StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
 		Endif
 
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && !kSlave.GetCurrentScene() && (Utility.RandomInt(0,100)>60)
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (!kSlave.GetCurrentScene()) && (Utility.RandomInt(0,100)>60)   
 
-			_slaveEndGame()
+			If (_SDGVP_join_days.GetValue() < 100) || ((_SDGVP_join_days.GetValue() == 100) && (Utility.RandomInt(0,100)>95))
+				; 5% chance of end game if master is unhappy with long term slavery option
+				_slaveEndGame()
+			Endif
 		Endif
+
+		Debug.Trace( "[SD] Slavery status - END daily update")
+
+		Debug.Trace( "[SD] Slavery status - Evaluate player tasks")
+		fctSlavery.EvaluateCurrentTask(kSlave) ; First evaluate current task in case it can be completed 
+		fctSlavery.PickNextTask(kSlave) 
+		Debug.Trace( "[SD] Slavery status - END Evaluate player tasks")
+
+
+
 	EndIf
 
 	enslavement.UpdateSlaveState(kMaster ,kSlave)

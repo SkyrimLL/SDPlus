@@ -24,6 +24,7 @@ GlobalVariable Property _SDGVP_slave_days_max Auto
 GlobalVariable Property _SDGVP_config_healthMult Auto
 ; ragdolling
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto
+GlobalVariable Property _SDGVP_frostfallMortality  Auto  
 
 ReferenceAlias Property _SDRAP_lust_m  Auto
 ReferenceAlias Property _SDRAP_lust_f  Auto
@@ -188,6 +189,8 @@ Function _Maintenance()
 	RegisterForModEvent("SDSanguineBlessingMod",   "OnSDModSanguineBlessing") ; obsolete
 	RegisterForModEvent("SDModSanguineBlessing",   "OnSDModSanguineBlessing")
 	RegisterForModEvent("SDModMasterTrust",   "OnSDModMasterTrust")
+	RegisterForModEvent("SDPickNextTask",   "OnSDPickNextTask")
+	RegisterForModEvent("SDModTaskAmount",   "OnSDModTaskAmount")
 
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
@@ -576,10 +579,12 @@ Function SDSurrender(Actor kActor, String SurrenderMode)
 			EndIf
 
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveTransfer",1)
-			_SDQP_enslavement.Stop()
+			; _SDQP_enslavement.Stop()
 
-			While ( _SDQP_enslavement.IsStopping() )
-			EndWhile
+			; While ( _SDQP_enslavement.IsStopping() )
+			; EndWhile
+
+			; Utility.wait(1.0)
 
 		EndIf
 
@@ -596,8 +601,11 @@ Function SDSurrender(Actor kActor, String SurrenderMode)
 		EndIf
 
 		; New enslavement - changing ownership
-		_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
- 
+		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+			_SD_Enslaved.TransferSlave(kCurrentMaster, kNewMaster, kPlayer)
+		else
+			_SDKP_enslave.SendStoryEvent(akRef1 = kNewMaster, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 1)
+ 		endif
 
 	ElseIf (kNewMaster != None)
 		; kNewMaster.SendModEvent("PCSubSex")
@@ -710,7 +718,7 @@ Event OnSDModMasterTrust(String _eventName = "", String _args, Float _argc = -1.
 	String iEventString = _args
 	Int iTrust
 
-	Debug.Trace("[_sdras_player] Receiving master tusts mod story event [" + _args  + "] [" + _argc as Int + "]")
+	Debug.Trace("[_sdras_player] Receiving master trust mod story event [" + _args  + "] [" + _argc as Int + "]")
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		kActor = _SD_Enslaved.GetMaster() as Actor
@@ -724,10 +732,36 @@ Event OnSDModMasterTrust(String _eventName = "", String _args, Float _argc = -1.
 	EndIf
 EndEvent
 
+Event OnSDPickNextTask(String _eventName = "", String _args ="Food", Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventAmount = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving pick slavery task mod story event [" + _args  + "] [" + _argc as Int + "]")
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		fctSlavery.EvaluateCurrentTask(kPlayer) ; First evaluate current task in case it can be completed 
+
+		fctSlavery.PickNextTask(kPlayer) 
+	EndIf
+EndEvent
+
+Event OnSDModTaskAmount(String _eventName = "", String _args ="Food", Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventAmount = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving slavery task mod story event [" + _args  + "] [" + _argc as Int + "]")
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		fctSlavery.ModTaskAmount(kPlayer, iEventString, iEventAmount) 
+	EndIf
+EndEvent
 
 Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+	Actor kMaster = None
 	; int storyID = _argc as Int
 
 	if (kActor != None)
@@ -741,10 +775,15 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sen
 	If (kTempAggressor != None)
 		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
 	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+		kMaster = _SD_Enslaved.GetMaster() as Actor
+		kTempAggressor = kMaster
 	Else
 		Return
 	EndIf
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (kTempAggressor!=kMaster) && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
+		fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
+	Endif
 
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
@@ -796,6 +835,7 @@ EndEvent
 Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
+	Actor kMaster = None
 	; int storyID = _argc as Int
 
 	if (kActor != None)
@@ -810,10 +850,15 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 	If (kTempAggressor != None)
 		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
 	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		kTempAggressor = _SD_Enslaved.GetMaster() as Actor
+		kMaster = _SD_Enslaved.GetMaster() as Actor
+		kTempAggressor = kMaster
 	Else
 		Return
 	EndIf
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (kTempAggressor!=kMaster) && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
+		fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
+	Endif
 
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
@@ -1364,6 +1409,7 @@ State monitor
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceEnslavement",_SDGVP_health_threshold.GetValue() as Int )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceSprigganInfection",_SDGVP_config_healthMult.GetValue() as Int )
+		StorageUtil.SetIntValue( kPlayer, "_SD_iFrostfallMortality", _SDGVP_frostfallMortality.GetValueInt( ) as Int)
 
 		If ( keys[0] != config._SDUIP_keys[1] || keys[1] != config._SDUIP_keys[6] || keys[2] != config._SDUIP_keys[2] || keys[3] != config._SDUIP_keys[5] )
 			UnregisterForKey( keys[0] )
@@ -1516,7 +1562,7 @@ State monitor
 
 					; Find a way to detect and fix situations when player is stuck 'flying' above ground
 
-					; Debug.SendAnimationEvent(kPlayer, "IdleForceDefaultState")
+					Debug.SendAnimationEvent(kPlayer, "IdleForceDefaultState")
 
 					; SendModEvent("da_UpdateBleedingDebuff")
 					; SendModEvent("da_EndNearDeathDebuff")	

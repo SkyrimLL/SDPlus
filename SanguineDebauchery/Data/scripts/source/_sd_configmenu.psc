@@ -131,9 +131,9 @@ Float _SDOID_config_S6_max = 100.0
 Float _SDOID_config_S6_default = 5.0
 Float _SDOID_config_S6_inc = 1.0
 Int _SDOID_config_S7
-Float _SDOID_config_S7_min = 50.0
+Float _SDOID_config_S7_min = 0.0
 Float _SDOID_config_S7_max = 100.0
-Float _SDOID_config_S7_default = 100.0
+Float _SDOID_config_S7_default = 20.0
 Float _SDOID_config_S7_inc = 10.0
 Int _SDOID_config_S8
 Float _SDOID_config_S8_min = 1.0
@@ -445,7 +445,7 @@ endEvent
 event OnVersionUpdate(int a_version)
 	{Called when a version update of this script has been detected}
 	If ( a_version != _SD_mcm_ver || CurrentVersion != _SD_mcm_ver )
-		Debug.Notification("[SD] Updating script to version " + _SD_mcm_ver)
+		; Debug.Notification("[SD] Updating script to version " + _SD_mcm_ver)
 		Debug.Trace("[SD] Updating script to version " + _SD_mcm_ver)
 		initMod( True )
 	EndIf
@@ -474,6 +474,7 @@ event OnPageReset(string a_page)
 		; _SDOID_config_S2 = AddSliderOption("$SD_OPTION_P0_WEAKENED_AT", _SDGVP_config_healthThreshold.GetValue() as Float, "$SD_PERCENT_HEALTH") ;4 - 3
 		_SDOID_config_S2 = AddSliderOption("Chance of enslavement", _SDGVP_config_healthThreshold.GetValue() as Float, "{1} %")  
 		_SDOID_config_S1 = AddSliderOption("Chance of spriggan infection", _SDGVP_config_healthMult.GetValue() as Float, "{1} %")  
+
 		; _SDOID_config_B1 = AddToggleOption("$SD_OPTION_P0_ESSENTIAL_WHILE_WEAKENED", _SDGVP_config_essential.GetValue() as Bool, OPTION_FLAG_DISABLED) ;6 - 4
 		AddHeaderOption("$SD_HEADER_P0_ITEMS") ;8 - 5
 		_SDOID_config_B3 = AddToggleOption("$SD_OPTION_P0_LIMITED_REMOVAL", _SDGVP_config_itemRemovalType.GetValue() as Bool) ;10 - 6
@@ -508,7 +509,7 @@ event OnPageReset(string a_page)
 		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
 		; AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
-		; _SDOID_config_S7 = AddSliderOption("$SD_SLIDER_P0_BLINDNESS_LEVEL", _SDGVP_config_blindnessLevel.GetValue() as Float, "$SD_PERCENT") ; 23 - 12
+
 
 	; STATUS
 	ElseIf ( a_page == Pages[1] )
@@ -556,6 +557,7 @@ event OnPageReset(string a_page)
 			_SDOID_config_T1 = AddTextOption(s_config_T1_text[i_T1_action], s_config_T1_value[i_T1_action], i_config_T1_flag[i_T1_action])
 			AddToggleOption("$SD_TOGGLE_P1_IS_PLAYER_ENSLAVED", _SDGVP_enslaved.GetValue() as Bool, OPTION_FLAG_DISABLED)
 			; _SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
+			_SDOID_config_S7 = AddSliderOption("Chance of dreamworld visits", _SDGVP_config_blindnessLevel.GetValue() as Float, "{1} %") ; 23 - 12
 			_SDOID_config_B2 = AddToggleOption("Start after A Night to remember", _SDGVP_config_lust.GetValue() as Bool )
 			_SDOID_config_B14 = AddToggleOption("Start after first escape", _SDGVP_config_auto_start.GetValue() as Bool )
 			If (_SDGVP_enslaved.GetValue() as Bool) || (_SDGVP_sprigganenslaved.GetValue() as Bool)
@@ -654,10 +656,8 @@ event OnPageReset(string a_page)
 			idx = 0
 			While idx < _SDQP_quests_addon.Length
 				; Only display Frostfall addon entry
-				If (idx==2) && ( _SDQP_quests_addon[idx] != None  && requiredParentModInstalled(idx) )
-					bRunning = _SDQP_quests_addon[idx].IsRunning() || _SDQP_quests_addon[idx].IsStarting()
-					_SDOID_quests_a[idx] = AddToggleOption( _SDSP_quests_addon_name[idx], bRunning, OPTION_FLAG_NONE)
-					If ( _SDGVP_quests_addon_subToggle[idx] != None && bRunning )
+				If (idx==2) && ( requiredParentModInstalled(idx) )
+					If ( _SDGVP_quests_addon_subToggle[idx] != None )
 						_SDOID_quests_ast[idx] = AddToggleOption("> " + _SDGVP_quests_addon_subToggle_name[idx], _SDGVP_quests_addon_subToggle[idx].GetValue() as Bool)
 					EndIf
 				; Else
@@ -776,7 +776,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_S6 )
 		SetInfoText( decimalDaysToString( _SDGVP_config_join_days.GetValue() as Float ) )
 	ElseIf ( a_option == _SDOID_config_S7 )
-		SetInfoText("$_SDOID_config_S7")
+		SetInfoText("Normal chance of visits to Sanguine's Dreamworld on sleep (after initial trigger conditions are met).")
 	ElseIf ( a_option == _SDOID_config_M1 )
 
 	ElseIf ( _SDOID_quests_o.Find( a_option ) >= 0 )
@@ -981,8 +981,9 @@ event OnOptionSliderOpen(int a_option)
 		SetSliderDialogInterval( 1.0 ) ; _SDOID_config_S6_inc )
 	ElseIf ( a_option == _SDOID_config_S7 )
 		SetSliderDialogStartValue( _SDGVP_config_blindnessLevel.GetValue() as Float )
+		StorageUtil.SetIntValue(Game.getPlayer(), "_SD_iChanceDreamworldOnSleep",_SDGVP_config_blindnessLevel.GetValue() as Int )
 		SetSliderDialogDefaultValue( _SDOID_config_S7_default )
-		SetSliderDialogRange( _SDOID_config_S7_min, _SDOID_config_S7_max )
+		SetSliderDialogRange( 0.0, 100.0 ) ; _SDOID_config_S7_min, _SDOID_config_S7_max )
 		SetSliderDialogInterval( _SDOID_config_S7_inc )
 	ElseIf ( a_option == _SDOID_config_S8 )
 		SetSliderDialogStartValue( _SDGVP_config_min_slavery_level.GetValue() as Float )
@@ -1034,7 +1035,7 @@ event OnOptionSliderAccept(int a_option, float a_value)
 		SetSliderOptionValue(_SDOID_config_S6, a_value, "$SD_DAYS")
 	ElseIf ( a_option == _SDOID_config_S7 )
 		_SDGVP_config_blindnessLevel.SetValue( a_value )
-		SetSliderOptionValue(_SDOID_config_S7, a_value, "$SD_PERCENT")
+		SetSliderOptionValue(_SDOID_config_S7, a_value, "{1} %")
 	ElseIf ( a_option == _SDOID_config_S8 )
 		if ( a_value > (_SDGVP_config_max_slavery_level.GetValue( ) as Float) )
 			a_value =  (_SDGVP_config_max_slavery_level.GetValue( ) as Float) 

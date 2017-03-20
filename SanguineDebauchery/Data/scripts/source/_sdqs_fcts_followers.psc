@@ -3,6 +3,10 @@ Scriptname _sdqs_fcts_followers extends Quest
 Import Utility
 Import SKSE
 
+ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
+ObjectReference[] Property _SD_CaptiveCreatureLocations  Auto  
+Keyword 			Property _SDKP_actorTypeNPC  Auto
+
 Function sendCaptiveFollowerAway( Actor akFollower)
 
 	Int iFormIndex 
@@ -20,7 +24,3 @@ Function sendCaptiveFollowerAway( Actor akFollower)
 	EndIf
 
 EndFunction
-
-ObjectReference[] Property _SD_CaptiveFollowersLocations  Auto  
-ObjectReference[] Property _SD_CaptiveCreatureLocations  Auto  
-Keyword 			Property _SDKP_actorTypeNPC  Auto
