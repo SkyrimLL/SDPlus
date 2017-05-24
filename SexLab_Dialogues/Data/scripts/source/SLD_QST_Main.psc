@@ -1,7 +1,84 @@
 Scriptname SLD_QST_Main extends Quest  
 
+SexLabFramework Property SexLab  Auto  
+ReferenceAlias Property _SLD_speakerAlias  Auto  
+ReferenceAlias Property _SLD_humanLoverAlias  Auto  
+ReferenceAlias Property _SLD_beastLoverAlias  Auto  
+ReferenceAlias Property _SLD_humanMasterAlias  Auto  
+ReferenceAlias Property _SLD_humanSlaveAlias  Auto  
+ReferenceAlias Property _SLD_beastMasterAlias  Auto  
+ReferenceAlias Property _SLD_beastSlaveAlias  Auto  
+
+GlobalVariable Property _SLD_NPCSexCount  Auto  
+GlobalVariable Property _SLD_NPCDrunk  Auto  
+GlobalVariable Property _SLD_NPCDrugged  Auto  
+
+GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
+GlobalVariable Property _SLD_PCSubEnslaved Auto
+GlobalVariable Property _SLD_PCSubMasterBeast Auto
+GlobalVariable Property _SLD_PCSubForcedSlavery Auto
+
+GlobalVariable Property _SLD_PCSubFollowSlave Auto
+GlobalVariable Property _SLD_PCSubDefaultStance Auto
+GlobalVariable Property _SLD_PCSubEnableStand Auto
+GlobalVariable Property _SLD_PCSubEnableLeash Auto
+GlobalVariable Property _SLD_PCSubHandsFree Auto
+GlobalVariable Property _SLD_PCSubDominance Auto
+
+GlobalVariable Property _SLD_NPCRelationshipType Auto
+GlobalVariable Property _SLD_NPCdisposition Auto
+GlobalVariable Property _SLD_NPCtrust Auto
+GlobalVariable Property _SLD_NPCcorruption Auto
+GlobalVariable Property _SLD_NPCseduction Auto
+
+GlobalVariable Property _SLD_NPChumanRelationship Auto
+GlobalVariable Property _SLD_NPCbeastRelationship Auto
+
+GlobalVariable Property _SLD_TestDialogues Auto
+
+Message Property _SLD_rapeMenu  Auto  
+Message Property _SLD_rapistMenu  Auto  
+Message Property _SLD_raceMenu  Auto  
+Message Property _SLD_robMenu  Auto  
+Message Property _SLD_claimMenu  Auto  
+Message Property _SLD_claimBeastMenu  Auto  
+
+GlobalVariable Property GameTime  Auto  
+float fLast = 0.0
+float fNextAllowed = 0.02
+
+HeadPart Property _SLD_FemaleSlaveHair  Auto  
+
+HeadPart Property _SLD_MaleSlaveHair  Auto  
+
+GlobalVariable Property _SLD_PCSubShavedON  Auto  
+MiscObject Property Gold001  Auto  
+
+Faction Property InnkeeperFaction  Auto  
+Faction Property TailorFaction  Auto  
+Faction Property MerchantFaction  Auto  
+Faction Property FarmerFaction  Auto  
+Faction Property PriestFaction  Auto  
+
+FormList Property InnkeeperGifts Auto  
+FormList Property TailorGifts Auto  
+FormList Property MerchantGifts Auto  
+FormList Property FarmerGifts Auto  
+FormList Property PriestGifts Auto  
+
+ ; not used anymore - kept for compatibility with upgrades
+LeveledItem Property InnkeeperGiftList Auto  
+LeveledItem Property TailorGiftList Auto  
+LeveledItem Property MerchantGiftList Auto  
+LeveledItem Property FarmerGiftList Auto  
+LeveledItem Property PriestGiftList Auto  
+
+ObjectReference Property DummyGhostRef  Auto  
+
 HeadPart playerOrigHair = None
 HeadPart playerCurrentHair
+DialogueFollowerScript Property DialogueFollower Auto
+
 
 Function SetNPCDialogueState ( Actor akSpeaker )
 	ObjectReference akSpeakerRef = akSpeaker as objectReference
@@ -9,125 +86,162 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Actor Player = Game.GetPlayer()
 	Bool isPCBimbo = False
 	Bool isSpeakerHuman = kSpeakerForm.HasKeywordString("ActorTypeNPC")
+	Bool isSpeakerMasterHuman = False
+	Bool isSpeakerBeast = False
 	Bool isSpeakerMasterBeast = False
 	Int iDominance = StorageUtil.GetIntValue( Player , "_SD_iDom") - StorageUtil.GetIntValue( Player , "_SD_iSub")
 
-	; Force disable test dialogues
-	If (_SLD_TestDialogues.GetValue() != 0)
-		_SLD_TestDialogues.SetValue(0)
-	EndIf
-
-	If (StorageUtil.GetIntValue(akSpeaker, "_SD_iMasterIsCreature") ==1)
-		isSpeakerMasterBeast = True
-		_SLD_PCSubMasterBeast.SetValue(1)
-	else
-		isSpeakerMasterBeast = False
-		_SLD_PCSubMasterBeast.SetValue(0)
-	endif
-
 	_SLD_speakerAlias.ForceRefTo(akSpeakerRef )
 
-	if ( (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable") == 1)
-		; Debug.Notification("NPC drunk state: " + (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable"))
-		_SLD_NPCdrunk.SetValue(1)
-	Else
-		_SLD_NPCdrunk.SetValue(0)
+	;-------------------------------- Player / NPC relationships
+	; - Extended Relationship level with Player (same as RelationshipRank, from -7 to +7)
+	_SLD_NPCRelationshipType.SetValue( akSpeaker.GetRelationshipRank(Player) )
+
+	If (StorageUtil.HasIntValue(akSpeaker, "_SD_iRelationshipType"))
+		_SLD_NPCRelationshipType.SetValue( StorageUtil.GetIntValue(akSpeaker, "_SD_iRelationshipType") )	
 	EndIf
 
+	; 0 - not a human, 1 - human master, 2 - human slave, 3 - human friend, 4 - human lover
+	_SLD_NPChumanRelationship.SetValue(0)
+
+	; 0 - not a beast, 1 - beast master, 2 - beast slave, 3 - beast friend, 4 - beast lover
+	_SLD_NPCbeastRelationship.SetValue(0)
+	_SLD_PCSubMasterBeast.SetValue(0)
+
+	If (isSpeakerHuman)
+		; 
+	else
+		isSpeakerBeast = True
+		; (DialogueFollower as DialogueFollowerScript).SetAnimal(akSpeaker as ObjectReference)
+		; akSpeaker.SetHeadTracking(true)
+	Endif
+
+	; ------ NPC is a Master
+	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
+
+		If (isSpeakerHuman) 
+			If (_SLD_humanMasterAlias.GetReference() != akSpeakerRef)
+				_SLD_humanMasterAlias.ForceRefTo(akSpeakerRef )
+			Endif 
+
+			isSpeakerMasterHuman = True
+			_SLD_NPChumanRelationship.SetValue(1)
+
+		Else 
+			If (_SLD_beastMasterAlias.GetReference() != akSpeakerRef)
+				_SLD_beastMasterAlias.ForceRefTo(akSpeakerRef )
+			EndIf
+
+			isSpeakerMasterBeast = True
+			_SLD_PCSubMasterBeast.SetValue(1)
+			_SLD_NPCbeastRelationship.SetValue(1)
+
+		EndIf
+
+	; ------ NPC is a Slave
+	ElseIf (_SLD_NPCRelationshipType.GetValue() > 4)
+		If (isSpeakerHuman) 
+			If (_SLD_humanSlaveAlias.GetReference() != akSpeakerRef)
+				_SLD_humanSlaveAlias.ForceRefTo(akSpeakerRef )
+			Endif
+			_SLD_NPChumanRelationship.SetValue(2)
+
+		Else
+			If (_SLD_beastSlaveAlias.GetReference() != akSpeakerRef)
+				_SLD_beastSlaveAlias.ForceRefTo(akSpeakerRef )
+			Endif
+
+			_SLD_NPCbeastRelationship.SetValue(2)
+		EndIf
+
+	; ------ NPC is a Lover
+	ElseIf (_SLD_NPCRelationshipType.GetValue() > 2 )
+		If (isSpeakerHuman) 
+			If (_SLD_humanLoverAlias.GetReference() != akSpeakerRef)
+				_SLD_humanLoverAlias.ForceRefTo(akSpeakerRef )
+			Endif
+
+			_SLD_NPChumanRelationship.SetValue(4)
+
+		Else
+			If (_SLD_beastLoverAlias.GetReference() != akSpeakerRef)
+				_SLD_beastLoverAlias.ForceRefTo(akSpeakerRef )
+			Endif
+
+			_SLD_NPCbeastRelationship.SetValue(4)
+		EndIf
+
+	; ------ NPC is a Friend
+	Else
+		If (isSpeakerHuman) 
+			_SLD_NPChumanRelationship.SetValue(3)
+
+		Else
+			_SLD_NPCbeastRelationship.SetValue(3)
+		EndIf
+	EndIf
+
+	;-------------------------------- NPC behavior options
 	; Variables (use StorageUtil - aliases only for AI packages) 
 	; - Time first met
 	; - Time last met
 	; - AI status ( following, in scene, default AI )
 	; - Interest level
-	; - Relationship level with Player (same as RelationshipRank, from -7 to +7)
 
-	If (StorageUtil.HasIntValue(akSpeaker, "_SD_iRelationshipType"))
-		_SLD_NPCRelationshipType.SetValue( StorageUtil.GetIntValue(akSpeaker, "_SD_iRelationshipType") )
-	Else
-		_SLD_NPCRelationshipType.SetValue( akSpeaker.GetRelationshipRank(Player) )
-	EndIf
-
-	isPCBimbo = StorageUtil.GetIntValue(Player, "_SLH_iBimbo") as Bool
-
-	If isPCBimbo  
-		; Enable Bimbo Override as single rape (for now)
-		StorageUtil.SetIntValue( Player , "_SD_iSlaveryLevel", 6)
-	Endif
-
-	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
-		If (isSpeakerHuman) && (_SLD_humanMasterAlias.GetReference() != akSpeakerRef)
-			_SLD_humanMasterAlias.ForceRefTo(akSpeakerRef )
-		ElseIf (!isSpeakerHuman) && (_SLD_beastMasterAlias.GetReference() != akSpeakerRef)
-			_SLD_beastMasterAlias.ForceRefTo(akSpeakerRef )
-		EndIf
-
-	ElseIf (_SLD_NPCRelationshipType.GetValue() > 4)
-		If (isSpeakerHuman) && (_SLD_humanSlaveAlias.GetReference() != akSpeakerRef)
-			_SLD_humanSlaveAlias.ForceRefTo(akSpeakerRef )
-		ElseIf (!isSpeakerHuman) &&  (_SLD_beastSlaveAlias.GetReference() != akSpeakerRef)
-			_SLD_beastSlaveAlias.ForceRefTo(akSpeakerRef )
-		EndIf
-
-	ElseIf (_SLD_NPCRelationshipType.GetValue() > 2 )
-		If (isSpeakerHuman) && (_SLD_humanLoverAlias.GetReference() != akSpeakerRef)
-			_SLD_humanLoverAlias.ForceRefTo(akSpeakerRef )
-		ElseIf (!isSpeakerHuman) &&  (_SLD_beastLoverAlias.GetReference() != akSpeakerRef)
-			_SLD_beastLoverAlias.ForceRefTo(akSpeakerRef )
-		EndIf
-
-	EndIf
-	
-
-	If (StorageUtil.HasIntValue( Player, "_SD_iSlaveryLevel"))
-		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iSlaveryLevel") )
-	Else
-		_SLD_PCSubSlaveryLevel.SetValue( 0 )
-	EndIf
-
-	If (StorageUtil.HasIntValue( Player, "_SD_iEnslaved"))
-		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnslaved") )
-	Else
-		_SLD_PCSubEnslaved.SetValue( 0 )
-	EndIf
-
-	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iForcedSlavery"))
-		_SLD_PCSubForcedSlavery.SetValue(  StorageUtil.GetIntValue( akSpeaker  , "_SD_iForcedSlavery") )
-	Else
-		_SLD_PCSubForcedSlavery.SetValue( 0 )
-	EndIf
-
+	_SLD_NPCdisposition.SetValue( 0 )
+	_SLD_NPCtrust.SetValue( 0 )
+	_SLD_NPCdrunk.SetValue(0)
 
 	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iDisposition"))
 		_SLD_NPCdisposition.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") )
-	Else
-		_SLD_NPCdisposition.SetValue( 0 )
 	EndIf
 
 	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iTrust"))
 		_SLD_NPCtrust.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iTrust") )
-	Else
-		_SLD_NPCtrust.SetValue( 0 )
 	EndIf
+
+	; If (akSpeakerRef.GetAnimationVariableInt("iDrunkVariable"))
+	;	if ( akSpeakerRef.GetAnimationVariableInt("iDrunkVariable") == 1)
+			; Debug.Notification("NPC drunk state: " + (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable"))
+	;		_SLD_NPCdrunk.SetValue(1)
+	;	Endif
+	; EndIf
+
+	;--------------------------------  Player behavior options
+	_SLD_PCSubDominance.SetValue( 0 )
+
+	If (StorageUtil.HasIntValue( Player , "_SD_iDominance"))
+		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iDominance") )
+	EndIf
+
+	;--------------------------------  Player romance options
+	_SLD_NPCseduction.SetValue( 0 )
+	_SLD_NPCcorruption.SetValue( 0 )
 
 	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iSeduction"))
 		_SLD_NPCseduction.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iSeduction") )
-	Else
-		_SLD_NPCseduction.SetValue( 0 )
 	EndIf
 
 	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iCorruption"))
 		_SLD_NPCcorruption.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iCorruption") )
-	Else
-		_SLD_NPCcorruption.SetValue( 0 )
 	EndIf
 
-	If (StorageUtil.HasIntValue( akSpeaker , "_SD_iFollowSlave"))
+	;--------------------------------  Player slavery options
+	_SLD_PCSubSlaveryLevel.SetValue( 0 )
+	_SLD_PCSubEnslaved.SetValue( 0 )
+	_SLD_PCSubForcedSlavery.SetValue( 0 )
+	_SLD_PCSubFollowSlave.SetValue( 0 )
+	_SLD_PCSubDefaultStance.SetValue( 0 )
+	_SLD_PCSubEnableStand.SetValue( 0 )
+	_SLD_PCSubEnableLeash.SetValue( 0 )
+	_SLD_PCSubHandsFree.SetValue( 0 )
+
+	If (StorageUtil.HasIntValue( Player, "_SD_iEnslaved"))
+		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnslaved") )
+		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iSlaveryLevel") )
+		_SLD_PCSubForcedSlavery.SetValue(  StorageUtil.GetIntValue( akSpeaker  , "_SD_iForcedSlavery") )
 		_SLD_PCSubFollowSlave.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iFollowSlave") )
-	Else
-		_SLD_PCSubFollowSlave.SetValue( 0 )
-	EndIf
 
-	If (StorageUtil.HasStringValue( Player , "_SD_sDefaultStance"))
 		If (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Crawling")
 			_SLD_PCSubDefaultStance.SetValue(  2 )
 		ElseIf (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Kneeling")
@@ -135,33 +249,20 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		ElseIf (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Standing")
 			_SLD_PCSubDefaultStance.SetValue(  0 )
 		EndIf
-	Else
-		_SLD_PCSubDefaultStance.SetValue( 0 )
-	EndIf
 
-	If (StorageUtil.HasIntValue( Player , "_SD_iEnableStand"))
 		_SLD_PCSubEnableStand.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnableStand") )
-	Else
-		_SLD_PCSubEnableStand.SetValue( 0 )
-	EndIf
-
-	If (StorageUtil.HasIntValue( Player , "_SD_iEnableLeash"))
 		_SLD_PCSubEnableLeash.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnableLeash") )
-	Else
-		_SLD_PCSubEnableLeash.SetValue( 0 )
-	EndIf
-
-	If (StorageUtil.HasIntValue( Player , "_SD_iHandsFree"))
 		_SLD_PCSubHandsFree.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iHandsFree") )
-	Else
-		_SLD_PCSubHandsFree.SetValue( 0 )
+
 	EndIf
 
-	If (StorageUtil.HasIntValue( Player , "_SD_iDominance"))
-		_SLD_PCSubDominance.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iDominance") )
-	Else
-		_SLD_PCSubDominance.SetValue( 0 )
-	EndIf
+	; Special case - player is bimbo
+	isPCBimbo = StorageUtil.GetIntValue(Player, "_SLH_iBimbo") as Bool
+
+	If isPCBimbo  
+		; Enable Bimbo Override as single rape (for now)
+		StorageUtil.SetIntValue( Player , "_SD_iSlaveryLevel", 6)
+	Endif
 
 
 	; - Feedom status ( bought by player, sold to NPC, whoring, free )
@@ -192,7 +293,10 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 
 	Debug.Trace("[SLD] " + akSpeaker + " sex: " + _SLD_NPCSexCount.GetValue( ) + " - Rel: " +  _SLD_NPCRelationshipType.GetValue() + " - Slavery: " +  _SLD_PCSubSlaveryLevel.GetValue() )
 	Debug.Trace("[SLD] Human speaker: " + isSpeakerHuman )
+	Debug.Trace("[SLD] Beast speaker: " + isSpeakerBeast )
 	Debug.Trace("[SLD] Master beast speaker: " + isSpeakerMasterBeast )
+	Debug.Trace("[SLD] Human relationship: " + _SLD_NPChumanRelationship.GetValue()  )
+	Debug.Trace("[SLD] Beast relationship: " + _SLD_NPCbeastRelationship.GetValue() )
 	Debug.Trace("[SLD] _SLD_speakerAlias: " + _SLD_speakerAlias.GetReference() as Actor)
 	Debug.Trace("[SLD] _SLD_humanLoverAlias: " + _SLD_humanLoverAlias.GetReference() as Actor) 
 	Debug.Trace("[SLD] _SLD_beastLoverAlias: " + _SLD_beastLoverAlias.GetReference() as Actor)  
@@ -203,73 +307,102 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Debug.Trace("[SLD] Disposition: " + _SLD_NPCdisposition.GetValue( ) as Int + " Trust: " + _SLD_NPCtrust.GetValue( ) as Int + " Seduction: " + _SLD_NPCseduction.GetValue( ) as Int + " Corruption: " + _SLD_NPCcorruption.GetValue( ) as Int)
 	Debug.Trace("[SLD] Leash: " + _SLD_PCSubEnableLeash.GetValue( ) as Int + " Stance: " + _SLD_PCSubDefaultStance.GetValue( ) as Int )
 
+
+	; Debug -----  Force disable test dialogues
+	; If (_SLD_TestDialogues.GetValue() != 0)
+	;	_SLD_TestDialogues.SetValue(0)
+	; EndIf
+
 EndFunction
 
 
 
 Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
-	Game.ForceThirdPerson()
+	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
-	Int IButton = _SLD_rapeMenu.Show()
-
-	If IButton == 0 ; Show the thing.
-
-		; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-			; Debug.Notification( "[Resists weakly]" )
-		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
-		; EndIf
-		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
-
-		Int randomNum = Utility.RandomInt(0, 100)
-		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
-
-		akSpeaker.SendModEvent("PCSubSex") ; Sex
-
+	; Prevent rapid fire attacks
+	if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(Player, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(Player, "_SD_iNextSexTime") )
+		Debug.Notification("(changes his mind...)")
+		Debug.Trace("[SLD]    Sex aborted - too soon since last sex scene")
+		Debug.Trace("[SLD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
+		Debug.Trace("[SLD]      		fNextAllowed : " + fNextAllowed)
+		Return
 	Else
-		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
-		SendModEvent("PCSubStripped")
+		Int IButton = _SLD_rapeMenu.Show()
 
-		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
+		If IButton == 0 ; Show the thing.
 
-		If (Utility.RandomInt(0, 100)>40)
-			akSpeaker.SendModEvent("PCSubWhip")
+			; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+				; Debug.Notification( "[Resists weakly]" )
+			;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+			; EndIf
+			StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+
+			Int randomNum = Utility.RandomInt(0, 100)
+			; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
+
+			akSpeaker.SendModEvent("PCSubSex") ; Sex
+
+		Else
+			StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+			SendModEvent("PCSubStripped")
+
+			SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
+
+			If (Utility.RandomInt(0, 100)>40)
+				akSpeaker.SendModEvent("PCSubWhip")
+			EndIf
 		EndIf
-	EndIf
+	Endif
 
 EndFunction
 
 Function StartPlayerCreatureRape ( Actor akSpeaker, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
-	Game.ForceThirdPerson()
+	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
-	Int IButton = _SLD_rapeMenu.Show()
+	if (fLast == 0.0)	
+		fLast = GameTime.GetValue() 
+		fNextAllowed = 0.0
+	Endif
 
-	If IButton == 0 ; Show the thing.
-
-		; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-			; Debug.Notification( "[Resists weakly]" )
-		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
-		; EndIf
-		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
-
-		Int randomNum = Utility.RandomInt(0, 100)
-		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
-
-		akSpeaker.SendModEvent("PCSubSex") ; Sex
-
+	; Prevent rapid fire attacks
+	if ( (GameTime.GetValue() - fLast) < (fNextAllowed) )
+		Debug.Notification("(changes his mind...)")
+		Debug.Trace("[SLD]    Sex aborted - too soon since last sex scene")
+		Debug.Trace("[SLD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
+		Debug.Trace("[SLD]      		fNextAllowed : " + fNextAllowed)
+		Return
 	Else
-		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		Int IButton = _SLD_rapeMenu.Show()
 
-	EndIf
+		If IButton == 0 ; Show the thing.
+
+			; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+				; Debug.Notification( "[Resists weakly]" )
+			;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+			; EndIf
+			StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+
+			; Int randomNum = Utility.RandomInt(0, 100)
+			; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
+
+			akSpeaker.SendModEvent("PCSubSex") ; Sex
+
+		Else
+			StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+
+		EndIf
+	Endif
 
 EndFunction
 
 Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
-	Game.ForceThirdPerson()
+	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
 	Int IButton = _SLD_rapeMenu.Show()
@@ -317,22 +450,23 @@ EndFunction
 
 
 Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
+	ObjectReference akSpeakerRef = akSpeaker as objectReference
 	Actor Player = Game.GetPlayer()
 	Bool isVictim = True
 	Int randomNum = Utility.RandomInt(0, 100)
 
-	Game.ForceThirdPerson()
+	; Game.ForceThirdPerson()
 	Debug.SendAnimationEvent( akSpeaker as ObjectReference, "bleedOutStart")
 
-	if ( (akSpeaker as ObjectReference).GetAnimationVariableInt("iDrunkVariable") == 1)
-		If ( Utility.RandomInt(0, 100) > 30 )
-			isVictim = False
-		Endif
-	else
+	; if ( akSpeakerRef.GetAnimationVariableInt("iDrunkVariable") == 1)
+	;	If ( Utility.RandomInt(0, 100) > 30 )
+	;		isVictim = False
+	;	Endif
+	; else
 		If ( Utility.RandomInt(0, 100) > 80 )
 			isVictim = False
 		Endif
-	endif
+	; endif
 
 	Int IButton = _SLD_rapistMenu.Show()
 
@@ -588,71 +722,3 @@ Function RobPlayer ( Actor akSpeaker  )
 	Utility.Wait(1.0)
 EndFunction
 
-SexLabFramework Property SexLab  Auto  
-ReferenceAlias Property _SLD_speakerAlias  Auto  
-ReferenceAlias Property _SLD_humanLoverAlias  Auto  
-ReferenceAlias Property _SLD_beastLoverAlias  Auto  
-ReferenceAlias Property _SLD_humanMasterAlias  Auto  
-ReferenceAlias Property _SLD_humanSlaveAlias  Auto  
-ReferenceAlias Property _SLD_beastMasterAlias  Auto  
-ReferenceAlias Property _SLD_beastSlaveAlias  Auto  
-
-GlobalVariable Property _SLD_NPCSexCount  Auto  
-GlobalVariable Property _SLD_NPCDrunk  Auto  
-GlobalVariable Property _SLD_NPCDrugged  Auto  
-
-GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
-GlobalVariable Property _SLD_PCSubEnslaved Auto
-GlobalVariable Property _SLD_PCSubMasterBeast Auto
-GlobalVariable Property _SLD_PCSubForcedSlavery Auto
-
-GlobalVariable Property _SLD_PCSubFollowSlave Auto
-GlobalVariable Property _SLD_PCSubDefaultStance Auto
-GlobalVariable Property _SLD_PCSubEnableStand Auto
-GlobalVariable Property _SLD_PCSubEnableLeash Auto
-GlobalVariable Property _SLD_PCSubHandsFree Auto
-GlobalVariable Property _SLD_PCSubDominance Auto
-
-GlobalVariable Property _SLD_NPCRelationshipType Auto
-GlobalVariable Property _SLD_NPCdisposition Auto
-GlobalVariable Property _SLD_NPCtrust Auto
-GlobalVariable Property _SLD_NPCcorruption Auto
-GlobalVariable Property _SLD_NPCseduction Auto
-
-
-GlobalVariable Property _SLD_TestDialogues Auto
-
-Message Property _SLD_rapeMenu  Auto  
-Message Property _SLD_rapistMenu  Auto  
-Message Property _SLD_raceMenu  Auto  
-Message Property _SLD_robMenu  Auto  
-Message Property _SLD_claimMenu  Auto  
-Message Property _SLD_claimBeastMenu  Auto  
-
- 
-
-HeadPart Property _SLD_FemaleSlaveHair  Auto  
-
-HeadPart Property _SLD_MaleSlaveHair  Auto  
-
-GlobalVariable Property _SLD_PCSubShavedON  Auto  
-MiscObject Property Gold001  Auto  
-
-Faction Property InnkeeperFaction  Auto  
-Faction Property TailorFaction  Auto  
-Faction Property MerchantFaction  Auto  
-Faction Property FarmerFaction  Auto  
-Faction Property PriestFaction  Auto  
-
-FormList Property InnkeeperGifts Auto  
-FormList Property TailorGifts Auto  
-FormList Property MerchantGifts Auto  
-FormList Property FarmerGifts Auto  
-FormList Property PriestGifts Auto  
-
- ; not used anymore - kept for compatibility with upgrades
-LeveledItem Property InnkeeperGiftList Auto  
-LeveledItem Property TailorGiftList Auto  
-LeveledItem Property MerchantGiftList Auto  
-LeveledItem Property FarmerGiftList Auto  
-LeveledItem Property PriestGiftList Auto  

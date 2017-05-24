@@ -11,6 +11,10 @@ FormList Property _SLD_GiftFilterHungry  Auto
 FormList Property _SLD_GiftFilterHurt  Auto  
 FormList Property _SLD_GiftFilterCold  Auto    
 
+GlobalVariable Property _SLD_CommentProbability Auto  
+GlobalVariable Property _SLD_AttackProbability Auto  
+GlobalVariable Property _SLD_BeggingProbability Auto
+
 Bool isPlayerEnslaved = False
 Bool isPlayerPregnant = False
 Bool isPlayerSuccubus = False
@@ -38,14 +42,22 @@ Function _maintenance()
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
 	RegisterForModEvent("SLDRefreshNPCDialogues",   "OnSLDRefreshNPCDialogues")
+	RegisterForModEvent("SLDRefreshGlobals",   "OnSLDRefreshGlobals")
+
 	RegisterForModEvent("SLDRobPlayer",   "OnSLDRobPlayer")
 	RegisterForModEvent("SLDGiftPlayer",   "OnSLDGiftPlayer")
 
 	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
 
+
 	isPlayerEnslaved = StorageUtil.GetIntValue( PlayerActor, "_SD_iEnslaved") as Bool
 	isPlayerPregnant = StorageUtil.GetIntValue( PlayerActor, "_SLH_isPregnant") as Bool
 	isPlayerSuccubus = StorageUtil.GetIntValue( PlayerActor, "_SLH_isSuccubus") as Bool
+
+	StorageUtil.SetIntValue( PlayerActor, "_SLD_iCommentProbability", _SLD_CommentProbability.GetValueInt() )
+	StorageUtil.SetIntValue( PlayerActor, "_SLD_iAttackProbability", _SLD_AttackProbability.GetValueInt() )
+	StorageUtil.SetIntValue( PlayerActor, "_SLD_iBeggingProbability", _SLD_BeggingProbability.GetValueInt() )
+
 
 	PlayerActor.AddSpell( RestSpell )
 
@@ -59,6 +71,10 @@ EndFunction
 
 Function _updateGlobals()
 	Actor PlayerActor = Game.GetPlayer()
+
+	isPlayerEnslaved = StorageUtil.GetIntValue( PlayerActor, "_SD_iEnslaved") as Bool
+	isPlayerPregnant = StorageUtil.GetIntValue( PlayerActor, "_SLH_isPregnant") as Bool
+	isPlayerSuccubus = StorageUtil.GetIntValue( PlayerActor, "_SLH_isSuccubus") as Bool
 
 	_SLD_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
 	_SLD_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
@@ -487,6 +503,18 @@ Event OnSLDRefreshNPCDialogues(String _eventName, String _args, Float _argc, For
  		_SLD_Main.SetNPCDialogueState( kActor )
 	EndIf
 EndEvent
+
+Event OnSLDRefreshGlobals(String _eventName, String _args, Float _argc, Form _sender)
+	ObjectReference PlayerREF= PlayerAlias.GetReference()
+	Actor PlayerActor= PlayerAlias.GetReference() as Actor
+ 	Actor kActor = _sender as Actor
+
+
+	_SLD_CommentProbability.SetValue(StorageUtil.GetIntValue( PlayerActor, "_SLD_iCommentProbability"))
+	_SLD_AttackProbability.SetValue(StorageUtil.GetIntValue( PlayerActor, "_SLD_iAttackProbability"))
+	_SLD_BeggingProbability.SetValue(StorageUtil.GetIntValue( PlayerActor, "_SLD_iBeggingProbability"))
+EndEvent
+
 
 Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor

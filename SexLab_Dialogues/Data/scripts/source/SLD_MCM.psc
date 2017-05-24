@@ -2,6 +2,22 @@ Scriptname SLD_MCM extends ski_configbase
 
 Import sslCreatureAnimationSlots
 
+GlobalVariable Property _SLD_PCSubShavedON  Auto  
+GlobalVariable Property _SLD_CommentProbability Auto  
+GlobalVariable Property _SLD_AttackProbability Auto  
+GlobalVariable Property _SLD_BeggingProbability Auto
+GlobalVariable Property _SLD_BeastDialogueON Auto  
+GlobalVariable Property _SLD_PCDomDialogueON Auto  
+GlobalVariable Property _SLD_PCSubDialogueON Auto  
+GlobalVariable Property _SLD_RomanceDialogueON Auto  
+GlobalVariable Property _SLD_PCSubEnableRobbery Auto  
+GlobalVariable Property _SLD_BeggingDialogueON Auto  
+GlobalVariable Property _SLD_GiftDialogueON Auto  
+GlobalVariable Property _SLD_BeastMenuDialogueON Auto  
+GlobalVariable Property _SLD_BlacksmithQuestON Auto  
+
+; SexLabFramework     property SexLab Auto
+
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
 ;
 ; NOTE:
@@ -36,6 +52,7 @@ bool	_RomanceDialogueON		= true
 bool	_PCSubEnableRobbery		= false
 bool	_BeggingDialogueON		= true
 bool	_GiftDialogueON		= true
+bool	_BeastMenuDialogueON		= true
 bool	_BlacksmithQuestON		= true
 bool	_RegisterCustomRaces		= false
 bool	_ClearGiantRaces		= false
@@ -97,6 +114,7 @@ event OnPageReset(string a_page)
 	_PCSubEnableRobbery		= _SLD_PCSubEnableRobbery.GetValue() as Int
 	_BeggingDialogueON		= _SLD_BeggingDialogueON.GetValue() as Int
 	_GiftDialogueON			= _SLD_GiftDialogueON.GetValue() as Int
+	_BeastMenuDialogueON	= _SLD_BeastMenuDialogueON.GetValue() as Int
 	_BlacksmithQuestON		= _SLD_BlacksmithQuestON.GetValue() as Int
 	_RegisterCustomRaces		= false
 	_ClearGiantRaces = false
@@ -118,6 +136,7 @@ event OnPageReset(string a_page)
 
 		AddHeaderOption(" Bestiality")
 		AddToggleOptionST("STATE_BeastDialogueON","Enable Bestiality", _BeastDialogueON as Float)
+ 		AddToggleOptionST("STATE_BeastMenuDialogueON","Enable popup menu for creatures", _BeastMenuDialogueON as Float)
 
 		SetCursorPosition(1)
 		AddHeaderOption(" Give and Take")
@@ -302,6 +321,27 @@ state STATE_GiftDialogueON ; TOGGLE
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_BeastMenuDialogueON","Enable BeastMenu to NPCs", _BeastMenuDialogueON as Float)
+state STATE_BeastMenuDialogueON ; TOGGLE
+	event OnSelectST()
+		_SLD_BeastMenuDialogueON.SetValueInt( Math.LogicalXor( 1, _SLD_BeastMenuDialogueON.GetValueInt() ) )
+		SetToggleOptionValueST( _SLD_BeastMenuDialogueON.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_SLD_BeastMenuDialogueON.SetValueInt( 1 )
+		SetToggleOptionValueST( True )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Replace dialogue interactions by popup menu for creature masters/slaves (to prevent a bug with frozen dialogues for beast NPCs)")
+	endEvent
+
+endState
+
 
 ; AddSliderOptionST("STATE_CommentProbability","Comment Probability",  _CommentProbability	 as Float,"{0} %")
 state STATE_CommentProbability ; SLIDER
@@ -543,17 +583,3 @@ function _ClearRaces()
 
 endFunction
 
-GlobalVariable Property _SLD_PCSubShavedON  Auto  
-GlobalVariable Property _SLD_CommentProbability Auto  
-GlobalVariable Property _SLD_AttackProbability Auto  
-GlobalVariable Property _SLD_BeggingProbability Auto
-GlobalVariable Property _SLD_BeastDialogueON Auto  
-GlobalVariable Property _SLD_PCDomDialogueON Auto  
-GlobalVariable Property _SLD_PCSubDialogueON Auto  
-GlobalVariable Property _SLD_RomanceDialogueON Auto  
-GlobalVariable Property _SLD_PCSubEnableRobbery Auto  
-GlobalVariable Property _SLD_BeggingDialogueON Auto  
-GlobalVariable Property _SLD_GiftDialogueON Auto  
-GlobalVariable Property _SLD_BlacksmithQuestON Auto  
-
-; SexLabFramework     property SexLab Auto
