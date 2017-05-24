@@ -6,6 +6,8 @@ Import SKSE
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 
+SexLabFrameWork Property SexLab Auto
+
 Bool Property sdBleedout = False Auto Conditional
 
 
@@ -15,7 +17,11 @@ GlobalVariable Property _SDGVP_naked_rape_chance Auto
 GlobalVariable Property _SDGVP_naked_rape_delay Auto
 GlobalVariable Property _SDGVP_gender_restrictions Auto
 GlobalVariable Property _SDGVP_punishments  Auto  
-SexLabFrameWork Property SexLab Auto
+
+GlobalVariable Property GameTime  Auto  
+float fLast = 0.0
+float fNextAllowed = 0.02
+
 
 Keyword Property _SDKP_punish Auto
 Keyword Property _SDKP_bound Auto
@@ -110,12 +116,12 @@ Bool Function actorInWeakenedState( Actor akActor, Float afThreshold = 0.05 )
 
 		akActor.StopCombatAlarm()
 		akActor.StopCombat()
-		Game.ForceThirdPerson()
+		; Game.ForceThirdPerson()
 		; Debug.SendAnimationEvent(akActor, "bleedOutStart")
 	ElseIf (0 == 1) && ( sdBleedout && !weakened )
 		sdBleedout = False
 		; Debug.SendAnimationEvent(akActor, "bleedOutStop")
-		Game.ForceThirdPerson()
+		; Game.ForceThirdPerson()
 	ElseIf (0 == 1) && ( sdBleedout && weakened )
 		; Debug.Notification("[_sdqs_functions] Actor both Weakened and in bleedout")
 	ElseIf (0 == 1) && ( !sdBleedout && !weakened )
@@ -345,7 +351,7 @@ EndFunction
 
 Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
-	Game.ForceThirdPerson()
+	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
 	Int IButton = _SD_rapeMenu.Show()
@@ -378,33 +384,61 @@ EndFunction
 
 Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
-	Game.ForceThirdPerson()
+;	Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
-	Int IButton = _SD_rapeMenu.Show()
+	if (fLast == 0.0)	
+		fLast = GameTime.GetValue() 
+		fNextAllowed = 0.0
+	Endif
 
-	If IButton == 0 ; Show the thing.
-
-		; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-			; Debug.Notification( "[Resists weakly]" )
-		;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
-		; EndIf
-		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
-
-		Int randomNum = Utility.RandomInt(0, 100)
-		; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
- 		SanguineRape( akSpeaker, Player , "Sex")
-
+	; Prevent rapid fire attacks
+	if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(Player, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(Player, "_SD_iNextSexTime") )
+		Debug.Notification("(changes his mind...)")
+		Debug.Trace("[SD]    Sex aborted - too soon since last sex scene")
+		Debug.Trace("[SD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
+		Debug.Trace("[SD]      		fNextAllowed : " + fNextAllowed)
+		Return
 	Else
-		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 
-	EndIf
+		Int IButton = _SD_rapeMenu.Show()
+
+		If IButton == 0 ; Show the thing.
+
+			; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+				; Debug.Notification( "[Resists weakly]" )
+			;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
+			; EndIf
+			StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+
+			Int randomNum = Utility.RandomInt(0, 100)
+			; StorageUtil.SetFormValue( Player , "_SD_TempAggressor", akSpeaker)
+	 		SanguineRape( akSpeaker, Player , "Sex")
+
+		Else
+			StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+
+		EndIf
+	Endif
 
 EndFunction
 
 Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
 	Actor Player = Game.GetPlayer()
 
+	if (fLast == 0.0)	
+		fLast = GameTime.GetValue() 
+		fNextAllowed = 0.0
+	Endif
+
+	; Prevent rapid fire attacks
+	if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(Player, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(Player, "_SD_iNextSexTime") )
+		Debug.Notification("(changes his mind...)")
+		Debug.Trace("[SD]    Sex aborted - too soon since last sex scene")
+		Debug.Trace("[SD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
+		Debug.Trace("[SD]      		fNextAllowed : " + fNextAllowed)
+		Return
+	Endif	
 
 	If (!akSpeaker)
 		Return
@@ -413,7 +447,12 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	If (!akTarget)
 		Return
 	EndIf
-	
+
+	fLast = GameTime.GetValue() 
+	fNextAllowed = 0.005 + Utility.RandomFloat( 0.005, 0.01 ) ; Utility.RandomFloat( 0.125, 0.25 )
+	StorageUtil.SetFloatValue(Player, "_SD_iLastSexTime", fLast)
+	StorageUtil.SetFloatValue(Player, "_SD_iNextSexTime", fNextAllowed)
+
 	Int    speakerGender = akSpeaker.GetLeveledActorBase().GetSex() as Int
 	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
 	Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
@@ -542,6 +581,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				; EndIf
 
 				; SexLab.QuickStart(SexLab.PlayerRef, akSpeaker, Victim = SexLab.PlayerRef, AnimationTags = "Aggressive")
+
 
 				sslThreadModel Thread = SexLab.NewThread()
 				Thread.AddActor(akTarget, true) ; // IsVictim = true

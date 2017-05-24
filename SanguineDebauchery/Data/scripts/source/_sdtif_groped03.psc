@@ -14,8 +14,8 @@ Actor kPlayer = Game.GetPlayer()
              GlowLight.Cast(kPlayer ,kPlayer )
              ChaurusSpit.Cast( akSpeaker , kPlayer )
 
-             Game.EnablePlayerControls( abMovement = True )
-             Game.SetPlayerAIDriven( False )
+ ;            Game.EnablePlayerControls( abMovement = True )
+ ;            Game.SetPlayerAIDriven( False )
 
 
 	; Aggressive sex

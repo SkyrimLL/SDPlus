@@ -6,6 +6,13 @@ Scriptname _sdtif_join_351 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+Actor kPlayer = Game.GetPlayer()
+
+kPlayer.SendModEvent("SDClearDevice", "Gag")
+kPlayer.SendModEvent("SDClearDevice", "Armbinder")
+kPlayer.SendModEvent("SDClearDevice", "LegCuffs")
+
+
 akSpeaker.SetRelationshipRank(_SDRAP_slave.GetReference() as Actor, 4)
 akSpeaker.AddToFaction(PotentialFollowerFaction)
 akSpeaker.AddToFaction(CurrentFollowerFaction)

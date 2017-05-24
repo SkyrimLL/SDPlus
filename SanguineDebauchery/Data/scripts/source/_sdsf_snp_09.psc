@@ -2,22 +2,22 @@
 ;NEXT FRAGMENT INDEX 4
 Scriptname _sdsf_snp_09 Extends Scene Hidden
 
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(9)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_1
 Function Fragment_1()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
 
 _SDGVP_snp_busy.SetValue(-1)
-Self.GetowningQuest().Stop()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(9)
+; Self.GetowningQuest().Stop()
 ;END CODE
 EndFunction
 ;END FRAGMENT

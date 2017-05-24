@@ -48,6 +48,7 @@ GlobalVariable Property _SDGVP_state_MasterFollowSlave  Auto
 GlobalVariable Property _SDGVP_config_limited_removal  Auto  
 GlobalVariable Property _SDGVP_config_min_days_before_master_travel Auto
 GlobalVariable Property _SDGVP_isMasterTraveller  Auto  
+GlobalVariable Property _SDGVP_isMasterInTransit  Auto  
 
 
 ReferenceAlias Property _SDRAP_cage  Auto
@@ -225,47 +226,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 
 		; Debug.Notification( "$SD_MESSAGE_MASTER_AWARE" )
 		
-		If ( iuType == 41 || iuType == 42 ) && (fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") ) 
-			; weapon or ammo
-
-			If ( _SDGVP_state_caged.GetValueInt() )
-				; Slave is caged
-
-				If ( kSlave.GetActorValue("Lockpicking") > Utility.RandomInt(0, 100) )
-					Debug.Notification( "$SD_MESSAGE_MAKE_LOCKPICK" )
-					kSlave.AddItem( _SDMOP_lockpick, 1 )
-				Else
-					Debug.Notification( "$SD_MESSAGE_FAIL_LOCKPICK" )
-				EndIf
-				; kSlave.RemoveItem( akBaseItem, aiItemCount, False )
-
-			ElseIf (false) && ( kMaster.GetSleepState() == 3 || !kMaster.HasLOS( kSlave ) )
-				fDamage = ( akBaseItem as Weapon ).GetBaseDamage() as Float
-				; Disabling 'breaking chains with weapon' for now.
-
-				If ( fDamage <= 0.0 )
-					fDamage = Utility.RandomFloat( 1.0, 4.0 )
-				EndIf
-
-				_SDFP_bindings_health -= fDamage
-				If ( _SDFP_bindings_health < 0.0 )
-					Debug.Trace("[_sdras_slave] Weak chains - Stop enslavement")
-					Debug.Messagebox("You manage to break your chains with a weapon.")
- 
-					fctOutfit.clearDeviceByString ( "Armbinder" )
-					fctOutfit.clearDeviceByString ( "LegCuffs" )
-					fctOutfit.clearDeviceByString ( "Blindfold" )
-
-					SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
-					Return
-				Else
-				;	kSlave.DropObject(akBaseItem, aiItemCount)
-				EndIf
-			EndIf
-
-			; fLastEscape = GetCurrentRealTime()
-
-		ElseIf ( iuType == 41 ) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") )
+		If ( iuType == 41 ) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") )
 				; TO DO - Add code here for compatibility with SPERG and other mods relying on equiping invisible weapons
 
 				; Debug.Notification( "$SD_MESSAGE_CAUGHT" )
@@ -305,13 +266,33 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 			;	kSlave.RemoveItem( akBaseItem, aiItemCount, False, kMaster )
 
 		EndIf
+
+
+
+
+		if !akSourceContainer
+			Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from the world")
+
+		elseif akSourceContainer == kMaster
+			Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from master")
+
+			If (kMaster.IsDead())
+				Debug.Trace( "[_sdras_slave] Item received from a dead master." )
+			else
+				kSlave.EquipItem( akBaseItem, aiItemCount )
+			EndIf
+		else
+			Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from another container")
+
+		endIf
+
 	EndIf
 EndEvent
 
 
 State waiting
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsRunning() ) ; && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster) && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			; fctConstraints.CollarUpdate()
 			GoToState("monitor")
 		EndIf
@@ -356,6 +337,9 @@ State monitor
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
 		; Debug.Notification("[SD] Punishment: " + fctOutfit.isPunishmentEquipped (  kSlave ) )
+		if (!kMaster) || ( !kMaster.Is3DLoaded() )
+			GoToState("monitor")
+		endif
 
 		_slaveStatusTicker()
 
@@ -446,7 +430,7 @@ State monitor
 			;	enslavement.bEscapedSlave = False
 			;	enslavement.bSearchForSlave = False
 
-		ElseIf ( !Game.IsMovementControlsEnabled() || kSlave.GetCurrentScene() )
+		ElseIf ( !Game.IsMovementControlsEnabled() ) ; || kSlave.GetCurrentScene() )
 			; Slave is busy in a scene or stuck in place 
 			; Could be useful later to keep the slave to a pillory or cross for an amount of time as punishment
 
@@ -778,6 +762,7 @@ State escape_choking
 			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 			
 			kSlave.DispelSpell( _SDSP_Weak )
+			_SDGVP_isMasterInTransit.SetValue(0) 
 
 			SendModEvent("SDEscapeStop") 
 
@@ -1055,6 +1040,8 @@ State escape_shock
 			kLeashCenter = kMaster
 		EndIf
 
+		_SDGVP_isMasterInTransit.SetValue(0) 
+
 		fDistance = kSlave.GetDistance( kLeashCenter )
 	
 		If ( kSlave.GetDistance( kMaster ) < fDistance)
@@ -1281,6 +1268,7 @@ EndState
 
 Function _slaveStatusTicker()
 	; Update slave status if needed
+	Float fSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") as Float
 
  	daysPassed = Game.QueryStat("Days Passed")
  	timePassed = Utility.GetCurrentGameTime()
@@ -1293,16 +1281,16 @@ Function _slaveStatusTicker()
  	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
  	if (iDaysSinceLastCheck==0)
-		if ((timePassed-HourlyTickerLastCallTime)>=HourlyTickerPeriod) ; same day - incremental updates
+		if ((timePassed-HourlyTickerLastCallTime)>= (HourlyTickerPeriod * fSlaveLevel) ) ; same day - incremental updates
 			Debug.Notification( "[SD] Slavery status - hourly update")
 			; Disabled for now - daily update makes more sense
 			; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
-			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/HourlyTickerPeriod) as Int
+			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/ (HourlyTickerPeriod * fSlaveLevel) ) as Int
 			if (iHoursLastCheck<1)
 				iHoursLastCheck = 1
 			EndIf
 
-			Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
+			Debug.Trace( "[SD] Hours passed: " + iHoursLastCheck)
 
 			fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
 			HourlyTickerLastCallTime = timePassed
@@ -1414,11 +1402,16 @@ Function _slaveEndGame()
 	; Debug.Notification("[SD] Endgame: " + kSlaver )
 	; Debug.Notification("[SD] Buyout: " + fBuyout)
 
+	kMaster.SendModEvent("PCSubMasterTravel", "Start")
+
+
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
 		; Endgame for creatures
-		Debug.MessageBox( "Your owner is fed up with your resistance and turns against you." )
-		kMaster.StartCombat(kSlave)
-		SendModEvent("PCSubFree")
+		If (Utility.RandomInt(0,100)>80)
+			Debug.MessageBox( "Your owner is fed up with your resistance and turns against you." )
+			kMaster.StartCombat(kSlave)
+			SendModEvent("PCSubFree")
+		Endif
 	Else
 		; genderRestrictions = 0 - any / 1 - same / 2 - opposite
 

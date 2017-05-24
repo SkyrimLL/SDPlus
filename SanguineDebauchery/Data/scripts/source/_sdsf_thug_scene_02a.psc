@@ -5,10 +5,10 @@ Scriptname _sdsf_thug_scene_02a Extends Scene Hidden
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0()
 ;BEGIN CODE
-Game.EnablePlayerControls( abMovement = True )
-Game.SetPlayerAIDriven( False )
+; Game.EnablePlayerControls( abMovement = True )
+; Game.SetPlayerAIDriven( False )
 
-Self.GetOwningQuest().SetStage(20)
+; Self.GetOwningQuest().SetStage(20)
 ;END CODE
 EndFunction
 ;END FRAGMENT

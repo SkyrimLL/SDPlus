@@ -58,6 +58,7 @@ Event OnInit()
 	Debug.Trace("[_sdras_companion]  Enslaving follower: ") 
 	If ( kCompanion ) && (kCompanion!=kMaster)
 		Debug.Trace("[_sdras_companion]     Follower name is being enslaved : " + kCompanion.GetName()) 
+		Debug.Trace("[_sdras_companion]     		Follower ID : " + kCompanion ) 
 		GoToState("monitor")
 		bEnslaved = False
 		kCompanion.SetNoBleedoutRecovery( True )
@@ -108,6 +109,7 @@ Function enslaveCompanion( Actor kActor)
 		kPlayer = Game.GetPlayer()
 
 		Debug.Trace("[_sdras_companion]       Enslavement starting for " + kActor.GetName()) 
+		Debug.Trace("[_sdras_companion]     		Follower ID : " + kCompanion ) 
 
 		fctFactions.syncActorFactionsByRace( kMaster, kCompanion ) 
 		fctFactions.syncActorFactions( kMaster, kCompanion )

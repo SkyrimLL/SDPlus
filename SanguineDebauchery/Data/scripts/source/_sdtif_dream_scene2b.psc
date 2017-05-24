@@ -6,16 +6,8 @@ Scriptname _sdtif_dream_scene2b Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Game.ForceThirdPerson()
-Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
-
-Int IButton = _SD_rapeMenu.Show()
-
-If IButton == 0 ; Show the thing.
-
+Self.GetOwningQuest().setstage(210)
 	funct.SanguineRape( akSpeaker, Game.GetPlayer() , "Sex")
-
-EndIf
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -75,7 +75,7 @@ endfunction
 bool function RedWaveEnslave( )  
 
 	IF (StorageUtil.GetIntValue(none, "_SLS_iStories")==1)
-		SendModEvent("_SLS_PCStartRedWave")
+		SendModEvent("_SLS_PCStartRedWave","No Pregnancy")
 		return True
 	Else
 		return False

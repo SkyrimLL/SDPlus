@@ -29,7 +29,12 @@ Bool Function addToQueue( ObjectReference akObject )
 	Bool bAdded = False
 	Actor akActor = akObject as Actor
 	Actor akPlayer = Game.GetPlayer()
-	
+
+	If ( !Self.IsRunning() )
+		Debug.Trace("[SD] Whore queue - Quest disabled - aborting")
+		Return False
+	Endif	
+
 	If ( akObject != None ) && ( akActor != None )
 		If (!akActor.IsGhost()) && (!akObject.IsDisabled()) &&  (SexLab.ValidateActor( akActor ) > 0) 
 			Int iIdx = 0
@@ -39,7 +44,7 @@ Bool Function addToQueue( ObjectReference akObject )
 					_SDORP_queue[iIdx] = akObject
 					_SDORP_queueAliasRef[iIdx].ForceRefTo( akObject )
 
-					Debug.Trace("[Whore queue] Adding actor to queue: " + akObject)
+					Debug.Trace("[SD] Whore queue - Adding actor to queue: " + akObject)
 				EndIf
 				iIdx += 1
 			EndWhile
@@ -56,10 +61,14 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 	Int iRandomNum 
 	Int IButton  
 	; Debug.SendAnimationEvent(akWhore, "ZazAPC205")
+	If ( !Self.IsRunning() )
+		Debug.Trace("[SD] Whore queue - Quest disabled - aborting")
+		Return False
+	Endif
 
 	While ( !bRemoved && iIdx < _SDORP_queue.Length )
 		If ( _SDORP_queue[iIdx] != None )
-			Debug.Trace("[Whore queue] Removing actor from queue: " + _SDORP_queue[iIdx])
+			Debug.Trace("[SD] Whore queue - Removing actor from queue: " + _SDORP_queue[iIdx])
 			StorageUtil.SetIntValue( (akWhore as actor) , "_SD_iHandsFreeSex", 1)
 
 			If (iIdx <= (_SDORP_queue.Length - 2)) 
@@ -148,13 +157,13 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 					EndIf
 
 				Else
-					Debug.Trace("[Whore queue] Actors busy: " + SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) + " - " + SexLab.ValidateActor(  akWhore as actor) )
+					Debug.Trace("[SD] Whore queue - Actors busy: " + SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) + " - " + SexLab.ValidateActor(  akWhore as actor) )
 				EndIf
 
 
 				Utility.Wait( 5.0 )
 			Else
-				Debug.Trace( "[Whore queue] abort - Actor in scene or out of player cell." )
+				Debug.Trace( "[SD] Whore queue - abort - Actor in scene or out of player cell." )
 			EndIf
 			_SDORP_queue[iIdx] = None
 			_SDORP_queueAliasRef[iIdx].ForceRefTo( akWhore )
@@ -165,7 +174,7 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 		Else
 			if  (_SDORP_queueAliasRef[iIdx].GetReference() != akWhore)			
 				_SDORP_queueAliasRef[iIdx].ForceRefTo( akWhore )
-				Debug.Trace( "[Whore queue] Cleaning up whore." )
+				Debug.Trace( "[SD] Whore queue - Cleaning up whore." )
 			EndIf
 
 			iIdx += 1
@@ -187,7 +196,11 @@ Function checkQueue( )
 	Int iRefCount = 0
 	Int iAliasCount = 0
 
-	Debug.Trace("[Whore queue] Queue ---")
+	Debug.Trace("[SD] Whore queue --- Checking")
+	If ( !Self.IsRunning() )
+		Debug.Trace("[SD] Whore queue - Quest disabled - aborting")
+		Return
+	Endif
 
 	While ( iIdx < _SDORP_queue.Length )
 		Debug.Trace("[Whore queue] Queue ["+ iIdx +"] ActorRef: " + _SDORP_queue[iIdx] + " - Alias: " + _SDORP_queueAliasRef[iIdx])

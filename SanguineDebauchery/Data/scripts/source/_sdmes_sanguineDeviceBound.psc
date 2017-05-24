@@ -43,7 +43,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	if (!fctOutfit.isPiercingsVaginalEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
 		fctOutfit.equipDeviceByString ( sDeviceString = "VaginalPiercing")
 	Else
-		Debug.Trace("[SD] Skipping sanguine gag ")
+		Debug.Trace("[SD] Skipping sanguine piercing ")
 	EndIf
 
 	fTimer = fRFSU * Utility.RandomInt(7 - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel") , 11  - StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel"))
@@ -53,7 +53,7 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	Debug.Trace("[SD] _sdmes_sanguineDeviceBound: OnEffectFinish")
-	If (fctOutfit.countDeviousSlotsByKeyword (  akTarget, "_SD_DeviousSanguine" )>0)
+	If (fctOutfit.countDeviousSlotsByKeyword (  akTarget, "_SD_DeviousSanguine" )>0) && (Utility.RandomInt(0,100) > 40)
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 	EndIf
 

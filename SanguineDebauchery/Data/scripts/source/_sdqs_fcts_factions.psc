@@ -244,11 +244,16 @@ Bool Function checkIfSlaver ( Actor akActor )
 	Bool isSlaver
 	Bool isActorAlreadySlaver
 	Bool isPlayerAlreadyOwned
+	int indexBannedActors = -1
 
 	; If (akActor == akPlayer)
 		; Debug.Notification("[SD] Slaver is Player!" )
 		; return False
 	; EndIf
+	
+	If ((akActor == None) || (akActor.IsDead()) )
+		Return False
+	Endif
 
 	if (StorageUtil.GetIntValue( akActor, "_SD_iDateSlaverChecked")==0)
 
@@ -277,12 +282,14 @@ Bool Function checkIfSlaver ( Actor akActor )
 			Debug.Trace("[SD] 		Actor is Ghost" )
 		endif
 		; Debug.Trace("[SD] Actor is Player - " + (akActor != Game.GetPlayer()))
-		if (actorFactionInList( akActor, _SDFLP_banned_factions ))
+		indexBannedActors = StorageUtil.FormListFind(akPlayer, "_SD_lBannedSlaveryActors", akActor as Form)
+		if (actorInBannedFactions( akActor ))
 			Debug.Trace("[SD] 		Actor is Member of banned faction " )
 		EndIf
-		if (actorInList(_SDFLP_banned_actors , akActor))
+		if (actorInList(_SDFLP_banned_actors , akActor) || (indexBannedActors>=0))
 			Debug.Trace("[SD] 		Actor is Member of banned actors " )
 		endif
+		;
 		If ((checkIfSpriggan ( akActor ))  || (StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
 			Debug.Trace("[SD] 		Actor is Spriggan - aborting normal enslavement")
 		Endif
@@ -319,11 +326,16 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	Actor akPlayer = Game.getPlayer() as Actor
 	Int  playerGender = akPlayer.GetLeveledActorBase().GetSex() as Int
 	Bool isSlaver
+	int indexBannedActors = -1
 
 	; If (akActor == akPlayer)
 	;	Debug.Notification("[SD] Slaver is Player!" )
 	;	return False
 	; EndIf
+
+	If ((akActor == None) || (akActor.IsDead()) )
+		Return False
+	Endif
 
 	If (StorageUtil.GetIntValue(akPlayer, "_SD_iEnableBeastMaster") == 0)
 		return False
@@ -354,10 +366,12 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 		if (akActor.IsGhost())
 			Debug.Trace("[SD] 		Actor is Ghost" )
 		endif
-		if (actorFactionInList( akActor, _SDFLP_banned_factions ))
+		;
+		indexBannedActors = StorageUtil.FormListFind(akPlayer, "_SD_lBannedSlaveryActors", akActor as Form)
+		if (actorInBannedFactions( akActor ))
 			Debug.Trace("[SD] 		Actor is Member of banned faction " )
 		EndIf
-		if (actorInList(_SDFLP_banned_actors , akActor))
+		if (actorInList(_SDFLP_banned_actors , akActor) || (indexBannedActors>=0))
 			Debug.Trace("[SD] 		Actor is Member of banned actors " )
 		endif
 		If ((checkIfSpriggan ( akActor )) || ( StorageUtil.GetIntValue(akPlayer, "_SD_iSprigganPlayer") ==1))
@@ -476,7 +490,7 @@ Bool Function checkIfSlaverCreatureRace ( Actor akActor )
 				thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
 				sRaceName = thisRace.GetName()
 
-				If (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)
+				If ((StringUtil.Find(sRaceName, sMasterRaceName)!= -1) || (actorRace == (thisRace as Race)) )
 					Debug.Trace("	Race [" + i + "] = " + sRaceName)
 					Debug.Trace("[SD] Master race match found - " + thisRace)
 					foundRace = thisRace
@@ -569,7 +583,7 @@ Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormLis
 	Bool found = False
 	Bool banned = False
 
-	If ( akActor && !akActor.IsEssential() && !akActor.IsDead() )
+	If ( akActor && !akActor.IsDead() )
 		If ( akBannedFactionList )
 			index = 0
 			size = akBannedFactionList.GetSize()
@@ -593,6 +607,30 @@ Bool Function actorFactionInList( Actor akActor, FormList akFactionList, FormLis
 	Return found
 EndFunction
 
+Bool Function actorInBannedFactions( Actor akActor )
+	Actor akPlayer = Game.GetPlayer()
+	Int index
+	Int size
+	Bool found = False
+	Bool banned = False
+	Faction thisFaction
+
+	if (actorFactionInList( akActor, _SDFLP_banned_factions ))
+		found = True
+	elseIf ( akActor && !akActor.IsDead() )
+		size = StorageUtil.FormListCount(akPlayer, "_SD_lBannedSlaveryFactions")
+		index = 0
+		while(index < size && !found )
+			; Debug.Notification("List[" + index + "] = " + StorageUtil.FormListGet(akPlayer, "_SD_lBannedSlaveryFactions", index))
+			thisFaction = StorageUtil.FormListGet(akPlayer, "_SD_lBannedSlaveryFactions", index) as Faction
+			found = akActor.IsInFaction( thisFaction )
+			index += 1
+		endwhile
+	EndIf
+
+	Debug.Trace("			_SD::actorInBannedFactions akActor:" + akActor + " found:" + found )
+	Return found
+EndFunction
 
 Bool Function qualifyActor( Actor akActor, Bool abCheckInScene = True )
 	Bool bOutOfScene = ( !abCheckInScene || ( abCheckInScene && akActor.GetCurrentScene() == None ) )

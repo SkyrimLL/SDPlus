@@ -448,10 +448,10 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	_SDGVP_enslaved.SetValue( 0 )
 
 	; Compatibility with other mods
-	ZazSlaveControl.ReleaseSlave(kSlave,"SD")
+	ZazSlaveControl.ReleaseSlave(kSlave,"SD",true)
 	ZazSlaveControl.SetPlayerMaster(None,"SD")
 	StorageUtil.StringListRemove(kMaster, "_DDR_DialogExclude", "SD+:Master")
-	StorageUtil.GetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
+	StorageUtil.SetIntValue(kSlave, "_SD_iDisableDreamworldOnSleep", 0)
 	StorageUtil.SetStringValue(kSlave, "_SD_sSleepPose", "") ; default sleep pose - reset
 	; StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Standing")
 	kSlave.SendModEvent( "PCSubStance" , "Standing")
@@ -666,13 +666,13 @@ Function UpdateSlaveryLevel(Actor kSlave)
 	ElseIf (exposure >= 1) && (exposure <10) ; level 1 - rebelious
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 1)
 
-	ElseIf (exposure >= 10) && (exposure <20) ; level 2 - reluctant
+	ElseIf (exposure >= 10) && (exposure <30) ; level 2 - reluctant
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 2)
 
-	ElseIf (exposure >= 20) && (exposure <40) ; level 3 - accepting
+	ElseIf (exposure >= 30) && (exposure <50) ; level 3 - accepting
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 3)
 
-	ElseIf (exposure >= 40) && (exposure < 80) ; level 4 - not so bad 
+	ElseIf (exposure >= 50) && (exposure < 80) ; level 4 - not so bad 
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", 4)
 
 	ElseIf (exposure >= 80) && (exposure < 100) ; level 5 - getting to like it
@@ -1356,7 +1356,7 @@ Function StartCurrentTask(Actor kSlave, Int iTaskID)
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", 1 ) ; 1 means player needs to go over target amount to succeed, -1 means player needs to remain under target amount to succeed
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) ; in days
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  10  )
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  1  )
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  30  )  ; 30+ - used for tasks
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  30  ) 
@@ -1371,7 +1371,7 @@ Function StartCurrentTask(Actor kSlave, Int iTaskID)
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", 1 )  
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  20  )
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  2  )
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  31  )  
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  31  ) 
@@ -1386,7 +1386,7 @@ Function StartCurrentTask(Actor kSlave, Int iTaskID)
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", -1 )  
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  30  )
+		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  3  )
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  32  )  
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  32  ) 

@@ -94,12 +94,9 @@ Event OnPlayerAlicia(String _eventName, String _args, Float _argc = -1.0, Form _
 		StorageUtil.SetIntValue(none, "_SLS_iPlayerStartAlicia", 0)
 	EndIf
 
-	DremoraSlaver= SanguineAlias.GetReference()
-	if (DremoraSlaver!=None)
-		DremoraSlaver.sendModEvent("PCSubEnslave")
-	Endif
-
 	SLS_PlayerAliciaQuest.SetStage(10)
+
+
 
 EndEvent
 

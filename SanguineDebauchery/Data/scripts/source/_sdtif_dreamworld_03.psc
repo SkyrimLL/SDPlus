@@ -6,12 +6,6 @@ Scriptname _sdtif_dreamworld_03 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Game.ForceThirdPerson()
-; Debug.SendAnimationEvent(Game.GetPlayer() as ObjectReference, "bleedOutStart")
-
-Int IButton = _SD_rapeMenu.Show()
-
-If IButton == 0 ; Show the thing.
 
 Int randomNum = Utility.RandomInt(0, 100)
 ; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
@@ -24,9 +18,7 @@ Else
 	akSpeaker.SendModEvent("PCSubSex") ; Sex
 EndIf
 
-	; Just sex
-	; funct.SanguineRape( akSpeaker, Game.GetPlayer()  , "Sex,Aggressive")
-EndIf
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

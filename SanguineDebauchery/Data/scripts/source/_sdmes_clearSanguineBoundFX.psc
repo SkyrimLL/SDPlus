@@ -30,20 +30,20 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	;	Utility.Wait(1.0)
 	; EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "LegCuffs"  ))  && (Utility.RandomInt(0, 100) > 40)
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "LegCuffs"  ))  
 		Debug.Trace("[SD] Removing Sanguine Shackles")
 		fctOutfit.clearDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 	EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Gag"  )) && (Utility.RandomInt(0, 100) > 40)
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Gag"  )) 
 		Debug.Trace("[SD] Removing Sanguine Gag")
 		fctOutfit.clearDeviceByString ( sDeviceString = "Gag", sOutfitString = "", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)
 		; kDreamer.RemoveItem( _SDA_gag, 1, False  )
 	EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "PiercingVaginal"  )) && (Utility.RandomInt(0, 100) > 40)
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "PiercingVaginal"  )) 
 		Debug.Trace("[SD] Removing Sanguine Artifact")
 		fctOutfit.clearDeviceByString ( sDeviceString = "PiercingVaginal", sOutfitString = "", skipEvents = true, skipMutex = true )
 		Utility.Wait(1.0)

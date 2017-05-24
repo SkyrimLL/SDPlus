@@ -123,13 +123,13 @@ Event OnDeath(Actor akKiller)
 			; Followers are not allowed to forcefully take the player as a slave to prevent friendly fire or rescue
 			; Only voluntary submission to followers is allowed
 
-			; Send all items back to Dreamworld storage
-			kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
-
 			If (Utility.RandomInt(0,100)>40)
 				SendModEvent("PCSubFree")
 
 			ElseIf (akKiller != kMaster)
+				; Send all items back to Dreamworld storage
+				kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
+
 				Debug.Notification( "A new owner grabs you." )
 				Debug.Trace("[_sdras_master] Start enslavement with:"  + akKiller)
 				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akKiller)
@@ -164,7 +164,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 		Int iGold = 100
 		Float iDemerits = 10.0
 				
-		Debug.Trace( "[SD] Master attacked by slave - aeCombatState " + aeCombatState )
+		Debug.Trace( "[_sdras_master] Master attacked by slave - aeCombatState " + aeCombatState )
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
@@ -216,7 +216,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 			; 
 			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-				Debug.Trace( "[SD] Punishment for engaging in combat or pickpocket attempt - Yoke" )
+				Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Yoke" )
 				enslavement.PunishSlave(kMaster,kSlave, "Yoke")
 			endif
 		else
@@ -232,11 +232,17 @@ EndEvent
 Event OnLostLOS(Actor akViewer, ObjectReference akTarget)
 	If (kMaster) && (kSlave) 
 
-		If ( kMaster.GetDistance( kSlave ) > _SDGVP_escape_radius.GetValue() / 4.0 )
+		If ( kMaster.GetDistance( kSlave ) > (_SDGVP_escape_radius.GetValue() / 4.0) )
+			; Debug.Notification( "[_sdras_master] Slave is too far or out of sight" )
+			If ( kMaster.GetCurrentScene() )
+				kMaster.GetCurrentScene().Stop()
+			EndIf
+			enslavement.bSearchForSlave = True
 			GoToState("search")
 		EndIf
-		
-		enslavement.bSearchForSlave = True
+
+
+		; enslavement.bSearchForSlave = True
 		fSlaveLastSeen = GetCurrentRealTime()
 	EndIf
 EndEvent
@@ -266,16 +272,16 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	fGoldEarned = 0.0
 
 	If (kMaster.IsDead())
-		Debug.Trace( "[SD] Item added to a dead master." )
+		Debug.Trace( "[_sdras_master] Item added to a dead master." )
 		Return
 	EndIf
 
 	if !akSourceContainer
-		Debug.Trace("[SD] Master receives  " + aiItemCount + "x " + akBaseItem + " from the world")
+		Debug.Trace("[_sdras_master] Master receives  " + aiItemCount + "x " + akBaseItem + " from the world")
 	elseif akSourceContainer == Game.GetPlayer()
-		Debug.Trace("[SD] Master receives  " + aiItemCount + "x " + akBaseItem)
+		Debug.Trace("[_sdras_master] Master receives  " + aiItemCount + "x " + akBaseItem)
 	else
-		Debug.Trace("[SD] Master receives  " + aiItemCount + "x " + akBaseItem + " from another container")
+		Debug.Trace("[_sdras_master] Master receives  " + aiItemCount + "x " + akBaseItem + " from another container")
 	endIf
 
 	If (kSourceContainer == kSlave ) 
@@ -283,7 +289,7 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 
 	Else
 		; Debug.Notification( "New item for owner" )
-		Debug.Trace( "[SD] Master receives an item from " + kSourceContainer + " / " + kSlave )
+		Debug.Trace( "[_sdras_master] Master receives an item from " + kSourceContainer + " / " + kSlave )
 
 	EndIf
 EndEvent
@@ -304,7 +310,7 @@ EndEvent
 
 State waiting
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsRunning() ) ; && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster)  && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			distanceAverage = 0
 			GoToState("monitor")
 		EndIf
@@ -317,10 +323,13 @@ EndState
 State monitor
 	Event OnBeginState()
 		; Debug.Notification("[_sdras_master] Master is monitoring slave")
+		; If ( kMaster.GetCurrentScene() )
+		;	kMaster.GetCurrentScene().Stop()
+		; EndIf
 
 		fSlaveFreeTime = _SDGV_free_time.GetValue()
 		fLeashLength = _SDGV_leash_length.GetValue()
-		enslavement.bSearchForSlave = True
+		enslavement.bSearchForSlave = False
 		fSlaveLastSeen = GetCurrentRealTime()
 		; fLibido = 0.0
 		
@@ -340,6 +349,9 @@ State monitor
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		if (!kMaster)  || ( !kMaster.Is3DLoaded() )
+			GoToState("monitor")
+		endif
 
 		; Master variable updates
 		_SDGVP_state_MasterFollowSlave.SetValue( StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") )
@@ -385,8 +397,9 @@ State monitor
 			; Park Master in Waiting mode while Enslavement quest is shutting down
 			GoToState("waiting")
 
-		ElseIf ( enslavement.bSearchForSlave || (GetCurrentRealTime() - fSlaveLastSeen > fSlaveFreeTime) || ( !kMaster.HasLOS( kSlave ))  )
-			; Master is looking for slave
+		ElseIf ( enslavement.bSearchForSlave && ( !kMaster.HasLOS( kSlave ))  && ( kMaster.GetDistance( kSlave ) > (_SDGVP_escape_radius.GetValue() / 4.0) ) ) ; || (GetCurrentRealTime() - fSlaveLastSeen > fSlaveFreeTime) 
+			; Master is looking for slave - should be triggered only when enslavement.bSearchForSlave is set from elsewhere
+			; Debug.Notification( "[_sdras_master] Checking in one slave or out of sight" )
 			GoToState("search")
 
 		ElseIf (kSlaveCell == kMasterCell)  &&  (kMasterCell.IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0) )  
@@ -394,7 +407,7 @@ State monitor
 			If (RandomInt( 0, 100 ) > 95 )
 				Debug.Notification( "Your captors are watching...")
 			EndIf
-			GoToState("waiting")
+			; GoToState("waiting")
 
 		ElseIf ( !Game.IsMovementControlsEnabled() || kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 			; Slave is in the middle of a scene (snp)
@@ -497,7 +510,7 @@ State monitor
 				fctConstraints.actorCombatShutdown( kMaster )
 				; 
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-					Debug.Trace( "[SD] Punishment for attacking master - Yoke" )
+					Debug.Trace( "[_sdras_master] Punishment for attacking master - Yoke" )
 					enslavement.PunishSlave(kMaster,kSlave, "Yoke")
 				endif
 
@@ -676,7 +689,7 @@ State monitor
 
 				;
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-					Debug.Trace( "[SD] Punishment for hitting master - Yoke" )
+					Debug.Trace( "[_sdras_master] Punishment for hitting master - Yoke" )
 					enslavement.PunishSlave(kMaster,kSlave,"Yoke")
 				endif
 
@@ -710,9 +723,12 @@ EndState
 State search
 	Event OnBeginState()
 		; Debug.Notification("[_sdras_master] Master starts searching for slave")
+		If ( kMaster.GetCurrentScene() )
+			kMaster.GetCurrentScene().Stop()
+		EndIf
 		enslavement.bSearchForSlave = True
-		kMaster.EvaluatePackage()
 		RegisterForLOS( kMaster, kSlave )
+		kMaster.EvaluatePackage()
 	EndEvent
 	
 	Event OnEndState()
@@ -722,9 +738,16 @@ State search
 	EndEvent
 
 	Event OnGainLOS(Actor akViewer, ObjectReference akTarget)
-		; Debug.Notification("[_sdras_master] Master found slave")
-		enslavement.bSearchForSlave = False
-		kMaster.EvaluatePackage()
+		If (kMaster.GetDistance( kSlave ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2 ) )
+			; Debug.Notification("[_sdras_master] Master found slave")
+			If ( kMaster.GetCurrentScene() )
+				kMaster.GetCurrentScene().Stop()
+			EndIf
+			; enslavement.bSearchForSlave = False
+			; kMaster.EvaluatePackage()
+		else
+			; Debug.Notification("[_sdras_master] Master can see slave")
+		Endif
 	EndEvent
 
 	Event OnDeath(Actor akKiller)
@@ -744,7 +767,7 @@ State search
 
 			SendModEvent("PCSubFree")
 
-		ElseIf ( (kMaster.GetDistance( kSlave ) <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") ) && (( kMaster.HasLOS( kSlave )) ) )
+		ElseIf ( (kMaster.GetDistance( kSlave ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2 ) ) && (( kMaster.HasLOS( kSlave )) ) )
 			; Slave is back, next to master
 			; Debug.Notification("[_sdras_master] Master close to slave with LOS")
 			enslavement.bEscapedSlave = False
@@ -763,13 +786,18 @@ EndState
 
 State combat
 	Event OnBeginState()
+		; Debug.Notification("[_sdras_master] Master in combat")
 		If ( kMaster.GetCurrentScene() )
 			kMaster.GetCurrentScene().Stop()
 		EndIf
+		enslavement.bSearchForSlave = False
 	EndEvent
 	
 	Event OnEndState()
 		kMaster.EvaluatePackage()
+		; Debug.Notification( "[_sdras_master] Combat ended - looking for slave" )
+		enslavement.bSearchForSlave = True
+		GoToState("search")
 	EndEvent
 
 	Event OnUpdate()
@@ -788,6 +816,7 @@ State combat
 
 		ElseIf ( !kMaster.IsInCombat() && !kSlave.IsInCombat() )
 			; GoToState("monitor")
+			; Debug.Notification( "[_sdras_master] Master not in combat - looking for slave" )
 			enslavement.bSearchForSlave = True
 			GoToState("search")
 		EndIf

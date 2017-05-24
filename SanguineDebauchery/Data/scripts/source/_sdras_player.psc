@@ -48,6 +48,8 @@ Keyword Property _SDKP_spriggan_infected  Auto
 FormList Property _SDFLP_spriggan_factions  Auto
 
 ; Thug enslavement
+Quest Property _SDQP_thugs  Auto
+Keyword Property _SDKP_thugs  Auto
 Faction Property _SDFP_thugs  Auto
 {quest: WIAddItem03 - WIThugFaction}
 
@@ -84,7 +86,37 @@ GlobalVariable Property _SDGVP_can_join  Auto
 Armor Property _SD_SimpleBindings Auto     
 Armor Property _SD_SimpleBindingsCosmetic Auto        	    
 
+ReferenceAlias Property _SDRAP_player_safe  Auto  
 
+FormList Property _SDFL_banned_sex  Auto  
+
+FormList Property _SDFL_allowed_creature_sex  Auto  
+
+SPELL Property Calm  Auto  
+Message Property _SD_safetyMenu  Auto  
+Message Property _SD_enslaveMenu Auto
+
+GlobalVariable Property _SDGVP_sanguine_blessing auto
+
+ObjectReference Property _SD_SprigganSwarm Auto
+
+GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
+
+GlobalVariable Property _SDGVP_isPlayerPregnant auto
+GlobalVariable Property _SDGVP_isPlayerSuccubus auto
+GlobalVariable Property _SDGVP_isPlayerHRT auto
+GlobalVariable Property _SDGVP_isPlayerTG auto
+GlobalVariable Property _SDGVP_isPlayerBimbo auto
+GlobalVariable Property _SDGVP_isPlayerEnslaved auto
+
+GlobalVariable Property _SDGVP_sanguine_blessings auto
+
+GlobalVariable Property _SDGVP_enable_parasites auto
+GlobalVariable Property _SDGVP_enable_masterTravel auto
+GlobalVariable Property _SDGVP_state_isMasterTraveller auto
+GlobalVariable Property _SDGVP_state_isMasterInTransit auto
+GlobalVariable Property _SDGVP_state_isMasterFollower auto
+GlobalVariable Property _SDGVP_isLeashON auto
 ; local
 Actor kPlayer
 Actor kMasterToBe = None
@@ -273,6 +305,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= kPlayer
 	Actor PlayerActor= PlayerREF as Actor
 	ActorBase pActorBase = PlayerActor.GetActorBase()
+	Actor kCurrentMaster
     sslBaseAnimation animation = SexLab.HookAnimation(_args)
 
 	if !Self || !SexLab 
@@ -292,7 +325,11 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	endif
 
 	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
-		; Actor kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+		kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
+
+		If (!funct._hasActor(actors, kCurrentMaster))  && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
+			fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
+		Endif
 		
 		If (funct._hasPlayer(actors)) 
 			; Player hands are freed temporarily for sex
@@ -521,13 +558,18 @@ Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _
 	; New enslavement - changing ownership
 	Int IButton = _SD_enslaveMenu.Show()
 
-	If IButton == 0 ; Undress
-		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+	If IButton == 0 ; Enslaved
+		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 2)
 		; kTempAggressor.SendModEvent("PCSubEnslave")
+
 		SDSurrender(kTempAggressor, "" )
+	ElseIf IButton == 1 ; Sex
+		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
+		funct.SanguineRape( kTempAggressor, kPlayer)
+
 	else
 		StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
-		funct.SanguineRape( kTempAggressor, kPlayer)
+
 
 	EndIf
 EndEvent
@@ -549,9 +591,9 @@ Function SDSurrender(Actor kActor, String SurrenderMode)
 		
 	Debug.Trace("[_sdras_player] Receiving 'surrender' event - New master: " + kNewMaster)
 
-	If (kNewMaster)
-		Debug.Trace("[_sdras_player] Faction check: " + fctFactions.checkIfSlaver (  kNewMaster ) )
-	EndIf
+	; If (kNewMaster)
+		; Debug.Trace("[_sdras_player] Faction check: " + fctFactions.checkIfSlaver (  kNewMaster ) )
+	; EndIf
 
 	If (kNewMaster != None)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceSprigganInfection")>0) &&  (fctFactions.checkIfSpriggan (  kNewMaster ) )
 		; if already enslaved, transfer of ownership
@@ -704,10 +746,13 @@ Event OnSDModSanguineBlessing(String _eventName, String _args, Float _argc = -1.
 		iEventCode=1
 	endIf
 
-	; if (_SDGVP_sanguine_blessings.GetValue() > 0 )
 		_SDGVP_sanguine_blessings.SetValue( _SDGVP_sanguine_blessings.GetValue() + iEventCode)
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 	; endif
+
+	if (_SDGVP_sanguine_blessings.GetValue() >= 2 )
+		SendModEvent("_SLS_PlayerAlicia")
+	endif
 
 	Debug.Trace("[SD] 	- Sanguine blessings: " + _SDGVP_sanguine_blessings.GetValue() )
 EndEvent
@@ -781,10 +826,6 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sen
 		Return
 	EndIf
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (kTempAggressor!=kMaster) && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
-		fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
-	Endif
-
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
 	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
@@ -810,23 +851,7 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sen
 		if (_argc==0.0)
 			funct.SanguineRape( kTempAggressor, kPlayer, _args)
 		else
-			Int IButton = _SDMP_rape_menu.Show()
-
-			If IButton == 0 ; Show the thing.
-
-				; If  (SexLab.ValidateActor( SexLab.PlayerREF) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
-					; Debug.Notification( "[Resists weakly]" )
-				;	SexLab.QuickStart(SexLab.PlayerRef,  akSpeaker, Victim = SexLab.PlayerRef , AnimationTags = tags)
-				; EndIf
-				StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
-
-				funct.SanguineRape( kTempAggressor, kPlayer, _args)
-
-			Else
-				StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
-
-			EndIf
-	
+			funct.SanguineRapeMenu( kTempAggressor, kPlayer, _args)
 		endIf
 
 	EndIf
@@ -855,10 +880,6 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 	Else
 		Return
 	EndIf
-
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (kTempAggressor!=kMaster) && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
-		fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
-	Endif
 
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
@@ -1206,7 +1227,7 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 			Debug.Messagebox("Your owner is going on a walk. Don't stray too far or you will be punished!")
 		EndIf
 
-		StorageUtil.SetIntValue( Game.GetPlayer() ,"_SD_iEnableLeash", 1)
+		StorageUtil.SetIntValue( kPlayer ,"_SD_iEnableLeash", 1)
 		StorageUtil.SetIntValue( kActor,"_SD_iFollowSlave", 0)
 		_SDGVP_state_isMasterFollower.SetValue(0) 
 
@@ -1219,12 +1240,21 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 		kActor.EvaluatePackage()
  		_SDGVP_enable_masterTravel.SetValue(1)
 
+
+		If !( _SDQP_thugs.IsRunning() )
+ 			Debug.Trace("[_sdras_player]  >>> Starting Thugs quest")
+			_SDKP_thugs.SendStoryEvent(akRef1 = kActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0)
+ 		else
+  			Debug.Trace("[_sdras_player]  >>> Thugs quest detected - starting walking scene")
+			_SDQP_thugs.setstage(10)
+ 		endif
+
  	elseif  (iEventString == "Stop") ||  (iEventString == "Disable")
  		If (_SDGVP_state_isMasterInTransit.GetValue() == 1 )
 			Debug.Messagebox("Your owner is staying put for now. Don't take that as a permission to wander off!!")
 		EndIf
 
-		StorageUtil.SetIntValue( Game.GetPlayer() ,"_SD_iEnableLeash", 0)
+		StorageUtil.SetIntValue( kPlayer ,"_SD_iEnableLeash", 0)
 		StorageUtil.SetIntValue( kActor,"_SD_iFollowSlave", 1)
 		_SDGVP_state_isMasterFollower.SetValue(1) 
 		_SDGVP_state_isMasterTraveller.SetValue(0) 
@@ -1235,6 +1265,13 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 		kActor.EvaluatePackage()
  		_SDGVP_enable_masterTravel.SetValue(1)
 
+		If !( _SDQP_thugs.IsRunning() )
+ 			Debug.Trace("[_sdras_player]  >>> Starting Thugs quest")
+			_SDKP_thugs.SendStoryEvent(akRef1 = kActor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 0)
+ 		else
+  			Debug.Trace("[_sdras_player]  >>> Thugs quest detected - pausing walking scene")
+			_SDQP_thugs.setstage(11)
+ 		endif
 
 
 		if  (iEventString == "Disable")
@@ -1639,12 +1676,44 @@ State monitor
 
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, Bool abPowerAttack, Bool abSneakAttack, Bool abBashAttack, Bool abHitBlocked)
 		Actor akActor = akAggressor as Actor
+		Actor PlayerRef = Game.GetPlayer()
+		Bool bHitByMagic = FALSE  ; True if likely hit by Magic attack.
+		Bool bHitByMelee = FALSE  ; True if likely hit by Melee attack.
+		Bool bHitByRanged = FALSE ; True if likely his by Ranged attack.
+		Bool bCheckForSlaver = FALSE
+		 
+		If (akAggressor != None) 
+			IF akActor != PlayerRef && PlayerRef.IsInCombat() && akActor.IsHostileToActor(PlayerRef)
+			; The above is really to rule out run of the mill physical traps.
+			 
+				IF ((akActor.GetEquippedItemType(0) == 8) || (akActor.GetEquippedItemType(1) == 8) \
+					|| (akActor.GetEquippedItemType(0) == 9) || (akActor.GetEquippedItemType(1) == 9))  && akProjectile != None
+					; bHitByMagic = TRUE
 
-		If (akActor != None)
-			If (!akActor.IsDead())
-				fctFactions.checkIfSlaver ( akActor )
-				fctFactions.checkIfSlaverCreature ( akActor )
+					If (Utility.RandomInt(0,100)<30) ; throttle checks for slavery way down in case of magick attack
+						bCheckForSlaver = TRUE
+					Endif
+
+				ELSEIF (akActor .GetEquippedItemType(0) != 7) && akProjectile == None
+					; bHitByMelee = TRUE
+					bCheckForSlaver = TRUE
+
+				ELSEIF (akActor .GetEquippedItemType(0) == 7)
+					; bHitByRanged = TRUE
+					bCheckForSlaver = TRUE
+				ENDIF
+			ENDIF
+
+			If (bCheckForSlaver)
+				if (StorageUtil.GetIntValue( akActor, "_SD_iDateSlaverChecked")==0)
+					fctFactions.checkIfSlaver ( akActor )
+				Endif
+
+				if (StorageUtil.GetIntValue( akActor, "_SD_iDateBeastSlaverChecked")==0)
+					fctFactions.checkIfSlaverCreature ( akActor )
+				Endif
 			Endif
+
 		Endif
 	EndEvent
 	
@@ -1766,13 +1835,15 @@ State surrender
 	Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, Bool abPowerAttack, Bool abSneakAttack, Bool abBashAttack, Bool abHitBlocked)
 		Actor akActor = akAggressor as Actor
 
-		If (!akActor.IsDead())
-			Debug.Notification("[SD] Surrender to aggressor")
-			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
-			; akActor.SendModEvent("PCSubSurrender")
-			SDSurrender(akActor, "" )
-			GoToState("monitor")
+		If (akAggressor != None) 
+			If (!akActor.IsDead())
+				Debug.Notification("[SD] Surrender to aggressor")
+				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
+				; akActor.SendModEvent("PCSubSurrender")
+				SDSurrender(akActor, "" )
+				GoToState("monitor")
 
+			Endif
 		Endif
 	EndEvent
 	
@@ -1789,34 +1860,3 @@ Function SetHandsFreeSlave(Actor kActor)
 EndFunction
 
 
-ReferenceAlias Property _SDRAP_player_safe  Auto  
-
-FormList Property _SDFL_banned_sex  Auto  
-
-FormList Property _SDFL_allowed_creature_sex  Auto  
-
-SPELL Property Calm  Auto  
-Message Property _SD_safetyMenu  Auto  
-Message Property _SD_enslaveMenu Auto
-
-GlobalVariable Property _SDGVP_sanguine_blessing auto
-
-ObjectReference Property _SD_SprigganSwarm Auto
-
-GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
-
-GlobalVariable Property _SDGVP_isPlayerPregnant auto
-GlobalVariable Property _SDGVP_isPlayerSuccubus auto
-GlobalVariable Property _SDGVP_isPlayerHRT auto
-GlobalVariable Property _SDGVP_isPlayerTG auto
-GlobalVariable Property _SDGVP_isPlayerBimbo auto
-GlobalVariable Property _SDGVP_isPlayerEnslaved auto
-
-GlobalVariable Property _SDGVP_sanguine_blessings auto
-
-GlobalVariable Property _SDGVP_enable_parasites auto
-GlobalVariable Property _SDGVP_enable_masterTravel auto
-GlobalVariable Property _SDGVP_state_isMasterTraveller auto
-GlobalVariable Property _SDGVP_state_isMasterInTransit auto
-GlobalVariable Property _SDGVP_state_isMasterFollower auto
-GlobalVariable Property _SDGVP_isLeashON auto

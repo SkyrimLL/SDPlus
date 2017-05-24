@@ -8,6 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 ; _SDKP_sex.SendStoryEvent(akRef1 = akSpeaker, akRef2 = Game.GetPlayer(), aiValue1 = 3, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 akSpeaker.SendModEvent("PCSubPunish")
+ Self.GetOwningQuest().setstage(210)
 ;END CODE
 EndFunction
 ;END FRAGMENT

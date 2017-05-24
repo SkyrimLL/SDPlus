@@ -2,6 +2,36 @@
 ;NEXT FRAGMENT INDEX 23
 Scriptname _sdqf_snp_01 Extends Quest Hidden
 
+;BEGIN ALIAS PROPERTY _SDRA_male
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_male Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_female
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_female Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_sexlight
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_sexlight Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_bystander_03
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_bystander_03 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_current
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_current Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_strapon
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_strapon Auto
+;END ALIAS PROPERTY
+
 ;BEGIN ALIAS PROPERTY _SDRA_bystander_01
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_bystander_01 Auto
@@ -12,34 +42,9 @@ ReferenceAlias Property Alias__SDRA_bystander_01 Auto
 ReferenceAlias Property Alias__SDRA_bystander_04 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_bed
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_bed Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_meridiana
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_meridiana Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SDRA_strapon_cbbe
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_strapon_cbbe Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_lockposition
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDLA_lockposition Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_erect_male
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_erect_male Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_bed_01
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_bed_01 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_sanguine_marker
@@ -47,19 +52,39 @@ ReferenceAlias Property Alias__SDRA_bed_01 Auto
 ReferenceAlias Property Alias__SDRA_sanguine_marker Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_strapon_unbp
+;BEGIN ALIAS PROPERTY _SDRA_sanguine
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_strapon_unbp Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_strapon_thorn
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_strapon_thorn Auto
+ReferenceAlias Property Alias__SDRA_sanguine Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_naamah
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_naamah Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_bed
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_bed Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_bed_01
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_bed_01 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_bed_03
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_bed_03 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_marker
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_marker Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_lockposition
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDLA_lockposition Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_bystander_05
@@ -72,24 +97,19 @@ ReferenceAlias Property Alias__SDRA_bystander_05 Auto
 ReferenceAlias Property Alias__SDRA_bystander_02 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_sexlight
+;BEGIN ALIAS PROPERTY _SDRA_strapon_unbp
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sexlight Auto
+ReferenceAlias Property Alias__SDRA_strapon_unbp Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDLA_current
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_current Auto
+;BEGIN ALIAS PROPERTY _SDRA_strapon_thorn
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_strapon_thorn Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_female
+;BEGIN ALIAS PROPERTY _SDRA_erect_male
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_female Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_strapon
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_strapon Auto
+ReferenceAlias Property Alias__SDRA_erect_male Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_bed_02
@@ -97,29 +117,9 @@ ReferenceAlias Property Alias__SDRA_strapon Auto
 ReferenceAlias Property Alias__SDRA_bed_02 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_male
+;BEGIN ALIAS PROPERTY _SDRA_meridiana
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_male Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_marker
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_marker Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_bed_03
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_bed_03 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_bystander_03
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_bystander_03 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_sanguine
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_sanguine Auto
+ReferenceAlias Property Alias__SDRA_meridiana Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_5
@@ -128,12 +128,14 @@ Function Fragment_5()
 ; Game.DisablePlayerControls( abMovement = true )
 ; Game.SetPlayerAIDriven()
 
+; Debug.Notification("[SNP] Starting scene...")
+
 Actor male = Alias__SDRA_male.GetReference() as Actor
 Actor female = Alias__SDRA_female.GetReference() as Actor
 fctConstraints.actorCombatShutdown( male )
 fctConstraints.actorCombatShutdown( female )
 
-male.AllowPCDialogue( False )
+; male.AllowPCDialogue( False )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -152,7 +154,7 @@ Actor female = Alias__SDRA_female.GetReference() as Actor
 ObjectReference bed = Alias__SDRA_bed.GetReference() as ObjectReference
 ObjectReference sexLight = Alias__SDRA_sexlight.GetReference() as ObjectReference
 
-male.AllowPCDialogue( True )
+; male.AllowPCDialogue( True )
 
 If ( female )
 	female.EvaluatePackage()

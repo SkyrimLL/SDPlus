@@ -183,7 +183,7 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 	; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
 		; Weapon
 	
-	ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+	ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1) )
 		; Add code to match received items against Master's needs
 		; Update Master's mood and trust
 
@@ -236,6 +236,30 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		ElseIf (Utility.RandomInt(0,100)<40)
 			kMaster.EquipItem(akBaseItem, True, True)
 		Endif
+
+	ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 1)
+		; Creatures can accept natural ingredients
+		If ( iuType == 30 || iuType == 46 || iuType == 32 || iuType == 52 )
+			fGoldEarned = akBaseItem.GetGoldValue()
+
+			if (fGoldEarned>100)
+				fctSlavery.ModMasterTrust( kMaster, 2)
+			else
+				fctSlavery.ModMasterTrust( kMaster, 1)
+			endif
+
+			; TO DO - Master reaction if slave reaches buyout amount
+			If (Utility.RandomInt(0,100)<80) && (fGoldEarned>100)
+				kMaster.EquipItem(akBaseItem, True, True)
+			ElseIf (Utility.RandomInt(0,100)<40)
+				kMaster.EquipItem(akBaseItem, True, True)
+			Endif
+				
+			Debug.Notification("(seems pleased)")
+		else
+				
+			Debug.Notification("(shrugs)")
+		endif
 	EndIf
 
 EndFunction

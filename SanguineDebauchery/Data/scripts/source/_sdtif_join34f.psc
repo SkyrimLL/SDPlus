@@ -13,8 +13,8 @@ Actor kPlayer = Game.GetPlayer()
 
              GlowLight.Cast(kPlayer , kPlayer )
              Utility.Wait(3.0)
-             Game.EnablePlayerControls( abMovement = True )
-             Game.SetPlayerAIDriven( False )
+  ;           Game.EnablePlayerControls( abMovement = True )
+ ;            Game.SetPlayerAIDriven( False )
 
 If (Utility.RandomInt(0,100) > 80)
 	; Aggressive sex

@@ -601,18 +601,18 @@ event OnPageReset(string a_page)
 						
 			SetCursorPosition( _SDQP_quests_secondary.Length * 2 + 5)
 
-			If ( i_T1_action > 1 && i_T1_action < 4 )
-				_SDOID_quests_o_flag = OPTION_FLAG_NONE
-			Else
+			; If ( i_T1_action > 1 && i_T1_action < 4 )
+			;	_SDOID_quests_o_flag = OPTION_FLAG_NONE
+			; Else
 				_SDOID_quests_o_flag = OPTION_FLAG_DISABLED
-			EndIf
+			; EndIf
 
-			AddHeaderOption("$SD_HEADER_P1_ENABLE_DISABLE")
+			; AddHeaderOption("$SD_HEADER_P1_ENABLE_DISABLE")
 			idx = 0
 			While idx < _SDQP_quests_optional.Length
 				bRunning = _SDQP_quests_optional[idx].IsRunning() || _SDQP_quests_optional[idx].IsStarting()
 				_SDBP_quests_optional_running[idx] = bRunning
-				_SDOID_quests_o[idx] = AddToggleOption(_SDQP_quests_optional[idx].GetName(), bRunning, _SDOID_quests_o_flag)
+			;	_SDOID_quests_o[idx] = AddToggleOption(_SDQP_quests_optional[idx].GetName(), bRunning, _SDOID_quests_o_flag)
 				idx += 1
 			EndWhile
 
@@ -1035,6 +1035,7 @@ event OnOptionSliderAccept(int a_option, float a_value)
 		SetSliderOptionValue(_SDOID_config_S6, a_value, "$SD_DAYS")
 	ElseIf ( a_option == _SDOID_config_S7 )
 		_SDGVP_config_blindnessLevel.SetValue( a_value )
+		StorageUtil.SetIntValue(Game.getPlayer(), "_SD_iChanceDreamworldOnSleep",_SDGVP_config_blindnessLevel.GetValue() as Int )
 		SetSliderOptionValue(_SDOID_config_S7, a_value, "{1} %")
 	ElseIf ( a_option == _SDOID_config_S8 )
 		if ( a_value > (_SDGVP_config_max_slavery_level.GetValue( ) as Float) )

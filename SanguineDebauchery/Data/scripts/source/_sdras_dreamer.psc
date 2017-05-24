@@ -58,12 +58,15 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		Return
 	Endif
 
+	_SDGVP_sanguine_blessing.SetValue(StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))
+
 	Debug.Trace("[_sdras_dreamer] Auto start?: " + _SDGVP_config_auto_start.GetValue())
 	Debug.Trace("[_sdras_dreamer] Start after Night to remember?: " + _SDGVP_config_lust.GetValue())
 	Debug.Trace("[_sdras_dreamer] Is Night to remember completed?: " + ANightQuest.IsCompleted())
 	Debug.Trace("[_sdras_dreamer] Chance on sleep: " + StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))
 	Debug.Trace("[_sdras_dreamer] Sanguine Blessing: " + _SDGVP_sanguine_blessing.GetValue())
 	Debug.Trace("[_sdras_dreamer] Number times enslaved: " + _SDGVP_stats_enslaved.GetValueInt())
+	Debug.Trace("[_sdras_dreamer] Dreamworld on Sleep disabled: " + StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep"))
 
 	; Disable Dreamworld on Sleep if delay option is checked and DA14 quest not done yet
 	If  ( (_SDGVP_config_lust.GetValue()==1) && (!ANightQuest.IsCompleted()) ) && (_SDGVP_config_auto_start.GetValue() == 1)
@@ -75,6 +78,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	EndIf
 
 	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && (_SDGVP_enslaved.GetValueInt() == 0)  ) ) || ( (_SDGVP_sanguine_blessing.GetValue() > 0) && (Utility.RandomInt(0,100)<=  StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) ) ) && (dbe.pSleepyTime != 1)  && (_SDGVP_config_auto_start.GetValue() == 1)  && (kPlayer.IsArrested() == False)
+		Debug.Trace("[_sdras_dreamer]         OnSleep event passed" )
 
 			; Debug.Notification("Reality slips away...")
 			; Debug.Notification("[dream] Sanguine finds you in your dream")
@@ -92,6 +96,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	;		Utility.Wait(1.0)
 
 	elseif (kLocation)  
+		Debug.Trace("[_sdras_dreamer]         OnSleep event by location" )
 
 		If kLocation.IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)<= (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ) * 2))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) 
 				
@@ -115,6 +120,9 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 				EndIf
 		EndIf
+	else
+		Debug.Trace("[_sdras_dreamer]         OnSleep event failed" )
+
 	; elseif (Utility.RandomInt(0,100)>30) && (_SDGVP_sanguine_blessing.GetValue() > 0)
 	; 		Debug.Trace("[SD] Sanguine items timer: OnSleep " )
 	; 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )

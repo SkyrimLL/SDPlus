@@ -11,8 +11,8 @@ Actor kPlayer = Game.GetPlayer()
 
 ; Debug.Notification("[Actor says hello]")
 
-             Game.EnablePlayerControls( abMovement = True )
-             Game.SetPlayerAIDriven( False )
+ ;            Game.EnablePlayerControls( abMovement = True )
+ ;            Game.SetPlayerAIDriven( False )
 
 
 	; Aggressive sex

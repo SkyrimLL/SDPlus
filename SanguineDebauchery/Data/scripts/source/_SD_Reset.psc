@@ -21,6 +21,7 @@ Quest Property _SD_watcher  Auto
 Quest Property _SD_whore  Auto
 GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_naked_rape_delay Auto
+GlobalVariable Property _SDGVP_config_ChanceDreamworldOnSleep  Auto
 GlobalVariable Property GameDaysPassed Auto
 ReferenceAlias Property Alias__SDRA_master  Auto
 GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
@@ -47,8 +48,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2017031600 ; <--- Edit this value when updating
-		fVersion = 2017031600; and this
+	If fVersion < 2017041000 ; <--- Edit this value when updating
+		fVersion = 2017041000; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
 		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
@@ -82,9 +83,12 @@ Function Maintenance()
 			StorageUtil.SetStringValue(kPlayer, "_SD_sSanguineGender","Both")
 		Endif
 
-		If (!StorageUtil.HasIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep"))
-			StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", 20)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", _SDGVP_config_ChanceDreamworldOnSleep.GetValue() as Int)
+
+		If (StorageUtil.FormListFind(kPlayer, "_SD_lBannedSlaveryFactions", SexLabProhibitedFaction as Form)<0)
+			StorageUtil.FormListAdd(kPlayer, "_SD_lBannedSlaveryFactions", SexLabProhibitedFaction as Form)
 		Endif
+
 
 		; kPlayer.SendModEvent( "PCSubStance" , "Standing")
 
@@ -168,3 +172,5 @@ GlobalVariable Property _SDGVP_naked_rape_chance  Auto
 GlobalVariable Property _SDGVP_version  Auto  
 
 zadLibs Property libs Auto
+
+Faction Property SexLabProhibitedFaction  Auto  

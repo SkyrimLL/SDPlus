@@ -7,12 +7,12 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 _SDQS_dream dream = Self.GetOwningQuest() as _SDQS_dream
+ Self.GetOwningQuest().setstage(200)
+; ObjectReference arPortal = (akSpeaker as ObjectReference).PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) 
 
-ObjectReference arPortal = (akSpeaker as ObjectReference).PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) 
+; Utility.wait( 3.0 )
 
-Utility.wait( 3.0 )
-
-dream.sendDreamerBack( 15 ) ; back to where PC came from
+; dream.sendDreamerBack( 15 ) ; back to where PC came from
 ;END CODE
 EndFunction
 ;END FRAGMENT

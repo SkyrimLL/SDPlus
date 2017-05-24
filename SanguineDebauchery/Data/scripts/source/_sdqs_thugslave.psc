@@ -6,7 +6,9 @@ ReferenceAlias Property _SDRAP_master  Auto
 ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_thug_1  Auto
 ReferenceAlias Property _SDRAP_thug_2  Auto
+ReferenceAlias Property _SDRAP_boss Auto
 
+Actor kABoss
 Actor kMaster
 Actor kSlave
 Actor kThug_1
@@ -19,6 +21,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	kSlave  = _SDRAP_slave.GetReference() as Actor
 	kThug_1 = _SDRAP_thug_1.GetReference() as Actor
 	kThug_2 = _SDRAP_thug_2.GetReference() as Actor
+	kABoss = _SDRAP_boss.GetReference() as Actor
 
 	If ( kMaster )
 		kMaster.StopCombat()
@@ -49,6 +52,12 @@ Auto State monitor
 		If ( kThug_2 )
 			kThug_2.EvaluatePackage()
 		EndIf
+
+		If (kABoss)
+			if ( kSlave.GetDistance( kABoss ) < 256 )
+				self.Setstage(20)
+			EndIf
+		endif
 		
 		If ( Self )
 			RegisterForSingleUpdate( fRegForUpdate )

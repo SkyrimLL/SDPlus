@@ -25,6 +25,42 @@ Quest Property HaelgaQuest  Auto
 _sdqs_dream_destinations property dreamDest Auto
 SexLabFrameWork Property SexLab Auto
 
+ObjectReference Property _SD_SafetyDest  Auto  
+
+Outfit Property _SDO_sanguine_chosen  Auto  
+
+Outfit Property _SDO_naked  Auto  
+
+Armor Property _SDA_collar_blood  Auto  
+
+Armor Property _SDA_bindings  Auto  
+
+Armor Property _SDA_gag  Auto  
+
+Armor Property _SDA_sanguine_chosen  Auto  
+
+
+slaUtilScr Property slaUtil  Auto  
+ 
+FormList Property _SD_sanguine_outfits  Auto  
+
+Faction Property _SDP_BunkhouseFaction  Auto  
+
+GlobalVariable Property _SDGVP_enslaved Auto
+GlobalVariable Property _SDGVP_enslavedSpriggan Auto
+GlobalVariable Property _SDGVP_gender_restrictions Auto
+ObjectReference Property _SD_DremoraChallenger  Auto  
+
+ReferenceAlias Property _SDRAP_redguard_girl  Auto  
+
+SPELL Property _SDSP_SanguineBound  Auto  
+
+GlobalVariable Property _SDGVP_sanguine_blessing auto
+
+
+
+Cell Property _SD_SanguineDreamworld  Auto  
+
 ; String                   Property NINODE_SCHLONG	 	= "NPC Genitals01 [Gen01]" AutoReadOnly
 string                   Property SD_KEY               = "sanguinesDebauchery.esp" AutoReadOnly
 String                   Property NINODE_SCHLONG	 	= "NPC GenitalsBase [GenBase]" AutoReadOnly
@@ -289,7 +325,7 @@ Function positionVictims( Int aiStage )
 	kImperialMan.MoveToMyEditorLocation()
 	kSanguine.MoveToMyEditorLocation()
 
-	if (Utility.RandomInt(0,100) > 80)
+	if (Utility.RandomInt(0,100) > 90) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >5) 
 
 		kDremoraChallenger.MoveToMyEditorLocation()
 		kDremoraChallenger.enable()
@@ -314,7 +350,7 @@ Function positionVictims( Int aiStage )
 	; Game.SetCameraTarget(Game.GetPlayer())
 
     ; Game.DisablePlayerControls(abMovement = false, abFighting = false, abCamSwitch = true, abMenu = false, abActivate = false, abJournalTabs = false, aiDisablePOVType = 1)
-    Game.ForceThirdPerson()
+    ; Game.ForceThirdPerson()
     ; Game.ShowFirstPersonGeometry(false)
 	; Utility.Wait(0.1)
 
@@ -371,6 +407,8 @@ Function positionVictims( Int aiStage )
  
 	; sanguineActorBase.SetWeight(fWeight) 
 	; kSanguine.UpdateWeight(NeckDelta) ;Apply the changes.
+
+
 	
 	Float fBreast  = 0.0
 	Float fSchlong = 0.0
@@ -406,6 +444,23 @@ Function positionVictims( Int aiStage )
 		XPMSELib.SetNodeScale(kSanguine, false,  NINODE_SCHLONG, fSchlong, SD_KEY)  
 	EndIf	
 
+
+	if (self.GetStageDone(220)==1)
+		; a - r - g - b
+		; Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+		Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+		StorageUtil.SetIntValue(kDreamer, "_SLH_iHairColor", iAliciaHairColor ) 
+		StorageUtil.SetIntValue(kDreamer, "_SLH_iHairColorDye", 1 ) 
+		StorageUtil.SetStringValue(kDreamer, "_SLH_sHairColorName", "Alicia red" ) 
+		kDreamer.SendModEvent("SLHRefreshColors")
+		
+	elseif (self.GetStageDone(230)==1)
+		StorageUtil.SetFloatValue(kDreamer, "_SLH_fBreast", StorageUtil.GetFloatValue(kDreamer, "_SLH_fBreast" ) + 0.5 ) 
+		StorageUtil.SetFloatValue(kDreamer, "_SLH_fWeight", StorageUtil.GetFloatValue(kDreamer, "_SLH_fWeight" ) + 20.0 ) 
+		kDreamer.SendModEvent("SLHRefresh")
+		kDreamer.SendModEvent("SLHRefreshColors")
+	endIf
+
 	; Random welcome scene
 	Int randomNum = Utility.RandomInt(0, 100)
 
@@ -423,40 +478,5 @@ bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
 EndFunction
 
-ObjectReference Property _SD_SafetyDest  Auto  
-
-Outfit Property _SDO_sanguine_chosen  Auto  
-
-Outfit Property _SDO_naked  Auto  
-
-Armor Property _SDA_collar_blood  Auto  
-
-Armor Property _SDA_bindings  Auto  
-
-Armor Property _SDA_gag  Auto  
-
-Armor Property _SDA_sanguine_chosen  Auto  
-
-
-slaUtilScr Property slaUtil  Auto  
- 
-FormList Property _SD_sanguine_outfits  Auto  
-
-Faction Property _SDP_BunkhouseFaction  Auto  
-
-GlobalVariable Property _SDGVP_enslaved Auto
-GlobalVariable Property _SDGVP_enslavedSpriggan Auto
-GlobalVariable Property _SDGVP_gender_restrictions Auto
-ObjectReference Property _SD_DremoraChallenger  Auto  
-
-ReferenceAlias Property _SDRAP_redguard_girl  Auto  
-
-SPELL Property _SDSP_SanguineBound  Auto  
-
-GlobalVariable Property _SDGVP_sanguine_blessing auto
-
-
-
-Cell Property _SD_SanguineDreamworld  Auto  
 
 
