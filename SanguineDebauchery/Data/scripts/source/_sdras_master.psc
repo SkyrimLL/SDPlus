@@ -225,7 +225,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
 	Else
-		GoToState("combat")
+		; GoToState("combat")
 	EndIf
 EndEvent
 
@@ -234,9 +234,9 @@ Event OnLostLOS(Actor akViewer, ObjectReference akTarget)
 
 		If ( kMaster.GetDistance( kSlave ) > (_SDGVP_escape_radius.GetValue() / 4.0) )
 			; Debug.Notification( "[_sdras_master] Slave is too far or out of sight" )
-			If ( kMaster.GetCurrentScene() )
-				kMaster.GetCurrentScene().Stop()
-			EndIf
+			; If ( kMaster.GetCurrentScene() )
+			;	kMaster.GetCurrentScene().Stop()
+			; EndIf
 			enslavement.bSearchForSlave = True
 			GoToState("search")
 		EndIf
@@ -349,6 +349,7 @@ State monitor
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		kMaster = _SDRAP_master.GetReference() as Actor
 		if (!kMaster)  || ( !kMaster.Is3DLoaded() )
 			GoToState("monitor")
 		endif
@@ -429,7 +430,7 @@ State monitor
 
 		ElseIf ( kMaster.IsInCombat() || kSlave.IsInCombat() )
 			; Combat state
-			GoToState("combat")
+			; GoToState("combat")
 
 		ElseIf (   kSlave.IsWeaponDrawn() && ( bSlaveDetectedByMaster || bSlaveDetectedByTarget ))
 			; Slave is drawing a weapon in front of master
@@ -723,9 +724,9 @@ EndState
 State search
 	Event OnBeginState()
 		; Debug.Notification("[_sdras_master] Master starts searching for slave")
-		If ( kMaster.GetCurrentScene() )
-			kMaster.GetCurrentScene().Stop()
-		EndIf
+		; If ( kMaster.GetCurrentScene() )
+		;	kMaster.GetCurrentScene().Stop()
+		; EndIf
 		enslavement.bSearchForSlave = True
 		RegisterForLOS( kMaster, kSlave )
 		kMaster.EvaluatePackage()
@@ -740,9 +741,9 @@ State search
 	Event OnGainLOS(Actor akViewer, ObjectReference akTarget)
 		If (kMaster.GetDistance( kSlave ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2 ) )
 			; Debug.Notification("[_sdras_master] Master found slave")
-			If ( kMaster.GetCurrentScene() )
-				kMaster.GetCurrentScene().Stop()
-			EndIf
+			; If ( kMaster.GetCurrentScene() )
+			;	kMaster.GetCurrentScene().Stop()
+			; EndIf
 			; enslavement.bSearchForSlave = False
 			; kMaster.EvaluatePackage()
 		else
@@ -760,6 +761,7 @@ State search
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		kMaster = _SDRAP_master.GetReference() as Actor
 		
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in search - Stop enslavement")
@@ -785,6 +787,7 @@ State search
 EndState
 
 State combat
+	; Disabled in 3.5.9 because of abusive stack dumps - revisit later
 	Event OnBeginState()
 		; Debug.Notification("[_sdras_master] Master in combat")
 		If ( kMaster.GetCurrentScene() )
@@ -803,6 +806,7 @@ State combat
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		; EndWhile
+		kMaster = _SDRAP_master.GetReference() as Actor
 
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in combat- Stop enslavement")
@@ -838,6 +842,7 @@ State caged
 	Event OnUpdate()
 	;	While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 	;	EndWhile
+		kMaster = _SDRAP_master.GetReference() as Actor
 		
 		If ( !kMaster || kMaster.IsDisabled() )
 			Debug.Trace("[_sdras_master] Master dead in caged - Stop enslavement")

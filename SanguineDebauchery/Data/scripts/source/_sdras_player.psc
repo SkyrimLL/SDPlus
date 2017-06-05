@@ -284,22 +284,6 @@ Function _Maintenance()
  
 EndFunction
 
-Event OnCrosshairRefChange(ObjectReference ref)
-	ObjectReference PlayerREF= kPlayer
-	Actor PlayerActor= PlayerREF as Actor
-
-	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iSurrenderOn")==1)
-		If  (ref != none) && ( (ref as Actor) != none)
-
-			if (ref.GetVoiceType() != none) && (!(ref as Actor).IsDead())  ;is this an actor?
-				kCrosshairTarget = ref 
- 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderCrosshairUpdated", 1)
-				Debug.Trace("[SD] Looking at potential master - " + ref)
-			endif
-
-		EndIf
-	Endif
-EndEvent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= kPlayer
@@ -1758,6 +1742,22 @@ State surrender
 	EndEvent
 
 
+	Event OnCrosshairRefChange(ObjectReference ref)
+		ObjectReference PlayerREF= kPlayer
+		Actor PlayerActor= PlayerREF as Actor
+
+		If (StorageUtil.GetIntValue(PlayerActor, "_SD_iSurrenderOn")==1)
+			If  (ref != none) && ( (ref as Actor) != none)
+
+				if (ref.GetVoiceType() != none) && (!(ref as Actor).IsDead())  ;is this an actor?
+					kCrosshairTarget = ref 
+	 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderCrosshairUpdated", 1)
+					Debug.Trace("[SD] Looking at potential master - " + ref)
+				endif
+
+			EndIf
+		Endif
+	EndEvent
 
 	Event OnUpdate()
 		kCombatTarget = kPlayer.GetCombatTarget() as Actor

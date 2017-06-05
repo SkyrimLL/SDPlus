@@ -337,6 +337,8 @@ State monitor
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
 		; Debug.Notification("[SD] Punishment: " + fctOutfit.isPunishmentEquipped (  kSlave ) )
+		kMaster = _SDRAP_master.GetReference() as Actor
+
 		if (!kMaster) || ( !kMaster.Is3DLoaded() )
 			GoToState("monitor")
 		endif
@@ -725,6 +727,8 @@ State escape_choking
 		Debug.Trace( "[SD] Escape attempt - choking collar" )
 		Debug.Trace( "[SD] starting timer" )
 
+		kMaster = _SDRAP_master.GetReference() as Actor
+
 		freedomTimer ( 20 ) ; _SDGVP_escape_timer.GetValue() )
 		fEscapeTime = GetCurrentRealTime() + 20 ; forced to 30 s for choking - funct.intMin( StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer") as Int, _SDGVP_escape_timer.GetValue() as Int)
 		fEscapeUpdateTime = GetCurrentRealTime() + 5 ; update every 10 s 
@@ -807,6 +811,7 @@ State escape_choking
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 
+		kMaster = _SDRAP_master.GetReference() as Actor
 
 		_slaveStatusTicker()
 
@@ -1031,6 +1036,8 @@ State escape_shock
 		Debug.Trace( "[SD] Escape attempt - shock collar" )
 		Debug.Trace( "[SD] starting timer" )
 
+		kMaster = _SDRAP_master.GetReference() as Actor
+
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
 		kLeashCenter =  StorageUtil.GetFormValue(kSlave, "_SD_LeashCenter") as Actor
@@ -1134,6 +1141,7 @@ State escape_shock
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		kMaster = _SDRAP_master.GetReference() as Actor
 
 		_slaveStatusTicker()
 
@@ -1246,6 +1254,7 @@ State caged
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 
+		kMaster = _SDRAP_master.GetReference() as Actor
 		_slaveStatusTicker()
 		
 		If ( !_SDGVP_state_caged.GetValueInt() )

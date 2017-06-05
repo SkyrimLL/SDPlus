@@ -49,16 +49,22 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	ObjectReference lust_m = Alias__SDRA_lust_m.GetReference() as ObjectReference
 	Actor kPlayer = Game.GetPlayer() as Actor
 	Location kLocation = kPlayer.GetCurrentLocation()
+	Bool bSendToDreamworld = False
 
 	; Disabling for now - removes locked devices instead of cleaning up items in inventory that are not worn
 	; CleanupSlaveDevices(kPlayer)
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworld") == 1)
-		Debug.Trace("[_sdras_dreamer] Disabled by script")
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworld") == 1) 
+		Debug.Trace("[_sdras_dreamer] Dreamworld disabled by script")
 		Return
 	Endif
 
-	_SDGVP_sanguine_blessing.SetValue(StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") == 1)
+		Debug.Trace("[_sdras_dreamer] Dreamworld on Sleep disabled: " + StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep"))
+		Return
+	Endif
+
+	StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", _SDGVP_sanguine_blessing.GetValue() as Int)
 
 	Debug.Trace("[_sdras_dreamer] Auto start?: " + _SDGVP_config_auto_start.GetValue())
 	Debug.Trace("[_sdras_dreamer] Start after Night to remember?: " + _SDGVP_config_lust.GetValue())
@@ -66,59 +72,65 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Debug.Trace("[_sdras_dreamer] Chance on sleep: " + StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))
 	Debug.Trace("[_sdras_dreamer] Sanguine Blessing: " + _SDGVP_sanguine_blessing.GetValue())
 	Debug.Trace("[_sdras_dreamer] Number times enslaved: " + _SDGVP_stats_enslaved.GetValueInt())
-	Debug.Trace("[_sdras_dreamer] Dreamworld on Sleep disabled: " + StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep"))
+
+	If  (_SDGVP_config_auto_start.GetValue() == 1) && ( Self.GetOwningQuest().GetStage() == 0 ) && (_SDGVP_stats_enslaved.GetValueInt() > 0) && (_SDGVP_enslaved.GetValueInt() == 0) 
+		; First visit - Sleep after release from first enslavement and not currently enslaved
+
+		If  (_SDGVP_config_lust.GetValue()==1) && (ANightQuest.IsCompleted())   
+			Debug.Trace("[_sdras_dreamer]         Sleep after first enslavement and A Night to Remember" )
+			bSendToDreamworld = True
+
+		elseIf  (_SDGVP_config_lust.GetValue()==0)
+			Debug.Trace("[_sdras_dreamer]         Sleep after first enslavement only" )
+			bSendToDreamworld = True
+		Endif
+
+	elseif ( (_SDGVP_sanguine_blessing.GetValue() > 0) && (Utility.RandomInt(1,100)<  StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) )  
+		; Subsequent visits  
+		
+		Debug.Trace("[_sdras_dreamer]         Randomly sent to Dreamworld after first visit" )
+		; 	Debug.Notification("Reality slips away...")
+		; 	Debug.Notification("[dream] Sanguine finds you in your dream")
+ 		;	Game.FadeOutGame(true, true, 5.0, 10.0)
+		bSendToDreamworld = True
+
+	elseif ((kLocation) && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) )  
+		Debug.Trace("[_sdras_dreamer]         OnSleep event by location" )
+
+		If kLocation.IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(1,100)< (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ) * 2))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  
+			bSendToDreamworld = True
+		  	
+		elseif kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
+			bSendToDreamworld = True
+		EndIf
+	EndIf
 
 	; Disable Dreamworld on Sleep if delay option is checked and DA14 quest not done yet
 	If  ( (_SDGVP_config_lust.GetValue()==1) && (!ANightQuest.IsCompleted()) ) && (_SDGVP_config_auto_start.GetValue() == 1)
-		_SDGVP_sanguine_blessing.SetValue(-1)
-		
-	ElseIf (_SDGVP_sanguine_blessing.GetValue() == -1)
-		_SDGVP_sanguine_blessing.SetValue(0)
-
+		Debug.Trace("[_sdras_dreamer]         OnSleep event aborted (Night to remember not done yet)" )
+		bSendToDreamworld = False
+	
 	EndIf
 
-	If  ( ( _SDGVP_sanguine_blessing.GetValue() == 0 && ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && (_SDGVP_enslaved.GetValueInt() == 0)  ) ) || ( (_SDGVP_sanguine_blessing.GetValue() > 0) && (Utility.RandomInt(0,100)<=  StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) ) ) && (dbe.pSleepyTime != 1)  && (_SDGVP_config_auto_start.GetValue() == 1)  && (kPlayer.IsArrested() == False)
-		Debug.Trace("[_sdras_dreamer]         OnSleep event passed" )
+	; Abort dreamworld if player is arrested or sleeping during Dark Brotherhood quest
+	if (dbe.pSleepyTime == 1)  || (kPlayer.IsArrested() == True)
+		Debug.Trace("[_sdras_dreamer]         OnSleep event aborted (quest or arrested)" )
+		bSendToDreamworld = False
+	EndIf
 
-			; Debug.Notification("Reality slips away...")
-			; Debug.Notification("[dream] Sanguine finds you in your dream")
- 	;		Game.FadeOutGame(true, true, 5.0, 10.0)
-
+	; Send player to Dreamworld if true
+	If (bSendToDreamworld)
 		StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 
+		Debug.Trace("[_sdras_dreamer] Sanguine blessings" + _SDGVP_sanguine_blessing.GetValue())
+
 		If (_SDGVP_sanguine_blessing.GetValue() == 0) 
- 			startDreamworld()
+			
+			startDreamworld()
 
 		Else
 			_SD_dreamQuest.SetStage(15)
-		EndIf
 
-	;		Utility.Wait(1.0)
-
-	elseif (kLocation)  
-		Debug.Trace("[_sdras_dreamer]         OnSleep event by location" )
-
-		If kLocation.IsSameLocation(_SDLOC_HaelgaBasement) && (Utility.RandomInt(0,100)<= (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ) * 2))  && (_SDGVP_sanguine_blessing.GetValue() > 0)  && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworldOnSleep") != 1) 
-				
-			StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
-
-			_SDGVP_config_lust.SetValue(0)
-		  	_SD_dreamQuest.SetStage(15)
-		  	
-		elseif kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
-				StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
-				_SDGVP_config_lust.SetValue(0)
-
-				Debug.Trace("[_sdras_dreamer] Sanguine blessings" + _SDGVP_sanguine_blessing.GetValue())
-
-				If (_SDGVP_sanguine_blessing.GetValue() == 0) 
-					
-					startDreamworld()
-
-				Else
-					_SD_dreamQuest.SetStage(15)
-
-				EndIf
 		EndIf
 	else
 		Debug.Trace("[_sdras_dreamer]         OnSleep event failed" )
@@ -146,9 +158,9 @@ Event OnSleepStop(bool abInterrupted)
 EndEvent
 
 function startDreamworld()
+	_SDGVP_config_lust.SetValue(0)
 
 	If ( !kConfig._SDBP_quests_primary_running[1] && !kConfig._SDBP_quests_primary_running[2])
-		_SDGVP_config_lust.SetValue(0)
 		kConfig._SDBP_quests_primary_running[1] = True
 		kConfig._SDQP_quests_primary[1].Start()
 		kConfig._SDBP_quests_primary_running[2] = True
