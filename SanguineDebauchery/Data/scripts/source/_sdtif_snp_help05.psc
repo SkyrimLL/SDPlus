@@ -1,6 +1,15 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 1
+;NEXT FRAGMENT INDEX 2
 Scriptname _sdtif_snp_help05 Extends TopicInfo Hidden
+
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1(ObjectReference akSpeakerRef)
+Actor akSpeaker = akSpeakerRef as Actor
+;BEGIN CODE
+pFDS.Persuade(akSpeaker)
+;END CODE
+EndFunction
+;END FRAGMENT
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)
@@ -28,3 +37,5 @@ Spell Property _SDSP_freedom  Auto
 ReferenceAlias Property _SDRAP_player  Auto  
 GlobalVariable Property _SDKP_trust_hands  Auto  
 GlobalVariable Property _SDKP_trust_feet   Auto  
+
+FavorDialogueScript Property pFDS  Auto  

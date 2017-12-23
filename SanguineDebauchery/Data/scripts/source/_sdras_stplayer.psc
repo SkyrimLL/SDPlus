@@ -60,6 +60,10 @@ EndFunction
 Event OnUpdate()
  	Actor PlayerActor= Game.GetPlayer() as Actor
 
+	If (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==0)
+		Return
+	endif
+
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
@@ -96,7 +100,21 @@ Event OnPlayerAlicia(String _eventName, String _args, Float _argc = -1.0, Form _
 
 	SLS_PlayerAliciaQuest.SetStage(10)
 
+	; Equip with sanguine bindings only
+	; Rest of gear is normal
+	; 	- restrictive collar
+	; 	- harness or corset
+	; 	- boots
 
+	PlayerActor.SendModEvent("SDEquipDevice",   "Collar:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Corset:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Boots:restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Gag:harness,ring")
+	; PlayerActor.SendModEvent("SDEquipDevice",   "Blindfold")
+	; PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs")
+
+	RegisterForSingleUpdate(10)
 
 EndEvent
 

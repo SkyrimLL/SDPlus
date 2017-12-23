@@ -220,6 +220,9 @@ Function CollarEffectFinish(Actor akTarget, Actor akCaster)
 EndFunction
 
 Function CollarUpdate()
+	Bool bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
+	Bool bIsArmbinderEquipped = fctOutfit.isArmbinderEquipped( kPlayer ) 
+
 	If (!kMaster) || (!kTarget)  || (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryCollarOn") == 0)
 		Return
 	EndIf
@@ -243,7 +246,7 @@ Function CollarUpdate()
 		; Debug.Notification("[_sdmes_bound.psc] Sleep type: " +  StorageUtil.GetIntValue(kPlayer, "_SD_iSleepType"))
 		; Debug.Notification("[_sdmes_bound.psc] Sleep pose: " +  StorageUtil.GetStringValue(kPlayer, "_SD_sSleepPose"))
 
-		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") || (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 1)
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 1)
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC011") ; HandsBehindLieFaceDown
@@ -262,7 +265,7 @@ Function CollarUpdate()
 
 			endif
 			
-		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") && ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.isArmbinderEquipped( kPlayer ) ) 
+		ElseIf (( !bIsArmbinderEquipped  ) && (!bIsYokeEquipped) ) 
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC020") ; 		HandsBehindKneelBowDown
@@ -281,27 +284,6 @@ Function CollarUpdate()
 
 			endif
 
-		ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing") && ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.hasTagByString ( kPlayer, "Armbinders", "leather") )
-			if(sleepType == 1) ; Kneeling
-				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO023") ;   AnimObjectZazAPCAO023		Vertical Pillory
-
-			elseif(sleepType == 2) ; Sitting	
-				; Debug.MessageBox("Your owner accepts to let you sit for a while. ")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO024") ;   AnimObjectZazAPCAO024		Wooden Horse
-
-			elseif(sleepType == 3) ; Sleeping sideway
-				; Debug.MessageBox("You are allowed to lie down and sleep for a while. ")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO009") ;    AnimObjectZazAPCAO009		PilloryIdle
-
-			elseif(sleepType == 4) ; Sleeping 
-				; Debug.MessageBox("Your owner lets you sleep on the ground. ")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO025") ;   AnimObjectZazAPCAO025		X Cross
-
-			endif
-
-		ElseIf ( !fctOutfit.isYokeEquipped( kPlayer )  ) && (!fctOutfit.isArmbinderEquipped( kPlayer ) )
-			StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPCAO009") ; default sleep pose - pillory idle
 		EndIf
 	EndIf
 	
@@ -315,40 +297,40 @@ Function CollarUpdate()
 	;	StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
 	; EndIf
 
-	If fctOutfit.isYokeEquipped( kPlayer ) && fctOutfit.isArmbinderEquipped( kPlayer ) 
+	; this shouldn't happen - clear armbinder if it did happen
+	If bIsYokeEquipped && bIsArmbinderEquipped
 		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
 	Endif
 
-	If ( fctOutfit.isYokeEquipped( kPlayer ) || fctOutfit.isArmbinderEquipped( kPlayer ) )
-		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") 
-			fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
-			fctOutfit.clearDeviceByString ( sDeviceString = "Yoke" )
-		Endif
+	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
+	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 1)
+	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 1)
 
-		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") && ( fctOutfit.isYokeEquipped( kPlayer ) || fctOutfit.hasTagByString ( kPlayer, "Armbinders", "leather") )
-			StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
-			StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
-			StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 1)
-		Endif
-	EndIf
-
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 0) && fctOutfit.isYokeEquipped( kPlayer ) 
+	If bIsYokeEquipped
 	;	Debug.Notification("[SD] Yoke detected" )
-		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 1)
-		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
-		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
-		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 1)
+		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 0)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 0)
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
+		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
 		
-	ElseIf (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling") == 1) && (fctOutfit.isArmbinderEquipped( kPlayer ) || fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSanguine", "Armbinder"  ) ) && !fctOutfit.isYokeEquipped( kPlayer ) 
+	ElseIf bIsArmbinderEquipped
 	;	Debug.Notification("[SD] SD cuffs detected" )
-		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 0)
-		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 0)
-		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 0)
-		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Kneeling" ) 
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 0)
+		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 0)
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 0)
+		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Kneeling" ) 
 
 	EndIf
 
-	If !kPlayer.GetCurrentScene() && !kPlayer.IsOnMount() && (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
+	; Force disabling of auto kneeling code for now - player should be able to cycle through kneeling, standing and cawling manually and suffer consequences if master doesn't allow them to stand 
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
+	Endif
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) &&  (!kPlayer.GetCurrentScene()) && (!kPlayer.IsOnMount()) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
 
 		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
 		;	togglePlayerControlsOff()
@@ -370,7 +352,7 @@ Function CollarUpdate()
 				
 			EndIf
 
-			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) && fctOutfit.isCollarEquipped( kPlayer )
+			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) 
 
 				If ( (Utility.RandomInt( 0, 200 ) >= 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")
 					Debug.Notification( "The collar forces you down on your knees." )
@@ -401,6 +383,8 @@ Function CollarUpdate()
 		Else
 			UpdateStanceOverrides()
 		EndIf
+	Else
+		UpdateStanceOverrides()
 	EndIf
 
 EndFunction

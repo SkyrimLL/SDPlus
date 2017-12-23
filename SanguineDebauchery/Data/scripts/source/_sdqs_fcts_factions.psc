@@ -125,6 +125,31 @@ Function initBeastMastersList (  )
 
 EndFunction
 
+Function initGenericMaster ( Actor kActor )
+	Form kForm = kActor.GetRace()
+	String sGenericRaceType
+	Debug.Trace("[SD] Register custom NPC race for generic master")	
+
+	If (checkIfNPC ( kActor ))
+		sGenericRaceType = "Humanoid"
+	Else
+		sGenericRaceType = "Beast"
+	Endif
+
+	if (StorageUtil.FormListFind( none, "_SD_lRaceMastersList", kForm) <0)
+		StorageUtil.FormListAdd( none, "_SD_lRaceMastersList", kForm)  
+
+		StorageUtil.SetIntValue(kForm, "_SD_iSlaveryRace", 1)
+		StorageUtil.SetStringValue( kForm, "_SD_sRaceType", sGenericRaceType)  
+		StorageUtil.SetStringValue( kForm, "_SD_sRaceName", kForm.GetName())   
+		initSlaveryFactionForThisRace ( kForm )
+		Debug.Trace("		Adding Form " + kForm)
+	endif
+
+	Debug.Trace("[SD] Register race masters list - count : " + StorageUtil.FormListCount( none, "_SD_lRaceMastersList"))
+
+EndFunction
+
 Function initSlaveryFactionByRace (  )
 ; 	For each race in master races storageUtil
 ;		registerSlaveryOptions( Race, allowCollar, allowArmbinders, allowPunishmentDevice, allowPunishmentScene, allowWhippingScene, defaultStance )
@@ -134,14 +159,20 @@ Function initSlaveryFactionByRace (  )
 	Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
 	int i = 0
 	Form thisRace
-	String sRaceName
- 
+
  	Debug.Trace("[SD] Registering race factions")
 
 	while(i < valueCount)
 		thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
-		sRaceName = thisRace.GetName()
-		Debug.Trace("	Race [" + i + "] = " + sRaceName)
+		
+		Debug.Trace("	Race [" + i + "] = " + thisRace.GetName())
+		initSlaveryFactionForThisRace ( thisRace )
+		i += 1
+	endwhile
+EndFunction
+
+Function initSlaveryFactionForThisRace ( Form thisRace )
+	String sRaceName = thisRace.GetName()
 
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
 			; Falmer   
@@ -188,6 +219,10 @@ Function initSlaveryFactionByRace (  )
 			ElseIf (StringUtil.Find(sRaceName, "Draugr")!= -1)
 				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", DraugrFaction) 
 
+			; Generic beast    
+			Else
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", HagravenFaction) 
+
 			endif
 		endIf
 
@@ -228,12 +263,14 @@ Function initSlaveryFactionByRace (  )
 			ElseIf (StringUtil.Find(sRaceName, "Dremora")!= -1)
 				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", DremoraFaction) 
 
+			; Generic humanoid
+			Else
+				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", RedguardFaction) 
+
 			endif
 		endif
-
-		i += 1
-	endwhile
 EndFunction
+
 
 ;---------------------------------------------------
 
@@ -861,6 +898,28 @@ Function displaySlaveFactions( Actor akSlave )
 		daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
 
 		Debug.Trace("[SD]      Slave Faction[" + i + "] = " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined  + " - Days remaining: " + (StorageUtil.GetIntValue( akSlave, "_SD_iDaysMaxJoinedFaction") - daysJoined  ) )
+
+		i += 1
+	endwhile
+EndFunction
+
+Bool Function isInSlaveFactions( Actor akActor )
+	; // iterate list from first added to last added
+	; Debug.Trace("[SD] List Slave Factions")
+	Actor akSlave = Game.getPlayer()
+	int currentDaysPassed = Game.QueryStat("Days Passed")
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
+	int i = 0
+	int daysJoined 
+	Form slaveFaction 
+	Bool bInSlaveFaction = False
+
+	while((i < valueCount) && (!bInSlaveFaction))
+		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+
+		if (akActor.IsInFaction( slaveFaction as Faction ))
+			bInSlaveFaction = True
+		Endif
 
 		i += 1
 	endwhile

@@ -307,7 +307,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", True)
 
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableStand", 0)
-	UpdateSlavePrivilege(kSlave, "_SD_iEnableStand", False)
+	UpdateSlavePrivilege(kSlave, "_SD_iEnableStand", True)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableKneel", True)
 	UpdateSlavePrivilege(kSlave, "_SD_iEnableCrawl", True)
 	; StorageUtil.SetIntValue(kSlave, "_SD_iEnableMovement", 0)
@@ -901,9 +901,9 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold")
 
 	if (masterTrust>0)
-		ModMasterTrust(kMaster, 6)
+		ModMasterTrust(kMaster, 1)
 	else
-		ModMasterTrust(kMaster, -6)
+		ModMasterTrust(kMaster, -1)
 	endif
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
@@ -981,19 +981,32 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		statusDominance = "Defiant \n"
 	Endif
 
-	String statusMessage = "It's a new day as a slave.\n Today your owner needs .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust  + "Disposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +")"+ "\nTrust: " + masterTrust 
+	String statusMessage = "It's a new day as a slave." 
+
+	; Keeping these messages for (simplified) display 
+	statusMessage =  statusMessage + "\nDisposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +"/"+ StorageUtil.GetIntValue(kMaster, "_SD_iDispositionThreshold") +")"
+	statusMessage =  statusMessage + "\nDays enslaved: " + (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") as Int) + "/" +  (StorageUtil.GetFloatValue(kMaster, "_SD_iMinJoinDays") as Int)
+	statusMessage =  statusMessage + "\nBuyout gold left: " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)
+
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")>0)
 		statusMessage =  statusMessage + "\nAllowance: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  + " hours free."
 	else
 		statusMessage =  statusMessage + "\nAllowance: " + -1 * StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  + " hours owed."
 	EndIf
 
+	statusMessage =  statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")"
+	statusMessage =  statusMessage + "\nSlavery level: " + slaveryLevel 
+
 	If (bDisplayStatus)
-		Debug.Messagebox(statusMessage + "\nYou are mostly " + statusDominance + " (" + iDominance + ")" + "\nSlavery level: " + slaveryLevel + "\n (Exposure: " + exposure + ")")
+		Debug.Messagebox(statusMessage)
 	Endif
 
 	; StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryStatus", statusMessage)
 
+	; Keeping these messages for trace only
+	statusMessage =  statusMessage + "\n Today your owner needs .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust
+	statusMessage =  statusMessage + "\nTrust: " + masterTrust 
+	statusMessage =  statusMessage + "\n (Exposure: " + exposure + ")"
 
 	Debug.Trace("[SD] --- Slavery update" )
 	Debug.Trace("[SD] " + statusMessage)
@@ -1003,7 +1016,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood") + " - Need: " + masterFoodNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
 	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Personality Type: " + masterPersonalityType)
-	Debug.Trace("[SD] Master: OverallDisposition: " + overallMasterDisposition )
+	Debug.Trace("[SD] Master: Overall Disposition: " + overallMasterDisposition )
 	Debug.Trace("[SD] Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
@@ -1117,28 +1130,43 @@ function DisplaySlaveryLevelObjective( Actor kMaster, Actor kSlave, Quest qSlave
 EndFunction
 
 Int Function ModMasterTrust(Actor kMaster, int iModValue)
+	Actor kPlayer = Game.GetPlayer()
 	Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
+	Int iMaxTrust = 50
+	Int iMinTrust = -50
 
-	If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 0)
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 		; Catch calls when slave has been released
 		Return iTrust
+	Endif
+
+	; double penalty if player is not in same cell as master
+	If (kPlayer.GetParentCell() != kMaster.GetParentCell())
+		iModValue = iModValue * 2
 	Endif
 
 	Debug.Trace("[SD] Trust pool before update: " + iTrust)
 
 	iTrust = iTrust + iModValue
 
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")>2)
+		iMaxTrust = 75
+		iMinTrust = -10
+	else
+		iMaxTrust = 10
+		iMinTrust = -75
+	endif
 
-	if (iTrust>120) ; 5 days * 24 hours = 120 points
-		iTrust = 120
-	elseif (iTrust<-120)
-		iTrust = -120
+	if (iTrust>iMaxTrust) ; 2 days * 24 hours = 48 points
+		iTrust = iMaxTrust
+	elseif (iTrust<iMinTrust)
+		iTrust = iMinTrust
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
 	Debug.Notification("Slave allowance points: " + iTrust)
 
-	Debug.Trace("[SD] Trust pool after update: " + iTrust)
+	Debug.Trace("[SD] Trust pool after update: " + iTrust + "(Min:" + iMinTrust + " / Max:" + iMaxTrust + ")")
 
 	Return iTrust
 EndFunction
@@ -1284,7 +1312,7 @@ Function PickNextTask(Actor kSlave)
 
 	If (fMasterDistance >= 900)
 		Debug.Notification("Your owner is too far to check in on you.")
-		ModMasterTrust(kMaster, -10) ; Master is disappointed
+		ModMasterTrust(kMaster, -1) ; Master is disappointed
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  -1  )  
 		_SDGVP_CurrentTaskStatus.SetValue(-1)  ; -1 fail / 0 started / 1 completed
 		StorageUtil.SetFloatValue(kSlave, "_SD_fCurrentTaskStartDate",  Game.QueryStat("Days Passed")  )

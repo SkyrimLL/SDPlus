@@ -189,16 +189,53 @@ Function initSlaveryGearByRace (  )
 
 	Int valueCount = StorageUtil.FormListCount(none, "_SD_lRaceMastersList")
 	int i = 0
-	Int slaveTatColor = 0 
 	Form thisRace
-	String sRaceName
  
  	Debug.Trace("[SD] Registering racial slavery gear")
 
 	while(i < valueCount)
 		thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
+		Debug.Trace("	Race [" + i + "] = " + thisRace.GetName())
+		initSlaveryGearForThisRace ( thisRace )
+		i += 1
+	endwhile
+EndFunction
+
+Function initSlaveryGearByActor ( Actor kActor )
+	Form thisRace = kActor.GetRace()
+
+	; Add race to potential slavers if not in list yet
+	fctFactions.initGenericMaster ( kActor )
+
+	; Init slavery gear for that race
+	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
+		registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+	Else
+		registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Redguard Scrawl (belly)" )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,padded,zap" )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,padded,zap" )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,iron"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather"  )
+	EndIf
+EndFunction
+
+Function initSlaveryGearForThisRace ( Form thisRace )
+	String sRaceName
+	Int slaveTatColor = 0 
+
 		sRaceName = thisRace.GetName()
-		Debug.Trace("	Race [" + i + "] = " + sRaceName)
 
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
 			; Falmer   
@@ -410,10 +447,8 @@ Function initSlaveryGearByRace (  )
 
 			endif
 		endif
-
-		i += 1
-	endwhile
 EndFunction
+
 
 Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbinders, Bool allowPunishmentDevice, Bool allowPunishmentScene, Bool allowWhippingScene, String defaultStance, String raceSlaveTat, Int raceSlaveTatDuration = 0 , Int raceSlaveTatColor = 0, Int raceSlaveTatGlow = 0 )
 ; 	For this Race
@@ -427,12 +462,12 @@ Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbin
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryPunishmentOn", allowPunishmentDevice as Int)
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryPunishmentSceneOn", allowPunishmentDevice as Int)
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryWhippingSceneOn", allowPunishmentDevice as Int)
-	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryDefaultStance", defaultStance)
-	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTat", raceSlaveTat)
-	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTatType", "SD+")
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatDuration", raceSlaveTatDuration )
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatColor", raceSlaveTatColor )
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatGlow", raceSlaveTatGlow )
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryDefaultStance", defaultStance)
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTat", raceSlaveTat)
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTatType", "SD+")
 
 EndFunction
 
@@ -1564,9 +1599,8 @@ Function addPunishmentDevice(String sDevice)
 		clearDeviceByString ( sDeviceString = "Belt")
 		equipDeviceByString ( sDeviceString = "PlugAnal")
 		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
 
-	If (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
+	ElseIf (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner smiles wickedly and shoves a cold plug into your abused womb." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
 		
@@ -1576,46 +1610,41 @@ Function addPunishmentDevice(String sDevice)
 		clearDeviceByString ( sDeviceString = "Belt")
 		equipDeviceByString ( sDeviceString = "PlugVaginal")
 		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
 
-	; Belt
-	If (sDevice == "Belt")  ; && (isMasterSpeaking==1)
+	ElseIf (sDevice == "Belt")  ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
 		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	; Blinds
-	If (sDevice == "Blindfold")
+	
+	ElseIf (sDevice == "Blindfold")
 		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
 		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
 		equipDeviceByString ( sDeviceString = "Blindfold")
-	EndIf
 
-	; Gag
-
-	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
+	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
 		equipDeviceByString ( sDeviceString = "Gag")
 
-	EndIf
-
-	; Yoke
-
-	If (sDevice == "Yoke") ; && (isMasterSpeaking==1)
+	ElseIf (sDevice == "Yoke") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
 		clearDeviceByString ( sDeviceString = "Armbinder")
 		equipDeviceByString ( sDeviceString = "Yoke")
+
+	Else ; generic punishment
+		; Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: " + sDevice )
+
+		equipDeviceByString ( sDeviceString = sDevice)
 
 	EndIf
 
@@ -1641,9 +1670,8 @@ Function removePunishmentDevice(String sDevice)
 		clearDeviceByString ( sDeviceString = "Belt")
 		clearDeviceByString ( sDeviceString = "PlugAnal")
 		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
 
-	If (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
+	ElseIf (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
 			
@@ -1653,35 +1681,33 @@ Function removePunishmentDevice(String sDevice)
 		clearDeviceByString ( sDeviceString = "Belt")
 		clearDeviceByString ( sDeviceString = "PlugVaginal")
 		equipDeviceByString ( sDeviceString = "Belt")
-	EndIf
 
-	; Belt
-	If (sDevice == "Belt") ; && (isMasterSpeaking==1)
+	ElseIf (sDevice == "Belt") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
 			
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		clearDeviceByString ( sDeviceString = "Belt")
-	EndIf
-
-	; Blinds
-	If (sDevice == "Blindfold")
+	
+	ElseIf (sDevice == "Blindfold")
 		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
 			
 		; setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
 		clearDeviceByString ( sDeviceString = "Blindfold")
-	EndIf
-
-	; Gag
-
-	If (sDevice == "Gag") ; && (isMasterSpeaking==1)
+	
+	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
 
 		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
 		clearDeviceByString ( sDeviceString = "Gag")
+	Else
+		; Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: " + sDevice )
 
+		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = sDevice)
 	EndIf
 
 EndFunction

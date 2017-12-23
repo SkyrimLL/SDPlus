@@ -59,18 +59,24 @@ Event OnInit()
 	If ( kCompanion ) && (kCompanion!=kMaster)
 		Debug.Trace("[_sdras_companion]     Follower name is being enslaved : " + kCompanion.GetName()) 
 		Debug.Trace("[_sdras_companion]     		Follower ID : " + kCompanion ) 
-		GoToState("monitor")
-		bEnslaved = False
-		kCompanion.SetNoBleedoutRecovery( True )
-		; kCompanion.StartCombat( kMaster )
-		kCompanion.AddToFaction( _SDFP_slaverResistance )
 
-		; Force proper enslavement of companions for now - add better behaviors later
-		enslaveCompanion(  kCompanion )
+		If (kCompanion.IsChild())
+			Debug.Trace("[_sdras_companion]     Follower is a child - Aborting") 
+			GoToState("null")
+		Else
+			GoToState("monitor")
+			bEnslaved = False
+			kCompanion.SetNoBleedoutRecovery( True )
+			; kCompanion.StartCombat( kMaster )
+			kCompanion.AddToFaction( _SDFP_slaverResistance )
 
-		RegisterForSingleUpdate( fRFSU )
+			; Force proper enslavement of companions for now - add better behaviors later
+			enslaveCompanion(  kCompanion )
+
+			RegisterForSingleUpdate( fRFSU )
+		EndIf
 	Else
-		Debug.Trace("[_sdras_companion]     Follower isn't initialized") 
+		Debug.Trace("[_sdras_companion]     Follower isn't initialized - Aborting") 
 		GoToState("null")
 	EndIf
 EndEvent

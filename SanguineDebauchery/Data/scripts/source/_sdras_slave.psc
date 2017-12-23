@@ -176,6 +176,8 @@ Event OnInit()
 	kMaster = _SDRAP_master.GetReference() as Actor
 	kSlave = _SDRAP_slave.GetReference() as Actor
 
+	_slaveStatusInit()
+	
 	fctConstraints.CollarEffectStart(kSlave, kMaster)
 
 	If ( Self.GetOwningQuest() )
@@ -199,6 +201,61 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	EndIf
 EndEvent
  
+Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
+	Weapon krHand = kSlave.GetEquippedWeapon()
+	Weapon klHand = kSlave.GetEquippedWeapon( True )
+
+	If ( !kMaster )
+		kMaster = _SDRAP_master.GetReference() as Actor
+	EndIf
+
+	; most likely to happen on a pickpocket failure.
+	If ( (aeCombatState != 0) && (fctFactions.isInSlaveFactions( akTarget ) ) )
+		Debug.Messagebox( "Your collar compels you to drop your weapon when attacking your owner's allies." )
+
+		; Drop current weapon 
+		if(kSlave.IsWeaponDrawn())
+			kSlave.SheatheWeapon()
+			Utility.Wait(2.0)
+		endif
+
+		If ( krHand )
+		;	kSlave.DropObject( krHand )
+			kSlave.UnequipItem( krHand )
+		EndIf
+		If ( klHand )
+		;	kSlave.DropObject( klHand )
+			kSlave.UnequipItem( klHand )
+		EndIf
+
+		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+			Debug.Trace( "[_sdras_master] Punishment for hitting master friends - Yoke" )
+			enslavement.PunishSlave(kMaster,kSlave,"Yoke")
+		endif
+
+		If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+			; add punishment
+			Int iRandomNum = Utility.RandomInt(0,100)
+
+			if (iRandomNum > 70) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
+				; Whipping
+			 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
+			 	; kMaster.SendModEvent("PCSubWhip") 
+				funct.SanguineWhip( kMaster )
+
+			Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+				; Punishment
+			 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
+			 	; kMaster.SendModEvent("PCSubPunish") 
+				funct.SanguinePunishment( kMaster )
+
+			Else
+			 	kMaster.SendModEvent("PCSubSex","Rough") 
+
+			EndIf
+		Endif
+	EndIf
+EndEvent
 
 Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
 
@@ -482,8 +539,8 @@ State monitor
 
 			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
 
-				GoToState("escape_choking")	
-
+				; GoToState("escape_choking")	
+				GoToState("escape_shock")
  
 			Else
 				; If distance based leash is Off, switch to time buffer leash instead
@@ -1065,6 +1122,7 @@ State escape_shock
 		; SD 3.3 - testing Master searching for slave during collar events
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			enslavement.bSearchForSlave = True
+			fctSlavery.ModMasterTrust( kMaster, -1  ); deduct 1 from trust allowance for the day
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 				kCrimeFaction = kMaster.GetCrimeFaction()
@@ -1113,7 +1171,7 @@ State escape_shock
 
 				endIf
 
-				if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+				if (Utility.RandomInt(0,100)>90) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					; Punishment
 					; 
 					if (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
@@ -1275,9 +1333,17 @@ State caged
 	EndEvent
 EndState
 
+Function _slaveStatusInit()
+	StorageUtil.SetIntValue(kMaster, "_SD_iDispositionThreshold", _SDGVP_config_disposition_threshold.GetValue() as Int) 
+	StorageUtil.SetFloatValue(kMaster, "_SD_iMinJoinDays", _SDGVP_join_days.GetValue() as Int) 
+	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
+	StorageUtil.SetFloatValue(kMaster, "_SD_iMasterBuyOut", fBuyout ) 
+EndFunction
+
 Function _slaveStatusTicker()
 	; Update slave status if needed
 	Float fSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") as Float
+	Int iPunishmentCheck = 0 
 
  	daysPassed = Game.QueryStat("Days Passed")
  	timePassed = Utility.GetCurrentGameTime()
@@ -1303,6 +1369,14 @@ Function _slaveStatusTicker()
 
 			fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
 			HourlyTickerLastCallTime = timePassed
+
+			; Check punishment status every 6 hours
+			iPunishmentCheck = iPunishmentCheck + 1
+
+			if (iPunishmentCheck==6)
+				enslavement.CheckSlavePunishment( kSlave )
+				iPunishmentCheck = 0
+			Endif
 		endif
 	Else ; day change - full update
 		Debug.Trace( "[SD] Slavery status - daily update")
@@ -1315,12 +1389,18 @@ Function _slaveStatusTicker()
 
 		StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
 		StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
+
+		StorageUtil.SetIntValue(kMaster, "_SD_iDispositionThreshold", _SDGVP_config_disposition_threshold.GetValue() as Int) 
+		StorageUtil.SetFloatValue(kMaster, "_SD_iMinJoinDays", _SDGVP_join_days.GetValue() as Int) 
+
 		_SDGVP_config_min_days_before_master_travel.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iMasterTravelDelay"))
 
-		If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
-			Debug.Trace( "[SD] Master is bored - starting travel package")
-			_SDGVP_isMasterTraveller.SetValue(1)
-		endif
+		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
+			If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
+				Debug.Trace( "[SD] Master is bored - starting travel package")
+				_SDGVP_isMasterTraveller.SetValue(1)
+			endif
+		Endif
 
 		; Cooldown at end of day
 		If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") <= -2 )
@@ -1340,6 +1420,8 @@ Function _slaveStatusTicker()
 		EndIf
 
 		; Safety - removal of punishments after one day
+		enslavement.CheckSlavePunishment( kSlave )
+
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
 			enslavement.RewardSlave(kMaster,kSlave,"Gag")
 			enslavement.RewardSlave(kMaster,kSlave,"Yoke")
@@ -1356,8 +1438,8 @@ Function _slaveStatusTicker()
 		endif
 
 		If (StorageUtil.GetIntValue( kSlave  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kSlave  , "_SD_iEnableAction") == 1) 
-				StorageUtil.SetIntValue( kSlave  , "_SD_iHandsFree", 1 )
-				StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
+			StorageUtil.SetIntValue( kSlave  , "_SD_iHandsFree", 1 )
+			StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
 		Endif
 
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (!kSlave.GetCurrentScene()) && (Utility.RandomInt(0,100)>60)   
@@ -1379,6 +1461,9 @@ Function _slaveStatusTicker()
 
 	EndIf
 
+	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
+	StorageUtil.SetFloatValue(kMaster, "_SD_iMasterBuyOut", fBuyout ) 
+
 	enslavement.UpdateSlaveState(kMaster ,kSlave)
 	enslavement.UpdateSlaveFollowerState(kSlave)
 
@@ -1392,7 +1477,6 @@ Function _slaveStatusTicker()
 		fEscapeLeashLength = funct.floatMin( _SDGVP_escape_timer.GetValue(), (StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer" ) ) as Float )
 	EndIf
 
-	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
 	fEnslavementDuration = fctSlavery.GetEnslavementDuration( kSlave)
 	StorageUtil.SetFloatValue(kSlave, "_SD_fEnslavementDuration", fEnslavementDuration ) 
 	_SDGVP_isLeashON.SetValue( StorageUtil.GetIntValue(kSlave, "_SD_iEnableLeash") as Int )

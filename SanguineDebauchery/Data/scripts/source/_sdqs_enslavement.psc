@@ -297,17 +297,23 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	Debug.Trace("[SD] You are chained and collared.")
 	Debug.Notification("You are chained and collared.")
 
+	StorageUtil.FormListClear( kSlave, "_SD_lActivePunishmentDevices" )
+
 	if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
 		fctOutfit.equipDeviceByString ( "Collar" )
 		fctOutfit.lockDeviceByString( kSlave,  "Collar")
 	EndIf
 
-	if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
-		fctOutfit.equipDeviceByString ( "Armbinder" )
-	EndIf
-	if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
-		fctOutfit.equipDeviceByString ( "LegCuffs" )
-	EndIf
+	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
+		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+			; fctOutfit.equipDeviceByString ( "Armbinder" )
+			PunishSlave(kMaster, kSlave, "Armbinder")
+		EndIf
+		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+			; fctOutfit.equipDeviceByString ( "LegCuffs" )
+			PunishSlave(kMaster, kSlave, "LegCuffs")
+		EndIf
+	Endif
 
 	; if  (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
 	;	PunishSlave( kMaster,  kSlave, "Gag")
@@ -330,8 +336,8 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	kMaster.SendModEvent("PCSubStatus")
 	kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
-	ScanSlavePunishment(kSlave)
-
+	; ScanSlavePunishment(kSlave)
+	CheckSlavePunishment(kSlave)
 EndFunction
 
 Function TransferSlave(Actor akOldMaster, Actor akNewMaster, Actor akSlave)
@@ -346,8 +352,13 @@ Function TransferSlave(Actor akOldMaster, Actor akNewMaster, Actor akSlave)
 
 	EnslavePlayer(akNewMaster, akSlave, _SDGVP_config[3].GetValue() as Bool)
 
-	oldMasterRef.RemoveItem(keyRef as Form, 1, true, akNewMaster as ObjectReference)
-	oldMasterRef.RemoveItem(cropRef as Form, 1, true, akNewMaster as ObjectReference)
+	; Find a way to add missing key / crop for transfer from creature to human master
+	if (keyRef != None)
+		oldMasterRef.RemoveItem(keyRef as Form, 1, true, akNewMaster as ObjectReference)
+	EndIf
+	if (cropRef != None)
+		oldMasterRef.RemoveItem(cropRef as Form, 1, true, akNewMaster as ObjectReference)
+	Endif
 EndFunction
 
 ; Auto State enslaved
@@ -364,44 +375,57 @@ EndFunction
 
 Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 
-	If (akSlave == Game.GetPlayer()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
+	If (akSlave == Game.GetPlayer())
+		If (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1)
 
-		fTimeEnslaved = GetCurrentGameTime() - fEnslavementStart
-		
-		If ( _SDGVP_demerits.GetValueInt() < uiLowestDemerits )
-			uiLowestDemerits = _SDGVP_demerits.GetValueInt()
-		EndIf
-		If ( _SDGVP_demerits.GetValueInt() > uiHighestDemerits )
-			uiHighestDemerits = _SDGVP_demerits.GetValueInt()
-		EndIf
-		ufMedianDemerits = ( uiHighestDemerits + uiLowestDemerits ) / 2
-		
-		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
-		Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
-		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
-		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
-
-		If (fPunishmentDuration > 0)
-			; Debug.Trace("[SD]   Punishment time:" + fPunishmentRemainingtime  )
-
-			; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
-			; Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
-			; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
-			; Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance + " - Leash: " + StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
-
-			If ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
-
-				If (!RewardSlave(  akMaster,   akSlave, "Gag"))
-					Debug.Trace("[SD] Clear punishment duration")
-					StorageUtil.SetFloatValue(akSlave, "_SD_fPunishmentDuration",0.0)
-				EndIf
-
-			ElseIf ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
-				; Debug.Notification("Your owner is too far to remove your punishment.")
-			Else
-				; Debug.Trace("Your punishment is not over yet.")
+			fTimeEnslaved = GetCurrentGameTime() - fEnslavementStart
+			
+			If ( _SDGVP_demerits.GetValueInt() < uiLowestDemerits )
+				uiLowestDemerits = _SDGVP_demerits.GetValueInt()
 			EndIf
+			If ( _SDGVP_demerits.GetValueInt() > uiHighestDemerits )
+				uiHighestDemerits = _SDGVP_demerits.GetValueInt()
+			EndIf
+			ufMedianDemerits = ( uiHighestDemerits + uiLowestDemerits ) / 2
+			
+			Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentGameTime")
+			Float fPunishmentDuration = StorageUtil.GetFloatValue(akSlave, "_SD_fPunishmentDuration")
+			float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
+			float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
+
+			If (fPunishmentDuration > 0)
+				; Debug.Trace("[SD]   Punishment time:" + fPunishmentRemainingtime  )
+
+				; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
+				; Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
+				; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
+				; Debug.Trace("[SD]   fMasterDistance:" + fMasterDistance + " - Leash: " + StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
+
+				If ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
+
+					If (!RewardSlave(  akMaster,   akSlave, "Gag"))
+						Debug.Trace("[SD] Clear punishment duration")
+						StorageUtil.SetFloatValue(akSlave, "_SD_fPunishmentDuration",0.0)
+					EndIf
+
+				ElseIf ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(akSlave, "_SD_iLeashLength"))
+					; Debug.Notification("Your owner is too far to remove your punishment.")
+				Else
+					; Debug.Trace("Your punishment is not over yet.")
+				EndIf
+			EndIf
+
 		EndIf
+
+		; Variables for inter-mod compatibility now that DD doesn't support ZAP keywords any more
+		If (fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(akSlave, "_SD_iDeviousCollarOn") == 0)
+			StorageUtil.SetIntValue(akSlave, "_SD_iDeviousCollarOn", 1)
+		EndIf
+
+		If (fctOutfit.isGagEquipped(kSlave)) && (StorageUtil.GetIntValue(akSlave, "_SD_iDeviousGagOn") == 0)
+			StorageUtil.SetIntValue(akSlave, "_SD_iDeviousGagOn", 1)
+		EndIf
+
 	Else
 		If (akSlave != Game.GetPlayer())
 			Debug.Trace("[_sdqs_enslavement] Update slave state: Target is not the player")
@@ -422,7 +446,8 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 			; Debug.Notification("[SD] Slave Punishment")
 
 			if (!fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
-				AddSlavePunishment( akSlave, sDevice)
+				; AddSlavePunishment( akSlave, sDevice)
+				QueueSlavePunishment(akSlave, sDevice, 1.0 + Utility.RandomFloat(1.0, 23.0))
 				punishmentAdded = True
 
 			Else
@@ -451,7 +476,8 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 
 			if (fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
 				Debug.Trace("[_sdqs_enslavement] Reward slave: Trying to remove - " + sDevice)
-				RemoveSlavePunishment( akSlave, sDevice)
+				; RemoveSlavePunishment( akSlave, sDevice)
+				ClearSlavePunishment(akSlave, sDevice, false)
 
 				punishmentRemoved = True
 
@@ -470,21 +496,20 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 	Return punishmentRemoved 
 EndFunction
 
-Function AddSlavePunishment(Actor kActor , String sDevice)
-	Bool bGag = fctOutfit.isDeviceEquippedString(kActor, "Gag")
-	Bool bBlindfold = fctOutfit.isDeviceEquippedString(kActor, "Blindfold")
-	Bool bBelt = fctOutfit.isDeviceEquippedString(kActor, "Belt")
-	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
-	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
+Function QueueSlavePunishment(Actor kActor , String sDevice, Float fPunishmentLength = 1.0)
+	Keyword kwDeviceKeyword = fctOutfit.getDeviousKeywordByString(sDevice)
 
-	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		fPunishmentsLength = 2.0 + (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
-		uiPunishmentsEarned = uiPunishmentsEarned + 1
+	If ((kwDeviceKeyword) && (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)  && (!fctOutfit.isDeviceEquippedString(  kActor,  sDevice  )) )
+		if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
+			StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+		endif
 
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * fPunishmentsLength)
+		StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+		StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration", 0.075 * fPunishmentLength)
+		StorageUtil.SetStringValue(kwDeviceKeyword as Form, "_SD_sPunishmentName", sDevice)
 
-		
+		Debug.Notification("[_sdqs_enslavement] Queue punishment: Adding " + sDevice)
+		Debug.Trace("[_sdqs_enslavement] Queue punishment: Adding " + sDevice)
 		Debug.Trace("[_sdqs_enslavement] Punishment received: " + sDevice )
 		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
 		Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
@@ -493,76 +518,120 @@ Function AddSlavePunishment(Actor kActor , String sDevice)
 
 		fctOutfit.addPunishmentDevice(sDevice)
 
+		; check if not in list first!!!!
+		uiPunishmentsEarned = uiPunishmentsEarned + 1
+
+
 	Else
-		Debug.Trace("[_sdqs_enslavement] Add punishment: Target is not the player")
+		If (!kwDeviceKeyword) 
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Device keyword not found ")
+		Endif
+		If (kActor == Game.GetPlayer())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Target is not the player - not supported yet ")
+		Endif
+		If (!kActor.IsInCombat())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Actor in combat - ignoring")
+		EndIf
+		If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") != 1)
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment not allowed with this master ")
+		Endif
+		If (fctOutfit.isDeviceEquippedString(  kActor,  sDevice  ))
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment already equipped -  "+ sDevice)
+		Endif
 	EndIf
 
 EndFunction
 
-Function ScanSlavePunishment(Actor kActor  )
-	Bool bGag = fctOutfit.isDeviceEquippedString(kActor, "Gag")
-	Bool bBlindfold = fctOutfit.isDeviceEquippedString(kActor, "Blindfold")
-	Bool bBelt = fctOutfit.isDeviceEquippedString(kActor, "Belt")
-	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
-	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
+Function ClearSlavePunishment(Actor kActor , String sDevice, Bool bClearNow = false)
+	Keyword kwDeviceKeyword = fctOutfit.getDeviousKeywordByString(sDevice)
 
-	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		fPunishmentsLength = 2.0 + (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
-		uiPunishmentsEarned = fctOutfit.countPunishmentEquipped(kActor)
+	If ((kwDeviceKeyword) && (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1) && (fctOutfit.isDeviceEquippedString(  kActor,  sDevice  )) )
 
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * fPunishmentsLength)
-
-		 
-		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
-		Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
-
-		; _SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
-
-		; fctOutfit.addPunishmentDevice(sDevice)
-
-	Else
-		Debug.Trace("[_sdqs_enslavement] Scan punishment: Target is not the player")
-	EndIf
-
-EndFunction
-
-Function RemoveSlavePunishment(Actor kActor , String sDevice)
-	Bool bGag = fctOutfit.isDeviceEquippedString(kActor, "Gag")
-	Bool bBlindfold = fctOutfit.isDeviceEquippedString(kActor, "Blindfold")
-	Bool bBelt = fctOutfit.isDeviceEquippedString(kActor, "Belt")
-	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
-	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
-
-	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
-		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(kActor, "_SD_fPunishmentGameTime")
-		Float fPunishmentDuration = StorageUtil.GetFloatValue(kActor, "_SD_fPunishmentDuration")
+		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime")
+		Float fPunishmentDuration = StorageUtil.GetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration")
 		float fMasterDistance = (kActor as ObjectReference).GetDistance(kMaster as ObjectReference)
 		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
 
-		If (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
+		If ((bClearNow) || ((fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))))
 
 			; Additional time added to remove next punishment item
-			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * Utility.RandomInt( 1,2))
+			StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+			StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration", 0.0)
 
-			Debug.Trace("[_sdqs_enslavement] Punishment removed: " + sDevice )
-			Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
-			Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
+			Debug.Notification("[_sdqs_enslavement] Clear Punishment:  Remove " + sDevice ) 
+			Debug.Trace("[_sdqs_enslavement] Clear Punishment:  Remove " + sDevice ) 
+			Debug.Trace("[_sdqs_enslavement] Clear Punishment Now: " + bClearNow ) 
 
 			fctOutfit.removePunishmentDevice(sDevice)
+			; StorageUtil.FormListRemove( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
 
 		ElseIf (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
-			Debug.Trace("[_sdqs_enslavement] RemoveSlavePunishment - Your owner is too far to remove your punishment.")
+			Debug.Trace("[_sdqs_enslavement] Clear Punishment - Your owner is too far to remove your punishment.")
+			Debug.Trace("[_sdqs_enslavement] fPunishmentStartGameTime: " + fPunishmentStartGameTime )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
 
 		Else
-			Debug.Trace("[_sdqs_enslavement] RemoveSlavePunishment - Punishment is not over yet.")
+			Debug.Trace("[_sdqs_enslavement] Clear punishment - Punishment is not over yet.")
+			Debug.Trace("[_sdqs_enslavement] fPunishmentStartGameTime: " + fPunishmentStartGameTime )
 			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
 			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
 		endif
 
 	Else
-		Debug.Trace("[_sdqs_enslavement] Remove punishment: Target is not the player")
+		If (!kwDeviceKeyword) 
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Device keyword not found ")
+		Endif
+		If (kActor == Game.GetPlayer())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Target is not the player - not supported yet ")
+		Endif
+		If (!kActor.IsInCombat())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Actor in combat - ignoring")
+		EndIf
+		If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") != 1)
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment not allowed with this master ")
+		Endif
+		If (!fctOutfit.isDeviceEquippedString(  kActor,  sDevice  ))
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment already cleared -  "+ sDevice)
+		Endif
+	EndIf
+
+EndFunction
+
+Function CheckSlavePunishment(Actor kActor  )
+	Int valueCount = StorageUtil.FormListCount(kActor, "_SD_lActivePunishmentDevices")
+	int i = 0
+	Form fThisDevice
+	String sDeviceName 
+	Float fPunishmentDuration  
+
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
+
+	 	Debug.Notification("[_sdqs_enslavement] Check and fix punishment list")
+	 	Debug.Trace("[_sdqs_enslavement] Check and fix punishment list")
+
+		while(i < valueCount)
+			fThisDevice = StorageUtil.FormListGet(kActor, "_SD_lActivePunishmentDevices", i)
+			sDeviceName = StorageUtil.GetStringValue(fThisDevice, "_SD_sPunishmentName")
+			fPunishmentDuration = StorageUtil.GetFloatValue(fThisDevice, "_SD_fPunishmentDuration")
+
+			if (fPunishmentDuration > 0.0)
+				Debug.Trace("	Device [" + i + "] = " + sDeviceName + " - Duration: " + fPunishmentDuration)
+
+				If (!fctOutfit.isDeviceEquippedString(  kActor,  sDeviceName  ))
+					Debug.Trace("	     Device not equipped - resetting duration")
+					StorageUtil.SetFloatValue(fThisDevice, "_SD_fPunishmentDuration", 0.0)
+				Else
+					Debug.Trace("	     Device equipped - update punishment status")
+					ClearSlavePunishment( kActor ,  sDeviceName, false)
+				EndIf
+			Endif
+
+			i += 1
+		endwhile
+
+	Else
+		Debug.Trace("[_sdqs_enslavement] Check and fix punishment list: Target is not the player")
 	EndIf
 
 EndFunction
@@ -655,4 +724,103 @@ Function EquipSlaveRags(Actor akSlave)
 	akSlave.EquipItem( kRags, True, True )
 EndFunction
 
+;
+; Old style punishments - deprecated soon (2017-12-04)
+;
 
+Function AddSlavePunishment(Actor kActor , String sDevice)
+	Bool bGag = fctOutfit.isDeviceEquippedString(kActor, "Gag")
+	Bool bBlindfold = fctOutfit.isDeviceEquippedString(kActor, "Blindfold")
+	Bool bBelt = fctOutfit.isDeviceEquippedString(kActor, "Belt")
+	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
+	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
+
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
+		fPunishmentsLength = 2.0 + (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
+		uiPunishmentsEarned = uiPunishmentsEarned + 1
+
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * fPunishmentsLength)
+
+		
+		Debug.Trace("[_sdqs_enslavement] Punishment received: " + sDevice )
+		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
+		Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
+
+		_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
+
+		fctOutfit.addPunishmentDevice(sDevice)
+
+	Else
+		Debug.Trace("[_sdqs_enslavement] Add punishment: Target is not the player")
+	EndIf
+
+EndFunction
+
+Function RemoveSlavePunishment(Actor kActor , String sDevice)
+	Bool bGag = fctOutfit.isDeviceEquippedString(kActor, "Gag")
+	Bool bBlindfold = fctOutfit.isDeviceEquippedString(kActor, "Blindfold")
+	Bool bBelt = fctOutfit.isDeviceEquippedString(kActor, "Belt")
+	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
+	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
+
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
+		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(kActor, "_SD_fPunishmentGameTime")
+		Float fPunishmentDuration = StorageUtil.GetFloatValue(kActor, "_SD_fPunishmentDuration")
+		float fMasterDistance = (kActor as ObjectReference).GetDistance(kMaster as ObjectReference)
+		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
+
+		If (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
+
+			; Additional time added to remove next punishment item
+			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+			StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * Utility.RandomInt( 1,2))
+
+			Debug.Trace("[_sdqs_enslavement] Punishment removed: " + sDevice )
+			Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
+			Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
+
+			fctOutfit.removePunishmentDevice(sDevice)
+
+		ElseIf (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
+			Debug.Trace("[_sdqs_enslavement] RemoveSlavePunishment - Your owner is too far to remove your punishment.")
+
+		Else
+			Debug.Trace("[_sdqs_enslavement] RemoveSlavePunishment - Punishment is not over yet.")
+			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
+		endif
+
+	Else
+		Debug.Trace("[_sdqs_enslavement] Remove punishment: Target is not the player")
+	EndIf
+
+EndFunction
+
+Function ScanSlavePunishment(Actor kActor  )
+	Bool bGag = fctOutfit.isDeviceEquippedString(kActor, "Gag")
+	Bool bBlindfold = fctOutfit.isDeviceEquippedString(kActor, "Blindfold")
+	Bool bBelt = fctOutfit.isDeviceEquippedString(kActor, "Belt")
+	Bool bPlugAnal = fctOutfit.isDeviceEquippedString(kActor, "PlugAnal")
+	Bool bPlugVaginal = fctOutfit.isDeviceEquippedString(kActor, "PlugVaginal")
+
+	If (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)
+		fPunishmentsLength = 2.0 + (bGag as Float) * 3.0 + (bBelt as Float) * 2.0 + (bPlugAnal as Float) * 3.0 + (bPlugVaginal as Float) * 4.0 + (bBlindfold as Float) * 2.0
+		uiPunishmentsEarned = fctOutfit.countPunishmentEquipped(kActor)
+
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+		StorageUtil.SetFloatValue(kActor, "_SD_fPunishmentDuration", 0.075 * fPunishmentsLength)
+
+		 
+		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
+		Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
+
+		; _SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
+
+		; fctOutfit.addPunishmentDevice(sDevice)
+
+	Else
+		Debug.Trace("[_sdqs_enslavement] Scan punishment: Target is not the player")
+	EndIf
+
+EndFunction

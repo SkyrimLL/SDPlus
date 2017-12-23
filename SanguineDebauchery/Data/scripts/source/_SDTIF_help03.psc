@@ -22,3 +22,5 @@ FormList Property _SDFLP_sex_items  Auto
 FormList Property _SDFLP_punish_items  Auto
 Spell Property _SDSP_freedom  Auto  
 ReferenceAlias Property _SDRAP_player  Auto  
+
+FavorDialogueScript Property pFDS  Auto  

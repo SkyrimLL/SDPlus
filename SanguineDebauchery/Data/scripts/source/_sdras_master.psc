@@ -125,6 +125,7 @@ Event OnDeath(Actor akKiller)
 
 			If (Utility.RandomInt(0,100)>40)
 				SendModEvent("PCSubFree")
+				GoToState("doNothing")
 
 			ElseIf (akKiller != kMaster)
 				; Send all items back to Dreamworld storage
@@ -146,6 +147,7 @@ Event OnEnterBleedout()
 	if (kMaster.IsEssential()) ; && (Variables.FollowerSetting==0)
 		Debug.Trace("[_sdras_master] Essential master bleeding out - Stop enslavement")
 		SendModEvent("PCSubFree")
+		GoToState("doNothing")
 		; Self.GetOwningQuest().Stop()
 	EndIf
 EndEvent
@@ -217,7 +219,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 			; 
 			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 				Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Yoke" )
-				enslavement.PunishSlave(kMaster,kSlave, "Yoke")
+				enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
 			endif
 		else
 			kMaster.SendModEvent("PCSubSex","Rough") 
@@ -393,6 +395,7 @@ State monitor
 			Debug.Notification( "Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
+			GoToState("doNothing")
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			; Park Master in Waiting mode while Enslavement quest is shutting down
@@ -626,10 +629,10 @@ State monitor
 				ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0) && (Utility.RandomInt(0,10) < StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 					; Master is in a good mood - chance to remove punishment
 
-					; enslavement.RewardSlave(kMaster,kSlave,"Gag")
-					; enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
-					kSlave.SendModEvent("SDRewardSlave", "Gag")
-					kSlave.SendModEvent("SDRewardSlave", "Blindfold")
+					enslavement.RewardSlave(kMaster,kSlave,"Gag")
+					enslavement.RewardSlave(kMaster,kSlave,"Blindfold")
+					; kSlave.SendModEvent("SDRewardSlave", "Gag")
+					; kSlave.SendModEvent("SDRewardSlave", "Blindfold")
 
 				EndIf
 			EndIf
@@ -755,6 +758,7 @@ State search
 		Debug.Trace("[_sdras_master] Master death event - Stop enslavement")
 
 		SendModEvent("PCSubFree")
+		GoToState("doNothing")
 		; Self.GetOwningQuest().Stop()
 	EndEvent
 
@@ -768,6 +772,7 @@ State search
 			Debug.Notification("It looks like your owner abandonned you...")
 
 			SendModEvent("PCSubFree")
+			GoToState("doNothing")
 
 		ElseIf ( (kMaster.GetDistance( kSlave ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2 ) ) && (( kMaster.HasLOS( kSlave )) ) )
 			; Slave is back, next to master
@@ -813,6 +818,7 @@ State combat
 			Debug.Notification("It looks like your owner left you to your fate...")
 
 			SendModEvent("PCSubFree") 
+			GoToState("doNothing")
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			kMaster.EvaluatePackage()
@@ -849,6 +855,7 @@ State caged
 			Debug.Notification("Your owner left you to your fate...")
 
 			SendModEvent("PCSubFree")
+			GoToState("doNothing")
 			; Self.GetOwningQuest().Stop()
 		ElseIf ( !_SDGVP_state_caged.GetValueInt() )
 			kMaster.EvaluatePackage()
@@ -861,4 +868,5 @@ State caged
 	EndEvent
 EndState
 
-
+State doNothing
+EndState

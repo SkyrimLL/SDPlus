@@ -734,7 +734,7 @@ Event OnSDModSanguineBlessing(String _eventName, String _args, Float _argc = -1.
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 	; endif
 
-	if (_SDGVP_sanguine_blessings.GetValue() >= 2 )
+	if ((_SDGVP_sanguine_blessings.GetValue() >= 2 ) && (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==1))
 		SendModEvent("_SLS_PlayerAlicia")
 	endif
 
@@ -1106,21 +1106,21 @@ Event OnSDStance(String _eventName, String _args, Float _argc = -1.0, Form _send
 		StorageUtil.SetStringValue( kPlayer, "_SD_sDefaultStance", iEventString)
 	endIf
 
-	if (iEventString == "Standing")
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 1 )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 1 )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
+	; if (iEventString == "Standing")
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 1 )
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 1 )
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
 
-	elseif (iEventString == "Kneeling")
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 1 )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
+	;elseif (iEventString == "Kneeling")
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 1 )
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
 
-	elseif (iEventString == "Crawling")
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 0 )
-		StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
-	endif
+	;elseif (iEventString == "Crawling")
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableStand", 0 )
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableKneel", 0 )
+	;	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableCrawl", 1 )
+	;endif
 
 EndEvent
  
@@ -1607,51 +1607,55 @@ State monitor
 		EndIf
 		If ( aiKeyCode == keys[2] )
 			
-			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") 
-				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnableKneel") == 1 )
+				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Kneeling")
 					Debug.Notification("Kneeling...")
-				Else
-					Debug.Notification("You are not allowed to kneel")
-				Endif
+				; Else
+				; 	Debug.Notification("You are not allowed to kneel")
+				; Endif
 
-			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") 
-				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")  && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnableStand") == 1 )
+				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 					Debug.Notification("Standing...")
-				Else
-					Debug.Notification("You are not allowed to stand")
-				Endif
+				; Else
+				; 	Debug.Notification("You are not allowed to stand")
+				; Endif
 
 			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")  
-				fctConstraints.UpdateStanceOverrides()
 				Debug.Notification("Already standing...")
 
 			endif
+
+			StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") ) 
+			fctConstraints.UpdateStanceOverrides()
 			; Debug.Notification("New stance: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 		endif
 		If ( aiKeyCode == keys[3] )
  			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")  
-				fctConstraints.UpdateStanceOverrides()
 				Debug.Notification("Already crawling...")
 
-			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling") 
-				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableCrawl") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")  && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnableCrawl") == 1 )
+				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableCrawl") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Crawling")
 					Debug.Notification("Crawling...")
-				Else
-					Debug.Notification("You are not allowed to crawl")
-				Endif
+				; Else
+				; 	Debug.Notification("You are not allowed to crawl")
+				; Endif
 
-			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing") 
-				If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
+			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")  && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnableKneel") == 1 )
+				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Kneeling")
 					Debug.Notification("Kneeling...")
-				Else
-					Debug.Notification("You are not allowed to kneel")
-				Endif
+				; Else
+				; 	Debug.Notification("You are not allowed to kneel")
+				; Endif
 
 			endif
+
+			StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") ) 
+			fctConstraints.UpdateStanceOverrides()
 			; Debug.Notification("New stance: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 
 		endif
@@ -1776,6 +1780,7 @@ State surrender
 				Debug.Trace("[SD] Surrender to combat target")
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 				; kCombatTarget.SendModEvent("PCSubSurrender")
+				fctOutfit.initSlaveryGearByActor ( kCombatTarget )
 				SDSurrender(kCombatTarget, "" )
 				GoToState("monitor")
 
@@ -1784,6 +1789,7 @@ State surrender
 				Debug.Notification("[SD] Surrender to crosshair target")
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 				; kSubmitTarget.SendModEvent("PCSubSurrender")
+				fctOutfit.initSlaveryGearByActor ( kSubmitTarget )
 				SDSurrender(kSubmitTarget, "" )
 				GoToState("monitor")
 
@@ -1840,6 +1846,7 @@ State surrender
 				Debug.Notification("[SD] Surrender to aggressor")
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 				; akActor.SendModEvent("PCSubSurrender")
+				fctOutfit.initSlaveryGearByActor ( akActor )
 				SDSurrender(akActor, "" )
 				GoToState("monitor")
 

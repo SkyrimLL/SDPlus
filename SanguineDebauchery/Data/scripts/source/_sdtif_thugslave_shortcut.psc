@@ -14,7 +14,7 @@ if (!bPlayerSold) && (iRandomFate>80)
 
 	if (bPlayerSold)
 		kQuest.SetStage(26)
-		Debug.MessageBox("Your owner wraps a bag over your head and leads you in total darkness. After what seem like hour, you finally stop inside of a cave. In the distance, the sounds of laughs and drinks are mixed with load moans and menacing howls.")
+		Debug.MessageBox("Your owner wraps a bag over your head and leads you in total darkness. After what seem like hours, you finally stop inside of a cave. In the distance, the sounds of laughs and drinks are mixed with load moans and menacing howls.")
 	endif
 endIf
 
