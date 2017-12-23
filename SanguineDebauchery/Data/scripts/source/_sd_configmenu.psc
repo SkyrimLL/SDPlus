@@ -466,6 +466,9 @@ event OnPageReset(string a_page)
 		UnloadCustomContent()
 	endIf
 
+	; Config overrides
+	_SDOID_config_S7_inc = 1.0
+
 	; CONFIG
 	If ( a_page == Pages[0] )
 		SetCursorFillMode(TOP_TO_BOTTOM)
