@@ -1,21 +1,23 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 2
-Scriptname SLD_TIF_RomanceDrunk01 Extends TopicInfo Hidden
+Scriptname SLD_TIF_WhoreSex01 Extends TopicInfo Hidden
+
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0(ObjectReference akSpeakerRef)
+Actor akSpeaker = akSpeakerRef as Actor
+;BEGIN CODE
+akSpeaker.SendModEvent("SLDPayPlayer", Utility.RandomInt(1,5)*10)
+
+fctDialogue.StartPlayerRape( akSpeaker, "Sex")
+;END CODE
+EndFunction
+;END FRAGMENT
 
 ;BEGIN FRAGMENT Fragment_1
 Function Fragment_1(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 pFDS.Persuade(akSpeaker)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0(ObjectReference akSpeakerRef)
-Actor akSpeaker = akSpeakerRef as Actor
-;BEGIN CODE
-fctDialogue.StartPlayerRapist( akSpeaker)
 ;END CODE
 EndFunction
 ;END FRAGMENT

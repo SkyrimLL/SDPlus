@@ -635,6 +635,25 @@ Function GiftPlayer ( Actor akSpeaker  )
 
 EndFunction
 
+Function PayPlayer ( Actor akSpeaker, Int iAmount ) 
+	; Player is a beggar
+	ObjectReference speakerRef = akSpeaker as ObjectReference
+	Actor akPlayer = Game.GetPlayer()
+	Form charityItemRef
+	LeveledItem charityLeveledItem 
+
+	; Debug.Notification("[SLD] Receiving payment")
+
+	charityItemRef = Gold001 
+	akPlayer.AddItem(charityItemRef, iAmount , false)
+
+	Debug.Notification("[SLD] Receiving - " + charityItemRef.GetName())
+	; Debug.Notification("[SLD]    -> Form - " + charityItemRef)
+	; Debug.Notification("[SLD]    -> LItem - " + charityLeveledItem.GetName())
+
+EndFunction
+
+
 Function RobPlayer ( Actor akSpeaker  )
 	Actor Player = Game.GetPlayer()
 	Utility.Wait(0.5)

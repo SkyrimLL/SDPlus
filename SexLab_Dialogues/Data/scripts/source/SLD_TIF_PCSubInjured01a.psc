@@ -8,10 +8,14 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kSlave = game.GetPlayer()
 
-	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 	int randomVar = Utility.RandomInt( 0, 10 ) 
+
+	If (Utility.RandomInt(0,100)>40) 
+		akSpeaker.AddItem( Ale, Utility.RandomInt(1,3), True )
+	Endif
 	 
 	If (randomVar >= 9  ) && (StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") < 0 )
+		Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 		Debug.Notification( "..some Skooma!" )
 		kSlave.AddItem( Skooma, 1, True )
 		kSlave.EquipItem( Skooma, True, True )
@@ -27,15 +31,14 @@ Actor kSlave = game.GetPlayer()
  		EndIf
 
 	Else 
-		Debug.Notification( "..some potion!" )
-	 	_SLD_Player.GiftFromNPC(akSpeaker, "Hurt")
-
+		Debug.Notification( "Be good and open your mouth." )
 
 		If (Utility.RandomInt(0,100)>20)
-			kSlave.AddItem( CureDiseases, 1, True )
-			kSlave.EquipItem( CureDiseases, True, True )
+			akSpeaker.AddItem( CureDiseases, 1, True ) 
 		Endif
  
+ 	 	_SLD_Player.GiftFromNPC(akSpeaker, "Hurt")
+
 	EndIf
 
 ;	While ( Utility.IsInMenuMode() )

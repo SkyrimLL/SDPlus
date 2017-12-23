@@ -10,6 +10,10 @@ Actor kSlave = game.GetPlayer()
 
 	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
 	int randomVar = Utility.RandomInt( 0, 10 ) 
+
+	If (Utility.RandomInt(0,100)>40) 
+		akSpeaker.AddItem( Ale, Utility.RandomInt(1,3), True )
+	Endif
 	 
 	If (randomVar >=9 ) && (StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") < 0 )
 		Debug.Notification( "..some Skooma!" )

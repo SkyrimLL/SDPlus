@@ -15,6 +15,11 @@ event onActivate(objectReference AkActivator)
 	ObjectReference kActorRef = self.GetReference()
 	Actor kActor = kActorRef as Actor
 
+	If (kActor.IsDead())
+		Debug.Trace( "[SLD] Attemping to activate a dead creature." )
+		Return
+	EndIf
+
 	;if player does not have an animal, make this animal player's animal
 	;	(DialogueFollower as DialogueFollowerScript).SetAnimal(kActor )
 	kActor.AllowPCDialogue(true)

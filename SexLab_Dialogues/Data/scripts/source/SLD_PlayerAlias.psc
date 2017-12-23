@@ -15,6 +15,29 @@ GlobalVariable Property _SLD_CommentProbability Auto
 GlobalVariable Property _SLD_AttackProbability Auto  
 GlobalVariable Property _SLD_BeggingProbability Auto
 
+GlobalVariable Property _SLD_isPlayerPregnant auto
+GlobalVariable Property _SLD_isPlayerSuccubus auto
+GlobalVariable Property _SLD_isPlayerEnslaved auto
+
+GlobalVariable Property _SLD_PCSubDefaultStance Auto
+GlobalVariable Property _SLD_PCSubEnableStand Auto
+GlobalVariable Property _SLD_PCSubEnableLeash Auto
+GlobalVariable Property _SLD_PCSubHandsFree Auto
+GlobalVariable Property _SLD_PCSubDominance Auto
+GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
+GlobalVariable Property _SLD_PCSubEnslaved Auto
+GlobalVariable Property _SLD_IsPlayerGagged  Auto  
+GlobalVariable Property _SLD_IsPlayerCollared  Auto  
+
+
+GlobalVariable Property _SLD_PCMasturbating Auto
+
+Faction Property PotentialFollowerFaction Auto
+Faction Property CurrentFollowerFaction Auto
+Faction Property PotentialMarriageFaction Auto
+
+SPELL Property RestSpell Auto
+
 Bool isPlayerEnslaved = False
 Bool isPlayerPregnant = False
 Bool isPlayerSuccubus = False
@@ -46,6 +69,7 @@ Function _maintenance()
 
 	RegisterForModEvent("SLDRobPlayer",   "OnSLDRobPlayer")
 	RegisterForModEvent("SLDGiftPlayer",   "OnSLDGiftPlayer")
+	RegisterForModEvent("SLDPayPlayer",   "OnSLDPayPlayer")
 
 	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
 
@@ -128,6 +152,19 @@ Function _updateGlobals()
 		_SLD_PCSubDominance.SetValue( 0 )
 	EndIf
 
+	If (StorageUtil.HasIntValue( PlayerActor , "_SD_iDeviousCollarOn"))
+		_SLD_isPlayerCollared.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iDeviousCollarOn") )
+	Else
+		_SLD_isPlayerCollared.SetValue( 0 )
+	EndIf
+
+	If (StorageUtil.HasIntValue( PlayerActor , "_SD_iDeviousGagOn"))
+		_SLD_isPlayerGagged.SetValue(  StorageUtil.GetIntValue( PlayerActor , "_SD_iDeviousGagOn") )
+	Else
+		_SLD_isPlayerGagged.SetValue( 0 )
+	EndIf
+
+
 EndFunction
 
 
@@ -168,6 +205,13 @@ Event OnSLDGiftPlayer(String _eventName, String _args, Float _argc, Form _sender
  	Actor kActor = _sender as Actor
 
 	_SLD_Main.GiftPlayer(kActor)
+EndEvent
+
+Event OnSLDPayPlayer(String _eventName, String _args, Float _argc = 0.0, Form _sender)
+	int iAmount = _argc as Int
+ 	Actor kActor = _sender as Actor
+
+	_SLD_Main.PayPlayer(kActor, iAmount)
 EndEvent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
@@ -603,22 +647,3 @@ Bool Function _hasRace(Actor[] _actors, Race thisRace)
 	Return False
 EndFunction
 
-SPELL Property RestSpell Auto
-
-GlobalVariable Property _SLD_isPlayerPregnant auto
-GlobalVariable Property _SLD_isPlayerSuccubus auto
-GlobalVariable Property _SLD_isPlayerEnslaved auto
-
-GlobalVariable Property _SLD_PCSubDefaultStance Auto
-GlobalVariable Property _SLD_PCSubEnableStand Auto
-GlobalVariable Property _SLD_PCSubEnableLeash Auto
-GlobalVariable Property _SLD_PCSubHandsFree Auto
-GlobalVariable Property _SLD_PCSubDominance Auto
-GlobalVariable Property _SLD_PCSubSlaveryLevel Auto
-GlobalVariable Property _SLD_PCSubEnslaved Auto
-
-GlobalVariable Property _SLD_PCMasturbating Auto
-
-Faction Property PotentialFollowerFaction Auto
-Faction Property CurrentFollowerFaction Auto
-Faction Property PotentialMarriageFaction Auto
