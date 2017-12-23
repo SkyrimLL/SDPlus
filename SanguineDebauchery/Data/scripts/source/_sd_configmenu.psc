@@ -134,7 +134,7 @@ Int _SDOID_config_S7
 Float _SDOID_config_S7_min = 0.0
 Float _SDOID_config_S7_max = 100.0
 Float _SDOID_config_S7_default = 20.0
-Float _SDOID_config_S7_inc = 10.0
+Float _SDOID_config_S7_inc = 1.0
 Int _SDOID_config_S8
 Float _SDOID_config_S8_min = 1.0
 Float _SDOID_config_S8_max = 6.0
