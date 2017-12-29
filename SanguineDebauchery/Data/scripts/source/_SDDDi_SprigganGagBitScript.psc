@@ -59,11 +59,11 @@ EndFunction
 
 Function DeviceMenuPickLock()
 	string skillName = ""
-	if libs.Config.SkyRe
-		skillName = "Pickpocket"
-	else
+	; if libs.Config.SkyRe
+	;	skillName = "Pickpocket"
+	; else
 		skillName = "Lockpicking"
-	EndIf
+	; EndIf
 	if libs.PlayerRef.WornHasKeyword(libs.zad_DeviousArmbinder)
 		zad_GagArmsTiedMsg.Show()
 		return

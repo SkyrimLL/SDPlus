@@ -156,19 +156,41 @@ Armor Property SDSlaveRags6  Auto
 Function registerDeviousOutfits ( )
 	Debug.Trace("[SD] Register devious outfits")
 
-	Debug.Trace("[SD] 		Registering leather collar")
-	libs.RegisterGenericDevice(zazLeatherCollar		, "collar,leather,zap")
-	Debug.Trace("[SD] 		Registering iron collar")
-	libs.RegisterGenericDevice(zazIronCollar		, "collar,metal,iron,zap")
-	Debug.Trace("[SD] 		Registering iron arm cuffs")
-	libs.RegisterGenericDevice(zazIronCuffs			, "armbinder,arms,metal,iron,zap")
-	Debug.Trace("[SD] 		Registering iron leg cuffs")
-	libs.RegisterGenericDevice(zazIronShackles		, "cuffs,legs,metal,iron,zap")
-	Debug.Trace("[SD] 		Registering wooden gag")
-	libs.RegisterGenericDevice(zazWoodenBit			, "gag,leather,wood,zap")
-	Debug.Trace("[SD] 		Registering leather blinds")
-	libs.RegisterGenericDevice(zazBlinds 			, "blindfold,leather,zap")
+	if (StorageUtil.FormListFind( libs.zad_DeviousCollar, "zad.GenericDevice", zazLeatherCollar) <0)
+		Debug.Trace("[SD] 		Registering leather collar")
+		libs.RegisterGenericDevice(zazLeatherCollar		, "collar,leather,zap")
+	Endif
 
+	if (StorageUtil.FormListFind( libs.zad_DeviousCollar, "zad.GenericDevice", zazIronCollar) <0)
+		Debug.Trace("[SD] 		Registering iron collar")
+		libs.RegisterGenericDevice(zazIronCollar		, "collar,metal,iron,zap")
+	Endif
+	
+	if (StorageUtil.FormListFind( libs.zad_DeviousHeavyBondage, "zad.GenericDevice", zazIronCuffs) <0)
+		Debug.Trace("[SD] 		Registering iron arm cuffs")
+		libs.RegisterGenericDevice(zazIronCuffs			, "armbinder,arms,metal,iron,zap")
+	Endif
+	
+	if (StorageUtil.FormListFind( libs.zad_DeviousLegCuffs, "zad.GenericDevice", zazIronShackles) <0)
+		Debug.Trace("[SD] 		Registering iron leg cuffs")
+		libs.RegisterGenericDevice(zazIronShackles		, "cuffs,legs,metal,iron,zap")
+	Endif
+	
+	if (StorageUtil.FormListFind( libs.zad_DeviousGag, "zad.GenericDevice", zazWoodenBit) <0)
+		Debug.Trace("[SD] 		Registering wooden gag")
+		libs.RegisterGenericDevice(zazWoodenBit			, "gag,leather,wood,zap")
+	Endif
+	
+	if (StorageUtil.FormListFind( libs.zad_DeviousBlindfold, "zad.GenericDevice", zazBlinds) <0)
+		Debug.Trace("[SD] 		Registering leather blinds")
+		libs.RegisterGenericDevice(zazBlinds 			, "blindfold,leather,zap")
+	Endif
+	
+	; if (StorageUtil.FormListCount( libs.zad_DeviousYoke, "zad.GenericDevice")==0)
+	;	Debug.Trace("[SD] Register generic devious devices")
+	;	libs.RegisterDevices() 
+	; Endif
+	
 EndFunction
 
 
@@ -211,7 +233,7 @@ Function initSlaveryGearByActor ( Actor kActor )
 	If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
 		registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
-		registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
@@ -221,7 +243,7 @@ Function initSlaveryGearByActor ( Actor kActor )
 	Else
 		registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Redguard Scrawl (belly)" )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,padded,zap" )
-		registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+		registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,padded,zap" )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 		registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
@@ -244,7 +266,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Falmer Glow (body)", raceSlaveTatDuration=5, raceSlaveTatColor = slaveTatColor, raceSlaveTatGlow = 1  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazFalmerCollar, deviceRendered=zazFalmerCollarRendered  )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="", deviceInventory=zazFalmerCuffs, deviceRendered=zazFalmerCuffsRendered   )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="", deviceInventory=zazFalmerCuffs, deviceRendered=zazFalmerCuffsRendered   )
 				; registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
 				; registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=None, deviceInventory=None, deviceRendered=None  )
 				; registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.None, deviceInventory=None, deviceRendered=None  )
@@ -256,7 +278,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Hagraven")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
@@ -268,54 +290,54 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Wolf")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Wolf scratches (back)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Dog    
 			ElseIf (StringUtil.Find(sRaceName, "Dog")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Dog scratches (breast)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; SaberCat    
 			ElseIf (StringUtil.Find(sRaceName, "Cat")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Wolf scratches (breast)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Bear    
 			ElseIf (StringUtil.Find(sRaceName, "Bear")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Troll Bites (body)", raceSlaveTatDuration=5 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Giant   
 			ElseIf (StringUtil.Find(sRaceName, "Giant")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Standing", raceSlaveTat="Giant Paint (body)", raceSlaveTatDuration=20 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 			; Chaurus   
 			ElseIf (StringUtil.Find(sRaceName, "Chaurus")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Chaurus Vaginal (body)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )  ; ADD Chaurus slimy collar later
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Spider    
 			ElseIf (StringUtil.Find(sRaceName, "Spider")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Spider Anal (butt)", raceSlaveTatDuration=2 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazWebCollar, deviceRendered=zazWebCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Troll   
 			ElseIf (StringUtil.Find(sRaceName, "Troll")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Troll Bites (body)", raceSlaveTatDuration=3 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Troll rusted collar later
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinder", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 
 			; Draugr    
@@ -324,7 +346,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=0, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Draugr Runes (breast)", raceSlaveTatDuration=20, raceSlaveTatColor = slaveTatColor, raceSlaveTatGlow = 1  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazIronCollar, deviceRendered=zazIronCollarRendered )  ; ADD Draugr ancient collar later
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
@@ -339,7 +361,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			If (StringUtil.Find(sRaceName, "Nord")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Nord Ankle (leg)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,iron,zap" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,primitive"  )
@@ -351,7 +373,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Breton")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Breton Wheel (belly)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
@@ -363,7 +385,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Imperial")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Imperial Stamp (butt)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,harness,leather" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,leather"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,leather"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,leather" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,padded"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,inflatable"  )
@@ -375,7 +397,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Redguard")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Redguard Scrawl (belly)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,padded,zap" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,padded,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
@@ -387,7 +409,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Orc")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Orc Scrawl (head)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,short,metal,rusty,heretic,ddx" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,iron"  )
@@ -399,7 +421,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Elf Slavers Hand (back)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,posture,leather" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,leather"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,leather"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,leather" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,padded"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
@@ -411,7 +433,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Khajiit")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Khajiit Slavers Hand (back)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,leather,zap" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,primitive"  )
@@ -423,7 +445,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			ElseIf (StringUtil.Find(sRaceName, "Argonian")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Argonian Slavers Hand (belly)" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,short,metal,iron,heretic,ddx" )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,simple,locking,metal,rusty,pear,bell,heretic,ddx"  )
@@ -437,7 +459,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Dremora Mark (body)", raceSlaveTatDuration=10, raceSlaveTatColor = slaveTatColor, raceSlaveTatGlow = 1 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousArmbinder , genericDeviceTags="", deviceInventory=zazSanguineCuffs, deviceRendered=zazSanguineCuffsRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Armbinders", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="", deviceInventory=zazSanguineCuffs, deviceRendered=zazSanguineCuffsRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="", deviceInventory=zazSanguineShackles, deviceRendered=zazSanguineShacklesRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
@@ -618,44 +640,54 @@ Function equipDeviceByString ( String sDeviceString = "", String sOutfitString =
 
 				bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 
-			elseif (sGenericDeviceTags!="")
-				; preferred tags
-				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags  )
-
-				aWornDevice = libs.GetDeviceByTags(kwDeviceKeyword, sGenericDeviceTags)
-
-				If (aWornDevice!=None)
-					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
-				EndIf
-
-				Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
-
-				If (aWornDevice!=None) && (aRenderedDevice!=None)
-
-					bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
-				Else
-					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
-				EndIf
 			else
-				; generic device
-				Debug.Trace("[SD] 		equipDeviceByString - generic: ")
- 
-				aWornDevice = libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
+				if (sGenericDeviceTags!="")
+					; preferred tags
+					Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags  )
 
-				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags + " - Device inventory: "  + aWornDevice  )
+					aWornDevice = libs.GetDeviceByTags(kwDeviceKeyword, sGenericDeviceTags)
 
-				If (aWornDevice!=None)
-					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+					If (aWornDevice!=None)
+						aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+					EndIf
+
+					Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+
+					If (aWornDevice!=None) && (aRenderedDevice!=None)
+						bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+					Else
+						Debug.Trace("[SD] 		equipDeviceByString - no device found"  )
+					EndIf
 				EndIf
 
-				Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+				if (!bDeviceEquipSuccess)
+					; generic device
+					Debug.Trace("[SD] 		equipDeviceByString - generic: ")
+	 
+					aWornDevice = libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
 
-				If (aWornDevice!=None) && (aRenderedDevice!=None)
+					; Debug.Trace("[SD] 		equipDeviceByString - Generic devices registered: "  + StorageUtil.FormListCount(kwDeviceKeyword, "zad.GenericDevice")  )
+					;Int i=StorageUtil.FormListCount(kwDeviceKeyword, "zad.GenericDevice") 
+					;While (i>0)
+					;	i = i - 1
+					;	Debug.Trace("[SD] 							- Generic device: "  + StorageUtil.FormListGet(kwDeviceKeyword, "zad.GenericDevice", i)  )
+					; EndWhile
 
-					bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
-				Else
-					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
-				EndIf
+					Debug.Trace("[SD] 		equipDeviceByString - Device inventory: "  + aWornDevice  )
+
+					If (aWornDevice!=None)
+						aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
+					EndIf
+
+					Debug.Trace("[SD] 		Device rendered: " + aRenderedDevice  )
+
+					If (aWornDevice!=None) && (aRenderedDevice!=None)
+
+						bDeviceEquipSuccess = equipDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+					Else
+						Debug.Trace("[SD] 		equipDeviceByString - no device found"  )
+					EndIf
+				Endif
 			endif
 
 			if (sOutfitString!="")
@@ -716,15 +748,17 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 
 					bDeviceEquipSuccess = equipDeviceNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 				Else
-					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
+					Debug.Trace("[SD] 		equipDeviceByString - no device found"  )
 				EndIf
-			else
+			EndIf
+
+			if (!bDeviceEquipSuccess)
 				; generic device
 				Debug.Trace("[SD] 		equipDeviceByString - generic: ")
  
 				aWornDevice = libs.GetGenericDeviceByKeyword(kwDeviceKeyword)
 
-				Debug.Trace("[SD] 		equipDeviceByString - tags: " + sGenericDeviceTags + " - Device inventory: "  + aWornDevice  )
+				Debug.Trace("[SD] 		equipDeviceByString - Device inventory: "  + aWornDevice  )
 
 				If (aWornDevice!=None)
 					aRenderedDevice = libs.GetRenderedDevice(aWornDevice)
@@ -736,7 +770,7 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 
 					bDeviceEquipSuccess = equipDeviceNPC ( akActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
 				Else
-					Debug.Trace("[SD] 		equipDeviceByString - tags - no device found"  )
+					Debug.Trace("[SD] 		equipDeviceByString - no device found"  )
 				EndIf
 			endif
 
@@ -813,7 +847,8 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
 				kForm = aWornDevice as Form
 
-				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+				; if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+				if ((kForm.HasKeyword(libs.zad_BlockGeneric) ) || (kForm.HasKeyword(libs.zad_QuestItem) ))
 					Debug.Notification("[SD] removing zad_BlockGeneric device!")  
 					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - Can't clear device")  
 				else
@@ -838,6 +873,83 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 
 	endif
 EndFunction
+
+Function clearNonGenericDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+	; Test for unique, non generic keyword should be done before calling this function
+
+	Keyword kwDeviceKeyword = none
+	Actor PlayerActor = Game.GetPlayer() as Actor
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Bool bDeviceOverride = False
+
+	; If master Race is set, check if override device is set for this race and use it first
+
+	If ( fActorOverride!= none)
+		Debug.Trace("[SD] clearDeviceByString - Actor override detected")  
+		if (StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword")!=none)
+			Debug.Trace("[SD] 	- Override detected for " + sDeviceString)  
+			bDeviceOverride = True
+			kwDeviceKeyword = 	StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword") as Keyword
+		else
+			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
+		endIf
+	endIf
+
+	If ( fRaceOverride!= none) && (!bDeviceOverride)
+		Debug.Trace("[SD] clearDeviceByString - Race override detected")  
+		if (StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword")!=none)
+			Debug.Trace("[SD] 	- Override detected for " + sDeviceString)  
+			bDeviceOverride = True
+			kwDeviceKeyword = 	StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword") as Keyword
+		else
+			Debug.Trace("[SD] 	- Override not found for " + sDeviceString)  
+		endIf
+	EndIf
+
+	If(!bDeviceOverride) ; generic item
+		Debug.Trace("[SD] clearDeviceByString - NO override detected")  
+			kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+	endIf
+ 
+	If (kwDeviceKeyword != None)
+
+		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
+
+			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
+			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
+
+			aWornDevice = libs.GetWornDevice(PlayerActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+				kForm = aWornDevice as Form
+
+				clearDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword, true)
+			else
+				Debug.Trace("[SD]    Can't get worn device")
+			endif
+			
+			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
+
+			if (sOutfitString!="")
+				Debug.Messagebox("[SD] clearDeviceByString called with message: " + sOutfitString)  
+			Endif
+
+		else
+			Debug.Trace("[SD] player is not wearing: " + sDeviceString)  
+		endIf
+
+	else
+		Debug.Trace("[SD] unknown device to clear " )  
+
+	endif
+EndFunction
+
+
 
 Function clearDeviceNPCByString ( Actor akActor, String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
 	Keyword kwDeviceKeyword = none 
@@ -869,7 +981,8 @@ Function clearDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
 				kForm = aWornDevice as Form
 
-				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+				; if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+				if ((kForm.HasKeyword(libs.zad_BlockGeneric) ) || (kForm.HasKeyword(libs.zad_QuestItem) ))
 					Debug.Notification("[SD] removing zad_BlockGeneric device!")  
 					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - Can't clear device")  
 				else
@@ -952,6 +1065,9 @@ Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 
 	; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
 	libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, bDestroy, False, True)
+
+	; libs.ManipulateGenericDevice(actor akActor, armor device, bool equipOrUnequip, bool skipEvents = false , bool skipMutex = false)
+	; libs.ManipulateGenericDevice(actor akActor, armor device, bool equipOrUnequip, bool skipEvents = false , bool skipMutex = false)
  
 	bDeviceRemoveSuccess = True
  
@@ -1082,20 +1198,20 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisKeyword = libs.zad_DeviousCollar
 
-	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders") 
-		thisKeyword = libs.zad_DeviousArmbinder
-
-	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs")  || (deviousKeyword == "LegCuff") 
-		thisKeyword = libs.zad_DeviousLegCuffs
-
 	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") 
 		thisKeyword = libs.zad_DeviousGag
+
+	elseif (deviousKeyword == "zad_DeviousGagPanel") || (deviousKeyword == "GagPanel") 
+		thisKeyword = libs.zad_DeviousGagPanel
 
 	elseif (deviousKeyword == "zad_DeviousBlindfold") || (deviousKeyword == "Blindfold") 
 		thisKeyword = libs.zad_DeviousBlindfold
 
 	elseif (deviousKeyword == "zad_DeviousBelt") || (deviousKeyword == "Belt") 
 		thisKeyword = libs.zad_DeviousBelt
+
+	elseif (deviousKeyword == "zad_DeviousPlug") || (deviousKeyword == "Plug") 
+		thisKeyword = libs.zad_DeviousPlug
 
 	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal") 
 		thisKeyword = libs.zad_DeviousPlugAnal
@@ -1106,20 +1222,41 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousBra") || (deviousKeyword == "Bra") 
 		thisKeyword = libs.zad_DeviousBra
 
+	elseif (deviousKeyword == "WristRestraint") || (deviousKeyword == "WristRestraints") 
+		thisKeyword = libs.zad_DeviousHeavyBondage
+
 	elseif (deviousKeyword == "zad_DeviousArmCuffs") || (deviousKeyword == "ArmCuffs")  || (deviousKeyword == "ArmCuff") 
 		thisKeyword = libs.zad_DeviousArmCuffs
+
+	elseif (deviousKeyword == "zad_DeviousLegCuffs") || (deviousKeyword == "LegCuffs")  || (deviousKeyword == "LegCuff") 
+		thisKeyword = libs.zad_DeviousLegCuffs
+
+	elseif (deviousKeyword == "zad_DeviousArmbinder") || (deviousKeyword == "Armbinder")  || (deviousKeyword == "Armbinders") 
+		thisKeyword = libs.zad_DeviousArmbinder
 
 	elseif (deviousKeyword == "zad_DeviousYoke") || (deviousKeyword == "Yoke") 
 		thisKeyword = libs.zad_DeviousYoke
 
+	elseif (deviousKeyword == "zad_DeviousYokeBB") || (deviousKeyword == "YokeBB") 
+		thisKeyword = libs.zad_DeviousYokeBB
+
+	elseif (deviousKeyword == "zad_DeviousArmBinderElbow") || (deviousKeyword == "ArmBinderElbow") 
+		thisKeyword = libs.zad_DeviousArmBinderElbow
+
+	elseif (deviousKeyword == "zad_DeviousCuffsFront") || (deviousKeyword == "CuffsFront") 
+		thisKeyword = libs.zad_DeviousCuffsFront
+
 	elseif (deviousKeyword == "zad_DeviousCorset") || (deviousKeyword == "Corset") 
 		thisKeyword = libs.zad_DeviousCorset
 
-	elseif (deviousKeyword == "zad_DeviousClamps") || (deviousKeyword == "Clamps") 
-		thisKeyword = libs.zad_DeviousClamps
+	elseif (deviousKeyword == "zad_DeviousStraitJacket") || (deviousKeyword == "StraitJacket") 
+		thisKeyword = libs.zad_DeviousStraitJacket
 
 	elseif (deviousKeyword == "zad_DeviousGloves") || (deviousKeyword == "Gloves") 
 		thisKeyword = libs.zad_DeviousGloves
+
+	elseif (deviousKeyword == "zad_DeviousBondageMittens") || (deviousKeyword == "BondageMittens")  || (deviousKeyword == "Mittens") 
+		thisKeyword = libs.zad_DeviousBondageMittens
 
 	elseif (deviousKeyword == "zad_DeviousHood") || (deviousKeyword == "Hood") 
 		thisKeyword = libs.zad_DeviousHood
@@ -1127,17 +1264,17 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousSuit") || (deviousKeyword == "Suits") 
 		thisKeyword = libs.zad_DeviousSuit
 
-	elseif (deviousKeyword == "zad_DeviousGagPanel") || (deviousKeyword == "GagPanel") 
-		thisKeyword = libs.zad_DeviousGagPanel
-
-	elseif (deviousKeyword == "zad_DeviousPlug") || (deviousKeyword == "Plug") 
-		thisKeyword = libs.zad_DeviousPlug
-
 	elseif (deviousKeyword == "zad_DeviousHarness") || (deviousKeyword == "Harness") 
 		thisKeyword = libs.zad_DeviousHarness
 
+	elseif (deviousKeyword == "zad_DeviousHobbleSkirt") || (deviousKeyword == "HobbleSkirt") 
+		thisKeyword = libs.zad_DeviousHobbleSkirt
+
 	elseif (deviousKeyword == "zad_DeviousBoots") || (deviousKeyword == "Boots") 
 		thisKeyword = libs.zad_DeviousBoots
+
+	elseif (deviousKeyword == "zad_DeviousClamps") || (deviousKeyword == "Clamps") 
+		thisKeyword = libs.zad_DeviousClamps
 
 	elseif (deviousKeyword == "zad_DeviousPiercingsNipple") || (deviousKeyword == "PiercingNipple")  || (deviousKeyword == "NipplePiercing")|| (deviousKeyword == "NipplePiercings") 
 		thisKeyword = libs.zad_DeviousPiercingsNipple
@@ -1632,13 +1769,21 @@ Function addPunishmentDevice(String sDevice)
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
 		equipDeviceByString ( sDeviceString = "Gag")
 
+	ElseIf (sDevice == "Armbinder") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "WristRestraint")
+		equipDeviceByString ( sDeviceString = "WristRestraint",sOutfitString = "", skipEvents = false, skipMutex = false,  sDeviceTags = "Armbinder")
+
 	ElseIf (sDevice == "Yoke") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Armbinder")
-		equipDeviceByString ( sDeviceString = "Yoke")
+		clearDeviceByString ( sDeviceString = "WristRestraint")
+		equipDeviceByString ( sDeviceString = "WristRestraint",sOutfitString = "", skipEvents = false, skipMutex = false,  sDeviceTags = "Yoke")
 
 	Else ; generic punishment
 		; Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
@@ -1647,7 +1792,6 @@ Function addPunishmentDevice(String sDevice)
 		equipDeviceByString ( sDeviceString = sDevice)
 
 	EndIf
-
 
 EndFunction
 
@@ -2014,10 +2158,10 @@ Function equipDeviceSpriggan ( String sDeviceString = "", String sOutfitString =
 				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
 				kForm = aWornDevice as Form 
 
-				if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
-					Debug.Notification("[SD] adding zad_BlockGeneric device!")  
-					Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
-				endif
+				; if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
+				;	Debug.Notification("[SD] adding zad_BlockGeneric device!")  
+				;	Debug.Trace("[SD]    zad_BlockGeneric keyword detected - shouldn't add device")  
+				; endif
 			else
 				Debug.Trace("[SD]    Can't get worn device")
 			endif

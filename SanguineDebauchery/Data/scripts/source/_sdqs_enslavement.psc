@@ -451,7 +451,7 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 				punishmentAdded = True
 
 			Else
-				Debug.Trace("[_sdqs_enslavement] Punish slave: Nothing to add")
+				Debug.Trace("[_sdqs_enslavement] Punish slave: Nothing to add. Device already equipped - " + sDevice)
 			EndIf
 
 		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
@@ -482,7 +482,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 				punishmentRemoved = True
 
 			Else
-				Debug.Trace("[_sdqs_enslavement] Reward slave: Nothing to remove")
+				Debug.Trace("[_sdqs_enslavement] Reward slave: Nothing to remove. Device missing - " + sDevice)
 
 			EndIf
 
@@ -618,23 +618,47 @@ Function CheckSlavePunishment(Actor kActor  )
 			if (fPunishmentDuration > 0.0)
 				Debug.Trace("	Device [" + i + "] = " + sDeviceName + " - Duration: " + fPunishmentDuration)
 
-				If (!fctOutfit.isDeviceEquippedString(  kActor,  sDeviceName  ))
-					Debug.Trace("	     Device not equipped - resetting duration")
-					StorageUtil.SetFloatValue(fThisDevice, "_SD_fPunishmentDuration", 0.0)
-				Else
-					Debug.Trace("	     Device equipped - update punishment status")
-					ClearSlavePunishment( kActor ,  sDeviceName, false)
-				EndIf
+				ClearSinglePunishmentDevice( kActor, sDeviceName )
 			Endif
 
 			i += 1
 		endwhile
+
+		; Clear punishment devices added outside of punishment queue
+		If (fctOutfit.isDeviceEquippedString(  kActor, "Armbinder"  ))
+			ClearSinglePunishmentDevice( kActor, "Armbinder" )
+		EndIf
+		
+		If (fctOutfit.isDeviceEquippedString(  kActor, "Yoke"  ))
+			ClearSinglePunishmentDevice( kActor, "Yoke" )
+		EndIf
+		
+		If (fctOutfit.isDeviceEquippedString(  kActor, "Blindfold"  ))
+			ClearSinglePunishmentDevice( kActor, "Blindfold" )
+		EndIf
+		
+		If (fctOutfit.isDeviceEquippedString(  kActor, "Gag"  ))
+			ClearSinglePunishmentDevice( kActor, "Gag" )
+		EndIf
+		
+
 
 	Else
 		Debug.Trace("[_sdqs_enslavement] Check and fix punishment list: Target is not the player")
 	EndIf
 
 EndFunction
+
+Function ClearSinglePunishmentDevice(Actor kActor, String sDeviceName )
+	If (!fctOutfit.isDeviceEquippedString(  kActor,  sDeviceName ))
+		Debug.Trace("	     Device not equipped - resetting duration - " + sDeviceName)
+		StorageUtil.SetFloatValue(fctOutfit.getDeviousKeywordByString("Armbinder") as Form, "_SD_fPunishmentDuration", 0.0)
+	Else
+		Debug.Trace("	     Device equipped - update punishment status")
+		ClearSlavePunishment( kActor ,  sDeviceName, false)
+	Endif
+EndFunction
+
 
 Function UpdateSlaveFollowerState(Actor akSlave)
 	Int idx = 0

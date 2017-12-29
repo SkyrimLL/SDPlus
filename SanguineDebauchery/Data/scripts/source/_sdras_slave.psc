@@ -667,8 +667,9 @@ State monitor
 				If (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStance") != "Crawling")
 					If (fMasterDistance < fKneelingDistance) && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
-						fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
-						fctOutfit.equipDeviceByString ( "Armbinder" )
+						; fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
+						; fctOutfit.equipDeviceByString ( "Armbinder" )
+						enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
 
 						StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 

@@ -218,7 +218,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 			; 
 			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-				Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Yoke" )
+				Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Armbinder" )
 				enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
 			endif
 		else
@@ -674,7 +674,7 @@ State monitor
 			ENDIF
 
 			If  ((boHitByMelee) || (boHitByRanged)) && (!boHitByMagic) ; (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))
-				Debug.Messagebox( "Your collar compels you to drop your weapon when attacking your owner." )
+				; Debug.Messagebox( "Your collar compels you to drop your weapon when attacking your owner." )
 
 				; Drop current weapon 
 				if(kSlave.IsWeaponDrawn())
@@ -695,6 +695,9 @@ State monitor
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 					Debug.Trace( "[_sdras_master] Punishment for hitting master - Yoke" )
 					enslavement.PunishSlave(kMaster,kSlave,"Yoke")
+					; enslavement.PunishSlave(kMaster,kSlave,"Corset")
+					; enslavement.PunishSlave(kMaster,kSlave,"Boots")
+					; enslavement.PunishSlave(kMaster,kSlave,"Gag")
 				endif
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0)

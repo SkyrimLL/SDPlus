@@ -401,6 +401,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If (StorageUtil.GetIntValue(kCurrentMaster, "_SD_iTrust")>0) && (Utility.RandomInt(0,100) > 70) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
+					fctOutfit.clearDeviceByString ( "Armbinder" )
 
 				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
@@ -411,11 +412,11 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				else
 					Debug.Trace("[_sdras_player] Unable to find bound hands conditions.")
 				EndIf
-			Else
 
+			Elseif (actors.Length > 1); Exclude masturbation
 				fctOutfit.setMasterGearByRace ( actors[1], PlayerActor  )
 
-				If (Utility.RandomInt(0,100) > 90) && (actors.Length > 1) ; Exclude masturbation
+				If (Utility.RandomInt(0,100) > 90)  
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
 					fctOutfit.clearDeviceByString ( "Armbinder" )
@@ -1597,6 +1598,10 @@ State monitor
 					; UnregisterForMenu( "Crafting Menu" )
 					; UnregisterForAnimationEvent(kPlayer, "RemoveCharacterControllerFromWorld")
 					; UnregisterForAnimationEvent(kPlayer, "GetUpEnd")
+
+				ElseIf (IButton == 3)
+					; Cancel
+
 				Else
 					Debug.Notification("You still have life in you...")
 				EndIf
