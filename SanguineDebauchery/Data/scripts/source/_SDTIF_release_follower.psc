@@ -6,7 +6,7 @@ Scriptname _SDTIF_release_follower Extends TopicInfo Hidden
 Function Fragment_4(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Armbinders" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "WristRestraint" )
 fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "ArmCuffs" )
 fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "LegCuffs" )
 fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Blindfold" )

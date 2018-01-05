@@ -614,10 +614,25 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 
 	; Bindings items
 	If (bBindings )
-		fctOutfit.clearDeviceByString ( "Collar" )
+		fctOutfit.clearDeviceByString ( "WristRestraint" )
+		fctOutfit.clearDeviceByString ( "Armbinder" )
+		fctOutfit.clearDeviceByString ( "ArmBinderElbow" )
+		fctOutfit.clearDeviceByString ( "StraitJacket" )
+		Utility.Wait(2.0)
+		fctOutfit.clearDeviceByString ( "Yoke" )
+		fctOutfit.clearDeviceByString ( "YokeBB" )
+		fctOutfit.clearDeviceByString ( "CuffsFront" )
+		Utility.Wait(2.0)
 		fctOutfit.clearDeviceByString ( "LegCuffs" )
+		fctOutfit.clearDeviceByString ( "Boots" )
+		Utility.Wait(2.0)
+		fctOutfit.clearDeviceByString ( "Harness" )
+		fctOutfit.clearDeviceByString ( "Belt" )
+		fctOutfit.clearDeviceByString ( "Corset" )
+		Utility.Wait(2.0)
 		fctOutfit.clearDeviceByString ( "Blindfold" )
 		fctOutfit.clearDeviceByString ( "Gag" )
+		fctOutfit.clearDeviceByString ( "GagPanel" )
 		Utility.Wait(2.0)
 	Endif
 

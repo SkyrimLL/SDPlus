@@ -134,7 +134,7 @@ Function enslaveCompanion( Actor kActor)
 			Else
 				; kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
 				Debug.Notification("Your follower has been enslaved!")
-				; fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
+				; fctOutfit.equipDeviceNPCByString ( kActor, "WristRestraints", "", false, false, "zap")
 				int index = StorageUtil.FormListFind(kPlayer, "_SD_lEnslavedFollower", kActor)
 				if (index < 0)
 					; Debug.Notification("Not found!")
@@ -177,7 +177,7 @@ Function enslaveCompanion( Actor kActor)
 			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
 			; kActor.playIdle(OffsetBoundStandingStart) 
 
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Armbinder", "", false, false, "zap")
+			; fctOutfit.equipDeviceNPCByString ( kActor, "WristRestraints", "", false, false, "zap")
 			; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
 			; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 

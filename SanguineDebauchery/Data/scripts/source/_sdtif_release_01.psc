@@ -11,9 +11,9 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 ; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-Game.GetPlayer().RemoveItem(Gold, 100 )
+kPlayer.RemoveItem(Gold, 100 )
 
-fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
+fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint" )
 fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
 fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
 fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )

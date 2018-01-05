@@ -162,7 +162,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	EndIf
 
 	; most likely to happen on a pickpocket failure.
-	If ( (aeCombatState != 0) && (akTarget == kSlave) && (!kMaster.GetCurrentScene()) && (Self.GetOwningQuest().GetStage() <  90) ) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) && !fctOutfit.isArmbinderEquipped( kSlave ) && !fctOutfit.isYokeEquipped( kSlave )
+	If ( (aeCombatState != 0) && (akTarget == kSlave) && (!kMaster.GetCurrentScene()) && (Self.GetOwningQuest().GetStage() <  90) ) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) && !fctOutfit.isWristRestraintEquipped( kSlave ) 
 		Int iGold = 100
 		Float iDemerits = 10.0
 				
@@ -515,7 +515,7 @@ State monitor
 				; 
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 					Debug.Trace( "[_sdras_master] Punishment for attacking master - Yoke" )
-					enslavement.PunishSlave(kMaster,kSlave, "Yoke")
+					enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
 				endif
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
@@ -694,7 +694,7 @@ State monitor
 				;
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 					Debug.Trace( "[_sdras_master] Punishment for hitting master - Yoke" )
-					enslavement.PunishSlave(kMaster,kSlave,"Yoke")
+					enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
 					; enslavement.PunishSlave(kMaster,kSlave,"Corset")
 					; enslavement.PunishSlave(kMaster,kSlave,"Boots")
 					; enslavement.PunishSlave(kMaster,kSlave,"Gag")

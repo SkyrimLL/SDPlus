@@ -57,6 +57,14 @@ Float fRFSU = 0.1
 int throttle = 0 
 String sPlayerLastStance = "" 
 
+Bool bIsYokeEquipped = false
+Bool bIsArmbinderEquipped = false
+Bool bIsWristRestraintEquipped = false
+Bool bIsYokeBBEquipped = false
+Bool bIsArmbinderElbowEquipped = false
+Bool bIsCuffsFrontEquipped = false
+Bool bIsStraitJacketEquipped = false
+
 Event OnInit()
 ;	_maintenance()
 	InitAA()
@@ -220,8 +228,13 @@ Function CollarEffectFinish(Actor akTarget, Actor akCaster)
 EndFunction
 
 Function CollarUpdate()
-	Bool bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
-	Bool bIsArmbinderEquipped = fctOutfit.isArmbinderEquipped( kPlayer ) 
+	bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
+	bIsArmbinderEquipped = fctOutfit.isArmbinderEquipped( kPlayer ) 
+	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
+	bIsYokeBBEquipped = fctOutfit.isYokeBBEquipped( kPlayer ) 
+	bIsArmbinderElbowEquipped = fctOutfit.isArmbinderElbowEquipped( kPlayer ) 
+	bIsCuffsFrontEquipped = fctOutfit.isCuffsFrontEquipped( kPlayer ) 
+	bIsStraitJacketEquipped  = fctOutfit.isStraitJacketEquipped( kPlayer ) 
 
 	If (!kMaster) || (!kTarget)  || (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryCollarOn") == 0)
 		Return
@@ -253,19 +266,19 @@ Function CollarUpdate()
 
 			elseif(sleepType == 2) ; Sitting	
 				; Debug.MessageBox("Your owner accepts to let you sit for a while. ")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC057") ;  		FrogTieFaceDownStruggle
+				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC012") ;  		HandsBehindLieSide						
 
 			elseif(sleepType == 3) ; Sleeping sideway
 				; Debug.MessageBox("You are allowed to lie down and sleep for a while. ")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC012") ;  		HandsBehindLieSide
+				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC013") ;  		HandsBehindLieFaceUp						
 
-			elseif(sleepType == 4) ; Sleeping 
+			else  ; if(sleepType == 4) ; Sleeping 
 				; Debug.MessageBox("Your owner lets you sleep on the ground. ")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC014") ;  		HandsBehindLieSideCurlUp
 
 			endif
 			
-		ElseIf (( !bIsArmbinderEquipped  ) && (!bIsYokeEquipped) ) 
+		ElseIf ( !bIsWristRestraintEquipped) 
 			if(sleepType == 1) ; Kneeling
 				; Debug.MessageBox("Your owner reluctantly allows you to kneel and take a rest.")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC020") ; 		HandsBehindKneelBowDown
@@ -278,11 +291,13 @@ Function CollarUpdate()
 				; Debug.MessageBox("You are allowed to lie down and sleep for a while. ")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC056") ;  		HogTieFaceDownLegsSpread
 
-			elseif(sleepType == 4) ; Sleeping 
+			else ; if(sleepType == 4) ; Sleeping 
 				; Debug.MessageBox("Your owner lets you sleep on the ground. ")
 				StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC015") ;  		HandsBehindLieHogtieFaceDown
 
 			endif
+		else  
+			StorageUtil.SetStringValue(kPlayer, "_SD_sSleepPose", "ZazAPC006") ;  		HandsBehindSitFloor		
 
 		EndIf
 	EndIf
@@ -298,15 +313,23 @@ Function CollarUpdate()
 	; EndIf
 
 	; this shouldn't happen - clear armbinder if it did happen
-	If bIsYokeEquipped && bIsArmbinderEquipped
-		fctOutfit.clearDeviceByString ( sDeviceString = "Armbinder" )
+	If bIsYokeEquipped 
+		fctOutfit.clearDeviceByString ( sDeviceString = "WristRestraints" )
 	Endif
 
 	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
 	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 1)
 	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 1)
 
-	If bIsYokeEquipped
+	If bIsArmbinderEquipped || bIsStraitJacketEquipped
+	;	Debug.Notification("[SD] SD cuffs detected" )
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 0)
+		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 0)
+		; StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 0)
+		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Kneeling" ) 
+
+	ElseIf bIsYokeEquipped || bIsWristRestraintEquipped
 	;	Debug.Notification("[SD] Yoke detected" )
 		; StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 1)
 		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
@@ -315,13 +338,6 @@ Function CollarUpdate()
 		; StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
 		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
 		
-	ElseIf bIsArmbinderEquipped
-	;	Debug.Notification("[SD] SD cuffs detected" )
-		; StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFree", 0)
-		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
-		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 0)
-		; StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 0)
-		; StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Kneeling" ) 
 
 	EndIf
 
@@ -362,12 +378,6 @@ Function CollarUpdate()
 					If (( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")) || ((!fctOutfit.isArmbinderEquipped( kPlayer))  && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") )
 						CollarStand()
 
-					ElseIf ( iTrust < 0 ) && (iDisposition < 0)
-						UpdateStanceOverrides()
-
-					ElseIf ( iTrust >= 0 ) && (iDisposition < 0)
-						UpdateStanceOverrides()
-
 					Else
 						UpdateStanceOverrides()
 					EndIf
@@ -393,17 +403,25 @@ Function CollarStand()
 	Bool bOk
 	Int zadOverrideIndex
 
-	If fctOutfit.isArmbinderEquipped( kPlayer )  ;  fctOutfit.isDeviceEquippedKeyword( kPlayer, "zap","Armbinder") ; reset to zaz pose only for iron cuffs
-	;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
+	If bIsArmbinderEquipped  || bIsStraitJacketEquipped
 		zadOverrideIndex = 0 ;   0 - bound hands in back / 1 - yoke
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
-		; Debug.Notification("[SD] Standing bound override ON")
 
-	ElseIf  fctOutfit.isYokeEquipped( kPlayer ) ;  fctOutfit.isDeviceEquippedKeyword( kPlayer, "zap","Armbinder") ; reset to zaz pose only for iron cuffs
-	;	PlayIdleWrapper(kPlayer, _SDIAP_bound[0] )
+	ElseIf  bIsYokeEquipped 
 		zadOverrideIndex = 1 ;   0 - bound hands in back / 1 - yoke
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
-		; Debug.Notification("[SD] Standing bound override ON")
+
+	ElseIf  bIsArmbinderElbowEquipped 
+		zadOverrideIndex = 3 ;   0 - bound hands in back / 1 - yoke
+		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
+
+	ElseIf  bIsYokeBBEquipped 
+		zadOverrideIndex = 4 ;   0 - bound hands in back / 1 - yoke
+		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
+
+	ElseIf  bIsCuffsFrontEquipped 
+		zadOverrideIndex = 5 ;   0 - bound hands in back / 1 - yoke
+		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") ; && (iOverride != 6)
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
@@ -480,7 +498,7 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	  		; bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", sneakmt_base, 0, "sanguinesDebauchery", true)  
 			
 	  	else ; set vanilla     
-	  		If fctOutfit.isArmbinderEquipped( kPlayer ) || fctOutfit.isYokeEquipped( kPlayer )
+	  		If (bIsYokeEquipped || bIsArmbinderEquipped || bIsWristRestraintEquipped)
 	  			CollarStand()
 	  		else
 	  			ResetStanceOverrides()

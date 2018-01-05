@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 2
-Scriptname _sdtif_release Extends TopicInfo Hidden
+Scriptname _sdtif_releaseArmor Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
 Function Fragment_0(ObjectReference akSpeakerRef)

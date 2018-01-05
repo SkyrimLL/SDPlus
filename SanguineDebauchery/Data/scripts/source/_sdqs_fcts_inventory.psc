@@ -4,6 +4,7 @@ Import Utility
 Import SKSE
 SexLabFrameWork Property SexLab Auto
 _SDQS_fcts_slavery Property fctSlavery  Auto
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 Keyword Property _SDKP_food  Auto  
 Keyword Property _SDKP_food_raw  Auto  
@@ -147,6 +148,64 @@ Function stashAllStolenGoods( Actor akThief, ObjectReference akContainer )
 	EndWhile
 EndFunction
 
+Function ProcessGoldEarned(Actor kMaster, Actor kSlave, Float fGoldAmount )
+
+	If (fGoldAmount > 0)
+		fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldAmount as Int)
+		StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldAmount as Int))
+		; _SDGVP_buyoutEarned.SetValue(fGoldAmount)
+
+
+		_SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldAmount as Int,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)
+		
+		if (fGoldAmount>100)
+			fctSlavery.ModMasterTrust( kMaster, 2)
+		else
+			fctSlavery.ModMasterTrust( kMaster, 1)
+		endif
+
+		fctSlavery.ModTaskAmount(kSlave, "Valuables", fGoldAmount as Int) 
+
+
+		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
+			Debug.Notification("Good slave... keep it coming.")
+
+
+		Else
+			Debug.Notification("That's right.")
+
+		Endif
+
+	ElseIf (fGoldAmount == 0)
+		Debug.Notification("What is this junk!?.")
+
+	EndIf
+EndFunction
+
+Function ProcessGoldAdded(Actor kMaster, Actor kSlave)
+	If (kMaster == None)
+		Return
+	Endif
+
+
+	fGoldEarned = 0.0
+
+	Debug.Trace( "[SD] Master receives gold from player" )
+
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+		Debug.Notification( "Good slave." )
+
+		Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
+		kSlave.RemoveItem(Gold, fGoldCoins as Int)
+
+		ProcessGoldEarned( kMaster,  kSlave, fGoldCoins )
+
+	else
+		Debug.Notification( "Your owner is disinterested." )
+	endif
+
+EndFunction
+
 Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 	iuType = akBaseItem.GetType()
 	fGoldEarned = 0.0
@@ -193,42 +252,8 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
 		EndIf
 
-		Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
-		kSlave.RemoveItem(Gold, fGoldCoins as Int)
-
-		fGoldEarned = fGoldEarned + fGoldCoins
-
-		If (fGoldEarned > 0)
-			fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldEarned as Int)
-			StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldEarned as Int))
-			; _SDGVP_buyoutEarned.SetValue(fGoldEarned)
-
-
-			_SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldEarned as Int,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)
-			
-			if (fGoldEarned>100)
-				fctSlavery.ModMasterTrust( kMaster, 2)
-			else
-				fctSlavery.ModMasterTrust( kMaster, 1)
-			endif
-
-			fctSlavery.ModTaskAmount(kSlave, "Valuables", fGoldEarned as Int) 
-
-
-			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-				Debug.Notification("Good slave... keep it coming.")
-
-
-			Else
-				Debug.Notification("That's right.")
-				Debug.Notification("You don't have a use for gold anymore.")
-	
-			Endif
-
-		ElseIf (fGoldEarned == 0)
-			Debug.Notification("What is this junk!?.")
-
-		EndIf
+ 
+		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
 
 		; TO DO - Master reaction if slave reaches buyout amount
 		If (Utility.RandomInt(0,100)<80) && (fGoldEarned>100)
@@ -249,10 +274,12 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			endif
 
 			; TO DO - Master reaction if slave reaches buyout amount
-			If (Utility.RandomInt(0,100)<80) && (fGoldEarned>100)
-				kMaster.EquipItem(akBaseItem, True, True)
-			ElseIf (Utility.RandomInt(0,100)<40)
-				kMaster.EquipItem(akBaseItem, True, True)
+			If (!akBaseItem.hasKeywordString("zad_Lockable"))
+				If (Utility.RandomInt(0,100)<80) && (fGoldEarned>100)
+					kMaster.EquipItem(akBaseItem, True, True)
+				ElseIf (Utility.RandomInt(0,100)<40)
+					kMaster.EquipItem(akBaseItem, True, True)
+				Endif
 			Endif
 				
 			Debug.Notification("(seems pleased)")

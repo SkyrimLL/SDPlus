@@ -374,8 +374,10 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn",  1)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryWhippingSceneOn",  1)
 
-			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Kneeling")
-			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Kneeling")
+			; StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Kneeling")
+			; StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Kneeling")
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Standing")
+			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Standing")
 
 			StorageUtil.SetStringValue(kSlave, "_SD_sSlaverySlaveTat",  "")
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  0)
@@ -388,8 +390,10 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn",  0)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryWhippingSceneOn",  0)
 
-			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Crawling")
-			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Crawling")
+			; StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Crawling")
+			; StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Crawling")
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Standing")
+			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Standing")
 
 			StorageUtil.SetStringValue(kSlave, "_SD_sSlaverySlaveTat",  "")
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  0)
@@ -986,7 +990,12 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	; Keeping these messages for (simplified) display 
 	statusMessage =  statusMessage + "\nDisposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +"/"+ StorageUtil.GetIntValue(kMaster, "_SD_iDispositionThreshold") +")"
 	statusMessage =  statusMessage + "\nDays enslaved: " + (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") as Int) + "/" +  (StorageUtil.GetFloatValue(kMaster, "_SD_iMinJoinDays") as Int)
-	statusMessage =  statusMessage + "\nBuyout gold left: " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)
+
+	if ((StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)<=0)
+		statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " under"
+	else
+		statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " over"
+	EndIf
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")>0)
 		statusMessage =  statusMessage + "\nAllowance: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  + " hours free."
@@ -1005,7 +1014,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 
 	; Keeping these messages for trace only
 	statusMessage =  statusMessage + "\n Today your owner needs .. \n" + statusSex + statusPunishment + statusFood + statusGold + statusMood + statusTrust
-	statusMessage =  statusMessage + "\nTrust: " + masterTrust 
+	statusMessage =  statusMessage + "\n Trust: " + masterTrust 
 	statusMessage =  statusMessage + "\n (Exposure: " + exposure + ")"
 
 	Debug.Trace("[SD] --- Slavery update" )
@@ -1131,6 +1140,7 @@ EndFunction
 
 Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	Actor kPlayer = Game.GetPlayer()
+	Int iSlaveryLevel = StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel")
 	Int iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 	Int iMaxTrust = 50
 	Int iMinTrust = -50
@@ -1150,11 +1160,11 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	iTrust = iTrust + iModValue
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")>2)
-		iMaxTrust = 75
+		iMaxTrust = 10 + iSlaveryLevel * 10
 		iMinTrust = -10
 	else
-		iMaxTrust = 10
-		iMinTrust = -75
+		iMaxTrust = 10  
+		iMinTrust = -10 - (6 - iSlaveryLevel) * 10
 	endif
 
 	if (iTrust>iMaxTrust) ; 2 days * 24 hours = 48 points
@@ -1351,8 +1361,8 @@ Function ModTaskAmount(Actor kSlave, String sTaskTarget, int iAmount)
 		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskAmount", iCurrentAmount + iAmount )
 
 		Debug.Trace("[SD]    Task update - Current amount: " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") )
-		Debug.Trace("[SD]    Task update - 	  % of target: " + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
-		Debug.Notification(" % of task completed: " + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
+		Debug.Trace("[SD]                 Task completion: %" + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
+		Debug.Notification("Task completion: %" + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
 
 	Endif
 EndFunction

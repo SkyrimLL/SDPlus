@@ -195,6 +195,7 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubTransfer",   "OnSDTransfer")
 	RegisterForModEvent("PCSubFree",   "OnSDFree")
 	RegisterForModEvent("PCSubStatus",   "OnSDStatusUpdate")
+	RegisterForModEvent("PCSubMasterGold",   "OnSDMasterGold")
 	RegisterForModEvent("SDSprigganEnslave",   "OnSDSprigganEnslave")
 	RegisterForModEvent("SDSprigganPunish",   "OnSDSprigganPunish")
 	; RegisterForModEvent("SDParasiteVag",   "OnSDParasiteVag")
@@ -318,7 +319,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 		If (funct._hasPlayer(actors)) 
 			; Player hands are freed temporarily for sex
 
-			if (fctOutfit.isArmbinderEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
+			if (fctOutfit.isWristRestraintEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
 				; Testing if devices automatically removed by DDi 3.0+
 				; fctOutfit.equipDeviceByString ( "Armbinder" )
 				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
@@ -401,9 +402,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If (StorageUtil.GetIntValue(kCurrentMaster, "_SD_iTrust")>0) && (Utility.RandomInt(0,100) > 70) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
-					fctOutfit.clearDeviceByString ( "Armbinder" )
+					fctOutfit.clearDeviceByString ( "WristRestraints" )
 
-				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
+				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; Testing if devices automatically removed by DDi 3.0+
 					; fctOutfit.equipDeviceByString ( "Armbinder" )
@@ -419,9 +420,9 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If (Utility.RandomInt(0,100) > 90)  
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
-					fctOutfit.clearDeviceByString ( "Armbinder" )
+					fctOutfit.clearDeviceByString ( "WristRestraints" )
 
-				ElseIf (!fctOutfit.isArmbinderEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
+				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
 					; If player is enslaved, use player outfit, else, use generic device
 					; fctOutfit.equipDeviceByString ( "Armbinder" )
@@ -677,6 +678,20 @@ Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form 
 
 EndEvent
 
+
+Event OnSDMasterGold(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Actor kActor
+ 
+	Debug.Trace("[_sdras_slave] Receiving 'player gives gold to master' event")
+
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		kActor = _SD_Enslaved.GetMaster() as Actor
+		fctInventory.ProcessGoldAdded( kActor, kPlayer)
+
+	EndIf
+
+EndEvent
+
 Event OnSDDreamworldStart(String _eventName, String _args, Float _argc = 0.0, Form _sender)
 	int blessingsStart = _argc as Int
 	; Dreamworld has to be visited at least once for this event to work
@@ -813,8 +828,8 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sen
 
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
-	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.clearDeviceByString ( "Armbinder" )
+	if (fctOutfit.isWristRestraintEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
+		fctOutfit.clearDeviceByString ( "WristRestraints" )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
  
@@ -868,8 +883,8 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
-	if (fctOutfit.isArmbinderEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.clearDeviceByString ( "Armbinder" )
+	if (fctOutfit.isWristRestraintEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
+		fctOutfit.clearDeviceByString ( "WristRestraints" )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
 
@@ -1578,8 +1593,8 @@ State monitor
 
 					Game.SetPlayerAIDriven(false)
 					Game.SetInCharGen(false, false, false)
-					; Game.EnablePlayerControls() ; just in case	
-					Game.EnablePlayerControls( abMovement = True )
+					Game.EnablePlayerControls() ; just in case	
+					; Game.EnablePlayerControls( abMovement = True )
 					fctOutfit.DDSetAnimating( kPlayer, false )
 
 					; Find a way to detect and fix situations when player is stuck 'flying' above ground
@@ -1590,6 +1605,8 @@ State monitor
 					; SendModEvent("da_EndNearDeathDebuff")	
 
 					Debug.SetGodMode( False )
+
+					fctConstraints.actorCombatShutdown( kPlayer )
 
 					; if (kPlayer.IsFlying())
 					;	Debug.Notification("Player is stuck in flight. Reload your game.")

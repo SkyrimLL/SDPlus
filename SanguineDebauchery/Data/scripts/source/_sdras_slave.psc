@@ -230,7 +230,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
 			Debug.Trace( "[_sdras_master] Punishment for hitting master friends - Yoke" )
-			enslavement.PunishSlave(kMaster,kSlave,"Yoke")
+			enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
 		endif
 
 		If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
@@ -665,13 +665,13 @@ State monitor
 				EndIf
 
 				If (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStance") != "Crawling")
-					If (fMasterDistance < fKneelingDistance) && (!fctOutfit.isArmbinderEquipped(kSlave)) && !fctOutfit.isYokeEquipped( kSlave )  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+					If (fMasterDistance < fKneelingDistance) && (!fctOutfit.isWristRestraintEquipped(kSlave))  && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 )  && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
 						; fctOutfit.setMasterGearByRace ( kMaster, kSlave  )
 						; fctOutfit.equipDeviceByString ( "Armbinder" )
-						enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
+						; enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
 
-						StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
+						; StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
 
 						; Debug.Notification("Your owner binds your hands again.")
 
@@ -679,9 +679,9 @@ State monitor
 						; Debug.Trace("[SD] _SD_iHandsFree: " + StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree"))
 						; Debug.Trace("[SD] _SD_iEnableAction: " + StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction"))
 
-					ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+					ElseIf (fMasterDistance < fKneelingDistance)  && (fctOutfit.isWristRestraintEquipped(kSlave)) && (StorageUtil.GetIntValue( kSlave, "_SL_iPlayerSexAnim") == 0 ) && (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFreeSex") == 0)   && ((StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 1)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 1)   ) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 
-						fctOutfit.clearDeviceByString ( "Armbinder" )
+						; fctOutfit.clearDeviceByString ( "Armbinder" )
 						; Debug.Notification("Your owner releases your hands.")
 
 					EndIf
@@ -690,7 +690,7 @@ State monitor
 				Weapon krHand = kSlave.GetEquippedWeapon()
 				Weapon klHand = kSlave.GetEquippedWeapon( True )
 
-				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isArmbinderEquipped(kSlave)) && ((StorageUtil.GetIntValue(kSlave, "_SD_iEnableWeaponEquip") == 0)   || (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)) && (kSlave.IsWeaponDrawn() || krHand || klHand)
+				If (fMasterDistance < fKneelingDistance)  && (!fctOutfit.isWristRestraintEquipped(kSlave)) && ((StorageUtil.GetIntValue(kSlave, "_SD_iEnableWeaponEquip") == 0)   || (StorageUtil.GetIntValue(kSlave, "_SD_iHandsFree") == 0)  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnableAction") == 0)) && (kSlave.IsWeaponDrawn() || krHand || klHand)
 
 					; Drop current weapon 
 					if(kSlave.IsWeaponDrawn())
@@ -1375,7 +1375,7 @@ Function _slaveStatusTicker()
 			iPunishmentCheck = iPunishmentCheck + 1
 
 			if (iPunishmentCheck==6)
-				enslavement.CheckSlavePunishment( kSlave )
+				enslavement.UpdateSlaveState( kMaster, kSlave )
 				iPunishmentCheck = 0
 			Endif
 		endif
@@ -1421,7 +1421,7 @@ Function _slaveStatusTicker()
 		EndIf
 
 		; Safety - removal of punishments after one day
-		enslavement.CheckSlavePunishment( kSlave )
+		enslavement.UpdateSlaveState( kMaster, kSlave )
 
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
 			enslavement.RewardSlave(kMaster,kSlave,"Gag")

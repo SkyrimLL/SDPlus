@@ -394,7 +394,7 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 
 	; Prevent rapid fire attacks
 	if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(Player, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(Player, "_SD_iNextSexTime") )
-		Debug.Notification("(changes his mind...)")
+		Debug.Notification("(nevermind...)")
 		Debug.Trace("[SD]    Sex aborted - too soon since last sex scene")
 		Debug.Trace("[SD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
 		Debug.Trace("[SD]      		fNextAllowed : " + fNextAllowed)
@@ -433,7 +433,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 	; Prevent rapid fire attacks
 	if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(Player, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(Player, "_SD_iNextSexTime") )
-		Debug.Notification("(changes his mind...)")
+		Debug.Notification("(nevermind...)")
 		Debug.Trace("[SD]    Sex aborted - too soon since last sex scene")
 		Debug.Trace("[SD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
 		Debug.Trace("[SD]      		fNextAllowed : " + fNextAllowed)

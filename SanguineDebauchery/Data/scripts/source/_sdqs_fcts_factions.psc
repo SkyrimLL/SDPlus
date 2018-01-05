@@ -125,28 +125,35 @@ Function initBeastMastersList (  )
 
 EndFunction
 
-Function initGenericMaster ( Actor kActor )
+Bool Function initGenericMaster ( Actor kActor )
 	Form kForm = kActor.GetRace()
 	String sGenericRaceType
-	Debug.Trace("[SD] Register custom NPC race for generic master")	
-
-	If (checkIfNPC ( kActor ))
-		sGenericRaceType = "Humanoid"
-	Else
-		sGenericRaceType = "Beast"
-	Endif
+	Bool bIsGenericRace = false
 
 	if (StorageUtil.FormListFind( none, "_SD_lRaceMastersList", kForm) <0)
+		Debug.Trace("[SD] Register custom NPC race for generic master")	
+
+		If (checkIfNPC ( kActor ))
+			sGenericRaceType = "Humanoid"
+		Else
+			sGenericRaceType = "Beast"
+		Endif
+
 		StorageUtil.FormListAdd( none, "_SD_lRaceMastersList", kForm)  
 
 		StorageUtil.SetIntValue(kForm, "_SD_iSlaveryRace", 1)
 		StorageUtil.SetStringValue( kForm, "_SD_sRaceType", sGenericRaceType)  
 		StorageUtil.SetStringValue( kForm, "_SD_sRaceName", kForm.GetName())   
 		initSlaveryFactionForThisRace ( kForm )
-		Debug.Trace("		Adding Form " + kForm)
+		bIsGenericRace = true
+		Debug.Trace("[SD]		Adding Form to master race list: " + kForm)
+	else
+		Debug.Trace("[SD]		Form already in master race list : " + kForm)
+
 	endif
 
 	Debug.Trace("[SD] Register race masters list - count : " + StorageUtil.FormListCount( none, "_SD_lRaceMastersList"))
+	return bIsGenericRace
 
 EndFunction
 

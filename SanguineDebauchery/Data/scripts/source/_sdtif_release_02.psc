@@ -13,7 +13,7 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 If   (Utility.RandomInt(0,100)>60)
 	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-	fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
+	fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint" )
 	fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
 	fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
 	fctOutfit.clearDeviceByString( sDeviceString = "Gag" )

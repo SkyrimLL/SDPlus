@@ -20,9 +20,16 @@ SPELL Property _SDSP_Weak Auto
 ; ragdolling
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto  
 GlobalVariable Property _SDGVP_config_verboseMerits  Auto
+
 Message Property _SD_whoreQueueMenu Auto
 
 ObjectReference whore
+
+
+GlobalVariable Property GameTime  Auto  
+float fLast = 0.0
+float fNextAllowed = 0.02
+
 Float fRegForUpdate = 5.0
 
 Bool Function addToQueue( ObjectReference akObject )
@@ -91,18 +98,25 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 			
 				; _SDKP_sex.SendStoryEvent( akLoc = akWhore.GetCurrentLocation(), akRef1 = _SDORP_queue[iIdx], akRef2 = akWhore, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt() ) )
 				; Sex
-				If  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor(akWhore as actor) > 0) 
 
-					If (iThreesome==0) && ( ( _SDORP_queue[iIdx] as actor ) == (akWhore as actor))
-						Debug.Notification("You can't help giving them a good show.")
+
+				if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(akWhore, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(akWhore, "_SD_iNextSexTime") )
+					; Debug.Notification("(nevermind...)")
+					Debug.Trace("[SD]    Sex aborted - too soon since last sex scene")
+					Debug.Trace("[SD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
+					Debug.Trace("[SD]      		fNextAllowed : " + fNextAllowed)
+
+				Else	
+					If ( ( _SDORP_queue[iIdx] as actor ) == (akWhore as actor)) && (SexLab.ValidateActor( akWhore as actor ) > 0)
+						Debug.Notification("They force you to give them a good show.")
 
 						funct.SanguineRape( akWhore as Actor , akWhore as Actor , "Masturbation", "Masturbation")
 
 
 					Else
-						iRandomNum = Utility.RandomInt(0,100)
 
-						If (iThreesome==1) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx+1] as actor ) > 0) 
+						If (iThreesome==1) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx+1] as actor ) > 0)  && (SexLab.ValidateActor( akWhore as actor ) > 0)
+							iRandomNum = Utility.RandomInt(0,100)
 							If (iRandomNum>80)
 								Debug.Notification("They are not finished with you yet.")
 							ElseIf (iRandomNum>50)
@@ -130,7 +144,8 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 							EndIf
 
 
-						Else 
+						Elseif (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) && (SexLab.ValidateActor( akWhore as actor ) > 0)
+							iRandomNum = Utility.RandomInt(0,100)
 							If (iRandomNum>80)
 								Debug.Notification("Another one is waiting for you.")
 							ElseIf (iRandomNum>50)
@@ -153,11 +168,11 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 								StorageUtil.SetIntValue( akWhore as actor , "_SD_iDom", StorageUtil.GetIntValue( akWhore as actor, "_SD_iDom") + 1)
 
 							EndIf							
+						Else
+							Debug.Trace("[SD] Whore queue - Actors busy: " + SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) + " - " + SexLab.ValidateActor(  akWhore as actor) )
 						EndIf
 					EndIf
 
-				Else
-					Debug.Trace("[SD] Whore queue - Actors busy: " + SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) + " - " + SexLab.ValidateActor(  akWhore as actor) )
 				EndIf
 
 

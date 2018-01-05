@@ -1,5 +1,5 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 1
+;NEXT FRAGMENT INDEX 2
 Scriptname _sdtif_submit_01a Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_0
@@ -12,6 +12,15 @@ Actor akPlayer = Game.GetPlayer()
 StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
 akSpeaker.SendModEvent("PCSubEnslave")
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_1
+Function Fragment_1(ObjectReference akSpeakerRef)
+Actor akSpeaker = akSpeakerRef as Actor
+;BEGIN CODE
+pFDS.Persuade(akSpeaker)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -29,3 +38,4 @@ FormList Property _SDFLP_master_items Auto
 _SDQS_functions Property funct Auto
 
 SexLabFramework Property SexLab  Auto  
+favordialoguescript Property pFDS  Auto  

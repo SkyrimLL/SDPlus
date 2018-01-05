@@ -26,7 +26,8 @@ GlobalVariable Property GameDaysPassed Auto
 ReferenceAlias Property Alias__SDRA_master  Auto
 GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 
-Float fVersion = 0.0
+Float fVersion = 0.0 ; DEPRECATED
+Int iVersionNumber = 20180101
 
 Function Maintenance()
 	Actor kPlayer = Game.GetPlayer()
@@ -48,12 +49,12 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If fVersion < 2017122800 ; <--- Edit this value when updating
-		fVersion = 2017122800; and this
+	If iVersionNumber < 20180105 ; <--- Edit this value when updating
+		iVersionNumber = 20180105; and this
 		_SDGVP_version.SetValue(fVersion)
-		Debug.Notification("Updating to SD+ version: " + fVersion as Int)
-		Debug.Trace("[SD] Updating to SD+ version: " + fVersion)
-		StorageUtil.SetIntValue( none, "_SD_version", fVersion as Int)
+		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
+		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)
+		StorageUtil.SetIntValue( none, "_SD_version", iVersionNumber)
 
 		StorageUtil.SetIntValue(none, "_SD_iSanguine", 1)
 		
