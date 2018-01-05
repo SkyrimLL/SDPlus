@@ -19,9 +19,10 @@ bool returnToFirstPerson = false
 Event OnEffectStart(Actor akTarget, Actor akCaster)
 	; Debug.Notification("[SLD] Rest anywhere cast")
 	int r
+	Actor kPlayer = Game.GetPlayer()
 
 	Target = akTarget
-	if(Target != Game.GetPlayer() || Target.GetCombatState() != 0)
+	if(Target != kPlayer || Target.GetCombatState() != 0)
 		self.Dispel()
 		return
 	endif
@@ -35,7 +36,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 
 	int sleepType = StorageUtil.GetIntValue(akTarget, "_SD_iSleepType")
 
-	if (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)
+	if (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		r = RestPrompt.Show()
 		if(r == 1)
 			self.Dispel()
@@ -102,6 +103,7 @@ State EnterSleeping
 	Event OnBeginState()
 		If (StorageUtil.GetStringValue(Target, "_SD_sSleepPose") != "")
 			Debug.SendAnimationEvent(Target, StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
+			Debug.Trace("[SLD] Rest anywhere - sleep pose override detected: " + StorageUtil.GetStringValue(Target, "_SD_sSleepPose"))
 		Else
 			Debug.SendAnimationEvent(Target, "idleLayDownEnter")
 		EndIf
