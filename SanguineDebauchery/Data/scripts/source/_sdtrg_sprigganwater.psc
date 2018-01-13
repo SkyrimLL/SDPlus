@@ -19,11 +19,10 @@ Event OnActivate(ObjectReference akActivator)
         If (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 0) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
             Debug.Messagebox("The spring waters wash away the residual roots clinging to your body.")
 
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gloves"  )
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Boots"  )
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Harness"  )
-            fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gag"  )
-
+            fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
+            fctOutfit.equipNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+            fctOutfit.equipNonGenericDeviceByString ( "Harness", "Spriggan" )
+            fctOutfit.equipNonGenericDeviceByString ( "Gag", "Spriggan" )
 
         ElseIf (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 1) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
             Debug.Messagebox("The spriggan sap flowing in your veins is still too powerful to be washed away so easily. Try dinking at the spring later.")

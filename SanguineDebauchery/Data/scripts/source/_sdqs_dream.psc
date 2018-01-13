@@ -145,7 +145,7 @@ Function sendDreamerBack( Int aiStage )
 			kDreamer.MoveTo( kSafeHarbor )
 			Utility.Wait( 1.0 )
 			kLeave.MoveTo( kEnter )
-		ElseIf (kEnter.GetDistance(kLeave)>200)
+		ElseIf (kEnter.GetDistance(kLeave)>2000)
 			Debug.Trace("[_sdqs_dream] Last location : " + kSafeHarbor)
 			kDreamer.MoveTo( kLeave )
 			Utility.Wait( 1.0 )
@@ -325,7 +325,7 @@ Function positionVictims( Int aiStage )
 	kImperialMan.MoveToMyEditorLocation()
 	kSanguine.MoveToMyEditorLocation()
 
-	if (Utility.RandomInt(0,100) > 90) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >5) 
+	if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >10) 
 
 		kDremoraChallenger.MoveToMyEditorLocation()
 		kDremoraChallenger.enable()
@@ -445,14 +445,11 @@ Function positionVictims( Int aiStage )
 	EndIf	
 
 
-	if (self.GetStageDone(220)==1)
-		; a - r - g - b
-		; Int iAliciaHairColor = Math.LeftShift(255, 24) + Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+	if (self.GetStageDone(240)==1)
 		Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
-		StorageUtil.SetIntValue(kDreamer, "_SLH_iHairColor", iAliciaHairColor ) 
-		StorageUtil.SetIntValue(kDreamer, "_SLH_iHairColorDye", 1 ) 
 		StorageUtil.SetStringValue(kDreamer, "_SLH_sHairColorName", "Alicia red" ) 
-		kDreamer.SendModEvent("SLHRefreshColors")
+		kDreamer.SendModEvent("SLHRefreshHairColor","Dye")
+
 		
 	elseif (self.GetStageDone(230)==1)
 		StorageUtil.SetFloatValue(kDreamer, "_SLH_fBreast", StorageUtil.GetFloatValue(kDreamer, "_SLH_fBreast" ) + 0.5 ) 

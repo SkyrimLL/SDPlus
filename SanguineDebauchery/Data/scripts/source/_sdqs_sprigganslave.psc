@@ -136,10 +136,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		( kSlave as Actor ).RestoreAV("health", ( kSlave as Actor ).GetBaseAV("health") )
 
 		if (!fctOutfit.isArmsEquipped(kSlave as Actor))
-			fctOutfit.equipDeviceSpriggan ( "Gloves", "Roots swarm around you.")	
+			Debug.MessageBox("Roots swarm around you.")	
+			fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
 		EndIf
 		if (!fctOutfit.isLegsEquipped(kSlave as Actor))
-			fctOutfit.equipDeviceSpriggan ( "Boots")
+			fctOutfit.equipNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
 		EndIf	
 
 		Utility.Wait(1.0)
@@ -289,19 +290,21 @@ Event OnUpdateGameTime()
 		Debug.Trace( "[SD] Spriggan punishment: " + _SD_spriggan_punishment.GetValue() )
 
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped (  kSlave as Actor ))
-			fctOutfit.equipDeviceSpriggan ( "Gloves")
+			fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
  
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1 )
 			Debug.Trace("[SD] Skipping spriggan hands - slot in use")
 		EndIf
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isShacklesEquipped (  kSlave as Actor ))
-			fctOutfit.equipDeviceSpriggan ( "Boots")	
+			fctOutfit.equipNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1)
 			Debug.Trace("[SD] Skipping spriggan feet - slot in use")
 		EndIf
 
 		If (_SD_spriggan_punishment.GetValue() >= 2 ) && (!fctOutfit.isBeltEquipped (  kSlave as Actor ))
-			fctOutfit.equipDeviceSpriggan ( "Harness", "The roots spread relentlessly through the rest of your body, leaving you gasping for air.")	
+			Debug.MessageBox("The roots spread relentlessly through the rest of your body, leaving you gasping for air.")
+			fctOutfit.equipNonGenericDeviceByString ( "Harness", "Spriggan" )
 
 			; kPlayer.AddToFaction(SprigganFaction)
 			; kPlayer.AddToFaction(GiantFaction)
@@ -313,7 +316,9 @@ Event OnUpdateGameTime()
 		EndIf
 		
 		If (_SD_spriggan_punishment.GetValue() >= 3 ) && (!fctOutfit.isGagEquipped (  kSlave as Actor))
-			fctOutfit.equipDeviceSpriggan ( "Gag", "The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")	
+			Debug.MessageBox("The roots cover your face, numbing your mind and filling your mouth with a flow of bitter-sweet nectar.")
+			fctOutfit.equipNonGenericDeviceByString ( "Gag", "Spriggan" )
+
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 3 )
 			Debug.Trace("[SD] Skipping spriggan mask - slot in use")
 		EndIf

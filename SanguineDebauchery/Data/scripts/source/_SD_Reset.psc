@@ -130,6 +130,10 @@ Function Maintenance()
 			_SD_enslavement.Stop()
 		EndIf
 
+		If ( _SD_thugslave.IsRunning() )
+			_SD_thugslave.Stop()
+		EndIf
+
 		; If ( _SD_dream.IsRunning() )
 			; Debug.Messagebox("Stopping dream quest for maintenance.\n Run 'startquest _sd_dream' in the console if you do not see 'Sanguine is watching' after this message." )
 

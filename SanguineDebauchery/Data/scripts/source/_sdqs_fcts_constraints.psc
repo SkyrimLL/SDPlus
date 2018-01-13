@@ -199,7 +199,7 @@ Function setLeashCenterRef( ObjectReference kCenterRef )
 Function CollarEffectStart(Actor akTarget, Actor akCaster)
 	kPlayer = Game.GetPlayer()
 	kTarget = akTarget
-	kMaster = _SDRAP_master.GetReference() as ObjectReference
+	kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 
 	If ( kTarget == kPlayer ) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryCollarOn") == 1)
 		togglePlayerControlsOff()
@@ -228,9 +228,10 @@ Function CollarEffectFinish(Actor akTarget, Actor akCaster)
 EndFunction
 
 Function CollarUpdate()
+	kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
+	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
 	bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
 	bIsArmbinderEquipped = fctOutfit.isArmbinderEquipped( kPlayer ) 
-	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
 	bIsYokeBBEquipped = fctOutfit.isYokeBBEquipped( kPlayer ) 
 	bIsArmbinderElbowEquipped = fctOutfit.isArmbinderElbowEquipped( kPlayer ) 
 	bIsCuffsFrontEquipped = fctOutfit.isCuffsFrontEquipped( kPlayer ) 
@@ -346,55 +347,13 @@ Function CollarUpdate()
 		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
 	Endif
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) &&  (!kPlayer.GetCurrentScene()) && (!kPlayer.IsOnMount()) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) && !(_SDGVP_ArmbinderKnee.GetValue()==0)
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")==1) &&  (!kPlayer.GetCurrentScene()) && (!kPlayer.IsOnMount()) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) 
 
-		; If ( Game.IsMovementControlsEnabled() && kTarget == kPlayer)
-		;	togglePlayerControlsOff()
-		; EndIf
-
-		; Debug.Notification("[SD] Stand: " + fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") + " - Stance:" + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
-
-		if (kMaster) && (StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSleepAnywhereON") == 0)
-
-			iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
-			iDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iDisposition")
-			fKneelingDistance = funct.floatWithinRange( 500.0 - ((iTrust as Float) * 5.0), 100.0, 2000.0 )
-
-			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing") && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStanceFollower") != "Standing")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
-
-			ElseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Standing") && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStanceFollower") == "Standing")
-				StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Kneeling" ) 
-				
-			EndIf
-
-			If ( kPlayer.GetDistance( kMaster ) < fKneelingDistance ) && ( kPlayer.GetAnimationVariableFloat("Speed") == 0 ) 
-
-				If ( (Utility.RandomInt( 0, 200 ) >= 198 ) && !fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")
-					Debug.Notification( "The collar forces you down on your knees." )
-				EndIf
-
-				If !fctOutfit.isYokeEquipped( kPlayer) && !fctOutfit.hasTagByString ( kPlayer, "Armbinders", "leather")
-					If (( fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") ) && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")) || ((!fctOutfit.isArmbinderEquipped( kPlayer))  && (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") )
-						CollarStand()
-
-					Else
-						UpdateStanceOverrides()
-					EndIf
-
-				Else
-						CollarStand()
-				EndIf
-
-			Else
-				CollarStand()
-			EndIf
-
-		Else
+		If (sPlayerLastStance != StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 			UpdateStanceOverrides()
-		EndIf
+		endif
 	Else
-		UpdateStanceOverrides()
+		; Automatic kneeling is disabled as of version 3.6
 	EndIf
 
 EndFunction
@@ -437,6 +396,8 @@ EndFunction
 
 Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	Bool bOk
+	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
+	kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 
 	If (kMaster)
 		iTrust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
@@ -498,7 +459,7 @@ Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	  		; bOk = FNIS_aa.SetAnimGroup(kPlayer, "_sneakmt", sneakmt_base, 0, "sanguinesDebauchery", true)  
 			
 	  	else ; set vanilla     
-	  		If (bIsYokeEquipped || bIsArmbinderEquipped || bIsWristRestraintEquipped)
+	  		If (bIsWristRestraintEquipped)
 	  			CollarStand()
 	  		else
 	  			ResetStanceOverrides()

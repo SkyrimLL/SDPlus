@@ -679,6 +679,7 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 
 
 	EndIf
+
 EndFunction
 
 Function ClearAllQuestObjectives()

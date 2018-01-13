@@ -461,7 +461,7 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	kSlave.SendModEvent( "PCSubStance" , "Standing")
 
 	StorageUtil.FormListClear(kMaster, "_SD_lEnslavedFollower")
-
+	fctConstraints.UpdateStanceOverrides()
 
 EndFunction
 
@@ -991,11 +991,13 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	statusMessage =  statusMessage + "\nDisposition: " + masterDisposition  + "\n(Overall: "  + overallMasterDisposition +"/"+ StorageUtil.GetIntValue(kMaster, "_SD_iDispositionThreshold") +")"
 	statusMessage =  statusMessage + "\nDays enslaved: " + (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") as Int) + "/" +  (StorageUtil.GetFloatValue(kMaster, "_SD_iMinJoinDays") as Int)
 
-	if ((StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)<=0)
-		statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " under"
-	else
-		statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " over"
-	EndIf
+	if (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")!=1)
+		if ((StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)<=0)
+			statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " under"
+		else
+			statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " over"
+		EndIf
+	Endif
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")>0)
 		statusMessage =  statusMessage + "\nAllowance: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  + " hours free."

@@ -375,6 +375,7 @@ _sdqs_functions Property funct  Auto
 Quest Property _SDQP_enslavement  Auto  
 
 
+_SDQS_fcts_outfit Property fctOutfit  Auto
 
 
 GlobalVariable Property _SDGV_Demerits  Auto  

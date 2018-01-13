@@ -308,7 +308,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
 		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 			; fctOutfit.equipDeviceByString ( "Armbinder" )
-			PunishSlave(kMaster, kSlave, "Armbinder")
+			PunishSlave(kMaster, kSlave, "WristRestraint")
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
 			; fctOutfit.equipDeviceByString ( "LegCuffs" )

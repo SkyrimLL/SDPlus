@@ -24,28 +24,31 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	;	Utility.Wait(1.0)
 	;EndIf
 
-	; if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Armbinders"  )) && (Utility.RandomInt(0, 100) > 40)
-	;	Debug.Trace("[SD] Removing Sanguine Cuffs")
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "WristRestraints"  )) && (Utility.RandomInt(0, 100) > 40)
+		Debug.Trace("[SD] Removing Sanguine Cuffs")
 	;	fctOutfit.clearDeviceByString ( sDeviceString = "Armbinders", sOutfitString = "", skipEvents = true, skipMutex = true )
-	;	Utility.Wait(1.0)
-	; EndIf
+		fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
+		Utility.Wait(1.0)
+	EndIf
 
 	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "LegCuffs"  ))  
 		Debug.Trace("[SD] Removing Sanguine Shackles")
-		fctOutfit.clearNonGenericDeviceByString ( sDeviceString = "LegCuffs", sOutfitString = "", skipEvents = true, skipMutex = true )
+		fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Sanguine" )
 		Utility.Wait(1.0)
 	EndIf
 
 	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Gag"  )) 
 		Debug.Trace("[SD] Removing Sanguine Gag")
-		fctOutfit.clearNonGenericDeviceByString ( sDeviceString = "Gag", sOutfitString = "", skipEvents = true, skipMutex = true )
+		fctOutfit.clearNonGenericDeviceByString ( "Gag", "Sanguine" )
 		Utility.Wait(1.0)
 		; kDreamer.RemoveItem( _SDA_gag, 1, False  )
 	EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "PiercingVaginal"  )) 
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  ))  && (Utility.RandomInt(0, 100) > 40)
 		Debug.Trace("[SD] Removing Sanguine Artifact")
-		fctOutfit.clearNonGenericDeviceByString ( sDeviceString = "PiercingVaginal", sOutfitString = "", skipEvents = true, skipMutex = true )
+		fctOutfit.clearNonGenericDeviceByString ( "VaginalPiercing", "Sanguine" )
 		Utility.Wait(1.0)
+	elseif (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  ))  
+		Debug.MessageBox("The spell fizzles before removing your piercing.")
 	EndIf
 EndEvent

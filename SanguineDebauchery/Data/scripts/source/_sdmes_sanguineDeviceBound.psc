@@ -16,32 +16,26 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	StorageUtil.SetFormValue(kPlayer, "_SD_fSlaveryGearActor", none)
 	Debug.Trace("[SD] _sdmes_sanguineDeviceBound: OnEffectStart")
 	
-	if (!fctOutfit.isCollarEquipped (  akTarget ))
-		fctOutfit.equipDeviceByString ( sDeviceString = "Collar")
-	Else
-		Debug.Trace("[SD] Skipping sanguine collar - slot in use")
-	EndIf
+	fctOutfit.clearDeviceByString ( "Collar" )
+	fctOutfit.equipNonGenericDeviceByString ( "Collar", "Sanguine" )
 
-	if (!fctOutfit.isArmsEquipped (  akTarget ))  && !fctOutfit.isYokeEquipped( akTarget )  && (Utility.RandomInt(0,100) > 40)
-		fctOutfit.equipDeviceByString ( sDeviceString = "WristRestraints")
-	Else
-		Debug.Trace("[SD] Skipping sanguine cuffs - slot in use")
-	EndIf
+	fctOutfit.clearDeviceByString ( "WristRestraints" )
+	fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
 
 	if (!fctOutfit.isLegsEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
-		fctOutfit.equipDeviceByString ( sDeviceString = "LegCuffs")
+		fctOutfit.equipNonGenericDeviceByString ( "LegCuffs", "Sanguine" )
 	Else
-		Debug.Trace("[SD] Skipping sanguine shackles - slot in use")
+		Debug.Trace("[SD] Skipping sanguine shackles")
 	EndIf
 	
 	if (!fctOutfit.IsGagEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
-		fctOutfit.equipDeviceByString ( sDeviceString = "Gag")
+		fctOutfit.equipNonGenericDeviceByString ( "Gag", "Sanguine" )
 	Else
 		Debug.Trace("[SD] Skipping sanguine gag ")
 	EndIf
 
 	if (!fctOutfit.isPiercingsVaginalEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)
-		fctOutfit.equipDeviceByString ( sDeviceString = "VaginalPiercing")
+		fctOutfit.equipNonGenericDeviceByString ( "VaginalPiercing", "Sanguine" )
 	Else
 		Debug.Trace("[SD] Skipping sanguine piercing ")
 	EndIf

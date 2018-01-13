@@ -31,6 +31,10 @@ Location Property _SDLOC_MarkarthTemple  Auto
 Location Property _SDLOC_RedWave  Auto  
 Location Property _SDLOC_HonningbrewMeadery  Auto  
 Location Property _SDLOC_Morvunskar  Auto  
+Location Property _SDLOC_NightGateInn  Auto  
+Location Property _SDLOC_MarkarthSilverBloodInn  Auto  
+Location Property _SDLOC_RiftenBeeandBarbInn  Auto  
+Location Property _SDLOC_SolitudeWinkingSkeeverInn  Auto  
 
 _SD_ConfigMenu Property kConfig  Auto  
  
@@ -71,6 +75,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Location kLocation = kPlayer.GetCurrentLocation()
 	Bool bSendToDreamworld = False
 	Int iDreamworldVisitModifier = 0
+	Int iDreamworldVisitModifierMax = StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )
 
 	; Disabling for now - removes locked devices instead of cleaning up items in inventory that are not worn
 	; CleanupSlaveDevices(kPlayer)
@@ -103,14 +108,14 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		If  (!bSendToDreamworld) && (ANightQuest.IsCompleted())   
 			Debug.Trace("[_sdras_dreamer]         Sleep after A Night to Remember" )
 			bSendToDreamworld = True
-			iDreamworldVisitModifier = 20
+			iDreamworldVisitModifier = iDreamworldVisitModifier + 20
 		Endif
 
 		; Compatibility with other mods 
 		If 	(!bSendToDreamworld) && ( (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartNordicQueen")==1) || (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartSexbot")==1) || (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartPet")==1) || (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartAlicia")==1) || (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartKin")==1)  || (StorageUtil.GetIntValue(none, "_SLS_iPlayerStartRedWave")==1) || (StorageUtil.GetIntValue(kPlayer, "_SLH_iDaedricInfluence")>30))
 			Debug.Trace("[_sdras_dreamer]         Sleep after first enslavement and A Night to Remember" )
 			bSendToDreamworld = True
-			iDreamworldVisitModifier = 20
+			iDreamworldVisitModifier = iDreamworldVisitModifier + 20
 		Endif
 
 		; Chance of visit to Dreamworld based on location of sleep
@@ -118,47 +123,84 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			Debug.Trace("[_sdras_dreamer]         OnSleep event by location" )
 
 			If kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
-				iDreamworldVisitModifier = 100
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 100
+				iDreamworldVisitModifierMax = 100
 				bSendToDreamworld = True
 			  	
 			elseif kLocation.IsSameLocation(_SDLOC_HaelgaBasement) 
-				iDreamworldVisitModifier = 50
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 20
 				bSendToDreamworld = True
 			  	
 			elseif kLocation.IsSameLocation(_SDLOC_SolitudeTemple) 
-				iDreamworldVisitModifier = 20
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 5
 				bSendToDreamworld = True
 			  	
 			elseif (kLocation.IsSameLocation(_SDLOC_MarkarthTemple) && (StorageUtil.GetIntValue(none, "_SLSD_iDibellaSisterhood")!=1) )
-				iDreamworldVisitModifier = 20
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
 				bSendToDreamworld = True
 			  	
 			elseif kLocation.IsSameLocation(_SDLOC_RedWave) 
-				iDreamworldVisitModifier = 30
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
 				bSendToDreamworld = True
 			  	
 			elseif kLocation.IsSameLocation(_SDLOC_HonningbrewMeadery) 
-				iDreamworldVisitModifier = 70
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 20
 				bSendToDreamworld = True
 
 			elseif kLocation.IsSameLocation(_SDLOC_Morvunskar) 
-				iDreamworldVisitModifier = 70
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 30
 				bSendToDreamworld = True
+
+			elseif kLocation.IsSameLocation(_SDLOC_NightGateInn) 
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 5
+				bSendToDreamworld = True
+
+			elseif kLocation.IsSameLocation(_SDLOC_MarkarthSilverBloodInn) 
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 5
+				bSendToDreamworld = True
+ 
+			elseif kLocation.IsSameLocation(_SDLOC_RiftenBeeandBarbInn) 
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 5
+				bSendToDreamworld = True
+ 
+			elseif kLocation.IsSameLocation(_SDLOC_SolitudeWinkingSkeeverInn) 
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 5  
+				bSendToDreamworld = True
+ 
+
 
 			EndIf
 		EndIf
 
+		; Increase chances when carrying Honningbrew mead
+		Int iHonningbrewMeadBottles = Game.GetPlayer().GetItemCount(HonningbrewMead)
+		if ( iHonningbrewMeadBottles > 0)
+		   iDreamworldVisitModifier = iDreamworldVisitModifier + (iHonningbrewMeadBottles * 2)
+		endIf
+
 		; Chance of visits to Dreamworld on plain sleep based on exposure
 		if (!bSendToDreamworld) && (_SDGVP_sanguine_blessing.GetValue()>1)
-			iDreamworldVisitModifier = _SDGVP_sanguine_blessing.GetValue() as Int
+			iDreamworldVisitModifier = iDreamworldVisitModifier + (_SDGVP_sanguine_blessing.GetValue() as Int)
 			bSendToDreamworld = True
 		EndIf		
 
-		; Force start of Dreamworld if daedric quests completed or daedra killed
-		if (((Game.QueryStat("Daedric Quests Completed") >= 1) || (Game.QueryStat("Daedra Killed") >= 1)) && ((_SDGVP_sanguine_blessing.GetValue() as Int)==0) )
-			iDreamworldVisitModifier = 100
-			bSendToDreamworld = True
-		endif
+		; Force start of Dreamworld if other conditions are met daedric quests completed or daedra killed
+		if ((!bSendToDreamworld) && ((_SDGVP_sanguine_blessing.GetValue() as Int)==0) )
+			if ((Game.QueryStat("Daedric Quests Completed") >= 1) || (Game.QueryStat("Daedra Killed") >= 1))
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
+				bSendToDreamworld = True
+			endif
+
+			if ((Game.QueryStat("Dragon Souls Collected") >= 1)&& (Game.QueryStat("Dragon Souls Collected") < 5)) 
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
+				bSendToDreamworld = True
+			endif
+
+			if (Game.QueryStat("Dragon Souls Collected") >= 5) 
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
+				bSendToDreamworld = True
+			endif
+		EndIf
 
 		; Abort dreamworld if player is arrested or sleeping during Dark Brotherhood quest
 		if ((!bSendToDreamworld) &&  ((dbe.pSleepyTime == 1)  || (kPlayer.IsArrested() == True) || (_SDGVP_enslaved.GetValueInt() == 1)) )
@@ -168,7 +210,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 		; First visit - Sleep after release from first enslavement and not currently enslaved
 		If  (bSendToDreamworld) && ( Self.GetOwningQuest().GetStage() == 0 ) 			
-			iDreamworldVisitModifier = 100
+			; iDreamworldVisitModifier = 100
 		Endif
 	EndIf
 
@@ -176,7 +218,14 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	If (bSendToDreamworld)
 		StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 
-		If ( (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )!= 0) && (Utility.RandomInt(0,100)<  (iDreamworldVisitModifier + StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )) )  )  
+		If (iDreamworldVisitModifier > iDreamworldVisitModifierMax)
+			iDreamworldVisitModifier = iDreamworldVisitModifierMax
+		Endif
+
+		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitModifier: " + iDreamworldVisitModifier )
+		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitModifierMax: " + iDreamworldVisitModifierMax )
+
+		If ( (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )!= 0) && (Utility.RandomInt(0,100)<  iDreamworldVisitModifier  )  )  
 			; 	Debug.Notification("Reality slips away...")
 			; 	Debug.Notification("[dream] Sanguine finds you in your dream")
 	 		;	Game.FadeOutGame(true, true, 5.0, 10.0)
@@ -188,7 +237,10 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				_SD_dreamQuest.SetStage(15)
 
 			EndIf
+		Else
+			Debug.Trace("[_sdras_dreamer]         Better luck next time" )
 		Endif
+
 	else
 		Debug.Trace("[_sdras_dreamer]         OnSleep event failed" )
 
@@ -252,3 +304,5 @@ Function CleanupSlaveDevices(Actor akActor)
 	EndWhile	
 EndFunction
 
+
+Potion Property HonningbrewMead  Auto  

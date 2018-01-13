@@ -22,6 +22,8 @@ fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
 fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
 fctOutfit.clearDeviceByString( sDeviceString = "Gloves" )
 fctOutfit.clearDeviceByString( sDeviceString = "PiercingVaginal" )
+        fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
+        fctOutfit.clearNonGenericDeviceByString ( "Gag", "Sanguine" )
 
 		funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE

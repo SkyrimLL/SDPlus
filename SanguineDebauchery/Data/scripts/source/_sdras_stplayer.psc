@@ -106,11 +106,6 @@ Event OnPlayerAlicia(String _eventName, String _args, Float _argc = -1.0, Form _
 	; 	- harness or corset
 	; 	- boots
 
-	PlayerActor.SendModEvent("SDEquipDevice",   "Collar|restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Corset|restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves|restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Boots|restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Gag|harness,ring")
 	; PlayerActor.SendModEvent("SDEquipDevice",   "Blindfold")
 	; PlayerActor.SendModEvent("SDEquipDevice",   "LegCuffs")
 

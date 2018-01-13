@@ -719,9 +719,13 @@ Event OnSDDreamworldPull(String _eventName, String _args, Float _argc = 15.0, Fo
 		Debug.Trace("[_sdras_player] StageID is 0, using this stage instead: " + stageID)
 	endif
 
-	If (_SDGVP_sanguine_blessing.GetValue() > 0) 
-		_SD_dreamQuest.SetStage(stageID)
-	EndIf
+	If (_SD_dreamQuest.GetStageDone(10))
+		If (_SDGVP_sanguine_blessing.GetValue() > 0) 
+			_SD_dreamQuest.SetStage(stageID)
+		EndIf
+	Else
+		_SD_dreamerScript.startDreamworld()
+	Endif
 
 EndEvent
 
@@ -750,9 +754,9 @@ Event OnSDModSanguineBlessing(String _eventName, String _args, Float _argc = -1.
 		StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
 	; endif
 
-	if ((_SDGVP_sanguine_blessings.GetValue() >= 2 ) && (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==1))
-		SendModEvent("_SLS_PlayerAlicia")
-	endif
+	; if ((_SDGVP_sanguine_blessings.GetValue() >= 2 ) && (StorageUtil.GetIntValue(none, "_SLS_iStoriesPlayerAlicia")==0))
+	;	SendModEvent("_SLS_PlayerAlicia")
+	; endif
 
 	Debug.Trace("[SD] 	- Sanguine blessings: " + _SDGVP_sanguine_blessings.GetValue() )
 EndEvent
@@ -1049,7 +1053,7 @@ Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "] [" + _argc + "]")
 
 	; Split _args between Device and Tags (separated by ':')
-	iTagsIndex = StringUtil.Find(_args, ":")
+	iTagsIndex = StringUtil.Find(_args, "|")
 	if (iTagsIndex==-1)
 	 	sDevice = _args
 		sTags = ""

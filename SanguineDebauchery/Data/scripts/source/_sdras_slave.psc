@@ -1366,7 +1366,7 @@ Function _slaveStatusTicker()
 				iHoursLastCheck = 1
 			EndIf
 
-			Debug.Trace( "[SD] Hours passed: " + iHoursLastCheck)
+			Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
 
 			fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
 			HourlyTickerLastCallTime = timePassed
@@ -1376,6 +1376,7 @@ Function _slaveStatusTicker()
 
 			if (iPunishmentCheck==6)
 				enslavement.UpdateSlaveState( kMaster, kSlave )
+				enslavement.UpdateSlaveFollowerState(kSlave)
 				iPunishmentCheck = 0
 			Endif
 		endif
@@ -1422,6 +1423,7 @@ Function _slaveStatusTicker()
 
 		; Safety - removal of punishments after one day
 		enslavement.UpdateSlaveState( kMaster, kSlave )
+		enslavement.UpdateSlaveFollowerState(kSlave)
 
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 0) 
 			enslavement.RewardSlave(kMaster,kSlave,"Gag")
@@ -1465,8 +1467,8 @@ Function _slaveStatusTicker()
 	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
 	StorageUtil.SetFloatValue(kMaster, "_SD_iMasterBuyOut", fBuyout ) 
 
-	enslavement.UpdateSlaveState(kMaster ,kSlave)
-	enslavement.UpdateSlaveFollowerState(kSlave)
+	; enslavement.UpdateSlaveState(kMaster ,kSlave)
+	; enslavement.UpdateSlaveFollowerState(kSlave)
 
 	; Update GlobalVariables based on storageUtil values
 	if (( kMaster.GetSleepState() != 0 ) && (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0))

@@ -109,12 +109,13 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 ; aHost.RemoveItem( oHostArmor.GetBaseObject(), aHost.GetItemCount( oHostArmor.GetBaseObject() )  )
 	
 	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Harness"  )
-		fctOutfit.clearDeviceSpriggan ( "Harness", "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+		Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+        fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
 	EndIf
 
 	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Gag"  )
-		fctOutfit.clearDeviceSpriggan ( "Gag" )	
-	Endif
+        fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
+   	Endif
 
 ; _SD_sprigganHusk.Enable()
 
@@ -214,8 +215,8 @@ Game.GetPlayer().RemoveFromFaction(SprigganFaction)
 Game.GetPlayer().RemoveFromFaction(GiantFaction)
 StorageUtil.SetIntValue(Game.GetPlayer(),"_SD_iDisableDreamworldOnSleep", 0)
 
-fctOutfit.clearDeviceSpriggan ( sDeviceString = "Boots"  )
-fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gloves"  )
+        fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Spriggan" )        
+        fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
 
 SendModEvent("SDSprigganStop")
 
@@ -275,13 +276,13 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Harness"  )
 		Debug.Messagebox("The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")
 		; fctOutfit.setDeviousOutfitBelt (  iDevOutfit = 7, bDevEquip = False, sDevMessage = "The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
-        fctOutfit.clearDeviceSpriggan ( sDeviceString = "Harness"  )
+        fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
 
    	EndIf
 
 	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Gag"  )
 		; fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
-        fctOutfit.clearDeviceSpriggan ( sDeviceString = "Gag"  )
+        fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
 	Endif
 
 ; _SD_sprigganHusk.Enable()
