@@ -186,6 +186,7 @@ Function _Maintenance()
  	UnregisterForAllModEvents()
 	Debug.Trace("[_sdras_player] Register events")
 	RegisterForModEvent("PCSubEnslave",   "OnSDEnslave")
+	RegisterForModEvent("PCSubEnslaveRadius",   "OnSDEnslaveRadius")
 	RegisterForModEvent("PCSubEnslaveMenu",   "OnSDEnslaveMenu")
 	RegisterForModEvent("PCSubSurrender",   "OnSDSurrender")
 	RegisterForModEvent("PCSubSex",   "OnSDStorySex")
@@ -643,6 +644,33 @@ Function SDSurrender(Actor kActor, String SurrenderMode)
 	EndIf
 EndFunction
 
+Event OnSDEnslaveRadius(String _eventName, String _args = "200.0", Float _argc = 1.0, Form _sender)
+	float fRadius = _args as Float
+	Actor kPotentialMaster
+	Actor kIgnoreActor = _sender as Actor
+	Int iAttempts = 0
+	Bool bMasterFound = false
+
+	While ((iAttempts<5) || (!bMasterFound))
+		fRadius = fRadius + (iAttempts * 50.0)
+		kPotentialMaster = SexLab.FindAvailableActor(kPlayer, fRadius)  
+		if ( ( ((kIgnoreActor!=None) && (kPotentialMaster!=kIgnoreActor)) || (kIgnoreActor==None)) && (kPotentialMaster!=None))
+			bMasterFound = True
+		Else
+			Debug.Trace("[_sdras_player] No potential master found around player - Radius:" + fRadius)
+		Endif
+
+		iAttempts = iAttempts + 1
+	Endwhile
+
+	if (bMasterFound)
+		SDSurrender(kPotentialMaster, _args )
+	else
+		Debug.Trace("[_sdras_player] No potential master found around player" )
+		SDFree()
+	endif
+EndEvent
+
 Event OnSDEnslave(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	SDSurrender(_sender as Actor, _args )
 EndEvent
@@ -660,8 +688,10 @@ Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 EndEvent
 
 Function SDFree()
-	_SDQP_enslavement.Stop()
-	Wait( fRFSU * 5.0 )
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		_SDQP_enslavement.Stop()
+		Wait( fRFSU * 5.0 )
+	Endif
 EndFunction
 
 Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form _sender)

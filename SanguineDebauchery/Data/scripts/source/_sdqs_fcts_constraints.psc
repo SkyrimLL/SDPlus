@@ -313,11 +313,6 @@ Function CollarUpdate()
 	;	StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", "Standing" ) 
 	; EndIf
 
-	; this shouldn't happen - clear armbinder if it did happen
-	If bIsYokeEquipped 
-		fctOutfit.clearDeviceByString ( sDeviceString = "WristRestraints" )
-	Endif
-
 	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
 	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 1)
 	StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 1)
@@ -361,28 +356,41 @@ EndFunction
 Function CollarStand()
 	Bool bOk
 	Int zadOverrideIndex
+	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
+	bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
+	bIsArmbinderEquipped = fctOutfit.isArmbinderEquipped( kPlayer ) 
+	bIsYokeBBEquipped = fctOutfit.isYokeBBEquipped( kPlayer ) 
+	bIsArmbinderElbowEquipped = fctOutfit.isArmbinderElbowEquipped( kPlayer ) 
+	bIsCuffsFrontEquipped = fctOutfit.isCuffsFrontEquipped( kPlayer ) 
+	bIsStraitJacketEquipped  = fctOutfit.isStraitJacketEquipped( kPlayer ) 
 
 	If bIsArmbinderEquipped  || bIsStraitJacketEquipped
+		Debug.Notification("[SD] Reset stance for Armbinder")
 		zadOverrideIndex = 0 ;   0 - bound hands in back / 1 - yoke
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsYokeEquipped 
-		zadOverrideIndex = 1 ;   0 - bound hands in back / 1 - yoke
+		Debug.Notification("[SD] Reset stance for Yoke")
+		zadOverrideIndex = 1 ;   
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsArmbinderElbowEquipped 
-		zadOverrideIndex = 3 ;   0 - bound hands in back / 1 - yoke
+		Debug.Notification("[SD] Reset stance for Armbinder Elbow")
+		zadOverrideIndex = 3 ;   
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsYokeBBEquipped 
-		zadOverrideIndex = 4 ;   0 - bound hands in back / 1 - yoke
+		Debug.Notification("[SD] Reset stance for YokeBB")
+		zadOverrideIndex = 4 ;  
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsCuffsFrontEquipped 
-		zadOverrideIndex = 5 ;   0 - bound hands in back / 1 - yoke
+		Debug.Notification("[SD] Reset stance for Cuffs Front")
+		zadOverrideIndex = 5 ;   
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") ; && (iOverride != 6)
+		Debug.Notification("[SD] Reset stance for default standing")
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
 
 		if (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")	
