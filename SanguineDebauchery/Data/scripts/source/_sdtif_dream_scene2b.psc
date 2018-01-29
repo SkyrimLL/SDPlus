@@ -7,7 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Self.GetOwningQuest().setstage(210)
-	funct.SanguineRape( akSpeaker, Game.GetPlayer() , "Sex")
+	funct.SanguineRape( akSpeaker, Game.GetPlayer() , "Oral")
 ;END CODE
 EndFunction
 ;END FRAGMENT

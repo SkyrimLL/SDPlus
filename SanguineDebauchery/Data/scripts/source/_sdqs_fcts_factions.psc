@@ -356,8 +356,8 @@ Bool Function checkIfSlaver ( Actor akActor )
 			isSlaver = False
 		ElseIf (isPlayerAlreadyOwned )
 			; Debug.Notification("Go away.. Your master must be looking for you.")
-			Debug.Trace("[SD] 		Player is already owned by a ZAP compatible mod - aborting")
-			isSlaver = False
+			Debug.Trace("[SD] 		Player is already owned by a ZAP compatible mod")
+			; isSlaver = False
 		Endif
 	else
 		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverHumanoid") as Bool

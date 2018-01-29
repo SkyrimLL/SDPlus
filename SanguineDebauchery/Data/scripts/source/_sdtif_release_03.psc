@@ -6,8 +6,8 @@ Scriptname _sdtif_release_03 Extends TopicInfo Hidden
 Function Fragment_4(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor kPlayer = _SDRAP_player.GetReference() as Actor
- 
+Actor kPlayer = Game.GetPlayer(); _SDRAP_player.GetReference() as Actor
+
 
 ;		funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
 ;		funct.removeItemsInList( kPlayer, _SDFLP_punish_items )

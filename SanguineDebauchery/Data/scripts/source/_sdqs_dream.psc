@@ -18,16 +18,22 @@ ReferenceAlias Property _SDRAP_nord_girl  Auto
 ReferenceAlias Property _SDRAP_imperial_man  Auto    
 ReferenceAlias Property _SDRAP_eisheth  Auto  
 ReferenceAlias Property _SDLA_safeHarbor  Auto  
+ReferenceAlias Property _SDRAP_SuccubusPlayer  Auto  
+ObjectReference Property _SD_SuccubusPlayerMarker  Auto  
+
 
 Quest Property _SD_dream_destinations  Auto  
 Quest Property SamQuest  Auto  
 Quest Property HaelgaQuest  Auto  
+Quest Property AliciaStartQuest Auto
 _sdqs_dream_destinations property dreamDest Auto
 SexLabFrameWork Property SexLab Auto
 
 ObjectReference Property _SD_SafetyDest  Auto  
+ObjectReference Property _SD_MoonshadowDest  Auto  
 
 Outfit Property _SDO_sanguine_chosen  Auto  
+Outfit Property _SDO_sanguine_gear  Auto  
 
 Outfit Property _SDO_naked  Auto  
 
@@ -50,6 +56,7 @@ GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_enslavedSpriggan Auto
 GlobalVariable Property _SDGVP_gender_restrictions Auto
 ObjectReference Property _SD_DremoraChallenger  Auto  
+ObjectReference Property _SD_DremoraInvader  Auto  
 
 ReferenceAlias Property _SDRAP_redguard_girl  Auto  
 
@@ -57,6 +64,7 @@ SPELL Property _SDSP_SanguineBound  Auto
 
 GlobalVariable Property _SDGVP_sanguine_blessing auto
 
+ObjectReference[] Property MoonshadowRoseList  Auto  
 
 
 Cell Property _SD_SanguineDreamworld  Auto  
@@ -105,6 +113,11 @@ Actor kImperialMan
 Actor kEisheth
 Actor kSvana
 Actor kHaelga
+Actor kDremoraChallenger  
+Actor kDremoraInvader
+Actor kSuccubusPlayer
+ObjectReference kSuccubusPlayerRef
+
 Form fGagDevice = None
 Bool bDeviousDeviceEquipped
 
@@ -127,6 +140,11 @@ Function sendDreamerBack( Int aiStage )
 		kLeave.MoveTo( kEnter )
 	ElseIf (aiStage == 25) || (aiStage == 99); safety destination from pulled chain
 		kDreamer.MoveTo( _SD_SafetyDest )
+		Utility.Wait( 1.0 )
+		kLeave.MoveTo( kEnter )
+	ElseIf (aiStage == 100); safety destination from pulled chain
+		initMoonshadow()
+		kDreamer.MoveTo( _SD_MoonshadowDest )
 		Utility.Wait( 1.0 )
 		kLeave.MoveTo( kEnter )
 	Else
@@ -174,6 +192,9 @@ Event OnInit()
 	kNordGirl = _SDRAP_nord_girl.GetReference() as Actor
 	kImperialMan = _SDRAP_imperial_man.GetReference() as Actor
 	kEisheth = _SDRAP_eisheth.GetReference() as Actor
+	kDremoraChallenger = _SD_DremoraChallenger as Actor
+	kDremoraInvader = _SD_DremoraInvader as Actor
+	kSuccubusPlayer = _SDRAP_SuccubusPlayer.GetReference() as Actor
 EndEvent
 
 Function positionVictims( Int aiStage )
@@ -199,6 +220,13 @@ Function positionVictims( Int aiStage )
 	kSanguine_sam = _SDRAP_sanguine_sam.GetReference() as Actor
 	kSanguine_haelga = _SDRAP_sanguine_haelga.GetReference() as Actor
 	kSanguine_svana = _SDRAP_sanguine_svana.GetReference() as Actor
+	kDremoraChallenger = _SD_DremoraChallenger as Actor
+	kDremoraInvader = _SD_DremoraInvader as Actor
+	kSuccubusPlayer = _SDRAP_SuccubusPlayer.GetReference() as Actor
+	kSuccubusPlayerRef=_SDRAP_SuccubusPlayer.GetReference()
+
+	kDremoraChallenger.disable()
+	kDremoraInvader.disable()
 
 	If !(kSanguine_m as ObjectReference).IsDisabled()
 		(kSanguine_m as ObjectReference).Disable()
@@ -299,7 +327,6 @@ Function positionVictims( Int aiStage )
 	Endif
 	_SDRAP_sanguine.ForceRefTo( kSanguine as ObjectReference )
 
-	Actor kDremoraChallenger = _SD_DremoraChallenger as Actor
 	Utility.Wait(1.0)
 
 	(kSanguine as ObjectReference).Enable()
@@ -326,17 +353,28 @@ Function positionVictims( Int aiStage )
 	kSanguine.MoveToMyEditorLocation()
 
 	if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >10) 
-
 		kDremoraChallenger.MoveToMyEditorLocation()
 		kDremoraChallenger.enable()
 
 		if (kDremoraChallenger.IsDead() )
 			kDremoraChallenger.Resurrect()
 		EndIf
-	Else
-		kDremoraChallenger.disable()
-
 	EndIf
+
+	if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >5) 
+		kDremoraInvader.MoveToMyEditorLocation()
+		kDremoraInvader.enable()
+
+		if (kDremoraInvader.IsDead() )
+			kDremoraInvader.Resurrect()
+		EndIf
+	EndIf
+
+	If (Self.GetStageDone(256))
+		_SD_SuccubusPlayerMarker.enable()
+		kSuccubusPlayerRef.MoveTo(_SD_SuccubusPlayerMarker)
+		kSuccubusPlayer.SetOutfit(_SDO_sanguine_gear)
+	Endif
 
 	kDreamer.StopCombatAlarm()
 	kDreamer.StopCombat()
@@ -389,7 +427,10 @@ Function positionVictims( Int aiStage )
   		kDreamer.AddToFaction(_SDP_BunkhouseFaction)
 	endIf
 
- 
+ 	If (AliciaStartQuest.GetStageDone(10)==0)
+ 		AliciaStartQuest.SetStage(10)
+ 	EndIf
+ 	
 	; iFormIndex = _SD_sanguine_outfits.GetSize()
 	; Outfit _SD_Sanguine_outfit = _SD_sanguine_outfits.GetAt(Utility.RandomInt(0,iFormIndex)) as Outfit
 	; kSanguine.setoutfit( _SD_Sanguine_outfit )
@@ -445,15 +486,15 @@ Function positionVictims( Int aiStage )
 	EndIf	
 
 
-	if (self.GetStageDone(240)==1)
+	if (self.GetStageDone(230)==1)
 		Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
 		StorageUtil.SetStringValue(kDreamer, "_SLH_sHairColorName", "Alicia red" ) 
 		kDreamer.SendModEvent("SLHRefreshHairColor","Dye")
 
 		
-	elseif (self.GetStageDone(230)==1)
+	elseif (self.GetStageDone(220)==1)
 		StorageUtil.SetFloatValue(kDreamer, "_SLH_fBreast", StorageUtil.GetFloatValue(kDreamer, "_SLH_fBreast" ) + 0.5 ) 
-		StorageUtil.SetFloatValue(kDreamer, "_SLH_fWeight", StorageUtil.GetFloatValue(kDreamer, "_SLH_fWeight" ) + 20.0 ) 
+		; StorageUtil.SetFloatValue(kDreamer, "_SLH_fWeight", StorageUtil.GetFloatValue(kDreamer, "_SLH_fWeight" ) + 20.0 ) 
 		kDreamer.SendModEvent("SLHRefresh")
 		kDreamer.SendModEvent("SLHRefreshColors")
 	endIf
@@ -474,6 +515,21 @@ EndFunction
 bool Function CheckXPMSERequirements(Actor akActor, bool isFemale)
 	return XPMSELib.CheckXPMSEVersion(akActor, isFemale, XPMSE_VERSION, true) && XPMSELib.CheckXPMSELibVersion(XPMSELIB_VERSION) && SKSE.GetPluginVersion("NiOverride") >= NIOVERRIDE_VERSION && NiOverride.GetScriptVersion() >= NIOVERRIDE_SCRIPT_VERSION
 EndFunction
+
+Function initMoonshadow()
+	Int iRandomRose = Utility.RandomInt(0, MoonshadowRoseList.Length - 1)
+	Int iIdx = 0
+	While ( iIdx < MoonshadowRoseList.Length )
+		if (iIdx == iRandomRose)
+			StorageUtil.SetIntValue(MoonshadowRoseList[iIdx] as Form, "_SD_iRandomRose", 1)
+		Else
+			StorageUtil.SetIntValue(MoonshadowRoseList[iIdx] as Form, "_SD_iRandomRose", 0)
+		Endif
+		iIdx += 1
+	EndWhile
+EndFunction
+
+
 
 
 

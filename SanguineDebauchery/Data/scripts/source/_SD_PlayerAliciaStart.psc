@@ -19,10 +19,6 @@ EndFunction
 Function Fragment_2()
 ;BEGIN CODE
 SetObjectiveDisplayed( 10, false)
-
-if (dreamQuest.GetStageDone(200) == 0)
-    dreamQuest.Setstage(200)
-endif
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -6,9 +6,9 @@ Scriptname _sdtif_release_06 Extends TopicInfo Hidden
 Function Fragment_4(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-Actor kPlayer = _SDRAP_player.GetReference() as Actor
+Actor kPlayer = Game.GetPlayer(); _SDRAP_player.GetReference() as Actor
 
-funct.SanguineRape( akSpeaker, akSpeaker.GetDialogueTarget() , "Aggressive")
+funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")
 ;END CODE
 EndFunction
 ;END FRAGMENT

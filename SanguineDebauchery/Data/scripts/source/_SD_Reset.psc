@@ -49,8 +49,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20180105 ; <--- Edit this value when updating
-		iVersionNumber = 20180105; and this
+	If iVersionNumber < 20180125 ; <--- Edit this value when updating
+		iVersionNumber = 20180125; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)
@@ -101,6 +101,7 @@ Function Maintenance()
 		If ( _SD_controller.IsRunning() )
 		;	_SD_controller.Stop()
 		;	Debug.Messagebox("Stopping main SD quest for maintenance.\n Open the SD menu and select BEGIN again." )
+			_SD_controller.SetObjectiveDisplayed(0,false)
 		EndIf
 
 		If ( _SD_dream_destinations.IsRunning() )

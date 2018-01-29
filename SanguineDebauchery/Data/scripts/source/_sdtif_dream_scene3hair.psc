@@ -8,9 +8,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor PlayerActor = Game.GetPlayer()
 
-	Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
-	StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Alicia red" ) 
-	PlayerActor.SendModEvent("SLHRefreshHairColor","Dye")
+Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Dark Red" ) 
+PlayerActor.SendModEvent("SLHRefreshHairColor","Dye")
 ;END CODE
 EndFunction
 ;END FRAGMENT
