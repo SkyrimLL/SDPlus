@@ -47,7 +47,7 @@ EndEvent
 
 Event OnEffectFinish(Actor akTarget, Actor akCaster)
 	Debug.Trace("[SD] _sdmes_sanguineDeviceBound: OnEffectFinish")
-	If (fctOutfit.countDeviousSlotsByKeyword (  akTarget, "_SD_DeviousSanguine" )>0) && (Utility.RandomInt(0,100) > 40)
+	If (fctOutfit.countDeviousSlotsByKeyword (  akTarget, "_SD_DeviousSanguine" )>0) 
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 	EndIf
 

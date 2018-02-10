@@ -6,6 +6,8 @@ Scriptname _sdtif_dreamworld_02 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+fctOutfit.clearNonGenericDeviceByString( sDeviceString = "WristRestraint")
+Utility.Wait(1.0)
 akSpeaker.SendModEvent("PCSubSex")
 ;END CODE
 EndFunction
@@ -22,5 +24,5 @@ GlobalVariable Property _SDGVP_punishments  Auto
 SexLabFramework Property SexLab  Auto  
 
 _sdqs_functions Property funct  Auto  
-
+_sdqs_fcts_outfit Property fctOutfit  Auto  
 Message Property _SD_rapeMenu  Auto  

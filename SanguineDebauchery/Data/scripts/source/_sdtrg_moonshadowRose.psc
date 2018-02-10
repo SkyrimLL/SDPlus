@@ -8,6 +8,7 @@ Faction Property WEPlayerEnemy  Auto
 Quest Property _SD_dreamQuest  Auto  
 Actor Property pClone auto 
 ReferenceAlias Property tempFollowerAlias  Auto  
+Quest Property DA01  Auto  
 
 ObjectReference pCloneRef
 ObjectReference arPortal
@@ -19,8 +20,10 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 	Actor akTwilightGuardian = TwilightGuardianRef as Actor
 	Form fSanguineRose = SanguineRoseRef as Form
 
-	akTwilightGuardian.RemoveFromFaction(WEPlayerFriend)
-	akTwilightGuardian.AddToFaction(WEPlayerEnemy)
+	If (DA01.GetStageDone(100)==0)
+		akTwilightGuardian.RemoveFromFaction(WEPlayerFriend)
+		akTwilightGuardian.AddToFaction(WEPlayerEnemy)
+	Endif
 
 	If ((StorageUtil.GetIntValue(fSanguineRose, "_SD_iRandomRose") == 1) && (!bCloneFound))
 		; Debug.MessageBox("This is the one!")

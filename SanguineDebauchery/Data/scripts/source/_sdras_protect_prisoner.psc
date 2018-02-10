@@ -49,13 +49,16 @@ Event OnInit()
 EndEvent
 
 Event OnHit(ObjectReference akAggressor, Form akSource, Projectile akProjectile, bool abPowerAttack, bool abSneakAttack, bool abBashAttack, bool abHitBlocked)
-	If (akAggressor)
+	Actor kActor
+
+	If (akAggressor) && (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved")==1)
 		If ( ( akAggressor as Actor ).IsHostileToActor( kSelf ) && Self.GetOwningQuest().GetStage() < 30 )
 			Int idx = _SDRAP_protecters.Length
 			While ( idx > 0 )
 				idx -= 1
-				if ( _SDRAP_protecters[idx].GetReference() as Actor )
-					( _SDRAP_protecters[idx].GetReference() as Actor ).StartCombat( akAggressor as Actor )
+				kActor = _SDRAP_protecters[idx].GetReference() as Actor
+				if ( kActor ) && (!kActor.IsDead())
+					kActor.StartCombat( akAggressor as Actor )
 				EndIf
 			EndWhile
 		EndIf

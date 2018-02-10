@@ -8,8 +8,9 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Int randomNum = Utility.RandomInt(0, 100)
  
+fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
+
 If (randomNum > 70)
-	fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
 	akSpeaker.SendModEvent("PCSubPunish") ; Punishment
 
 ElseIf (randomNum > 30)

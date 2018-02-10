@@ -865,22 +865,15 @@ Function clearSlaveFactions( Actor akSlave )
 	; // iterate list from first added to last added
 	Debug.Trace("[SD] Clear Slave Factions for " + akSlave)
 
-	int currentDaysPassed = Game.QueryStat("Days Passed")
 	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
 	int i = 0
-	int daysJoined 
 	Form slaveFaction 
 
 	while(i < valueCount)
 		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
 		If (slaveFaction != none) && (StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")!=  -1 )
-			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")
-
-			Debug.Trace("[SD]      Slave Faction[" + i + "] expired: " + slaveFaction.GetName() + " " + slaveFaction + " Days Since Joined: " + daysJoined )
-
-			; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
 			StorageUtil.SetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction",  -1 )
-			Debug.Trace("[SD]    Slave faction removed: " + slaveFaction.GetName())
+			Debug.Trace("[SD]    Slave faction cleared: " + slaveFaction.GetName())
 
 			akSlave.RemoveFromFaction( slaveFaction as Faction )
 		Endif
@@ -889,6 +882,25 @@ Function clearSlaveFactions( Actor akSlave )
 	endwhile
 EndFunction
 
+Function removeSlaveFactions( Actor akSlave )
+	; // iterate list from first added to last added
+	Debug.Trace("[SD] Remove Slave Factions for " + akSlave)
+
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveFactions")
+	int i = 0
+	Form slaveFaction 
+
+	while(i < valueCount)
+		slaveFaction = StorageUtil.FormListGet(akSlave, "_SD_lSlaveFactions", i)
+		If (slaveFaction != none) && (StorageUtil.GetIntValue( slaveFaction, "_SD_iDaysPassedJoinedFaction")!=  -1 )
+			Debug.Trace("[SD]    Slave faction removed: " + slaveFaction.GetName())
+
+			akSlave.RemoveFromFaction( slaveFaction as Faction )
+		Endif
+
+		i += 1
+	endwhile
+EndFunction
 
 Function displaySlaveFactions( Actor akSlave )
 	; // iterate list from first added to last added

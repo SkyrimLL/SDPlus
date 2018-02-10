@@ -12,7 +12,7 @@ ObjectReference arPortal = (akSpeaker as ObjectReference).PlaceAtMe(Game.GetForm
 
 Utility.wait( 3.0 )
 
-dream.sendDreamerBack( 15 ) ; back to where PC came from
+dream.sendDreamerBack( 25 )
 ;END CODE
 EndFunction
 ;END FRAGMENT

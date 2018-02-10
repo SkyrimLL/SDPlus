@@ -142,7 +142,7 @@ Function sendDreamerBack( Int aiStage )
 		kDreamer.MoveTo( _SD_SafetyDest )
 		Utility.Wait( 1.0 )
 		kLeave.MoveTo( kEnter )
-	ElseIf (aiStage == 100); safety destination from pulled chain
+	ElseIf (aiStage == 100); moonshadow soul garden
 		initMoonshadow()
 		kDreamer.MoveTo( _SD_MoonshadowDest )
 		Utility.Wait( 1.0 )

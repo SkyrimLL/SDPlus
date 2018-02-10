@@ -35,6 +35,7 @@ Location Property _SDLOC_NightGateInn  Auto
 Location Property _SDLOC_MarkarthSilverBloodInn  Auto  
 Location Property _SDLOC_RiftenBeeandBarbInn  Auto  
 Location Property _SDLOC_SolitudeWinkingSkeeverInn  Auto  
+Location Property _SDLOC_SanguineDreamworld  Auto  
 
 _SD_ConfigMenu Property kConfig  Auto  
  
@@ -176,8 +177,6 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				iDreamworldVisitModifier = iDreamworldVisitModifier + 5  
 				bSendToDreamworld = True
  
-
-
 			EndIf
 		EndIf
 
@@ -192,6 +191,9 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		Int iSanguineVisits = (_SDGVP_sanguine_blessing.GetValue() as Int)
 		if (!bSendToDreamworld) && (iSanguineVisits>1)
 			Debug.Trace("[_sdras_dreamer]         OnSleep event by sanguine exposure - _SDGVP_sanguine_blessing: " + iSanguineVisits)
+			if (iSanguineVisits>30)
+				iSanguineVisits = 30
+			Endif
 			iDreamworldVisitModifier = iDreamworldVisitModifier + iSanguineVisits
 			bSendToDreamworld = True
 		EndIf		
@@ -223,6 +225,13 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			bSendToDreamworld = False
 		EndIf
 
+		If (kLocation)
+			if kLocation.IsSameLocation(_SDLOC_SanguineDreamworld) 
+				Debug.Trace("[_sdras_dreamer]         OnSleep event by location - Dreamworld detected - teleport aborted" )
+				bSendToDreamworld = False
+			endIf
+		endIf
+		
 		; First visit - Sleep after release from first enslavement and not currently enslaved
 		; If  (bSendToDreamworld) && ( Self.GetOwningQuest().GetStage() == 0 ) 			
 			; iDreamworldVisitModifier = 100

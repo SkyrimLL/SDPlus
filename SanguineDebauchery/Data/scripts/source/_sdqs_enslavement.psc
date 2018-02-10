@@ -672,6 +672,15 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 				EndIf
 			EndIf
 
+			Faction DefeatDialogueBlockFaction = StorageUtil.GetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction") As Faction
+			If (DefeatDialogueBlockFaction != None)
+				If (nthActor.IsInFaction(DefeatDialogueBlockFaction))
+			 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is in Dialogue Blocking Faction from Defeat" )
+			 		nthActor.RemoveFromFaction(DefeatDialogueBlockFaction)
+				Else
+			 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is NOT in Dialogue Blocking Faction from Defeat" )
+				Endif
+			Endif
 			nthActor.EvaluatePackage()
 
 		EndIf

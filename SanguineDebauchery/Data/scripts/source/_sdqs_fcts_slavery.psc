@@ -35,7 +35,6 @@ GlobalVariable Property _SDGVP_SlaveryLevel  Auto
 
 
  
-
 Quest Property slaveryQuest  Auto  
 
 ; Properties redefined to allow upgrade to SD+ V3 without a need for a new save game
@@ -431,6 +430,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 EndFunction
  
 function StopSlavery( Actor kMaster, Actor kSlave)
+
 
 	; API variables
 	StorageUtil.SetFormValue(kSlave, "_SD_LastOwner", kMaster)

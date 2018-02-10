@@ -7,6 +7,10 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 self.GetOwningQuest().setstage(232)
+
+if (self.GetOwningQuest().getstagedone(234)) && (self.GetOwningQuest().getstagedone(236))
+	self.GetOwningQuest().setstage(238)
+endif
 ;END CODE
 EndFunction
 ;END FRAGMENT

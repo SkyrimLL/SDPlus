@@ -573,6 +573,21 @@ Function questShutdown()
 
 	_SD_CollarStrangleImod.Remove()
 
+	idx = 0
+	While idx < _SDRAP_companions.Length
+		nthActor = _SDRAP_companions[idx].GetReference() as Actor
+		If ( nthActor )
+			If ( nthActor.GetNoBleedoutRecovery() )
+				nthActor.SetNoBleedoutRecovery( False )
+			EndIf
+			nthActor.EvaluatePackage()
+			Debug.SendAnimationEvent( nthActor, "IdleForceDefaultState" )
+			fctFactions.removeSlaveFactions( nthActor ) 
+			fctOutfit.clearDeviceNPCByString ( nthActor, "Armbinder" )
+		EndIf
+		idx += 1
+	EndWhile
+
 	If (_SDGVP_state_joined.GetValue()==0)
 		fctFactions.clearSlaveFactions( slave )
 	EndIf
@@ -584,20 +599,7 @@ Function questShutdown()
 		idx += 1
 	EndWhile
 
-	idx = 0
-	While idx < _SDRAP_companions.Length
-		nthActor = _SDRAP_companions[idx].GetReference() as Actor
-		If ( nthActor )
-			If ( nthActor.GetNoBleedoutRecovery() )
-				nthActor.SetNoBleedoutRecovery( False )
-			EndIf
-			nthActor.EvaluatePackage()
-			Debug.SendAnimationEvent( nthActor, "IdleForceDefaultState" )
-			fctFactions.clearSlaveFactions( nthActor ) 
-			fctOutfit.clearDeviceNPCByString ( nthActor, "Armbinder" )
-		EndIf
-		idx += 1
-	EndWhile
+
 
 	StorageUtil.FormListClear(slave, "_SD_lEnslavedFollower")
 	Debug.SendAnimationEvent( slave, "IdleForceDefaultState" )
@@ -673,6 +675,15 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 				nthActor.SetOutfit( _SDOP_naked )
 				nthActor.SetOutfit( _SDOP_naked, True )
 
+				Faction DefeatDialogueBlockFaction = StorageUtil.GetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction") As Faction
+				If (DefeatDialogueBlockFaction != None)
+					If (nthActor.IsInFaction(DefeatDialogueBlockFaction))
+				 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is in Dialogue Blocking Faction from Defeat" )
+				 		nthActor.RemoveFromFaction(DefeatDialogueBlockFaction)
+					Else
+				 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is NOT in Dialogue Blocking Faction from Defeat" )
+					Endif
+				Endif
 			EndIf
 			idx += 1
 		EndWhile

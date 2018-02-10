@@ -93,6 +93,7 @@ FormList Property _SDFL_banned_sex  Auto
 FormList Property _SDFL_allowed_creature_sex  Auto  
 
 SPELL Property Calm  Auto  
+SPELL Property _SDSP_SanguineBoundClear  Auto  
 Message Property _SD_safetyMenu  Auto  
 Message Property _SD_enslaveMenu Auto
 
@@ -102,12 +103,16 @@ ObjectReference Property _SD_SprigganSwarm Auto
 
 GlobalVariable Property _SDGVP_config_slavery_level_mult Auto
 
+GlobalVariable Property _SDGVP_isPlayerEnslaved auto
 GlobalVariable Property _SDGVP_isPlayerPregnant auto
 GlobalVariable Property _SDGVP_isPlayerSuccubus auto
 GlobalVariable Property _SDGVP_isPlayerHRT auto
 GlobalVariable Property _SDGVP_isPlayerTG auto
 GlobalVariable Property _SDGVP_isPlayerBimbo auto
-GlobalVariable Property _SDGVP_isPlayerEnslaved auto
+GlobalVariable Property _SDGVP_allowPlayerHRT auto
+GlobalVariable Property _SDGVP_allowPlayerTG auto
+GlobalVariable Property _SDGVP_allowPlayerBimbo auto
+
 
 GlobalVariable Property _SDGVP_sanguine_blessings auto
 
@@ -153,6 +158,9 @@ Bool isPlayerSuccubus = False
 Bool isPlayerHRT = False
 Bool isPlayerTG = False
 Bool isPlayerBimbo = False
+Bool allowPlayerHRT = False
+Bool allowPlayerTG = False
+Bool allowPlayerBimbo = False
 
 String lastStance = ""
 bool bOk
@@ -276,6 +284,9 @@ Function _Maintenance()
 	isPlayerHRT = StorageUtil.GetIntValue( kPlayer, "_SLH_isHRT") as Bool
 	isPlayerTG = StorageUtil.GetIntValue( kPlayer, "_SLH_isTG") as Bool
 	isPlayerBimbo = StorageUtil.GetIntValue( kPlayer, "_SLH_isBimbo") as Bool
+	allowPlayerHRT = StorageUtil.GetIntValue( kPlayer, "_SLH_allowHRT") as Bool
+	allowPlayerTG = StorageUtil.GetIntValue( kPlayer, "_SLH_allowTG") as Bool
+	allowPlayerBimbo = StorageUtil.GetIntValue( kPlayer, "_SLH_allowBimbo") as Bool
 
 	_SDGVP_isPlayerPregnant.SetValue(isPlayerPregnant as Int)
 	_SDGVP_isPlayerSuccubus.SetValue(isPlayerSuccubus as Int)
@@ -283,6 +294,9 @@ Function _Maintenance()
 	_SDGVP_isPlayerHRT.SetValue(isPlayerHRT as Int)
 	_SDGVP_isPlayerTG.SetValue(isPlayerTG as Int)
 	_SDGVP_isPlayerBimbo.SetValue(isPlayerBimbo as Int)
+	_SDGVP_allowPlayerHRT.SetValue(allowPlayerHRT as Int)
+	_SDGVP_allowPlayerTG.SetValue(allowPlayerTG as Int)
+	_SDGVP_allowPlayerBimbo.SetValue(allowPlayerBimbo as Int)
  
 EndFunction
 
@@ -1447,7 +1461,15 @@ State monitor
 				; Slavery level = 6 - inverted cooldown (1.1 * normal rate) - sextoys don't get to cooldown
 				fNewExposure =  fOldExposure * fExposureMultiplier * ( ( (0.1 +  StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") ) as Float) / 6.0)			
 
+				If ( _SDQP_thugs.IsRunning() )
+		 			Debug.Trace("[_sdras_player]  Clean up thugs quest after enslavement")
+					_SDQP_thugs.Stop()
+		 		endif
 
+				If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0) 
+		 			Debug.Trace("[_sdras_player]  Clean up sanguine devices at night")
+					_SDSP_SanguineBoundClear.RemoteCast( kPlayer, kPlayer, kPlayer )
+				EndIf
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
 

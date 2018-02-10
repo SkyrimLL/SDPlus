@@ -45,6 +45,14 @@ Function Maintenance()
 	    Debug.Messagebox("SexLab Dialogues is updating. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery. Check your load order and mod versions if you see this message more than once." )
 	EndIf	
  
+ 	Faction DefeatDialogueBlockFaction = Game.GetFormFromFile(0x0008C862, "SexLabDefeat.esp") As Faction
+	If (DefeatDialogueBlockFaction != None)
+		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", DefeatDialogueBlockFaction as Form)
+	Else
+		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", None)
+	Endif
+
+
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
