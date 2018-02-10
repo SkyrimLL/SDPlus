@@ -16,6 +16,8 @@ GlobalVariable Property _SLD_GiftDialogueON Auto
 GlobalVariable Property _SLD_BeastMenuDialogueON Auto  
 GlobalVariable Property _SLD_BlacksmithQuestON Auto  
 
+Book Property _SLD_debugSpell Auto
+
 ; SexLabFramework     property SexLab Auto
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
@@ -56,6 +58,7 @@ bool	_BeastMenuDialogueON		= true
 bool	_BlacksmithQuestON		= true
 bool	_RegisterCustomRaces		= false
 bool	_ClearGiantRaces		= false
+bool	_GetDebugSpell		= false
 
 ; INITIALIZATION ----------------------------------------------------------------------------------
 
@@ -116,8 +119,9 @@ event OnPageReset(string a_page)
 	_GiftDialogueON			= _SLD_GiftDialogueON.GetValue() as Int
 	_BeastMenuDialogueON	= _SLD_BeastMenuDialogueON.GetValue() as Int
 	_BlacksmithQuestON		= _SLD_BlacksmithQuestON.GetValue() as Int
-	_RegisterCustomRaces		= false
-	_ClearGiantRaces = false
+	; _RegisterCustomRaces		= false
+	; _ClearGiantRaces = false
+	; _GetDebugSpell	= false
  
 
 	If (a_page == "Features")
@@ -151,6 +155,9 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Compatibility settings")
 		AddToggleOptionST("STATE_RegisterCustomRaces","Register custom races", _RegisterCustomRaces	 as Float) 
 		AddToggleOptionST("STATE_ClearGiantRaces","Clear giant races", _ClearGiantRaces	 as Float) 
+
+		AddHeaderOption(" Debug")
+		AddToggleOptionST("STATE_GetDebugSpell","Get debug spell book", _GetDebugSpell	 as Float) 
 
 
 	ElseIf (a_page == "Quests")
@@ -443,6 +450,7 @@ endState
 state STATE_RegisterCustomRaces ; TOGGLE
 	event OnSelectST()
 		_RegisterRaces()
+		_RegisterCustomRaces  = Math.LogicalXor( 1, (_RegisterCustomRaces  as Int) )
 		SetToggleOptionValueST( _RegisterCustomRaces )
 		ForcePageReset()
 	endEvent
@@ -462,6 +470,7 @@ endState
 state STATE_ClearGiantRaces ; TOGGLE
 	event OnSelectST()
 		_ClearRaces()
+		_ClearGiantRaces  = Math.LogicalXor( 1, (_ClearGiantRaces  as Int) )
 		SetToggleOptionValueST( _ClearGiantRaces )
 		ForcePageReset()
 	endEvent
@@ -472,10 +481,31 @@ state STATE_ClearGiantRaces ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Remove SexLab regsitration for giant races (giants, dragons) and some ridiculous races (bears, sabrecats, chickens, skeevers).")
+		SetInfoText("Remove SexLab registration for giant races (giants, dragons) and some ridiculous races (bears, sabrecats, chickens, skeevers).")
 	endEvent
 
 endState
+
+; AddToggleOptionST("STATE_GetDebugSpell","Clear giant races", _GetDebugSpell	 as Float)
+state STATE_GetDebugSpell ; TOGGLE
+	event OnSelectST() 
+		Game.GetPlayer().AddItem(_SLD_debugSpell, 1)
+		_GetDebugSpell  = Math.LogicalXor( 1, (_GetDebugSpell  as Int) )
+		SetToggleOptionValueST( _GetDebugSpell )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST() 
+		SetToggleOptionValueST( false )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Get a spellbook with a debug spell to analyze and repair followers and masters NPCs.")
+	endEvent
+
+endState
+
 float function fMin(float  a, float b)
 	if (a<=b)
 		return a
