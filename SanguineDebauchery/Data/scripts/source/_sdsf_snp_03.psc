@@ -2,6 +2,36 @@
 ;NEXT FRAGMENT INDEX 115
 Scriptname _sdsf_snp_03 Extends Scene Hidden
 
+;BEGIN FRAGMENT Fragment_87
+Function Fragment_87()
+;BEGIN CODE
+snp._SDUIP_phase = 2
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+
+fctSlavery.PlayPunishmentIdle(  )
+
+Utility.Wait(4.0)
+
+
+; Game.DisablePlayerControls( abMovement = true )
+; Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18(ReferenceAlias akAlias)
+;BEGIN CODE
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+; Utility.Wait(2)
+; Actor female = _SDRAP_female.GetReference() as Actor
+; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
+;female.PushActorAway(female, 0.1)
+; Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_95
 Function Fragment_95()
 ;BEGIN CODE
@@ -48,8 +78,8 @@ ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
 
 marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
 
-if (fctOutfit.isArmbinderEquipped( female ))  
-	fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
+if (fctOutfit.isWristRestraintEquipped( female ))  
+	enslave.ClearSinglePunishmentDevice(female , "WristRestraints" )
 	StorageUtil.SetIntValue(female , "_SD_iHandsFreeSex", 1)
 EndIf
 
@@ -63,49 +93,10 @@ Game.SetPlayerAIDriven()
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_87
-Function Fragment_87()
-;BEGIN CODE
-snp._SDUIP_phase = 2
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-
-fctSlavery.PlayPunishmentIdle(  )
-
-Utility.Wait(4.0)
-
-
-; Game.DisablePlayerControls( abMovement = true )
-; Game.SetPlayerAIDriven( False )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_68
-Function Fragment_68()
-;BEGIN CODE
-snp._SDUIP_phase = 1
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_94
 Function Fragment_94()
 ;BEGIN CODE
 snp._SDUIP_phase = 3
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18(ReferenceAlias akAlias)
-;BEGIN CODE
-; Game.FadeOutGame(True, True, 3.0, 2.0)
-; Utility.Wait(2)
-; Actor female = _SDRAP_female.GetReference() as Actor
-; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
-;female.PushActorAway(female, 0.1)
-; Game.FadeOutGame(False, True, 15.0, 5.0)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -158,21 +149,15 @@ _SDGVP_snp_busy.SetValue(-1)
 	fctSlavery.UpdateSlaveStatus( kPlayer, "_SD_iSlaveryExposure", modValue = 1)
 
 Utility.Wait(2)
-; Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
 
-	If (Utility.RandomInt(0,100) > 90) && (male != kMaster )
-		; Keep hands free by accident
-		If (Utility.RandomInt(0,100) > 70) 
-			female.SendModEvent("da_ForceBleedout")
-		EndIf
-
-	ElseIf (!fctOutfit.isArmbinderEquipped(female)) && (StorageUtil.GetIntValue(female, "_SD_iHandsFree") == 0)
-		fctOutfit.setMasterGearByRace( male, female )
-		fctOutfit.equipDeviceByString( sDeviceString = "Armbinders" )
-	EndIf
-
-
-; female.SendModEvent("da_ForceBlackout")
+;BEGIN FRAGMENT Fragment_68
+Function Fragment_68()
+;BEGIN CODE
+snp._SDUIP_phase = 1
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
 ;END CODE
 EndFunction
 ;END FRAGMENT

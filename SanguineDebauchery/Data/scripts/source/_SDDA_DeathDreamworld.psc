@@ -15,10 +15,10 @@ Bool Function QuestCondition(Location akLocation, Actor akAggressor, Actor akFol
 	thisPlayer = Game.GetPlayer()
 	thisAggressor = akAggressor
 
-	Debug.Trace("[SDDA] Death Dreamworld start enslavement attempt (Humanoid):" + thisAggressor)
-	Debug.Trace("	start master is Humanoid:" + StorageUtil.GetIntValue( thisAggressor, "_SD_bIsSlaverHumanoid"))
+	Debug.Trace("[SDDA] Death Dreamworld" )
+	; Debug.Trace("	start master is Humanoid:" + StorageUtil.GetIntValue( thisAggressor, "_SD_bIsSlaverHumanoid"))
 	
-	if (StorageUtil.GetIntValue(thisPlayer, "_SD_iSanguineBlessings") > 0)  && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslaved")==0)
+	if (StorageUtil.GetIntValue(thisPlayer, "_SD_iSanguineBlessings") > 0)  ; && (StorageUtil.GetIntValue(thisPlayer, "_SD_iEnslaved")==0)
 
 		return true
 	else

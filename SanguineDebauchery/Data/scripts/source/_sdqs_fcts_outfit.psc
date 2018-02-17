@@ -236,15 +236,10 @@ Function initSlaveryGearByActor ( Actor kActor )
 	if (bIsNewRace)
 		; Init slavery gear for that race
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
-			registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal" )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="WristRestraint", deviceKeyword=libs.zad_DeviousHeavyBondage, genericDeviceTags="armbinder,arms,metal,iron,zap"  )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="cuffs,legs,metal,iron,zap" )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt , genericDeviceTags="belt,metal,iron"  )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal , genericDeviceTags="plug,vaginal,soulgem"  )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal , genericDeviceTags="plug,anal,soulgem"  )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag , genericDeviceTags="gag,leather,zap"  )
-			registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, genericDeviceTags="blindfold,leather,zap"  )
+			registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="", deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="WristRestraint", deviceKeyword=libs.zad_DeviousHeavyBondage , genericDeviceTags="none" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs , genericDeviceTags="none" )
 		Else
 			registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Redguard Scrawl (belly)" )
 			registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, genericDeviceTags="collar,metal,padded,zap" )
@@ -493,6 +488,7 @@ Function registerSlaveryOptions ( Form fRace, Bool allowCollar, Bool allowArmbin
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatDuration", raceSlaveTatDuration )
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatColor", raceSlaveTatColor )
 	StorageUtil.SetIntValue(fRace, "_SD_iSlaveryTatGlow", raceSlaveTatGlow )
+	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryExpectedStance", defaultStance)
 	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryDefaultStance", defaultStance)
 	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTat", raceSlaveTat)
 	StorageUtil.SetStringValue(fRace, "_SD_sSlaveryTatType", "SD+")
@@ -1236,8 +1232,15 @@ Bool Function ActorHasKeywordByString(actor akActor, String deviousKeyword = "")
 EndFunction
 
 Bool Function isDeviceEquippedString( Actor akActor,  String sDeviceString  )
+	; If device is armbinder, yoke, etc .. use getDeviousKeywordByString wihth 'WristRestraint' keyword as fallback
+	; Else
+	Bool bDeviceFound = akActor.WornHasKeyword(getDeviousKeywordByString(sDeviceString))
 
-	Return akActor.WornHasKeyword(getDeviousKeywordByString(sDeviceString))
+	If (!bDeviceFound) && ( (sDeviceString == "Armbinder") || (sDeviceString == "Armbinders") || (sDeviceString == "Yoke") || (sDeviceString == "YokeBB") || (sDeviceString == "ArmbinderElbow") || (sDeviceString == "CuffsFront"))
+		bDeviceFound = akActor.WornHasKeyword(getDeviousKeywordByString("WristRestraint"))
+	Endif
+
+	Return bDeviceFound
 EndFunction
 
 Bool Function isDeviceEquippedKeyword( Actor akActor,  String sKeyword, String sDeviceString  )

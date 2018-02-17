@@ -7,34 +7,9 @@ Scriptname _sdqfs_thugslave_01 Extends Quest Hidden
 LocationAlias Property Alias__SDLA_boss4 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_boss4
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_boss4 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_note
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_note Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_boss2
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_boss2 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_mistwatch_door
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_mistwatch_door Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SDLA_boss2
 ;ALIAS PROPERTY TYPE LocationAlias
 LocationAlias Property Alias__SDLA_boss2 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_slave
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_slave Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_thug_2
@@ -42,14 +17,64 @@ ReferenceAlias Property Alias__SDRA_slave Auto
 ReferenceAlias Property Alias__SDRA_thug_2 Auto
 ;END ALIAS PROPERTY
 
+;BEGIN ALIAS PROPERTY _SDRA_master
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_master Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_mistwatch_christer
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_mistwatch_christer Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_slave
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_slave Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_dropoff
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_dropoff Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_boss
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_boss Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_boss3
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_boss3 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_thug_1
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_thug_1 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDLA_boss
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_boss Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_boss2
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_boss2 Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDRA_note
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_note Auto
+;END ALIAS PROPERTY
+
 ;BEGIN ALIAS PROPERTY _SDRA_boss1
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDRA_boss1 Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDLA_boss1
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss1 Auto
+;BEGIN ALIAS PROPERTY _SDRA_boss3
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDRA_boss3 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_dropoff_box
@@ -62,14 +87,9 @@ ReferenceAlias Property Alias__SDRA_dropoff_box Auto
 ReferenceAlias Property Alias__SDRA_marker_capture Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_thug_1
+;BEGIN ALIAS PROPERTY _SDRA_boss4
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_thug_1 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_dropoff
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_dropoff Auto
+ReferenceAlias Property Alias__SDRA_boss4 Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDRA_mistwatch_bridge
@@ -77,160 +97,15 @@ LocationAlias Property Alias__SDLA_dropoff Auto
 ReferenceAlias Property Alias__SDRA_mistwatch_bridge Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_master
+;BEGIN ALIAS PROPERTY _SDRA_mistwatch_door
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_master Auto
+ReferenceAlias Property Alias__SDRA_mistwatch_door Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDRA_boss
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_boss Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_boss3
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_boss3 Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_boss3
+;BEGIN ALIAS PROPERTY _SDLA_boss1
 ;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss3 Auto
+LocationAlias Property Alias__SDLA_boss1 Auto
 ;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_boss
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_boss Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDRA_mistwatch_christer
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDRA_mistwatch_christer Auto
-;END ALIAS PROPERTY
-
-;BEGIN FRAGMENT Fragment_28
-Function Fragment_28()
-;BEGIN CODE
-Game.EnablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven( False)
-
-If ( kAMaster )
-	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-If ( kAThug_1 )
-	kAThug_1.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-If ( kAThug_2 )
-	kAThug_2.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-
-
-_SDGVP_inTransit.SetValue(0)
-SendModEvent("SDThugTransitStop")
-SendModEvent("SDmasterTransitStop")
-
-	; Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
-	_SDQP_enslavement.Stop()
-
-	While ( !_SDQP_enslavement.IsStopped() )
-	EndWhile
-
-	; _SDQP_WIThugs.Stop()
-	; Stop()
-	SetStage(50)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_38
-Function Fragment_38()
-;BEGIN CODE
-Game.EnablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven( False)
-
-If ( kAMaster )
-	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-
-Utility.Wait(5)
-
-_SDGVP_inTransit.SetValue(0)
-SendModEvent("SDThugTransitStop")
-SendModEvent("SDMasterTransitStop")
-
-If (kaBoss == None)
-	if (kAMaster)
-             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
-       else
-		SendModEvent("PCSubEnslaveRadius","300.0")
-	endif
-Else
-If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
-        Actor PlayerRef = Game.GetPlayer()
-        Alias__SDRA_Master.GetReference().moveTo( kBoss )
-	
-        Game.FadeOutGame(true, true, 0.1, 15)
-        PlayerRef.moveTo( kBoss )
-	Game.FadeOutGame(false, true, 0.01, 10)
-
-	StorageUtil.SetIntValue(kABoss, "_SD_iForcedSlavery", 1)
-
-	Debug.MessageBox( "You finish the march in a blur and eventually wake up in front of your new master.")
-        kABoss.SendModEvent("PCSubTransfer")
-Else
-	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
-	if (kAMaster)
-             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
-       else
-		SendModEvent("PCSubEnslaveRadius","300.0")
-	endif
-
-EndIf
-Endif
-
-Utility.Wait(500)
-SetStage(50)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-; stage 0
-Actor kMaster  = Alias__SDRA_master.GetActorReference()
-Actor kThug_1 = Alias__SDRA_thug_1.GetActorReference()
-Actor kThug_2 = Alias__SDRA_thug_2.GetActorReference()
-
-Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
-kChrister.Disable()
-
-ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
-kDoor.Lock( False );
-
-ObjectReference kBridge = Alias__SDRA_mistwatch_bridge.GetReference()
-kBridge.SetOpen()
-
-If ( kMaster )
-	kMaster.StopCombat()
-EndIf
-If ( kThug_1 )
-	kThug_1.StopCombat()
-EndIf
-If ( kThug_2 )
-	kThug_2.StopCombat()
-EndIf
-
-_SDGVP_inTransit.SetValue(1)
-SendModEvent("SDThugTransitStart")
-
-alignParties( )
-; main script monitors distances and
-; advances to stage 10 when ready
-	
-;SetStage(10)
-;END CODE
-EndFunction
-;END FRAGMENT
 
 ;BEGIN FRAGMENT Fragment_34
 Function Fragment_34()
@@ -249,216 +124,6 @@ SendModEvent("SDMasterTransitStart")
 ; main script monitors distances and
 ; advances to stage 10 when ready
 ; SetStage(10)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_12
-Function Fragment_12()
-;BEGIN CODE
-; advances to stage 40 when ready
-fctInventory.stashAllStolenGoods( kAMaster, kContainer )
-fctInventory.stashAllStolenGoods( kAThug_1, kContainer )
-fctInventory.stashAllStolenGoods( kAThug_2, kContainer )
-
-_SDSP_thug_scene_03.Start()
-SetObjectiveDisplayed( 30 )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_32
-Function Fragment_32()
-;BEGIN CODE
-; stage 0
-Actor kMaster  = Alias__SDRA_master.GetActorReference()
-
-Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
-kChrister.Disable()
-
-ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
-kDoor.Lock( False );
-
-ObjectReference kBridge = Alias__SDRA_mistwatch_bridge.GetReference()
-kBridge.SetOpen()
-
-If ( kMaster )
-	kMaster.StopCombat()
-EndIf
-
-_SDGVP_inTransit.SetValue(1)
-SendModEvent("SDMasterTransitStart")
-
-; alignParties( )
-; main script monitors distances and
-; advances to stage 10 when ready
-; SetStage(10)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_9
-Function Fragment_9()
-;BEGIN CODE
-Game.EnablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven( False)
-
-If ( kAMaster )
-	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-If ( kAThug_1 )
-	kAThug_1.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-If ( kAThug_2 )
-	kAThug_2.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-
-Debug.Notification( "You arrive to your new home.")
-Utility.Wait(5)
-
-_SDGVP_inTransit.SetValue(0)
-SendModEvent("SDThugTransitStop")
-SendModEvent("SDMasterTransitStop")
-
-If (kaBoss == None)
-	if (kAMaster)
-             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
-       else
-		SendModEvent("PCSubEnslaveRadius","300.0")
-	endif
-Else
-If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
-       kABoss.SendModEvent("PCSubTransfer")
-Else
-	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
-	if (kAMaster)
-             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
-       else
-		SendModEvent("PCSubEnslaveRadius","300.0")
-	endif
-
-
-
-EndIf
-Endif
-
-Utility.Wait(500)
-SetStage(50)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_36
-Function Fragment_36()
-;BEGIN CODE
-Game.EnablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven( False)
-
-If ( kAMaster )
-	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
-EndIf
-
-Debug.Notification( "You arrive to your new home.")
-Utility.Wait(5)
-
-_SDGVP_inTransit.SetValue(0)
-SendModEvent("SDThugTransitStop")
-SendModEvent("SDMasterTransitStop")
-
-If (kaBoss == None)
-	if (kAMaster)
-             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
-       else
-		SendModEvent("PCSubEnslaveRadius","300.0")
-	endif
-Else
-If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
-       kABoss.SendModEvent("PCSubTransfer")
-Else
-	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
-	if (kAMaster)
-             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
-       else
-		SendModEvent("PCSubEnslaveRadius","300.0")
-	endif
-
-EndIf
-Endif
-
-Utility.Wait(500)
-SetStage(50)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
-;BEGIN CODE
-( Alias__SDRA_master.GetActorReference() as Actor).DeleteWhenAble()
-( Alias__SDRA_thug_1.GetActorReference() as Actor).DeleteWhenAble()
-( Alias__SDRA_thug_2.GetActorReference() as Actor).DeleteWhenAble()
-
-Alias__SDRA_master.Clear()
-Alias__SDRA_thug_1.Clear()
-Alias__SDRA_thug_2.Clear()
-Alias__SDRA_boss.Clear()
-Alias__SDLA_boss.Clear()
-Alias__SDRA_marker_capture.Clear()
-
-CompleteAllObjectives()
-SetObjectiveDisplayed( 30, False )
-SetObjectiveDisplayed( 40, False )
-
-If ( _SDQP_WIThugs.IsRunning() )
-	_SDQP_WIThugs.Stop();
-EndIf
-
-Reset()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_15
-Function Fragment_15()
-;BEGIN CODE
-If ( kAMaster )
-	kAMaster.AddToFaction( _SDFP_wiplayerenemy )
-EndIf
-If ( kAThug_1 )
-	kAThug_1.AddToFaction( _SDFP_wiplayerenemy )
-EndIf
-If ( kAThug_2 )
-	kAThug_2.AddToFaction( _SDFP_wiplayerenemy )
-EndIf
-;
-; kmyQuest.stashAllStolenGoods( kAMaster, kContainer )
-; kmyQuest.stashAllStolenGoods( kAThug_1, kContainer )
-; kmyQuest.stashAllStolenGoods( kAThug_2, kContainer )
-kNote.Enable()
-
-Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
-kChrister.Enable()
-
-ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
-;kDoor.Lock();
-
-;_SDQP_enslavement.Stop()
-
-SetObjectiveDisplayed( 30, False )
-SetObjectiveDisplayed( 40 )
-_SDSP_thug_scene_04.Start()
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-; Game.ForceThirdPerson()
-; Game.DisablePlayerControls( abMovement = true )
-; Game.SetPlayerAIDriven()
-
-_SDSP_thug_scene_02.Start()
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -520,6 +185,349 @@ Endif
 
 Utility.Wait(500)
 SetStage(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+; stage 0
+Actor kMaster  = Alias__SDRA_master.GetActorReference()
+Actor kThug_1 = Alias__SDRA_thug_1.GetActorReference()
+Actor kThug_2 = Alias__SDRA_thug_2.GetActorReference()
+
+Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
+kChrister.Disable()
+
+ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
+kDoor.Lock( False );
+
+ObjectReference kBridge = Alias__SDRA_mistwatch_bridge.GetReference()
+kBridge.SetOpen()
+
+If ( kMaster )
+	kMaster.StopCombat()
+EndIf
+If ( kThug_1 )
+	kThug_1.StopCombat()
+EndIf
+If ( kThug_2 )
+	kThug_2.StopCombat()
+EndIf
+
+_SDGVP_inTransit.SetValue(1)
+SendModEvent("SDThugTransitStart")
+
+alignParties( )
+; main script monitors distances and
+; advances to stage 10 when ready
+	
+;SetStage(10)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_15
+Function Fragment_15()
+;BEGIN CODE
+If ( kAMaster )
+	kAMaster.AddToFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_1 )
+	kAThug_1.AddToFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_2 )
+	kAThug_2.AddToFaction( _SDFP_wiplayerenemy )
+EndIf
+;
+; kmyQuest.stashAllStolenGoods( kAMaster, kContainer )
+; kmyQuest.stashAllStolenGoods( kAThug_1, kContainer )
+; kmyQuest.stashAllStolenGoods( kAThug_2, kContainer )
+kNote.Enable()
+
+Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
+kChrister.Enable()
+
+ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
+;kDoor.Lock();
+
+;_SDQP_enslavement.Stop()
+
+SetObjectiveDisplayed( 30, False )
+SetObjectiveDisplayed( 40 )
+_SDSP_thug_scene_04.Start()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_9
+Function Fragment_9()
+;BEGIN CODE
+Game.EnablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven( False)
+
+If ( kAMaster )
+	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_1 )
+	kAThug_1.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_2 )
+	kAThug_2.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+
+Debug.Notification( "You arrive to your new home.")
+Utility.Wait(5)
+
+_SDGVP_inTransit.SetValue(0)
+SendModEvent("SDThugTransitStop")
+SendModEvent("SDMasterTransitStop")
+
+If (kaBoss == None)
+	if (kAMaster)
+             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
+       else
+		SendModEvent("PCSubEnslaveRadius","300.0")
+	endif
+Else
+If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
+       kABoss.SendModEvent("PCSubTransfer")
+Else
+	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
+	if (kAMaster)
+             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
+       else
+		SendModEvent("PCSubEnslaveRadius","300.0")
+	endif
+
+
+
+EndIf
+Endif
+
+Utility.Wait(500)
+SetStage(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_12
+Function Fragment_12()
+;BEGIN CODE
+; advances to stage 40 when ready
+fctInventory.stashAllStolenGoods( kAMaster, kContainer )
+fctInventory.stashAllStolenGoods( kAThug_1, kContainer )
+fctInventory.stashAllStolenGoods( kAThug_2, kContainer )
+
+_SDSP_thug_scene_03.Start()
+SetObjectiveDisplayed( 30 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_38
+Function Fragment_38()
+;BEGIN CODE
+Game.EnablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven( False)
+
+If ( kAMaster )
+	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+
+Utility.Wait(5)
+
+_SDGVP_inTransit.SetValue(0)
+SendModEvent("SDThugTransitStop")
+SendModEvent("SDMasterTransitStop")
+
+If (kaBoss == None)
+	if (kAMaster)
+             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
+       else
+		SendModEvent("PCSubEnslaveRadius","300.0")
+	endif
+Else
+If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
+        Actor PlayerRef = Game.GetPlayer()
+        Alias__SDRA_Master.GetReference().moveTo( kBoss )
+	
+        Game.FadeOutGame(true, true, 0.1, 15)
+        PlayerRef.moveTo( kBoss )
+	Game.FadeOutGame(false, true, 0.01, 10)
+
+	StorageUtil.SetIntValue(kABoss, "_SD_iForcedSlavery", 1)
+
+	Debug.MessageBox( "You finish the march in a blur and eventually wake up in front of your new master.")
+        kABoss.SendModEvent("PCSubTransfer")
+Else
+	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
+	if (kAMaster)
+             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
+       else
+		SendModEvent("PCSubEnslaveRadius","300.0")
+	endif
+
+EndIf
+Endif
+
+Utility.Wait(500)
+SetStage(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_28
+Function Fragment_28()
+;BEGIN CODE
+Game.EnablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven( False)
+
+If ( kAMaster )
+	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_1 )
+	kAThug_1.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+If ( kAThug_2 )
+	kAThug_2.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+
+
+_SDGVP_inTransit.SetValue(0)
+SendModEvent("SDThugTransitStop")
+SendModEvent("SDmasterTransitStop")
+
+	; Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
+	_SDQP_enslavement.Stop()
+
+	While ( !_SDQP_enslavement.IsStopped() )
+	EndWhile
+
+	; _SDQP_WIThugs.Stop()
+	; Stop()
+	SetStage(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_36
+Function Fragment_36()
+;BEGIN CODE
+Game.EnablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven( False)
+
+If ( kAMaster )
+	kAMaster.RemoveFromFaction( _SDFP_wiplayerenemy )
+EndIf
+
+Debug.Notification( "You arrive to your new home.")
+Utility.Wait(5)
+
+_SDGVP_inTransit.SetValue(0)
+SendModEvent("SDThugTransitStop")
+SendModEvent("SDMasterTransitStop")
+
+If (kaBoss == None)
+	if (kAMaster)
+             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
+       else
+		SendModEvent("PCSubEnslaveRadius","300.0")
+	endif
+Else
+If ( !kABoss.IsDead() && !kABoss.IsDisabled() ) 
+       kABoss.SendModEvent("PCSubTransfer")
+Else
+	Debug.Notification("$SD_MESSAGE_MASTER_IS_DEAD_LUCK")
+	if (kAMaster)
+             kAMaster.SendModEvent("PCSubEnslaveRadius","300.0")
+       else
+		SendModEvent("PCSubEnslaveRadius","300.0")
+	endif
+
+EndIf
+Endif
+
+Utility.Wait(500)
+SetStage(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+; Game.ForceThirdPerson()
+; Game.DisablePlayerControls( abMovement = true )
+; Game.SetPlayerAIDriven()
+
+_SDSP_thug_scene_02.Start()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
+;BEGIN CODE
+If (Alias__SDRA_master.GetActorReference())
+;	( Alias__SDRA_master.GetActorReference() as Actor).DeleteWhenAble()
+Endif
+
+If (Alias__SDRA_thug_1.GetActorReference() )
+;	( Alias__SDRA_thug_1.GetActorReference() as Actor).DeleteWhenAble()
+endif
+
+If (Alias__SDRA_thug_2.GetActorReference())
+;	( Alias__SDRA_thug_2.GetActorReference() as Actor).DeleteWhenAble()
+Endif
+
+Alias__SDRA_master.Clear()
+Alias__SDRA_thug_1.Clear()
+Alias__SDRA_thug_2.Clear()
+Alias__SDRA_boss.Clear()
+Alias__SDLA_boss.Clear()
+Alias__SDRA_marker_capture.Clear()
+
+CompleteAllObjectives()
+SetObjectiveDisplayed( 30, False )
+SetObjectiveDisplayed( 40, False )
+
+If ( _SDQP_WIThugs.IsRunning() )
+	_SDQP_WIThugs.Stop();
+EndIf
+
+Reset()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_32
+Function Fragment_32()
+;BEGIN CODE
+; stage 0
+Actor kMaster  = Alias__SDRA_master.GetActorReference()
+
+Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
+kChrister.Disable()
+
+ObjectReference kDoor = Alias__SDRA_mistwatch_door.GetReference()
+kDoor.Lock( False );
+
+ObjectReference kBridge = Alias__SDRA_mistwatch_bridge.GetReference()
+kBridge.SetOpen()
+
+If ( kMaster )
+	kMaster.StopCombat()
+EndIf
+
+_SDGVP_inTransit.SetValue(1)
+SendModEvent("SDMasterTransitStart")
+
+; alignParties( )
+; main script monitors distances and
+; advances to stage 10 when ready
+; SetStage(10)
 ;END CODE
 EndFunction
 ;END FRAGMENT

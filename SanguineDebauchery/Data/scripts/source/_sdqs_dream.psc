@@ -487,8 +487,10 @@ Function positionVictims( Int aiStage )
 
 
 	if (self.GetStageDone(230)==1)
+
 		Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
-		StorageUtil.SetStringValue(kDreamer, "_SLH_sHairColorName", "Alicia red" ) 
+		StorageUtil.SetIntValue(kDreamer, "_SLH_iHairColor", iAliciaHairColor )  
+		StorageUtil.SetStringValue(kDreamer, "_SLH_sHairColorName", "Dark Red" ) 
 		kDreamer.SendModEvent("SLHRefreshHairColor","Dye")
 
 		

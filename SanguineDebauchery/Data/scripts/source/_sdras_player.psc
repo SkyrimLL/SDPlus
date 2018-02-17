@@ -22,7 +22,7 @@ GlobalVariable Property _SDGV_leash_length  Auto
 GlobalVariable Property _SDGVP_health_threshold Auto
 GlobalVariable Property _SDGVP_slave_days_max Auto
 GlobalVariable Property _SDGVP_config_healthMult Auto
-; ragdolling
+GlobalVariable Property _SDGVP_state_caged  Auto 
 GlobalVariable Property _SDGVP_state_playerRagdoll  Auto
 GlobalVariable Property _SDGVP_frostfallMortality  Auto  
 
@@ -1464,6 +1464,7 @@ State monitor
 				If ( _SDQP_thugs.IsRunning() )
 		 			Debug.Trace("[_sdras_player]  Clean up thugs quest after enslavement")
 					_SDQP_thugs.Stop()
+					Wait( fRFSU * 5.0 )
 		 		endif
 
 				If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0) 
@@ -1620,8 +1621,14 @@ State monitor
 					; Monitor.GoToState("")
 					; Debug.SetGodMode( True )
 					; kPlayer.EndDeferredKill()
+
+					If (Utility.RandomInt(0,100) > 70) && (_SDGVP_state_caged.GetValue() == 1) && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
+						; player still enslaved and caged
+
+						_SDGVP_state_caged.SetValue(0)
+						kPlayer.AddItem(Lockpick, 5)
 					
-					If (Utility.RandomInt(0,100) > 95) && (_SD_dreamQuest.GetStage() != 0) 
+					ElseIf (Utility.RandomInt(0,100) > 95) && (_SD_dreamQuest.GetStage() != 0) 
 						; Send PC to Dreamworld
 
 						_SD_dreamQuest.SetStage(100)
@@ -1945,3 +1952,5 @@ Function SetHandsFreeSlave(Actor kActor)
 EndFunction
 
 
+
+MiscObject Property Lockpick  Auto  

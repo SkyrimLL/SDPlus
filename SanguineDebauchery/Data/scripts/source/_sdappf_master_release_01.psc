@@ -14,6 +14,10 @@ If (StorageUtil.GetIntValue( cage, "_SD_iCageBroken"  ) != 1)
 	EndIf
 	cage.SetOpen( )
 
+	Debug.MessageBox("Get out and back to work.")
+	_SDGVP_state_caged.SetValue(0)
+	StorageUtil.SetIntValue( none, "_SD_iCageSceneActive"  , 0)
+
 	akActor.EvaluatePackage()
 EndIf
 ;END CODE
@@ -23,3 +27,4 @@ EndFunction
 ;END FRAGMENT CODE - Do not edit anything between this and the begin comment
 
 ReferenceAlias Property _SDRAP_cage  Auto  
+GlobalVariable Property _SDGVP_state_caged  Auto  

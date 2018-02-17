@@ -11,7 +11,9 @@ Event OnLoad()
 EndEvent
 
 Event OnActivate(ObjectReference akActionRef)
-	Debug.Trace( "_SD:cage activate attempt " + akActionRef )
+	; Debug.Notification( "[SD] Cage door - activate attempt " + akActionRef )
+	Debug.Trace( "[SD] Cage door - activate attempt " + akActionRef )
+
 	ObjectReference cage = Self.GetReference() as ObjectReference
 	Int kOpen = cage.GetOpenState()
 	If ( akActionRef.GetItemCount( _SDRAP_masters_key.GetReference() ) )
@@ -25,11 +27,15 @@ Event OnActivate(ObjectReference akActionRef)
 EndEvent
 
 Event OnOpen(ObjectReference akActionRef)
-	_SDGVP_state_caged.SetValue( 0 )
+	; Debug.Notification( "[SD] Cage door - opening" )
+	Debug.Trace( "[SD] Cage door - opening" )
+	; _SDGVP_state_caged.SetValue( 0 )
 EndEvent
 
 Event OnClose(ObjectReference akActionRef)
-	_SDGVP_state_caged.SetValue( 1 )
+	; Debug.Notification( "[SD] Cage door - closing" )
+	Debug.Trace( "[SD] Cage door - closing" )
+	; _SDGVP_state_caged.SetValue( 1 )
 EndEvent
 
 GlobalVariable Property _SDGVP_enableCages  Auto  

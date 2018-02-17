@@ -14,21 +14,14 @@ Actor male = _SDRAP_male.GetReference() as Actor
 
 male.ClearLookAt()
 
-; if  bindings
-;	itemCount = female.GetItemCount( bindings.GetBaseObject() )
-;	If ( itemCount && _SDQP_enslavement.GetStage() >= 20 )
-;		female.RemoveItem( bindings, itemCount )
-;	EndIf
-; EndIf
+	fctSlavery.UpdateSlaveStatus( female , "_SD_iSlaveryExposure", modValue = 1)
 
 
-; While idx < _SDFLP_punish_items.GetSize()
-;	itemCount = female.GetItemCount( _SDFLP_punish_items.GetAt(idx) )
-;	If ( itemCount )
-;		female.RemoveItem( _SDFLP_punish_items.GetAt(idx), itemCount )
-;	EndIf
-;	idx += 1
-; EndWhile
+	If ( StorageUtil.GetIntValue(male , "_SD_iDisposition") >= 0 )
+		fctSlavery.ModMasterTrust( male , 1 )
+	else
+		fctSlavery.ModMasterTrust( male , -1 )
+	endif 
 
 _SDGVP_snp_busy.SetValue(-1)
 ; Self.GetowningQuest().Stop()
@@ -60,3 +53,4 @@ FormList Property _SDFLP_punish_items  Auto
 GlobalVariable Property _SDGVP_snp_busy  Auto  
  
 SPELL Property VampireFeed  Auto  
+_SDQS_fcts_slavery Property fctSlavery  Auto

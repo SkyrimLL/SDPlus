@@ -52,6 +52,7 @@ GlobalVariable Property _SDGVP_isMasterInTransit  Auto
 
 
 ReferenceAlias Property _SDRAP_cage  Auto
+ReferenceAlias Property _SDRAP_cage_marker  Auto
 ReferenceAlias Property _SDRAP_masters_key  Auto
 ReferenceAlias Property _SDRAP_slave  Auto
 ReferenceAlias Property _SDRAP_master  Auto
@@ -124,6 +125,7 @@ ObjectReference kSlaver2_m
 ObjectReference kSlaver2_f
 Actor kCombatTarget
 Actor kLeashCenter
+ObjectReference kCageRef
 ObjectReference kBindings
 ObjectReference kShackles
 ObjectReference kCollar
@@ -154,6 +156,8 @@ Int iCollarDevice = 1 ;45  Collar
 Int iAnklesDevice = 2 ;53  Ankles
 Int iGagDevice = 4 ;44  DD Gag
 Form fGagDevice = None
+
+Int iCageRadius = 3500
 
 Function freedomTimer( Float afTime )
 	If ( afTime >= 60.0 )
@@ -287,7 +291,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				; TO DO - Add code here for compatibility with SPERG and other mods relying on equiping invisible weapons
 
 				; Debug.Notification( "$SD_MESSAGE_CAUGHT" )
-				; Debug.Notification( "You are not allowed to hold a weapon.  Your collar compels you to remove it." )
+				Debug.Notification( "You are not allowed to hold a weapon.  Your collar compels you to remove it." )
 
 				; kSlave.UnequipItem( akBaseItem, aiItemCount )
 				Weapon krHand = kSlave.GetEquippedWeapon()
@@ -308,14 +312,14 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 					kSlave.UnequipItem( klHand )
 				EndIf
 
-		ElseIf ( iuType == 26 )  &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip") && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip"))  &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals")
+		; ElseIf ( iuType == 26 )  &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip") && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip"))  &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals")
 			; Armor
 
 				; Debug.MessageBox( "You are not allowed to wear clothing. Your Master won't behappy about that." )
 
 				; kSlave.UnequipItem( akBaseItem, aiItemCount )
 
-		ElseIf ( kMaster.GetSleepState() != 0 && kMaster.HasLOS( kSlave ) ) &&  !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableInventory") && ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
+		; ElseIf ( kMaster.GetSleepState() != 0 && kMaster.HasLOS( kSlave ) ) &&  !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableInventory") && ( !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals"))
 			; Not working as intended - revisit later
 			
 			;	Debug.MessageBox( "You are not allowed to pick something up yet. Your owner takes that away from you." )
@@ -325,25 +329,25 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 		EndIf
 
 
-
-
-		if !akSourceContainer
-			Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from the world")
-
-		elseif akSourceContainer == kMaster
-			Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from master")
-
-			If (kMaster.IsDead())
-				Debug.Trace( "[_sdras_slave] Item received from a dead master." )
-			else
-				kSlave.EquipItem( akBaseItem, aiItemCount )
-			EndIf
-		else
-			Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from another container")
-
-		endIf
-
 	EndIf
+
+	if !akSourceContainer
+		Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from the world")
+
+	elseif akSourceContainer == kMaster
+		Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from master")
+
+		If (kMaster.IsDead())
+			Debug.Trace( "[_sdras_slave] Item received from a dead master." )
+		else
+			kSlave.EquipItem( akBaseItem, aiItemCount )
+		EndIf
+	else
+		Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from another container")
+
+	endIf
+
+
 EndEvent
 
 
@@ -351,7 +355,11 @@ State waiting
 	Event OnUpdate()
 		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster) && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			; fctConstraints.CollarUpdate()
-			GoToState("monitor")
+			If (!kMaster.IsDead()) 
+				GoToState("monitor")
+			Else
+				GoToState("doNothing")
+			EndIf
 		EndIf
 		If ( Self.GetOwningQuest() )
 			RegisterForSingleUpdate( fRFSU )
@@ -497,8 +505,15 @@ State monitor
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
 
-		ElseIf ( _SDGVP_state_caged.GetValueInt() )
+		Elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==1) &&  ( _SDGVP_state_caged.GetValueInt() == 0 )
+			Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
+			Debug.Trace( "[SD] Cage state - slave out of cage during scene" )
+			GoToState("escape_choke")
+
+		ElseIf ( _SDGVP_state_caged.GetValueInt() == 1 )
 			; Slave is caged
+			Debug.Notification( "[SD] Cage state - caged detected" )
+			Debug.Trace( "[SD] Cage state - caged detected" )
 
 			GoToState("caged")
 
@@ -518,7 +533,7 @@ State monitor
 				EndIf
 			EndIf
 
-		ElseIf  (kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 )   || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlaveCell != kMasterCell)  && (fctOutfit.isCollarEquipped ( kSlave ))  && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
+		ElseIf  (kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 )   || (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") > 0) ) && (kSlaveCell != kMasterCell)  && (fctOutfit.isCollarEquipped ( kSlave ))  && ( (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") - 3) < 0)  
 			; Special handling of interior cells (for large caves with connecting rooms)
 			; Slave is free to roam around if both master and slave are in the same indoor cell and slave is 'trusted' or master is asleep or if master is following (prevent collar teleport when changing cells )
 
@@ -539,7 +554,6 @@ State monitor
 
 			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
 
-				; GoToState("escape_choking")	
 				GoToState("escape_shock")
  
 			Else
@@ -778,314 +792,6 @@ State monitor
 
 EndState
 
-State escape_choking
-	Event OnBeginState()
-		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
-		Debug.Notification( "Your collar tightens as you wander off." )
-		Debug.Trace( "[SD] Escape attempt - choking collar" )
-		Debug.Trace( "[SD] starting timer" )
-
-		kMaster = _SDRAP_master.GetReference() as Actor
-
-		freedomTimer ( 20 ) ; _SDGVP_escape_timer.GetValue() )
-		fEscapeTime = GetCurrentRealTime() + 20 ; forced to 30 s for choking - funct.intMin( StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer") as Int, _SDGVP_escape_timer.GetValue() as Int)
-		fEscapeUpdateTime = GetCurrentRealTime() + 5 ; update every 10 s 
-
-		; SD 3.3 - testing Master searching for slave during collar events
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
-			enslavement.bSearchForSlave = True
-
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-				kCrimeFaction = kMaster.GetCrimeFaction()
-				If (kCrimeFaction!=None)
-					kCrimeFaction.SetCrimeGold(100)
-				Endif
-			endif
-		Endif
-
-		kMaster.EvaluatePackage()
-	EndEvent
-	
-	Event OnEndState()
-		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
-		Debug.Notification( "Your owner is keeping an eye on you." )
-		Debug.Trace( "[SD] Escape attempt - end" )
-
-		If (kSlave.GetDistance(kMaster)< (_SDGV_leash_length.GetValue() / 2) ) && (!kMaster.IsDead()) 
-			; Slave is close to master and master is not dead, stop escape state
-
-			Debug.Notification("The collar is choking you.." )
-			if (iPlayerGender==0)
-				_SDSMP_choke_m.Play( kSlave )
-			else
-				_SDSMP_choke.Play( kSlave )
-			endif
-
-			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
-			
-			kSlave.DispelSpell( _SDSP_Weak )
-			_SDGVP_isMasterInTransit.SetValue(0) 
-
-			SendModEvent("SDEscapeStop") 
-
-			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-
-				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "Where did you think you were going?" )
-
-					If (kCrimeFaction!=None)
-						Int iGold = kCrimeFaction.GetCrimeGold()
-						kCrimeFaction.PlayerPayCrimeGold( True, False )	
-						_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  + iGold )
-					Endif
-				endIf
-				
-				if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
-					; Punishment
-					; 
-					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-						enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
-					endif
-					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-					; kMaster.SendModEvent("PCSubPunish")
-					funct.SanguinePunishment( kMaster )
-
-				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
-					; Whipping
-					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-					; kMaster.SendModEvent("PCSubWhip")
-					funct.SanguineWhip( kMaster )
-
-				else
-					kMaster.SendModEvent("PCSubSex","Rough")
-				EndIf
-			Else
-				kMaster.SendModEvent("PCSubSex")
-			EndIf
-		EndIf
-	EndEvent
-
-	Event OnUpdate()
-		; While ( !Game.GetPlayer().Is3DLoaded() )
-		; EndWhile
-
-		kMaster = _SDRAP_master.GetReference() as Actor
-
-		_slaveStatusTicker()
-
-		; Calculate distance to reference - set to Master for now. 
-		; Could be set to a location marker later if needed
-		kLeashCenter =  StorageUtil.GetFormValue(kSlave, "_SD_LeashCenter") as Actor
-
-		if (kLeashCenter == None)
-			fctConstraints.setLeashCenterRef(kMaster as ObjectReference)
-			kLeashCenter = kMaster
-		EndIf
-
-		fDistance = kSlave.GetDistance( kLeashCenter )
- 		kMasterCell = kMaster.GetParentCell()
-		kSlaveCell = kSlave.GetParentCell()
-
-		If ( kSlave.GetDistance( kMaster ) < fDistance)
-			; If master is closer than previously set center of leash... could be because of a change of cell
-			fctConstraints.setLeashCenterRef(kMaster as ObjectReference)
-			kLeashCenter = kMaster
-		EndIf
-
-		fMasterDistance = kSlave.GetDistance( kMaster )
-
-		If (_SDGVP_config_safeword.GetValue() as bool)
-			; Safeword detected - End enslavement
-
-			Debug.Trace("[_sdras_slave] Safeword on escape - Stop enslavement")
-			Debug.MessageBox( "Safeword: You are released from enslavement.")
-			_SDGVP_state_joined.SetValue( 0 )
-			_SDGVP_config_safeword.SetValue(0)
-
-			SendModEvent("PCSubFree")
-			; Self.GetOwningQuest().Stop()
-
-		ElseIf  (kSlaveCell == kMasterCell) ; && (kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) )   
-			; Slave back in same cell as master, turn off escape mode
-			; If (RandomInt( 0, 100 ) > 70 )
-			;	Debug.Notification( "Your captors are watching. Don't stray too far...")
-			; EndIf
- 
-			GoToState("monitor")
-		Else
-
-			If ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
-				; Park slave in 'waiting' state while enslavement quest is shuttting down
-				GoToState("waiting")
-
-			; ElseIf ( !Game.IsMovementControlsEnabled() )
-				; AI controlled - slave marched back to master
-				; Keep it for later if needed
-
-				;	kSlave.PathToReference( kMaster, 1.0 )
-				;	GoToState("monitor")
-
-			ElseIf ( (fMasterDistance > _SDGVP_escape_radius.GetValue()) && ((kSlaveCell != kMasterCell) || (!kMasterCell.IsInterior())) )
-				; Slave is outside escape radius and master is outdoors or in a different cell
-
-				If ( GetCurrentRealTime() > fEscapeUpdateTime )
-					; Escape timer is running
-
-					; Debug.Notification( "Run!" )
-					fTime = fEscapeTime - GetCurrentRealTime()
-					fEscapeUpdateTime = GetCurrentRealTime() + 60
-					freedomTimer ( fTime ) ; - Displays "x minutes and you are free...
- 
-				ElseIf ( GetCurrentRealTime() >= fEscapeTime )
-					; Escape timer is exceeded - player has escaped
-
-					; Debug.Trace("[_sdras_slave] Escaped from master - collar will send random shocks")
-					; _SDFP_slaversFaction.ModCrimeGold( 1000 )
-					enslavement.bEscapedSlave = True
-					enslavement.bSearchForSlave = True
-
-
-					; Automatic end of enslavement after escape is disabled for now... master is still lurking around
-					; TO DO - add expiration code (free slave after enough time outside timed buffer)
-					; TO DO - turn on master follow slave / turn off later
-
-					if (StorageUtil.GetIntValue(kMaster,"_SD_iFollowSlave") == 0)
-						StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
-						_SDGVP_state_MasterFollowSlave.SetValue(1) 
-						SendModEvent("SDEscapeStart") 
-					EndIf
-
-					; SendModEvent("PCSubFree")  
-
-					fBlackoutRatio = ( funct.floatMin( fDistance, _SDGVP_escape_radius.GetValue() * 2.0 ) - _SDGVP_escape_radius.GetValue() ) / _SDGVP_escape_radius.GetValue()
-					; Debug.Notification( "[SD] Blackout ratio: "  + fBlackoutRatio )
-
-
-					If (fBlackoutRatio < 0.3)
-						_SD_CollarStrangleImod.Remove()
-						Debug.Notification( "Your collar tightens around your throat..." )
-						_SD_CollarStrangleImod.Apply(fBlackoutRatio)
-						if (Utility.RandomInt(0,100)>80)
-							if (iPlayerGender==0)
-								_SDSMP_choke_m.Play( Game.GetPlayer() )
-							else
-								_SDSMP_choke.Play( Game.GetPlayer() )
-							endif
-
-						EndIf
-
-					ElseIf (fBlackoutRatio < 0.6)
-						;_SD_CollarStrangleImod.Remove()
-						Debug.Notification( "Your breathing is painful..." )
-						_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
-						if (Utility.RandomInt(0,100)>80)
-							if (iPlayerGender==0)
-								_SDSMP_choke_m.Play( Game.GetPlayer() )
-							else
-								_SDSMP_choke.Play( Game.GetPlayer() )
-							endif
-
-						EndIf
-
-					Else
-						;_SD_CollarStrangleImod.Remove()
-						Debug.Notification( "Your collar is choking you..." )
-						_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
-						if (Utility.RandomInt(0,100)>80)
-							if (iPlayerGender==0)
-								_SDSMP_choke_m.Play( Game.GetPlayer() )
-							else
-								_SDSMP_choke.Play( Game.GetPlayer() )
-							endif
-
-						EndIf
-
-					EndIf
-
-
-					If (fBlackoutRatio >= 0.95)
-					;	Debug.Notification("You should blackout here.")
-						_SD_CollarStrangleImod.Remove()
-						if (iPlayerGender==0)
-							_SDSMP_choke_m.Play( Game.GetPlayer() )
-						else
-							_SDSMP_choke.Play( Game.GetPlayer() )
-						endif
-
-
-		                Game.FadeOutGame(true, true, 0.5, 5)
-
-		                If (kSlaveCell == kMasterCell)
-
-							kSlave.MoveTo( kMaster )
-
-		                Else
-		                	If ( (kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) ) || ( (!kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) )
-
-		                		kMaster.MoveTo( kSlave )
-
-		                	ElseIf ( (kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) ) || ( (!kMasterCell.IsInterior()) && (kSlaveCell.IsInterior()) )
-
-		                		If  ( ( !kMaster.HasLOS( kSlave )) || ( kMaster.GetSleepState() != 0 )  ) && (Utility.RandomInt(0,100)>80)
-		                			; Small chance to get away with using door while punished if master is not paying attention
-		                			kMaster.MoveTo( kSlave )
-
-		                		ElseIf ( fctOutfit.isPunishmentEquipped (  kSlave ))
-		                			kSlave.MoveTo( kMaster )
-
-		                		Else 
-							 		kMaster.MoveTo( kSlave )
-
-							 	EndIf
-							EndIf						
-
-						EndIf						
-
-						Game.FadeOutGame(false, true, 2.0, 20)
-
-						Utility.Wait( 1.0 )
-
-						Debug.MessageBox( "After being choked by the collar, you wake up next to your owner." )
-
-
-						If (!kMaster.IsDead()) && (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-							; 
-							; 
-							If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-								enslavement.PunishSlave(kMaster,kSlave,"Gag")
-								enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
-							endif
-
-							if (Utility.RandomInt(0,100)>50) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
-								; Punishment
-								; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
-								; kMaster.SendModEvent("PCSubPunish")
-								funct.SanguinePunishment( kMaster )
-
-							Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
-								; Whipping
-								; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
-								; kMaster.SendModEvent("PCSubWhip")
-								funct.SanguineWhip( kMaster )
-
-							else
-								kMaster.SendModEvent("PCSubSex","Rough")
-							EndIf
-						EndIf
-					EndIf
-
-
-				EndIf
-			EndIf
-		EndIf
-
-		If ( Self.GetOwningQuest() ) && (!enslavement.bEscapedSlave)
-			RegisterForSingleUpdate( fRFSU )
-		ElseIf ( Self.GetOwningQuest() ) && (enslavement.bEscapedSlave)
-			RegisterForSingleUpdate( fRFSU / 4.0 )
-		EndIf
-	EndEvent
-EndState
 
 State escape_shock
 	Event OnBeginState()
@@ -1300,13 +1006,47 @@ State escape_shock
 	EndEvent
 EndState
 
-State caged
+State escape_choke
 	Event OnBeginState()
-		enslavement.bEscapedSlave = False
-		enslavement.bSearchForSlave = False
+		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
+		Debug.Notification( "Your collar tightens as you wander off from the cage." )
+		Debug.Trace( "[SD] Cage scene - choking collar - start" )
+		Debug.Trace( "[SD] starting timer" )
+
+		kMaster = _SDRAP_master.GetReference() as Actor
+
+		freedomTimer ( 20 ) ; _SDGVP_escape_timer.GetValue() )
+		fEscapeTime = GetCurrentRealTime() + 20 ; forced to 30 s for choking - funct.intMin( StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer") as Int, _SDGVP_escape_timer.GetValue() as Int)
+		fEscapeUpdateTime = GetCurrentRealTime() + 5 ; update every 10 s 
+
+		; SD 3.3 - testing Master searching for slave during collar events
+		enslavement.bSearchForSlave = True
+
+		kMaster.EvaluatePackage()
 	EndEvent
 	
 	Event OnEndState()
+		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
+		Debug.Notification( "[SD] Cage scene - choking collar - end" )
+		Debug.Trace( "[SD] Cage scene - choking collar - end" )
+
+		SendModEvent("SDEscapeStop") 
+
+		If (!kMaster.IsDead()) 
+
+			Debug.Notification("The collar is choking you.." )
+			if (iPlayerGender==0)
+				_SDSMP_choke_m.Play( kSlave )
+			else
+				_SDSMP_choke.Play( kSlave )
+			endif
+
+			; _SDSP_SelfShockEffect.Cast(kSlave as Actor)
+			
+			kSlave.DispelSpell( _SDSP_Weak )
+			_SDGVP_isMasterInTransit.SetValue(0) 
+
+		EndIf
 	EndEvent
 
 	Event OnUpdate()
@@ -1314,24 +1054,222 @@ State caged
 		; EndWhile
 
 		kMaster = _SDRAP_master.GetReference() as Actor
-		_slaveStatusTicker()
-		
-		If ( !_SDGVP_state_caged.GetValueInt() )
-			GoToState("monitor")
 
-		ElseIf ( _SDRAP_cage.GetReference().GetDistance( kSlave ) > 768 )
-			if (fctOutfit.isCollarEquipped ( kSlave ))
-				GoToState("escape_shock")
-			else
-				GoToState("monitor")
-			endif	
-			_SDGVP_state_caged.SetValue( 0 )
+		If (kMaster.IsDead()) 
+			Debug.Notification( "[SD] Cage scene - choking collar - master is dead" )
+			Debug.Trace( "[SD] Cage scene - choking collar - master is dead" )
+			GoToState("doNothing")
+		Endif
+
+		_slaveStatusTicker()
+
+		kCageRef =  _SDRAP_cage_marker.GetReference() ; cage location
+
+		if (kCageRef == None)
+			; somehow, no cage detected
+			Debug.Trace( "[SD] Cage scene - no cage found" )
+			GoToState("waiting")
 		EndIf
 
-		If ( Self.GetOwningQuest() )
+		fDistance = kCageRef.GetDistance( kSlave )
+ 		kMasterCell = kMaster.GetParentCell()
+		kSlaveCell = kSlave.GetParentCell()
+		fMasterDistance = kSlave.GetDistance( kMaster )
+
+		If (_SDGVP_config_safeword.GetValue() as bool)
+			; Safeword detected - End enslavement
+
+			Debug.Trace("[_sdras_slave] Safeword on escape - Stop enslavement")
+			Debug.MessageBox( "Safeword: You are released from enslavement.")
+			_SDGVP_state_joined.SetValue( 0 )
+			_SDGVP_config_safeword.SetValue(0)
+
+			SendModEvent("PCSubFree")
+			; Self.GetOwningQuest().Stop()
+
+		Else
+
+			If ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
+				; Park slave in 'waiting' state while enslavement quest is shuttting down
+				GoToState("waiting")
+
+			; ElseIf ( !Game.IsMovementControlsEnabled() )
+				; AI controlled - slave marched back to master
+				; Keep it for later if needed
+
+				;	kSlave.PathToReference( kLeashCenter, 1.0 )
+				;	GoToState("cage")
+
+			ElseIf ( fDistance > iCageRadius ) ; && ((kSlaveCell != kMasterCell) || (!kMasterCell.IsInterior())) )
+				; Slave is outside escape radius and master is outdoors or in a different cell
+
+				If ( GetCurrentRealTime() > fEscapeUpdateTime )
+					; Escape timer is running
+
+					; Debug.Notification( "Run!" )
+					fTime = fEscapeTime - GetCurrentRealTime()
+					fEscapeUpdateTime = GetCurrentRealTime() + 60
+					freedomTimer ( fTime ) ; - Displays "x minutes and you are free...
+ 
+				ElseIf ( GetCurrentRealTime() >= fEscapeTime )
+					; Escape timer is exceeded - player has escaped
+
+					; Debug.Trace("[_sdras_slave] Escaped from master - collar will send random shocks")
+					; _SDFP_slaversFaction.ModCrimeGold( 1000 )
+					enslavement.bEscapedSlave = True
+					enslavement.bSearchForSlave = True
+
+
+					; Automatic end of enslavement after escape is disabled for now... master is still lurking around
+					; TO DO - add expiration code (free slave after enough time outside timed buffer)
+					; TO DO - turn on master follow slave / turn off later
+
+					if (StorageUtil.GetIntValue(kMaster,"_SD_iFollowSlave") == 0)
+						StorageUtil.SetIntValue(kMaster,"_SD_iFollowSlave", 1)
+						_SDGVP_state_MasterFollowSlave.SetValue(1) 
+						SendModEvent("SDEscapeStart") 
+					EndIf
+
+					; SendModEvent("PCSubFree")  
+
+					fBlackoutRatio = ( funct.floatMin( fDistance, iCageRadius * 2.0 ) - iCageRadius ) / iCageRadius
+					; Debug.Notification( "[SD] Blackout ratio: "  + fBlackoutRatio )
+
+
+					If (fBlackoutRatio < 0.3)
+						_SD_CollarStrangleImod.Remove()
+						_SD_CollarStrangleImod.Apply(fBlackoutRatio)
+						if (Utility.RandomInt(0,100)>80)
+							Debug.Notification( "You are too far from the cage." )
+							Debug.Notification( "Your collar tightens around your throat..." )
+							if (iPlayerGender==0)
+								_SDSMP_choke_m.Play( kSlave )
+							else
+								_SDSMP_choke.Play( kSlave )
+							endif
+
+						EndIf
+
+					ElseIf (fBlackoutRatio < 0.6)
+						;_SD_CollarStrangleImod.Remove()
+						_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
+						if (Utility.RandomInt(0,100)>80)
+							Debug.Notification( "You are still far from the cage." )
+							Debug.Notification( "Your breathing is painful..." )
+							if (iPlayerGender==0)
+								_SDSMP_choke_m.Play( kSlave )
+							else
+								_SDSMP_choke.Play( kSlave )
+							endif
+
+						EndIf
+
+					Else
+						;_SD_CollarStrangleImod.Remove()
+						_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
+						if (Utility.RandomInt(0,100)>80)
+							Debug.Notification( "Your collar is choking you..." )
+							if (iPlayerGender==0)
+								_SDSMP_choke_m.Play( kSlave )
+							else
+								_SDSMP_choke.Play( kSlave )
+							endif
+
+						EndIf
+
+					EndIf
+
+
+					If (fBlackoutRatio >= 0.95)
+					;	Debug.Notification("You should blackout here.")
+						_SD_CollarStrangleImod.Remove()
+						if (iPlayerGender==0)
+							_SDSMP_choke_m.Play( kSlave )
+						else
+							_SDSMP_choke.Play( kSlave )
+						endif
+
+		                Game.FadeOutGame(true, true, 0.5, 5)
+
+		                kSlave.MoveTo( kCageRef )					
+
+						Game.FadeOutGame(false, true, 2.0, 20)
+
+						Utility.Wait( 1.0 )
+
+						Debug.MessageBox( "After being choked by the collar, you wake up next to your owner." )
+
+						If (!kMaster.IsDead()) && (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+ 
+							If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+								enslavement.PunishSlave(kMaster,kSlave,"Gag")
+								enslavement.PunishSlave(kMaster,kSlave,"Blindfold")
+							endif
+
+						EndIf
+					EndIf
+
+
+				EndIf
+			EndIf
+		EndIf
+
+		If ( Self.GetOwningQuest() ) && (!enslavement.bEscapedSlave)
+			RegisterForSingleUpdate( fRFSU )
+		ElseIf ( Self.GetOwningQuest() ) && (enslavement.bEscapedSlave)
+			RegisterForSingleUpdate( fRFSU / 4.0 )
+		EndIf
+	EndEvent
+EndState
+
+State caged
+	Event OnBeginState()
+		Debug.Notification( "[SD] Cage state - start" )
+		Debug.Trace( "[SD] Cage state - start" )
+
+		enslavement.bEscapedSlave = False
+		enslavement.bSearchForSlave = False
+		; _SDGVP_state_caged.SetValue( 1 )
+		If (kMaster.IsDead()) 
+			GoToState("doNothing")
+		Endif
+
+	EndEvent
+	
+	Event OnEndState()
+		Debug.Notification( "[SD] Cage state - end" )
+		Debug.Trace( "[SD] Cage state - end" )
+
+	EndEvent
+
+	Event OnUpdate()
+		; While ( !Game.GetPlayer().Is3DLoaded() )
+		; EndWhile
+
+		kMaster = _SDRAP_master.GetReference() as Actor
+
+		If (kMaster.IsDead()) 
+			GoToState("doNothing")
+		Endif
+
+		_slaveStatusTicker()
+		
+		If ( _SDGVP_state_caged.GetValueInt() == 0)
+			Debug.Notification( "[SD] Cage state - slave is released - stop" )
+			Debug.Trace( "[SD] Cage state - slave is released - stop" )
+
+			GoToState("monitor")
+
+		EndIf
+
+		If ( Self.GetOwningQuest() ) && ( _SDGVP_state_caged.GetValueInt() == 1)
 			RegisterForSingleUpdate( fRFSU )
 		EndIf
 	EndEvent
+EndState
+
+
+State doNothing
 EndState
 
 Function _slaveStatusInit()

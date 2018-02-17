@@ -255,7 +255,7 @@ Function initSlaveryFactionForThisRace ( Form thisRace )
 				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", OrcFaction) 
 
 			; Elf
-			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1)
+			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1) || (StringUtil.Find(sRaceName, "Dunmer")!= -1) || (StringUtil.Find(sRaceName, "Altmer")!= -1) || (StringUtil.Find(sRaceName, "Bosmer")!= -1)
 				StorageUtil.SetFormValue( thisRace, "_SD_sRaceFaction", ElfFaction) 
 
 			; Khajit

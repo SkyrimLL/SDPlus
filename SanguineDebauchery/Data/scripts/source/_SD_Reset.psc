@@ -52,6 +52,13 @@ Function Maintenance()
 		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", None)
 	Endif
 
+	; initialize manual stances
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)  
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableStand", 1)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableKneel", 1)
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 1)
+	Endif
+
 
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 	; Reload every time

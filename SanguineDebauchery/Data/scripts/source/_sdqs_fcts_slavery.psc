@@ -104,6 +104,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	StorageUtil.SetFormValue(kSlave, "_SD_LeashCenter", kMaster)
 	StorageUtil.SetIntValue(kSlave, "_SD_iLeashLength", 200)
+	StorageUtil.SetStringValue(kSlave, "_SD_sExpectedStance", "Standing")
 	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStance", "Kneeling")
 	StorageUtil.SetStringValue(kSlave, "_SD_sDefaultStanceFollower", "Kneeling" )
 
@@ -359,6 +360,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryPunishmentSceneOn"))
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryWhippingSceneOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryWhippingSceneOn"))
 
+		StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryExpectedStance",  StorageUtil.GetStringValue(masterRace, "_SD_sSlaveryDefaultStance"))
 		StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  StorageUtil.GetStringValue(masterRace, "_SD_sSlaveryDefaultStance"))
 		StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", StorageUtil.GetStringValue(masterRace, "_SD_sSlaveryDefaultStance"))
 
@@ -375,6 +377,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 			; StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Kneeling")
 			; StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Kneeling")
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryExpectedStance",  "Standing")
 			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Standing")
 			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Standing")
 
@@ -391,6 +394,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 			; StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Crawling")
 			; StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Crawling")
+			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryExpectedStance",  "Standing")
 			StorageUtil.SetStringValue(kSlave, "_SD_sSlaveryDefaultStance",  "Standing")
 			StorageUtil.SetStringValue( kSlave, "_SD_sDefaultStance", "Standing")
 
@@ -993,7 +997,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")!=1)
 		if ((StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)<=0)
-			statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " under"
+			statusMessage =  statusMessage + "\nBuyout gold : " + ( -1 * (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int)) + " to go"
 		else
 			statusMessage =  statusMessage + "\nBuyout gold : " + (StorageUtil.GetFloatValue(kMaster, "_SD_iMasterBuyOut") as Int) + " over"
 		EndIf
