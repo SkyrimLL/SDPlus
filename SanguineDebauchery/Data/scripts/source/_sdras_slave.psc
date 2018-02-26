@@ -471,6 +471,13 @@ State monitor
 			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
 
+		ElseIf !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			Debug.Notification( "Your owner is either dead or left you...")
+
+			SendModEvent("PCSubFree")
+			GoToState("doNothing")
+
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			; Park the slave in 'waiting' state while enslavement quest is shutting down
 
@@ -505,6 +512,7 @@ State monitor
 			enslavement.bEscapedSlave = False
 			enslavement.bSearchForSlave = False
 
+		; Disabled for now - issues with conditions to triger it
 		Elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==1) &&  ( _SDGVP_state_caged.GetValueInt() == 0 )
 			Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
 			Debug.Trace( "[SD] Cage state - slave out of cage during scene" )
@@ -1100,6 +1108,11 @@ State escape_choke
 				;	kSlave.PathToReference( kLeashCenter, 1.0 )
 				;	GoToState("cage")
 
+			elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==0) ||  ( _SDGVP_state_caged.GetValueInt() == 1 )
+				; Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
+				; Debug.Trace( "[SD] Cage state - slave out of cage during scene" )
+				GoToState("monitoring")
+
 			ElseIf ( fDistance > iCageRadius ) ; && ((kSlaveCell != kMasterCell) || (!kMasterCell.IsInterior())) )
 				; Slave is outside escape radius and master is outdoors or in a different cell
 
@@ -1295,24 +1308,40 @@ Function _slaveStatusTicker()
  	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
  	if (iDaysSinceLastCheck==0)
-		if ((timePassed-HourlyTickerLastCallTime)>= (HourlyTickerPeriod * fSlaveLevel) ) ; same day - incremental updates
+		if ((timePassed-HourlyTickerLastCallTime)>= (HourlyTickerPeriod ) ) ; same day - incremental updates
 			Debug.Notification( "[SD] Slavery status - hourly update")
 			; Disabled for now - daily update makes more sense
 			; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
-			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/ (HourlyTickerPeriod * fSlaveLevel) ) as Int
+			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/ (HourlyTickerPeriod ) ) as Int
 			if (iHoursLastCheck<1)
 				iHoursLastCheck = 1
 			EndIf
 
 			Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
 
-			fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
+			If (_SDGVP_state_caged.GetValue()==1)
+				fctSlavery.ModMasterTrust( kMaster, 1 ); add trust point for being caged
+			Else
+				If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedSleepToken") == 1)
+					; prevent loss of trust if player was sleeping while enslaved
+					StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedSleepToken", 0)
+				Else
+					fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
+				Endif
+			EndIf
+
 			HourlyTickerLastCallTime = timePassed
 
-			; Check punishment status every 6 hours
+			if (iHoursLastCheck>1)
+				fctSlavery.EvaluateSlaveryTaskList(kSlave) ; evaluate tasks after wait or sleep
+			endIf
+
+			; Check punishment status every 4 hours
 			iPunishmentCheck = iPunishmentCheck + 1
 
-			if (iPunishmentCheck==6)
+			if (iPunishmentCheck==4)
+				fctSlavery.EvaluateSlaveryTaskList(kSlave) 
+
 				enslavement.UpdateSlaveState( kMaster, kSlave )
 				enslavement.UpdateSlaveFollowerState(kSlave)
 				iPunishmentCheck = 0
@@ -1391,12 +1420,10 @@ Function _slaveStatusTicker()
 			Endif
 		Endif
 
+		fctSlavery.EvaluateSlaveryTaskList(kSlave) ; First evaluate current task in case it can be completed 
+
 		Debug.Trace( "[SD] Slavery status - END daily update")
 
-		Debug.Trace( "[SD] Slavery status - Evaluate player tasks")
-		fctSlavery.EvaluateCurrentTask(kSlave) ; First evaluate current task in case it can be completed 
-		fctSlavery.PickNextTask(kSlave) 
-		Debug.Trace( "[SD] Slavery status - END Evaluate player tasks")
 
 
 

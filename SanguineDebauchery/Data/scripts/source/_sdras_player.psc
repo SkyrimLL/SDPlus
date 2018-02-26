@@ -327,19 +327,22 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1)
 		kCurrentMaster = StorageUtil.GetFormValue(PlayerActor, "_SD_CurrentOwner") as Actor
 
-		If (!funct._hasActor(actors, kCurrentMaster))  && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
-			fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
-		Endif
+		; If (!funct._hasActor(actors, kCurrentMaster))  && (StorageUtil.GetStringValue(kPlayer, "_SD_sCurrentTaskTarget") == "MasterOnly" )
+			; fctSlavery.ModTaskAmount(kPlayer, "MasterOnly", 1) ; player is having sex without master 
+		; Endif
 		
-		If (funct._hasPlayer(actors)) 
+		If (StorageUtil.GetIntValue(PlayerActor, "_SL_iPlayerSexAnim") == 1)
+
 			; Player hands are freed temporarily for sex
 
-			if (fctOutfit.isWristRestraintEquipped( PlayerActor )) && (actors.Length > 1) ; Exclude masturbation
+			if ( (fctOutfit.isWristRestraintEquipped( PlayerActor )) && (actors.Length > 1) && (Utility.RandomInt(0,100)>80) ); Exclude masturbation
 				; Testing if devices automatically removed by DDi 3.0+
 				; fctOutfit.equipDeviceByString ( "Armbinder" )
-				StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
+				; StorageUtil.SetIntValue(PlayerActor, "_SD_iHandsFreeSex", 1)
+				fctOutfit.ClearSlavePunishment(PlayerActor , "WristRestraints", true )
 			EndIf
 		EndIf
+
 
 		int listIndex
 		int idx = 0
@@ -386,14 +389,10 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 	; 	_listActors("End: ", actors)
 	; EndIf
 
-	; If (funct._hasPlayer(actors))
-		;
-	; EndIf
-
 	If (funct._hasPlayer(actors)) 
-		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 0)
-	else
 		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 1)
+	else
+		StorageUtil.SetIntValue(PlayerActor, "_SL_iPlayerSexAnim", 0)
 	endif
 
 	If (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (funct._hasPlayer(actors))
@@ -410,14 +409,17 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iGoalSex", modValue = 1)
 				fctSlavery.UpdateSlaveStatus( PlayerActor, "_SD_iSlaveryExposure", modValue = 1)
 
-
+				if animation.HasTag("Oral")
+					fctSlavery.ModSlaveryTask(PlayerActor, "Wash", 1)
+				endIf
+		
 				; Debug.Notification("[SD]: Sex with your master: " + StorageUtil.GetIntValue(PlayerActor, "_SD_iGoalSex"))
 
 				; If master is trusting slave, increased chance of hands free after sex
 				If (StorageUtil.GetIntValue(kCurrentMaster, "_SD_iTrust")>0) && (Utility.RandomInt(0,100) > 70) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
 					Debug.Notification("Your hands remain free.. lucky you.")
-					fctOutfit.clearDeviceByString ( "WristRestraints" )
+					; fctOutfit.clearDeviceByString ( "WristRestraints" )
 
 				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
@@ -704,6 +706,11 @@ EndEvent
 Function SDFree()
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		_SDQP_enslavement.Stop()
+		If ( _SDQP_thugs.IsRunning() )
+			_SDQP_thugs.setstage(50)
+			_SDQP_thugs.Stop()
+ 		endif
+
 		Wait( fRFSU * 5.0 )
 	Endif
 EndFunction
@@ -825,29 +832,58 @@ Event OnSDModMasterTrust(String _eventName = "", String _args, Float _argc = -1.
 	EndIf
 EndEvent
 
-Event OnSDPickNextTask(String _eventName = "", String _args ="Food", Float _argc = 1.0, Form _sender)
+Event OnSDPickNextTask(String _eventName = "", String _args ="", Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Int iEventAmount = _argc as Int
 	String iEventString = _args
 
 	Debug.Trace("[_sdras_player] Receiving pick slavery task mod story event [" + _args  + "] [" + _argc as Int + "]")
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		fctSlavery.EvaluateCurrentTask(kPlayer) ; First evaluate current task in case it can be completed 
+	If (StorageUtil.GetFloatValue(kActor, "_SD_iEnslavementDays")==0.0)
+		; No task on very first day
+		Debug.Trace("[SD] Pick Slavery Task Event - No task on first day: " + StorageUtil.GetFloatValue(kActor, "_SD_iEnslavementDays") as Int)
+		Return
+	Endif
 
-		fctSlavery.PickNextTask(kPlayer) 
-	EndIf
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		If (iEventString=="") ; no task provided, pick at random
+			fctSlavery.EvaluateSlaveryTaskList(kPlayer) ; First evaluate current task in case it can be completed 
+		Else
+			fctSlavery.PickSlaveryTask( kPlayer,  iEventString )
+		endif
+
+	EndIf 
 EndEvent
 
-Event OnSDModTaskAmount(String _eventName = "", String _args ="Food", Float _argc = 1.0, Form _sender)
+Event OnSDModTaskAmount(String _eventName = "", String _args ="", Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Int iEventAmount = _argc as Int
 	String iEventString = _args
 
 	Debug.Trace("[_sdras_player] Receiving slavery task mod story event [" + _args  + "] [" + _argc as Int + "]")
 
+	; Event strings:
+
+	; Bring food
+	; Bring gold
+	; Bring armor
+	; Bring weapon
+	; Bring ingredient
+	; Bring firewood
+	; Bring book
+	; Dance
+	; Solo
+	; Sex
+	; Inspection
+	; Training anal
+	; Training vaginal
+	; Training oral
+	; Training posture
+	; Wash
+	; Ignore   
+
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
-		fctSlavery.ModTaskAmount(kPlayer, iEventString, iEventAmount) 
+		fctSlavery.ModSlaveryTask(kPlayer, iEventString, iEventAmount)
 	EndIf
 EndEvent
 
@@ -882,14 +918,16 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sen
 	EndIf
  
 	if  (_args == "Gangbang")
-
+		fctSlavery.ModSlaveryTask( kPlayer, "Sex", 2)
 		funct.SanguineGangRape( kTempAggressor, kPlayer, False, False)
 
 	Elseif (_args == "Soloshow")
+		fctSlavery.ModSlaveryTask( kPlayer, "Solo", 1)
 
 		funct.SanguineGangRape( kTempAggressor, kPlayer, False, True)
 	Else 
 		; Debug.Trace("[_sdras_player] Sending sex story")
+		fctSlavery.ModSlaveryTask( kPlayer, "Sex", 1)
 
 		if  (_args == "") 
 			_args = "Aggressive"
@@ -932,20 +970,24 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
 	if (fctOutfit.isWristRestraintEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.clearDeviceByString ( "WristRestraints" )
+		fctOutfit.ClearSinglePunishmentDevice(kPlayer , "WristRestraints" )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
 
 	if  (_args == "Gangbang")
 		; Debug.Notification("[_sdras_slave] Receiving Gangbang")
+		fctSlavery.ModSlaveryTask( kPlayer, "Sex", 2)
 		funct.SanguineGangRape( kTempAggressor, kPlayer, True, False)
 
 	Elseif (_args == "Soloshow")
 		; Debug.Notification("[_sdras_slave] Receiving Show")
 
+		fctSlavery.ModSlaveryTask( kPlayer, "Sex", 2)
+		fctSlavery.ModSlaveryTask( kPlayer, "Solo", 1)
 		funct.SanguineGangRape( kTempAggressor, kPlayer, True, True)
 	Else 
 		; Dance
+		fctSlavery.ModSlaveryTask( kPlayer, "Dance", 2)
 		_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 7, aiValue2 = 0 )
 	EndIf
 
@@ -1463,8 +1505,7 @@ State monitor
 
 				If ( _SDQP_thugs.IsRunning() )
 		 			Debug.Trace("[_sdras_player]  Clean up thugs quest after enslavement")
-					_SDQP_thugs.Stop()
-					Wait( fRFSU * 5.0 )
+					_SDQP_thugs.SetStage(50)
 		 		endif
 
 				If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0) 

@@ -81,6 +81,12 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	; Disabling for now - removes locked devices instead of cleaning up items in inventory that are not worn
 	; CleanupSlaveDevices(kPlayer)
 
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)  
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnslavedSleepToken", 1) 
+	Else
+		StorageUtil.SetIntValue(kPlayer, "_SD_iEnslavedSleepToken", 0) 
+	Endif
+
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisableDreamworld") == 1) 
 		Debug.Trace("[_sdras_dreamer] Dreamworld disabled by script - abort")
 		Return

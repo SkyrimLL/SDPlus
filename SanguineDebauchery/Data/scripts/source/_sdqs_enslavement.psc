@@ -426,11 +426,11 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 
 			if (fPunishmentDuration <= 0.0) && (fctOutfit.isDeviceEquippedString(  akSlave, sDeviceName ))
 				; Timer ran out and device still equiped
-				ClearSinglePunishmentDevice( akSlave, sDeviceName )
+				fctOutfit.ClearSinglePunishmentDevice( akSlave, sDeviceName )
 
 			Elseif (fPunishmentDuration > 0.0) && (!fctOutfit.isDeviceEquippedString(  akSlave, sDeviceName ))
 				; Timer still running and device not equiped
-				EquipSinglePunishmentDevice( akSlave, sDeviceName )
+				fctOutfit.EquipSinglePunishmentDevice( akSlave, sDeviceName )
 			Endif
 
 			i += 1
@@ -466,7 +466,7 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 
 			if (!fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
 				; AddSlavePunishment( akSlave, sDevice)
-				QueueSlavePunishment(akSlave, sDevice, 1.0 + Utility.RandomFloat(1.0, 23.0))
+				fctOutfit.QueueSlavePunishment(akSlave, sDevice, 1.0 + Utility.RandomFloat(1.0, 23.0))
 				punishmentAdded = True
 
 			Else
@@ -496,7 +496,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 			if (fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
 				Debug.Trace("[_sdqs_enslavement] Reward slave: Trying to remove - " + sDevice)
 				; RemoveSlavePunishment( akSlave, sDevice)
-				ClearSlavePunishment(akSlave, sDevice, false)
+				fctOutfit.ClearSlavePunishment(akSlave, sDevice, false)
 
 				punishmentRemoved = True
 
@@ -515,122 +515,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 	Return punishmentRemoved 
 EndFunction
 
-Function QueueSlavePunishment(Actor kActor , String sDevice, Float fPunishmentLength = 1.0)
-	Keyword kwDeviceKeyword = fctOutfit.getDeviousKeywordByString(sDevice)
 
-	If ((kwDeviceKeyword) && (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)  && (!fctOutfit.isDeviceEquippedString(  kActor,  sDevice  )) )
-		if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
-			StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
-		endif
-
-		StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-		StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration", 0.075 * fPunishmentLength)
-		StorageUtil.SetStringValue(kwDeviceKeyword as Form, "_SD_sPunishmentName", sDevice)
-
-		Debug.Notification("[_sdqs_enslavement] Queue punishment: Adding " + sDevice)
-		Debug.Trace("[_sdqs_enslavement] Queue punishment: Adding " + sDevice)
-		Debug.Trace("[_sdqs_enslavement] Punishment received: " + sDevice )
-		Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
-		Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentsLength )
-
-		_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
-
-		fctOutfit.addPunishmentDevice(sDevice)
-
-		; check if not in list first!!!!
-		uiPunishmentsEarned = uiPunishmentsEarned + 1
-
-
-	Else
-		If (!kwDeviceKeyword) 
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Device keyword not found ")
-		Endif
-		If (kActor == Game.GetPlayer())
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Target is not the player - not supported yet ")
-		Endif
-		If (!kActor.IsInCombat())
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Actor in combat - ignoring")
-		EndIf
-		If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") != 1)
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment not allowed with this master ")
-		Endif
-		If (fctOutfit.isDeviceEquippedString(  kActor,  sDevice  ))
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment already equipped -  "+ sDevice)
-		Endif
-	EndIf
-
-EndFunction
-
-Function ClearSlavePunishment(Actor kActor , String sDevice, Bool bClearNow = false)
-	Keyword kwDeviceKeyword = fctOutfit.getDeviousKeywordByString(sDevice)
-
-	If ((kwDeviceKeyword) && (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1) && (fctOutfit.isDeviceEquippedString(  kActor,  sDevice  )) )
-
-		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime")
-		Float fPunishmentDuration = StorageUtil.GetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration")
-		float fMasterDistance = (kActor as ObjectReference).GetDistance(kMaster as ObjectReference)
-		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
-
-		If ((bClearNow) || ((fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))))
-
-			; Additional time added to remove next punishment item
-			StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
-			StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration", 0.0)
-
-			Debug.Notification("[_sdqs_enslavement] Clear Punishment:  Remove " + sDevice ) 
-			Debug.Trace("[_sdqs_enslavement] Clear Punishment:  Remove " + sDevice ) 
-			Debug.Trace("[_sdqs_enslavement] Clear Punishment Now: " + bClearNow ) 
-
-			fctOutfit.removePunishmentDevice(sDevice)
-			; StorageUtil.FormListRemove( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
-
-		ElseIf (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
-			Debug.Trace("[_sdqs_enslavement] Clear Punishment - Your owner is too far to remove your punishment.")
-			Debug.Trace("[_sdqs_enslavement] fPunishmentStartGameTime: " + fPunishmentStartGameTime )
-			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
-			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
-
-		Else
-			Debug.Trace("[_sdqs_enslavement] Clear punishment - Punishment is not over yet.")
-			Debug.Trace("[_sdqs_enslavement] fPunishmentStartGameTime: " + fPunishmentStartGameTime )
-			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
-			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
-		endif
-
-	Else
-		If (!kwDeviceKeyword) 
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Device keyword not found ")
-		Endif
-		If (kActor == Game.GetPlayer())
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Target is not the player - not supported yet ")
-		Endif
-		If (!kActor.IsInCombat())
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Actor in combat - ignoring")
-		EndIf
-		If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") != 1)
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment not allowed with this master ")
-		Endif
-		If (!fctOutfit.isDeviceEquippedString(  kActor,  sDevice  ))
-			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment already cleared -  "+ sDevice)
-		Endif
-	EndIf
-
-EndFunction
-
-Function EquipSinglePunishmentDevice(Actor kActor, String sDeviceName )
-	Debug.Trace("[_sdqs_enslavement]	     Device equipped - update punishment status")
-	fctOutfit.addPunishmentDevice(sDeviceName)
-EndFunction
-
-Function ClearSinglePunishmentDevice(Actor kActor, String sDeviceName )
-	If (!fctOutfit.isDeviceEquippedString(  kActor,  sDeviceName ))
-		Debug.Trace("[_sdqs_enslavement]	     Device not equipped - resetting duration - " + sDeviceName)
-		StorageUtil.SetFloatValue(fctOutfit.getDeviousKeywordByString(sDeviceName) as Form, "_SD_fPunishmentDuration", 0.0)
-	Else
-		Debug.Trace("[_sdqs_enslavement]	     Device equipped - update punishment status")
-		ClearSlavePunishment( kActor ,  sDeviceName, false)
-	Endif
-EndFunction
 
 Function UpdateSlaveFollowerState(Actor akSlave)
 	Int idx = 0
@@ -649,10 +534,10 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 			; 	StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
 			; endif
 
-			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isYokeEquipped( nthActor) &&  !fctOutfit.isArmbinderEquipped( nthActor)
+			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isWristRestraintEquipped( nthActor)
 				; nthActor.EquipItem(  _SDA_bindings , True, True )
 				; nthActor.SendModEvent("SDEquipDevice","Armbinder:zap")
-				fctOutfit.equipDeviceNPCByString (nthActor, sDeviceString = "Armbinder", sDeviceTags = "zap" )
+				fctOutfit.equipDeviceNPCByString (nthActor, sDeviceString = "WristRestraint", sDeviceTags = "armbinder,zap" )
 
 			EndIf
 
@@ -661,11 +546,11 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 				trust = StorageUtil.GetIntValue(kMaster, "_SD_iTrust")  
 				kneelingDistance = funct.floatWithinRange( 500.0 - ((trust as Float) * 5.0), 100.0, 2000.0 )
 
-				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") != "Standing") && !nthActor.GetCurrentScene() &&  !fctOutfit.isYokeEquipped( nthActor)
+				If ( ( nthActor.GetDistance( kMaster ) < kneelingDistance ) || ( nthActor.GetDistance( kSlave ) < kneelingDistance ) ) && ( nthActor.GetAnimationVariableFloat("Speed") == 0 ) && (StorageUtil.GetStringValue(kSlave, "_SD_sDefaultStanceFollower") != "Standing") && !nthActor.GetCurrentScene() &&  !fctOutfit.isWristRestraintEquipped( nthActor)
 
 					Debug.SendAnimationEvent(nthActor, "ZazAPC018")
 
-				ElseIf !nthActor.GetCurrentScene() &&  !fctOutfit.isYokeEquipped( nthActor)
+				ElseIf !nthActor.GetCurrentScene() &&  !fctOutfit.isWristRestraintEquipped( nthActor)
 
 					Debug.SendAnimationEvent(nthActor, "OffsetBoundStandingStart")
 

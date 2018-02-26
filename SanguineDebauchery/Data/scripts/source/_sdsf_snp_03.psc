@@ -2,105 +2,6 @@
 ;NEXT FRAGMENT INDEX 115
 Scriptname _sdsf_snp_03 Extends Scene Hidden
 
-;BEGIN FRAGMENT Fragment_87
-Function Fragment_87()
-;BEGIN CODE
-snp._SDUIP_phase = 2
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-
-fctSlavery.PlayPunishmentIdle(  )
-
-Utility.Wait(4.0)
-
-
-; Game.DisablePlayerControls( abMovement = true )
-; Game.SetPlayerAIDriven( False )
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18(ReferenceAlias akAlias)
-;BEGIN CODE
-; Game.FadeOutGame(True, True, 3.0, 2.0)
-; Utility.Wait(2)
-; Actor female = _SDRAP_female.GetReference() as Actor
-; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
-;female.PushActorAway(female, 0.1)
-; Game.FadeOutGame(False, True, 15.0, 5.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_95
-Function Fragment_95()
-;BEGIN CODE
-snp._SDUIP_phase = 5
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_93
-Function Fragment_93()
-;BEGIN CODE
-snp._SDUIP_phase = 4
-Debug.Notification("You are left to ponder your fate...")
-
-Game.DisablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven()
-
-Utility.Wait(1.0)
-
-
-fctSlavery.PlayPunishmentIdle(  )
-
-
-Utility.Wait(1.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-snp._SDUIP_phase = 0
-_SDGVP_snp_busy.SetValue(3)
-; libs.SetAnimating(Game.GetPlayer(),true)
-
-; Game.FadeOutGame(True, True, 3.0, 2.0)
-
-; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-Debug.Notification("You brace for the coming punishment...")
-
-Actor female = _SDRAP_female.GetReference() as Actor
-Actor male = _SDRAP_male.GetReference() as Actor
-ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
-
-marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
-
-if (fctOutfit.isWristRestraintEquipped( female ))  
-	enslave.ClearSinglePunishmentDevice(female , "WristRestraints" )
-	StorageUtil.SetIntValue(female , "_SD_iHandsFreeSex", 1)
-EndIf
-
-Utility.Wait(1)
-
-Game.DisablePlayerControls( abMovement = true )
-Game.SetPlayerAIDriven()
-
-; Game.FadeOutGame(False, True, 15.0, 5.0)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_94
-Function Fragment_94()
-;BEGIN CODE
-snp._SDUIP_phase = 3
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_32
 Function Fragment_32()
 ;BEGIN CODE
@@ -153,11 +54,110 @@ Utility.Wait(2)
 EndFunction
 ;END FRAGMENT
 
+;BEGIN FRAGMENT Fragment_93
+Function Fragment_93()
+;BEGIN CODE
+snp._SDUIP_phase = 4
+Debug.Notification("You are left to ponder your fate...")
+
+Game.DisablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven()
+
+Utility.Wait(1.0)
+
+
+fctSlavery.PlayPunishmentIdle(  )
+
+
+Utility.Wait(1.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_95
+Function Fragment_95()
+;BEGIN CODE
+snp._SDUIP_phase = 5
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
+;BEGIN CODE
+snp._SDUIP_phase = 0
+_SDGVP_snp_busy.SetValue(3)
+; libs.SetAnimating(Game.GetPlayer(),true)
+
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+Debug.Notification("You brace for the coming punishment...")
+
+Actor female = _SDRAP_female.GetReference() as Actor
+Actor male = _SDRAP_male.GetReference() as Actor
+ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference
+
+marker.MoveTo( female, 128 * Math.Sin( female.GetAngleZ() ), 128 * Math.Cos( female.GetAngleZ() ), female.GetHeight() )
+
+if (fctOutfit.isWristRestraintEquipped( female ))  
+	fctOutfit.ClearSlavePunishment(female , "WristRestraints" , true )
+	StorageUtil.SetIntValue(female , "_SD_iHandsFreeSex", 1)
+EndIf
+
+Utility.Wait(1)
+
+Game.DisablePlayerControls( abMovement = true )
+Game.SetPlayerAIDriven()
+
+; Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_87
+Function Fragment_87()
+;BEGIN CODE
+snp._SDUIP_phase = 2
+; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+
+fctSlavery.PlayPunishmentIdle(  )
+
+Utility.Wait(4.0)
+
+
+; Game.DisablePlayerControls( abMovement = true )
+; Game.SetPlayerAIDriven( False )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18(ReferenceAlias akAlias)
+;BEGIN CODE
+; Game.FadeOutGame(True, True, 3.0, 2.0)
+; Utility.Wait(2)
+; Actor female = _SDRAP_female.GetReference() as Actor
+; Debug.SendAnimationEvent(female, "IdleForceDefaultState")
+;female.PushActorAway(female, 0.1)
+; Game.FadeOutGame(False, True, 15.0, 5.0)
+;END CODE
+EndFunction
+;END FRAGMENT
+
 ;BEGIN FRAGMENT Fragment_68
 Function Fragment_68()
 ;BEGIN CODE
 snp._SDUIP_phase = 1
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_94
+Function Fragment_94()
+;BEGIN CODE
+snp._SDUIP_phase = 3
 ;END CODE
 EndFunction
 ;END FRAGMENT

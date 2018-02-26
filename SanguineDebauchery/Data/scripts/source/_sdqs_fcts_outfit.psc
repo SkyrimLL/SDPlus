@@ -1135,7 +1135,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
 		thisKeyword = libs.zad_DeviousCollar
 
-	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") 
+	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") || (deviousKeyword == "TrainingGag") 
 		thisKeyword = libs.zad_DeviousGag
 
 	elseif (deviousKeyword == "zad_DeviousGagPanel") || (deviousKeyword == "GagPanel") 
@@ -1150,10 +1150,10 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousPlug") || (deviousKeyword == "Plug") 
 		thisKeyword = libs.zad_DeviousPlug
 
-	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal") 
+	elseif (deviousKeyword == "zad_DeviousPlugAnal") || (deviousKeyword == "PlugAnal")  || (deviousKeyword == "TrainingPlugAnal") 
 		thisKeyword = libs.zad_DeviousPlugAnal
 
-	elseif (deviousKeyword == "zad_DeviousPlugVaginal") || (deviousKeyword == "PlugVaginal") 
+	elseif (deviousKeyword == "zad_DeviousPlugVaginal") || (deviousKeyword == "PlugVaginal")  || (deviousKeyword == "TrainingPlugVaginal") 
 		thisKeyword = libs.zad_DeviousPlugVaginal
 
 	elseif (deviousKeyword == "zad_DeviousBra") || (deviousKeyword == "Bra") 
@@ -1207,7 +1207,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousHobbleSkirt") || (deviousKeyword == "HobbleSkirt") 
 		thisKeyword = libs.zad_DeviousHobbleSkirt
 
-	elseif (deviousKeyword == "zad_DeviousBoots") || (deviousKeyword == "Boots") 
+	elseif (deviousKeyword == "zad_DeviousBoots") || (deviousKeyword == "Boots")  || (deviousKeyword == "TrainingBoots") 
 		thisKeyword = libs.zad_DeviousBoots
 
 	elseif (deviousKeyword == "zad_DeviousClamps") || (deviousKeyword == "Clamps") 
@@ -1574,289 +1574,6 @@ Bool Function isClothingBodyEquipped( Actor akActor )
 	Else
 		Return False
 	endIf
-EndFunction
-
-
-
-; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
-
-; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
-
-function sendSlaveTatModEvent(actor akActor, string sType = "SD+", string sTatooName = "Slavers Hand (back)", int iColor = 0x99000000)
-	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
-  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
-  	Actor PlayerActor = Game.GetPlayer()
-	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
-	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
-	Form fOverride
-	Bool bTatOverride = False 
-	string tatooType  
-	string tatooName  
-	int tatooColor 
-	int tatooGlow
-
-	; If master Race is set, check if override device is set for this race and use it first
-	Debug.Trace("[SD] sendSlaveTatModEvent - tattoo: " + sTatooName )  
-	Debug.Trace("[SD] sendSlaveTatModEvent - fRaceOverride: " + fRaceOverride )  
-	Debug.Trace("[SD] sendSlaveTatModEvent - fActorOverride: " + fActorOverride )  
-
-	If ( fActorOverride!= none)
-		Debug.Trace("[SD] sendSlaveTatModEvent - Actor override detected: " + StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat"))  
-		if (StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat")!= "")
-			Debug.Trace("[SD] 	- Actor override detected for tattoo" )  
-			bTatOverride = True
-			tatooName = StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat" )
-			tatooType = StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTatType" )
-			tatooColor = StorageUtil.GetIntValue(fActorOverride, "_SD_iSlaveryTatColor" )
-			tatooGlow = StorageUtil.GetIntValue(fActorOverride, "_SD_iSlaveryTatGlow" )
-			fOverride = fActorOverride
-		else
-			Debug.Trace("[SD] 	- Actor override not found for tattoo" )  
-		endIf
-	EndIf
-	
-	If ( fRaceOverride!= none) && (!bTatOverride)
-		Debug.Trace("[SD] sendSlaveTatModEvent - Race override detected: " + StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat" ))  
-		if (StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat")!= "")
-			Debug.Trace("[SD] 	- Racial override detected for tattoo" )  
-			bTatOverride = True
-			tatooName = StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat" )
-			tatooType = StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTatType" )
-			tatooColor = StorageUtil.GetIntValue(fRaceOverride, "_SD_iSlaveryTatColor" )
-			tatooGlow = StorageUtil.GetIntValue(fRaceOverride, "_SD_iSlaveryTatGlow" )
-			fOverride = fRaceOverride
-		else
-			Debug.Trace("[SD] 	- Racial override not found for tattoo" )  
-		endIf
-	EndIf
-	
-	If (!bTatOverride) ; generic item
-		Debug.Trace("[SD] sendSlaveTatModEvent - NO override detected")  
-		StorageUtil.SetStringValue(akActor as Form, "_SD_sSlaveryTat", sTatooName )
-		StorageUtil.SetStringValue(akActor as Form, "_SD_sSlaveryTatType", sType )
-		tatooName = sTatooName
-		tatooType = sType
-		tatooColor = 0
-		tatooGlow = 0
-		fOverride = akActor as Form
-	endIf
-
-	If (tatooColor == 0)
-		tatooColor = Math.LeftShift(128, 24) + Math.LeftShift(128, 16) + Math.LeftShift(64, 8) + 64
-	endif
-
-  	if (STevent) 
-        ModEvent.PushForm(STevent, PlayerActor)      	; Form - actor
-        ModEvent.PushString(STevent, tatooType)    		; String - type of tattoo?
-        ModEvent.PushString(STevent, tatooName)  	; String - name of tattoo
-        ModEvent.PushInt(STevent, tatooColor)  			; Int - color
-        ModEvent.PushBool(STevent, true)        	; Bool - last = false
-        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
-
-        ModEvent.Send(STevent)
-
-        ; if tat is not in list, add it
-        ; add application time - _SDGVP_gametime.GetValue() - and duration time
-        StorageUtil.SetIntValue(fOverride, "_SD_iSlaveryTatDay", Game.QueryStat("Days Passed") )
- 
-		if (StorageUtil.FormListFind( none, "_SD_lSlaveryTatList", fOverride) <0)
-			StorageUtil.FormListAdd( none, "_SD_lSlaveryTatList", fOverride)  
-		endif
-
-
-  	else
-  		Debug.Trace("[_sdqs_fcts_outfit]  Send slave tat event failed.")
-	endIf
-endfunction
-
-Function expireSlaveTats( Actor akSlave )
-	; // iterate list from first added to last added
-	Debug.Trace("[SD] Expire Slave Tats for " + akSlave)
-
-	int currentDaysPassed = Game.QueryStat("Days Passed")
-	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveryTatList")
-	int i = 0
-	int daysJoined 
-	Form fOverride 
-	Actor PlayerActor = Game.GetPlayer()
-
-	while(i < valueCount)
-		fOverride = StorageUtil.FormListGet(akSlave, "_SD_lSlaveryTatList", i)
-		If (fOverride != none)
-
-			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay")
-
-			if (daysJoined > StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDuration") )  && (StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay" )!=-1)
-
-				Debug.Trace("[SD]      Slave Tats[" + i + "] expired: " + fOverride.GetName() + " " + fOverride + " Days Since Marked: " + daysJoined )
-
-				; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
-				StorageUtil.SetIntValue( fOverride, "_SD_iSlaveryTatDay",  -1 )
-				Debug.Notification("Slave Tat removed: " + fOverride.GetName())
-
-				Debug.Trace("[SD] Slave Tat removed: " + fOverride.GetName())
-
-				; akSlave.RemoveFromFaction( slaveFaction as Faction )
-				int STevent = ModEvent.Create("STSimpleRemoveTattoo") 
-				if (STevent)
-				    ModEvent.PushForm(STevent, PlayerActor)        ; Form - actor
-				    ModEvent.PushString(STevent, StorageUtil.GetStringValue(fOverride, "_SD_sSlaveryTatType" ))     	; String - tattoo section (the folder name)
-				    ModEvent.PushString(STevent, StorageUtil.GetStringValue(fOverride, "_SD_sSlaveryTat" ))    ; String - name of tattoo
-				    ModEvent.PushBool(STevent, true)            ; Bool - last = false (the tattoos are only removed when last = true, use it on batches)
-				    ModEvent.PushBool(STevent, true)            ; Bool - silent = true (do not show a message)
-				    ModEvent.Send(STevent)
-				endif
-			EndIf
-		Endif
-
-		i += 1
-	endwhile
-EndFunction
-
-Function addPunishmentDevice(String sDevice)
-	Actor kPlayer = Game.getPlayer() as Actor
-	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-	Actor kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
-	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
-
- 	setMasterGearByRace ( kMaster, kPlayer  )
-
-	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner viciously inserts a cold plug inside your ass." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		equipDeviceByString ( sDeviceString = "PlugAnal")
-		equipDeviceByString ( sDeviceString = "Belt")
-
-	ElseIf (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner smiles wickedly and shoves a cold plug into your abused womb." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
-		
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		equipDeviceByString ( sDeviceString = "PlugVaginal")
-		equipDeviceByString ( sDeviceString = "Belt")
-
-	ElseIf (sDevice == "Belt")  ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Belt")
-	
-	ElseIf (sDevice == "Blindfold")
-		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
-			
-		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Blindfold")
-
-	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
-
-		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Gag")
-
-	ElseIf (sDevice == "WristRestraint") || (sDevice == "WristRestraints") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Wrist Restraints" )
-
-		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "WristRestraint")
-		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "")
-
-	ElseIf (sDevice == "Armbinder") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
-
-		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "WristRestraint")
-		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "armbinder")
-
-	ElseIf (sDevice == "Yoke") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
-
-		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "WristRestraint")
-		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "yoke")
-
-	Else ; generic punishment
-		; Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
-		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: " + sDevice )
-
-		equipDeviceByString ( sDeviceString = sDevice)
-
-	EndIf
-
-EndFunction
-
-
-Function removePunishmentDevice(String sDevice)
-	Actor kPlayer = Game.getPlayer() as Actor
-	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
-	Actor kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
-	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
-
- 	setMasterGearByRace ( kMaster, kPlayer  )
-
-	If (sDevice == "PlugAnal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		clearDeviceByString ( sDeviceString = "PlugAnal")
-		equipDeviceByString ( sDeviceString = "Belt")
-
-	ElseIf (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
-		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-		clearDeviceByString ( sDeviceString = "PlugVaginal")
-		equipDeviceByString ( sDeviceString = "Belt")
-
-	ElseIf (sDevice == "Belt") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
-			
-		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Belt")
-	
-	ElseIf (sDevice == "Blindfold")
-		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
-			
-		; setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Blindfold")
-	
-	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
-		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
-
-		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = "Gag")
-	Else
-		; Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
-		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: " + sDevice )
-
-		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString ( sDeviceString = sDevice)
-	EndIf
-
 EndFunction
 
 
@@ -2279,6 +1996,452 @@ Function clearNonGenericDeviceByString ( String sDeviceString = "", String sOutf
 	endif
 EndFunction
 
+; ======================== Punishment items
+
+Function QueueSlavePunishment(Actor kActor , String sDevice, Float fPunishmentLength = 1.0)
+	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDevice)
+
+	If ((kwDeviceKeyword) && (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1)  && (!isDeviceEquippedString(  kActor,  sDevice  )) )
+		if (StorageUtil.FormListFind( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form) <0)
+			StorageUtil.FormListAdd( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+		endif
+
+		StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+		StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration", 0.075 * fPunishmentLength)
+		StorageUtil.SetStringValue(kwDeviceKeyword as Form, "_SD_sPunishmentName", sDevice)
+
+		Debug.Notification("[_sdqs_enslavement] Queue punishment: Adding " + sDevice)
+		Debug.Trace("[_sdqs_enslavement] Queue punishment: Adding " + sDevice)
+		Debug.Trace("[_sdqs_enslavement] Punishment received: " + sDevice )
+		; Debug.Trace("[_sdqs_enslavement] Punishment earned: " + uiPunishmentsEarned )
+		Debug.Trace("[_sdqs_enslavement] Punishment length: " + fPunishmentLength )
+
+		fctFactions.PaySlaveryCrime()
+
+		addPunishmentDevice(sDevice)
+
+		; check if not in list first!!!!
+		; uiPunishmentsEarned = uiPunishmentsEarned + 1
+
+
+	Else
+		If (!kwDeviceKeyword) 
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Device keyword not found ")
+		Endif
+		If (kActor == Game.GetPlayer())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Target is not the player - not supported yet ")
+		Endif
+		If (!kActor.IsInCombat())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Actor in combat - ignoring")
+		EndIf
+		If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") != 1)
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment not allowed with this master ")
+		Endif
+		If (isDeviceEquippedString(  kActor,  sDevice  ))
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment already equipped -  "+ sDevice)
+		Endif
+	EndIf
+
+EndFunction
+
+Function ClearSlavePunishment(Actor kActor , String sDevice, Bool bClearNow = false)
+	Keyword kwDeviceKeyword = getDeviousKeywordByString(sDevice)
+	Actor kMaster = None
+
+
+	If ((kwDeviceKeyword) && (kActor == Game.GetPlayer()) && (!kActor.IsInCombat()) && (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") == 1) && (isDeviceEquippedString(  kActor,  sDevice  )) ) && (StorageUtil.GetIntValue(kActor, "_SD_iEnslaved") == 1)
+
+		Float fPunishmentStartGameTime = StorageUtil.GetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime")
+		Float fPunishmentDuration = StorageUtil.GetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration")
+		float fMasterDistance = 0
+		float fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
+
+		kMaster = StorageUtil.GetFormValue(kActor, "_SD_CurrentOwner") as Actor
+		fMasterDistance = (kActor as ObjectReference).GetDistance(kMaster as ObjectReference)
+
+		If ((bClearNow) || ((fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance <= StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))))
+
+			; Additional time added to remove next punishment item
+			StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentGameTime", _SDGVP_gametime.GetValue())
+			StorageUtil.SetFloatValue(kwDeviceKeyword as Form, "_SD_fPunishmentDuration", 0.0)
+
+			Debug.Notification("[_sdqs_enslavement] Clear Punishment:  Remove " + sDevice ) 
+			Debug.Trace("[_sdqs_enslavement] Clear Punishment:  Remove " + sDevice ) 
+			Debug.Trace("[_sdqs_enslavement] Clear Punishment Now: " + bClearNow ) 
+
+			removePunishmentDevice(sDevice)
+			; StorageUtil.FormListRemove( kActor, "_SD_lActivePunishmentDevices", kwDeviceKeyword as Form )
+
+		ElseIf (fPunishmentDuration >= 0) && ( fPunishmentRemainingtime <= 0 ) && (fMasterDistance > StorageUtil.GetIntValue(kActor, "_SD_iLeashLength"))
+			Debug.Trace("[_sdqs_enslavement] Clear Punishment - Your owner is too far to remove your punishment.")
+			Debug.Trace("[_sdqs_enslavement] fPunishmentStartGameTime: " + fPunishmentStartGameTime )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
+
+		Else
+			Debug.Trace("[_sdqs_enslavement] Clear punishment - Punishment is not over yet.")
+			Debug.Trace("[_sdqs_enslavement] fPunishmentStartGameTime: " + fPunishmentStartGameTime )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentDuration: " + fPunishmentDuration )
+			Debug.Trace("[_sdqs_enslavement] fPunishmentRemainingtime: " + fPunishmentRemainingtime )
+		endif
+
+	Else
+		If (!kwDeviceKeyword) 
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Device keyword not found ")
+		Endif
+		If (kActor == Game.GetPlayer())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Target is not the player - not supported yet ")
+		Endif
+		If (!kActor.IsInCombat())
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Actor in combat - ignoring")
+		EndIf
+		If (StorageUtil.GetIntValue(kActor, "_SD_iSlaveryPunishmentOn") != 1)
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment not allowed with this master ")
+		Endif
+		If (!isDeviceEquippedString(  kActor,  sDevice  ))
+			Debug.Trace("[_sdqs_enslavement] Queue punishment: Punishment already cleared -  "+ sDevice)
+		Endif
+	EndIf
+
+EndFunction
+
+Function EquipSinglePunishmentDevice(Actor kActor, String sDeviceName )
+	Debug.Trace("[_sdqs_enslavement]	     Device equipped - update punishment status")
+	addPunishmentDevice(sDeviceName)
+EndFunction
+
+Function ClearSinglePunishmentDevice(Actor kActor, String sDeviceName )
+	If (!isDeviceEquippedString(  kActor,  sDeviceName ))
+		Debug.Trace("[_sdqs_enslavement]	     Device not equipped - resetting duration - " + sDeviceName)
+		StorageUtil.SetFloatValue(getDeviousKeywordByString(sDeviceName) as Form, "_SD_fPunishmentDuration", 0.0)
+	Else
+		Debug.Trace("[_sdqs_enslavement]	     Device equipped - update punishment status")
+		ClearSlavePunishment( kActor ,  sDeviceName, false)
+	Endif
+EndFunction
+
+Function addPunishmentDevice(String sDevice)
+	Actor kPlayer = Game.getPlayer() as Actor
+	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+	Actor kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
+	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
+
+ 	setMasterGearByRace ( kMaster, kPlayer  )
+
+	If (sDevice == "PlugAnal") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner viciously inserts a cold plug inside your ass." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Anal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "PlugAnal")
+		equipDeviceByString ( sDeviceString = "Belt")
+
+	ElseIf (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner smiles wickedly and shoves a cold plug into your abused womb." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Vaginal plug" )
+		
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "PlugVaginal")
+		equipDeviceByString ( sDeviceString = "Belt")
+
+	ElseIf (sDevice == "Belt")  ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Belt")
+	
+	ElseIf (sDevice == "Blindfold")
+		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
+			
+		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Blindfold")
+
+	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Gag")
+
+	ElseIf (sDevice == "WristRestraint") || (sDevice == "WristRestraints") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Wrist Restraints" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "WristRestraint")
+		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "")
+		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+
+	ElseIf (sDevice == "Armbinder") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "WristRestraint")
+		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "armbinder")
+		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+
+	ElseIf (sDevice == "Yoke") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
+
+		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "WristRestraint")
+		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "yoke")
+		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+
+	ElseIf (sDevice == "TrainingPlugAnal") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner viciously inserts a cold pear shaped plug inside your ass." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Training Anal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "PlugAnal", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "plug,anal,heretic,pear,chain")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "belt,metal,iron")
+
+	ElseIf (sDevice == "TrainingPlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner smiles wickedly and shoves a cold pear shaped plug into your abused womb." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Training Vaginal plug" )
+		
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "PlugVaginal", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "plug,vaginal,heretic,pear,chain")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "belt,metal,iron")
+
+	ElseIf (sDevice == "TrainingGag")  ; && (isMasterSpeaking==1)
+		Debug.MessageBox("Your owner straps a metal around your face to keep your mouth always open and accessible." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Training Gag" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Gag", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "gag,ring,iron,heretic")
+	
+	ElseIf (sDevice == "TrainingBoots")
+		Debug.MessageBox("Your owner forces your feet into steep metal boots, keeping you on your toes and forcing you to rock your hips wantonly as you walk." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Training Boots" )
+			
+		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
+		equipDeviceByString ( sDeviceString = "Boots", sOutfitString = "", skipEvents = false, skipMutex = false, sDeviceTags = "boots,ballet,iron,heretic")
+
+	Else ; generic punishment
+		; Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
+		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: " + sDevice )
+
+		equipDeviceByString ( sDeviceString = sDevice)
+
+	EndIf
+
+EndFunction
+
+
+Function removePunishmentDevice(String sDevice)
+	Actor kPlayer = Game.getPlayer() as Actor
+	Int    playerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
+	Actor kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
+	Int 	isMasterSpeaking = StorageUtil.GetIntValue(kMaster, "_SD_iSpeakingNPC")
+
+ 	setMasterGearByRace ( kMaster, kPlayer  )
+
+	If (sDevice == "PlugAnal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteAn", "PlugAnal"  ) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The anal plug is removed, leaving you terribly sore and empty." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Anal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString ( sDeviceString = "PlugAnal")
+		equipDeviceByString ( sDeviceString = "Belt")
+
+	ElseIf (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Vaginal plug" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
+		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString ( sDeviceString = "PlugVaginal")
+		equipDeviceByString ( sDeviceString = "Belt")
+
+	ElseIf (sDevice == "Belt") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
+			
+		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Belt")
+	
+	ElseIf (sDevice == "Blindfold")
+		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
+			
+		; setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Blindfold")
+	
+	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
+		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
+
+		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = "Gag")
+	Else
+		; Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
+		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: " + sDevice )
+
+		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
+		clearDeviceByString ( sDeviceString = sDevice)
+	EndIf
+
+EndFunction
+
+
+; ======================== Tattoos
+
+; STRemoveAllSectionTattoo(Form _form, String _section, bool _ignoreLock, bool _silent): remove all tattoos from determined section (ie, the folder name on disk, like "Bimbo")
+
+; STAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent, int _glowColor, bool _gloss, bool _lock): add a tattoo with more parameters, including glow, gloss (use it to apply makeup, looks much better) and locked tattoos.
+
+function sendSlaveTatModEvent(actor akActor, string sType = "SD+", string sTatooName = "Slavers Hand (back)", int iColor = 0x99000000)
+	; SlaveTats.simple_add_tattoo(bimbo, "Bimbo", "Tramp Stamp", last = false, silent = true)
+  	int STevent = ModEvent.Create("STSimpleAddTattoo")  
+  	Actor PlayerActor = Game.GetPlayer()
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Form fOverride
+	Bool bTatOverride = False 
+	string tatooType  
+	string tatooName  
+	int tatooColor 
+	int tatooGlow
+
+	; If master Race is set, check if override device is set for this race and use it first
+	Debug.Trace("[SD] sendSlaveTatModEvent - tattoo: " + sTatooName )  
+	Debug.Trace("[SD] sendSlaveTatModEvent - fRaceOverride: " + fRaceOverride )  
+	Debug.Trace("[SD] sendSlaveTatModEvent - fActorOverride: " + fActorOverride )  
+
+	If ( fActorOverride!= none)
+		Debug.Trace("[SD] sendSlaveTatModEvent - Actor override detected: " + StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat"))  
+		if (StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat")!= "")
+			Debug.Trace("[SD] 	- Actor override detected for tattoo" )  
+			bTatOverride = True
+			tatooName = StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTat" )
+			tatooType = StorageUtil.GetStringValue(fActorOverride, "_SD_sSlaveryTatType" )
+			tatooColor = StorageUtil.GetIntValue(fActorOverride, "_SD_iSlaveryTatColor" )
+			tatooGlow = StorageUtil.GetIntValue(fActorOverride, "_SD_iSlaveryTatGlow" )
+			fOverride = fActorOverride
+		else
+			Debug.Trace("[SD] 	- Actor override not found for tattoo" )  
+		endIf
+	EndIf
+	
+	If ( fRaceOverride!= none) && (!bTatOverride)
+		Debug.Trace("[SD] sendSlaveTatModEvent - Race override detected: " + StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat" ))  
+		if (StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat")!= "")
+			Debug.Trace("[SD] 	- Racial override detected for tattoo" )  
+			bTatOverride = True
+			tatooName = StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTat" )
+			tatooType = StorageUtil.GetStringValue(fRaceOverride, "_SD_sSlaveryTatType" )
+			tatooColor = StorageUtil.GetIntValue(fRaceOverride, "_SD_iSlaveryTatColor" )
+			tatooGlow = StorageUtil.GetIntValue(fRaceOverride, "_SD_iSlaveryTatGlow" )
+			fOverride = fRaceOverride
+		else
+			Debug.Trace("[SD] 	- Racial override not found for tattoo" )  
+		endIf
+	EndIf
+	
+	If (!bTatOverride) ; generic item
+		Debug.Trace("[SD] sendSlaveTatModEvent - NO override detected")  
+		StorageUtil.SetStringValue(akActor as Form, "_SD_sSlaveryTat", sTatooName )
+		StorageUtil.SetStringValue(akActor as Form, "_SD_sSlaveryTatType", sType )
+		tatooName = sTatooName
+		tatooType = sType
+		tatooColor = 0
+		tatooGlow = 0
+		fOverride = akActor as Form
+	endIf
+
+	If (tatooColor == 0)
+		tatooColor = Math.LeftShift(128, 24) + Math.LeftShift(128, 16) + Math.LeftShift(64, 8) + 64
+	endif
+
+  	if (STevent) 
+        ModEvent.PushForm(STevent, PlayerActor)      	; Form - actor
+        ModEvent.PushString(STevent, tatooType)    		; String - type of tattoo?
+        ModEvent.PushString(STevent, tatooName)  	; String - name of tattoo
+        ModEvent.PushInt(STevent, tatooColor)  			; Int - color
+        ModEvent.PushBool(STevent, true)        	; Bool - last = false
+        ModEvent.PushBool(STevent, true)         	; Bool - silent = true
+
+        ModEvent.Send(STevent)
+
+        ; if tat is not in list, add it
+        ; add application time - _SDGVP_gametime.GetValue() - and duration time
+        StorageUtil.SetIntValue(fOverride, "_SD_iSlaveryTatDay", Game.QueryStat("Days Passed") )
+ 
+		if (StorageUtil.FormListFind( none, "_SD_lSlaveryTatList", fOverride) <0)
+			StorageUtil.FormListAdd( none, "_SD_lSlaveryTatList", fOverride)  
+		endif
+
+
+  	else
+  		Debug.Trace("[_sdqs_fcts_outfit]  Send slave tat event failed.")
+	endIf
+endfunction
+
+Function expireSlaveTats( Actor akSlave )
+	; // iterate list from first added to last added
+	Debug.Trace("[SD] Expire Slave Tats for " + akSlave)
+
+	int currentDaysPassed = Game.QueryStat("Days Passed")
+	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveryTatList")
+	int i = 0
+	int daysJoined 
+	Form fOverride 
+	Actor PlayerActor = Game.GetPlayer()
+
+	while(i < valueCount)
+		fOverride = StorageUtil.FormListGet(akSlave, "_SD_lSlaveryTatList", i)
+		If (fOverride != none)
+
+			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay")
+
+			if (daysJoined > StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDuration") )  && (StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay" )!=-1)
+
+				Debug.Trace("[SD]      Slave Tats[" + i + "] expired: " + fOverride.GetName() + " " + fOverride + " Days Since Marked: " + daysJoined )
+
+				; StorageUtil.FormListRemoveAt( akSlave, "_SD_lSlaveFactions", i )
+				StorageUtil.SetIntValue( fOverride, "_SD_iSlaveryTatDay",  -1 )
+				Debug.Notification("Slave Tat removed: " + fOverride.GetName())
+
+				Debug.Trace("[SD] Slave Tat removed: " + fOverride.GetName())
+
+				; akSlave.RemoveFromFaction( slaveFaction as Faction )
+				int STevent = ModEvent.Create("STSimpleRemoveTattoo") 
+				if (STevent)
+				    ModEvent.PushForm(STevent, PlayerActor)        ; Form - actor
+				    ModEvent.PushString(STevent, StorageUtil.GetStringValue(fOverride, "_SD_sSlaveryTatType" ))     	; String - tattoo section (the folder name)
+				    ModEvent.PushString(STevent, StorageUtil.GetStringValue(fOverride, "_SD_sSlaveryTat" ))    ; String - name of tattoo
+				    ModEvent.PushBool(STevent, true)            ; Bool - last = false (the tattoos are only removed when last = true, use it on batches)
+				    ModEvent.PushBool(STevent, true)            ; Bool - silent = true (do not show a message)
+				    ModEvent.Send(STevent)
+				endif
+			EndIf
+		Endif
+
+		i += 1
+	endwhile
+EndFunction
 
 ;================================================================================
 

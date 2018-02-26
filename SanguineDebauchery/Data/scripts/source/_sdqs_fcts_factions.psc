@@ -53,6 +53,7 @@ Faction Property  KhajiitFaction  Auto 		; KhajiitCaravanFaction
 Faction Property  ArgonianFaction  Auto 	; HunterFaction
 Faction Property  DremoraFaction  Auto 		; DremoraFaction
 
+Faction Property _SDFP_slaverCrimeFaction  Auto 
 
 int TYPE_FACTION = 11
 
@@ -942,6 +943,11 @@ Bool Function isInSlaveFactions( Actor akActor )
 
 		i += 1
 	endwhile
+EndFunction
+
+
+Function PaySlaveryCrime()
+	_SDFP_slaverCrimeFaction.PlayerPayCrimeGold( True, False )
 EndFunction
 
 ; ----------- Deprecated 

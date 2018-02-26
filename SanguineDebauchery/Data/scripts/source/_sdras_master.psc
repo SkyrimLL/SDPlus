@@ -214,13 +214,15 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 					kMaster.SendModEvent("PCSubSex","Rough") 
 				EndIf
 				Wait(1.0)
+			Else
+				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+					Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Armbinder" )
+					enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
+				endif
 			EndIf
 
 			; 
-			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-				Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Armbinder" )
-				enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
-			endif
+
 		else
 			kMaster.SendModEvent("PCSubSex","Rough") 
 		endif
@@ -513,10 +515,7 @@ State monitor
 				fctConstraints.actorCombatShutdown( kSlave )
 				fctConstraints.actorCombatShutdown( kMaster )
 				; 
-				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-					Debug.Trace( "[_sdras_master] Punishment for attacking master - Yoke" )
-					enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
-				endif
+
 
 				If (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
 					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
@@ -525,6 +524,11 @@ State monitor
 
 					else
 						kMaster.SendModEvent("PCSubSex","Rough") 
+					endif
+				Else
+					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+						Debug.Trace( "[_sdras_master] Punishment for attacking master - Yoke" )
+						enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
 					endif
 				Endif
 
@@ -555,9 +559,8 @@ State monitor
 							kMaster.SendModEvent("PCSubSex","Rough") 
 						endif
 					Endif
-				EndIf
-
-				If ( bSlaveDetectedByTarget )
+					
+				ElseIf ( bSlaveDetectedByTarget )
 					Debug.Notification( "Your owner wouldn't like that!" )
 					; Whipping
 					; kSlave.PlayAnimation("ZazAPC055");Inte

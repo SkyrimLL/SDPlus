@@ -10,6 +10,7 @@ Keyword Property _SDKP_food  Auto
 Keyword Property _SDKP_food_raw  Auto  
 
 MiscObject Property Gold  Auto  
+MiscObject Property Firewood  Auto  
 
 Quest Property _SDQP_enslavement Auto
 
@@ -164,7 +165,7 @@ Function ProcessGoldEarned(Actor kMaster, Actor kSlave, Float fGoldAmount )
 			fctSlavery.ModMasterTrust( kMaster, 1)
 		endif
 
-		fctSlavery.ModTaskAmount(kSlave, "Valuables", fGoldAmount as Int) 
+		fctSlavery.ModSlaveryTask(kSlave, "Bring gold", fGoldAmount as Int) 
 
 
 		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
@@ -222,7 +223,7 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		; Master receives Food
 		fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalFood", modValue = 1)
 		fctSlavery.ModMasterTrust( kMaster, 1)
-		fctSlavery.ModTaskAmount(kSlave, "Food", 1) 
+		fctSlavery.ModSlaveryTask( kSlave, "Bring food", 1)
 
 		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
@@ -241,10 +242,45 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 
 	; ElseIf ( iuType == 26 || iuType == 41 || iuType == 42 )
 		; Weapon
-	
+	ElseIf ( iuType == 30 || iuType == 46 || iuType == 32 || iuType == 52 )
+		; Creatures can accept natural ingredients
+		fGoldEarned = akBaseItem.GetGoldValue()
+
+		If (akBaseItem == (Firewood as Form))
+			fctSlavery.ModSlaveryTask( kSlave, "Bring firewood", 1)
+		Else
+			fctSlavery.ModSlaveryTask( kSlave, "Bring ingredient", 1)
+		Endif
+
+		if (fGoldEarned>100)
+			fctSlavery.ModMasterTrust( kMaster, 2)
+		else
+			fctSlavery.ModMasterTrust( kMaster, 1)
+		endif
+
+		; TO DO - Master reaction if slave reaches buyout amount
+		If (!akBaseItem.hasKeywordString("zad_Lockable"))
+			If (Utility.RandomInt(0,100)<80) && (fGoldEarned>100)
+				kMaster.EquipItem(akBaseItem, True, True)
+			ElseIf (Utility.RandomInt(0,100)<40)
+				kMaster.EquipItem(akBaseItem, True, True)
+			Endif
+		Endif
+			
+		Debug.Notification("(seems pleased)")
+
+
 	ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1) )
 		; Add code to match received items against Master's needs
 		; Update Master's mood and trust
+
+		If ( iuType == 27 )
+			fctSlavery.ModSlaveryTask(kSlave, "Bring book", 1)
+		ElseIf ( iuType == 26 )
+			fctSlavery.ModSlaveryTask(kSlave, "Bring armor", 1)
+		Elseif (iuType == 41 || iuType == 42 )
+			fctSlavery.ModSlaveryTask(kSlave, "Bring weapon", 1)
+		Endif
 
 	 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
 	 		fGoldEarned = akBaseItem.GetGoldValue()
@@ -252,7 +288,6 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
 		EndIf
 
- 
 		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
 
 		; TO DO - Master reaction if slave reaches buyout amount
@@ -262,31 +297,10 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			kMaster.EquipItem(akBaseItem, True, True)
 		Endif
 
-	ElseIf (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 1)
-		; Creatures can accept natural ingredients
-		If ( iuType == 30 || iuType == 46 || iuType == 32 || iuType == 52 )
-			fGoldEarned = akBaseItem.GetGoldValue()
-
-			if (fGoldEarned>100)
-				fctSlavery.ModMasterTrust( kMaster, 2)
-			else
-				fctSlavery.ModMasterTrust( kMaster, 1)
-			endif
-
-			; TO DO - Master reaction if slave reaches buyout amount
-			If (!akBaseItem.hasKeywordString("zad_Lockable"))
-				If (Utility.RandomInt(0,100)<80) && (fGoldEarned>100)
-					kMaster.EquipItem(akBaseItem, True, True)
-				ElseIf (Utility.RandomInt(0,100)<40)
-					kMaster.EquipItem(akBaseItem, True, True)
-				Endif
-			Endif
+	else
 				
-			Debug.Notification("(seems pleased)")
-		else
-				
-			Debug.Notification("(shrugs)")
-		endif
+		Debug.Notification("(shrugs)")
+
 	EndIf
 
 EndFunction

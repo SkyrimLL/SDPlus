@@ -1,5 +1,6 @@
 Scriptname _sdqs_fcts_slavery extends Quest  
 
+_SDQS_functions Property funct  Auto
 _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 _SDQS_fcts_factions Property fctFactions  Auto
@@ -32,6 +33,26 @@ GlobalVariable Property _SDGVP_MasterNeedGold  Auto
 GlobalVariable Property _SDGVP_MasterNeedSex  Auto  
 GlobalVariable Property _SDGVP_MasterNeedPunishment  Auto  
 GlobalVariable Property _SDGVP_SlaveryLevel  Auto  
+GlobalVariable Property _SDGVP_state_caged  Auto 
+
+Keyword Property _SDTSK_BRING_FOOD  Auto  
+Keyword Property _SDTSK_BRING_GOLD  Auto  
+Keyword Property _SDTSK_BRING_ARMOR  Auto  
+Keyword Property _SDTSK_BRING_WEAPON  Auto  
+Keyword Property _SDTSK_BRING_INGREDIENT  Auto  
+Keyword Property _SDTSK_BRING_FIREWOOD  Auto 
+Keyword Property _SDTSK_BRING_BOOK  Auto  
+Keyword Property _SDTSK_ENTERTAIN_DANCE  Auto  
+Keyword Property _SDTSK_ENTERTAIN_SOLO  Auto  
+Keyword Property _SDTSK_ENTERTAIN_SEX Auto  
+Keyword Property _SDTSK_INSPECTION  Auto  
+Keyword Property _SDTSK_TRAINING_ANAL  Auto  
+Keyword Property _SDTSK_TRAINING_VAGINAL  Auto  
+Keyword Property _SDTSK_TRAINING_ORAL  Auto  
+Keyword Property _SDTSK_TRAINING_POSTURE  Auto  
+Keyword Property _SDTSK_WASH  Auto  
+Keyword Property _SDTSK_IGNORE  Auto  
+
 
 
  
@@ -45,7 +66,17 @@ Quest Property slaveryQuest  Auto
 
 Keyword Property ActorTypeNPC  Auto  
 
-Int iNumberTasks = 3
+Int iNumberTasks 
+Int iDaysPassed 
+Float fTimePassed 
+int iGameDateLastCheck = -1
+int iDaysSinceLastCheck
+int iCountSinceLastCheck
+int iHoursLastCheck 
+float TaskTickerLastCallTime = 0.0
+float TaskTickerThisCallTime = 0.0
+float TaskTickerPeriod = 0.05  ; ingame time (days) for Hourly ticker, about 0.04 is enough
+
 
 function InitSlaveryState( Actor kSlave )
 	; Called during SD initialization - Sanguine is watching
@@ -418,7 +449,6 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		EndIf
 	Endif
 
-	PickNextTask(kSlave)
 
 	; Compatibility with other mods
 	StorageUtil.StringListAdd(kMaster, "_DDR_DialogExclude", "SD+:Master")
@@ -465,6 +495,8 @@ function StopSlavery( Actor kMaster, Actor kSlave)
 	kSlave.SendModEvent( "PCSubStance" , "Standing")
 
 	StorageUtil.FormListClear(kMaster, "_SD_lEnslavedFollower")
+	ResetSlaveryTaskList(kSlave)  
+
 	fctConstraints.UpdateStanceOverrides()
 
 EndFunction
@@ -1319,243 +1351,684 @@ EndFunction
 
 ;----- Enslavement task system
 
-; Create Modevents for PickNextTask and ModTaskAmount
-Function PickNextTask(Actor kSlave)
-	Int iNewTaskID 
-	Bool bForceStart = False
-	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
-	Float fMasterDistance = kSlave.GetDistance( kMaster )
+Function InitSlaveryTaskList()
+	Debug.Trace("[SD] Initialize tasks list")
 
-	If (fMasterDistance >= 900)
-		Debug.Notification("Your owner is too far to check in on you.")
-		ModMasterTrust(kMaster, -1) ; Master is disappointed
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  -1  )  
-		_SDGVP_CurrentTaskStatus.SetValue(-1)  ; -1 fail / 0 started / 1 completed
-		StorageUtil.SetFloatValue(kSlave, "_SD_fCurrentTaskStartDate",  Game.QueryStat("Days Passed")  )
+	StorageUtil.FormListClear(none, "_SD_lSlaveryTaskList")
+	StorageUtil.FormListClear(none, "_SD_lSlaveryCurrentTaskList")
+	; Initialize form list of active task forms
+	; _SDGVP_CurrentTaskID.SetValue(iTaskID)
+	; _SDGVP_CurrentTaskStatus.SetValue(0)  ; -1 fail / 0 started / 1 completed
+
+	; Bring food
+	RegisterSlaveryTask(iTaskID= 1, fKeyword=_SDTSK_BRING_FOOD  as Form, sTaskName = "Bring food", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(5,10), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Food", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="creature master" )  
+	; Bring Gold
+	RegisterSlaveryTask(iTaskID= 2, fKeyword=_SDTSK_BRING_GOLD  as Form, sTaskName = "Bring gold", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(50,100), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )  
+	; Bring armor  
+	RegisterSlaveryTask(iTaskID= 3, fKeyword=_SDTSK_BRING_ARMOR  as Form, sTaskName = "Bring armor", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Comment", sTaskTags="" )  
+	; Bring weapon   
+	RegisterSlaveryTask(iTaskID= 4, fKeyword=_SDTSK_BRING_WEAPON  as Form, sTaskName = "Bring weapon", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=3, sTaskPositiveReward="Comment", iTaskNegativeMod= -3, sTaskNegativeReward="Comment", sTaskTags="" ) 
+	; Bring ingredient    
+	RegisterSlaveryTask(iTaskID= 5, fKeyword=_SDTSK_BRING_INGREDIENT  as Form, sTaskName = "Bring ingredient", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(5,10), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="creature master" )     
+	; Bring firewood
+	RegisterSlaveryTask(iTaskID= 6, fKeyword=_SDTSK_BRING_FIREWOOD  as Form, sTaskName = "Bring firewood", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(1,5), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )    
+	; Bring book
+	RegisterSlaveryTask(iTaskID= 7, fKeyword=_SDTSK_BRING_BOOK  as Form, sTaskName = "Bring book", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )    
+	; Entertain - Dance 
+	RegisterSlaveryTask(iTaskID= 8, fKeyword=_SDTSK_ENTERTAIN_DANCE  as Form, sTaskName = "Dance", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="NipplePiercing", iTaskNegativeMod= -1, sTaskNegativeReward="Whip", sTaskTags="" )  
+	; Entertain - Solo show   
+	RegisterSlaveryTask(iTaskID= 9, fKeyword=_SDTSK_ENTERTAIN_SOLO  as Form, sTaskName = "Solo", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="VaginalPiercing", iTaskNegativeMod= -2, sTaskNegativeReward="Whip", sTaskTags="" )  
+	; Entertain - Sex   
+	RegisterSlaveryTask(iTaskID= 10, fKeyword=_SDTSK_ENTERTAIN_SEX as Form, sTaskName = "Sex", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Punishment", sTaskTags="creature master" )  
+	; Inspection   
+	RegisterSlaveryTask(iTaskID= 11, fKeyword=_SDTSK_INSPECTION  as Form, sTaskName = "Inspection", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )     
+	; Training anal
+	RegisterSlaveryTask(iTaskID= 12, fKeyword=_SDTSK_TRAINING_ANAL  as Form, sTaskName = "Training anal", fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
+	; Training vaginal
+	RegisterSlaveryTask(iTaskID= 13, fKeyword=_SDTSK_TRAINING_VAGINAL  as Form, sTaskName = "Training vaginal", fTaskDuration= 6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="female player" )     
+	; Training oral
+	RegisterSlaveryTask(iTaskID= 14, fKeyword=_SDTSK_TRAINING_ORAL  as Form, sTaskName = "Training oral", fTaskDuration= 6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
+	; Training posture
+	RegisterSlaveryTask(iTaskID= 15, fKeyword=_SDTSK_TRAINING_POSTURE  as Form, sTaskName = "Training posture", fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Yoke", sTaskTags="" )     
+	; Wash
+	RegisterSlaveryTask(iTaskID= 16, fKeyword=_SDTSK_WASH  as Form, sTaskName = "Wash", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Gag", sTaskTags="" )     
+	; Ignore
+	RegisterSlaveryTask(iTaskID= 17, fKeyword=_SDTSK_IGNORE  as Form, sTaskName = "Ignore", fTaskDuration=Utility.RandomInt(4,8)*1.0, fTaskTargetItem=None, iTaskTargetCount=0, iTaskTargetDifference= -1 * Utility.RandomInt(1,5), iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="WristRestraint", sTaskTags="creature master" )     
+
+	iNumberTasks = StorageUtil.FormListCount( none, "_SD_lTaskList")
+EndFunction
+
+Function RegisterSlaveryTask(Int iTaskID, Form fKeyword, String sTaskName, Float fTaskDuration, Form fTaskTargetItem, Int iTaskTargetCount, Int iTaskTargetDifference, Int iTaskPositiveMod, String sTaskPositiveReward, Int iTaskNegativeMod, String sTaskNegativeReward, String sTaskTags)
+	if (StorageUtil.FormListFind( none, "_SD_lTaskList", fKeyword) <0)
+		Debug.Trace("[SD] Registering slavery task: " + iTaskID)
+
+		StorageUtil.FormListAdd( none, "_SD_lTaskList", fKeyword)  ; form ID / keyword - anchor for task parameters
+
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskID",  iTaskID ) ; task ID - easier to handle than form for conditions, dialogue topcis...
+		StorageUtil.SetStringValue(fKeyword, "_SD_sTaskName",  sTaskName ) ; task name - for more readable coding
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  fTaskDuration ) ; duration of task, roughly in hours
+		StorageUtil.SetFormValue(fKeyword, "_SD_fTaskTargetItem",  fTaskTargetItem ) ; Form - can be direct item Form ID or Form List to pick from. If None, detection should be handled according to taks ID
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetCount",  iTaskTargetCount ) ; number of expected items to complete task 
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetDifference",  iTaskTargetDifference ) ; expected difference between positive and negative counts. Use 0 to ignore (optional)
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveMod",  iTaskPositiveMod  ) ; trust points as a reward for successful task
+		StorageUtil.SetStringValue(fKeyword, "_SD_sTaskPositiveReward",  sTaskPositiveReward ) ; string - type of reward for successful task
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskNegativeMod",  iTaskNegativeMod  ) ; trust points as a reward for failed task
+		StorageUtil.SetStringValue(fKeyword, "_SD_sTaskNegativeReward",  sTaskNegativeReward ) ; string - type of reward for failed task
+		StorageUtil.SetStringValue(fKeyword, "_SD_sTaskTags",  sTaskTags ) ; string - tags to apply constraints to tasks (male player, female player, creature master)
+
+		; parameters set by task management system when task is triggered
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskStartDate",  0.0  ) ; 
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount",  0  ) 
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskNegativeCount",  0  ) 
+
+		; Add to form list of active task forms
+		; _SDGVP_CurrentTaskID.SetValue(iTaskID)
+		; _SDGVP_CurrentTaskStatus.SetValue(0)  ; -1 fail / 0 started / 1 completed
+
+	endif
+EndFunction
+
+
+Function PickSlaveryTask(Actor kSlave, String sTaskName = "")
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Form fKeyword = None
+	Bool bFound = false
+	Int iTaskID = 0
+	Int iSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") 
+
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
+		Debug.Trace("[SD] Evaluate slavery task list - creature master found - aborting tasks")
 		Return
 	endif
 
-	If (_SDGVP_CurrentTaskID.GetValue()==0)
-		bForceStart = True
-	Endif
+	If (_SDGVP_state_caged.GetValue( )== 1)
+		Debug.Trace("[SD] Evaluate slavery task list - player is caged - aborting tasks")
+		Return
+	endif
 
-	If (StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskStatus")!=0) || (bForceStart); current task is completed - OK to start a new task
-		; Random selection for now - later use master trust/disposition to select more appropriate task
+	If (sTaskName == "") ; pick random task
+		int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
+		int i = 0
 
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-			iNewTaskID = Utility.RandomInt(1,iNumberTasks)
-		Else
-			If (Utility.RandomInt(0,100)>50)
-				iNewTaskID = 1
-			else
-				iNewTaskID = 3
+		Debug.Trace("[SD] Pick random slavery task: " )
+		while(i < iSlaveLevel) && (!bFound) ; allow for iSlaveLevel attempts at picking a task - ie. up to iSlaveLevel tasks active at a time
+			iTaskID = Utility.RandomInt(1,valueCount)
+			fKeyword = GetSlaveryTaskFromID(iTaskID)
+			if (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")==0)
+				Debug.Trace("[SD]      Task found: " + iTaskID + " [" + fKeyword + "]")
+				bFound = true
+				StartSlaveryTask(kSlave, iTaskID)
 			endif
-		endif
-
-
-		StartCurrentTask( kSlave, iNewTaskID)
+			i += 1
+		endwhile
 	Else
-		Debug.Trace("[SD] Pick a new task - Current task is not completed yet")
+		Debug.Trace("[SD] Pick slavery task by name: " + sTaskName )
+		fKeyword = GetSlaveryTaskFromName(sTaskName)
+		iTaskID = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")
+		if (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")==0)
+			Debug.Trace("[SD]      Task found: " + iTaskID + " [" + fKeyword + "]")
+			StartSlaveryTask(kSlave, iTaskID)
+		Endif
 	Endif
+
 EndFunction
 
-Function ModTaskAmount(Actor kSlave, String sTaskTarget, int iAmount)
-	Int iCurrentAmount = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount" )
 
-	; Only update amount if task target matches current task target
-	If (sTaskTarget == StorageUtil.GetStringValue(kSlave, "_SD_sCurrentTaskTarget"))
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskAmount", iCurrentAmount + iAmount )
+Function StartSlaveryTask(Actor kSlave, Int iTaskID)
+	Form fKeyword 
+	int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
+	Int iSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") 
+	int i = 0
+	String sTaskName
 
-		Debug.Trace("[SD]    Task update - Current amount: " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") )
-		Debug.Trace("[SD]                 Task completion: %" + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
-		Debug.Notification("Task completion: %" + (100 * StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") ) / StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") )
-
-	Endif
-EndFunction
-
-Function StartCurrentTask(Actor kSlave, Int iTaskID)
 	If ((iTaskID < 1) || (iTaskID > iNumberTasks))
 		Debug.Trace("[SD] Start a new task - bad task ID: " + iTaskID)
+		Debug.Trace("[SD]                  - iNumberTasks: " + iNumberTasks)
 		Return
 	endif
 
-	If (StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays")==0.0)
-		; No task on very first day
-		Debug.Trace("[SD] New task aborted - No task on first day: " + StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") as Int)
+	If (_SDGVP_state_caged.GetValue( )== 1)
+		Debug.Trace("[SD] Evaluate slavery task list - player is caged - aborting tasks")
 		Return
+	endif
+
+	fKeyword = GetSlaveryTaskFromID(iTaskID)
+	sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+
+	; grant rights, remove or equip items based on task (training devices for example)
+
+	; Bring food
+	; Bring gold
+	; Bring armor
+	; Bring weapon
+	; Bring ingredient
+	; Bring firewood
+	; Bring book
+	; Dance
+	; Solo
+	; Sex
+	; Inspection
+
+	If (sTaskName=="Training vaginal")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal")) && (iSlaveLevel>=1) && (iSlaveLevel<=2)
+			fctOutfit.QueueSlavePunishment(kSlave, "TrainingPlugVaginal", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Else
+			Return ; abort
+		Endif
+	ElseIf (sTaskName=="Training anal") 
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"PlugAnal")) && (iSlaveLevel>=2) && (iSlaveLevel<=4)  
+			fctOutfit.QueueSlavePunishment(kSlave, "TrainingPlugAnal", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Else
+			Return ; abort
+		Endif
+	ElseIf (sTaskName=="Training oral")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"Gag")) && (iSlaveLevel>=1) && (iSlaveLevel<=6)  
+			fctOutfit.QueueSlavePunishment(kSlave, "TrainingGag", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Else
+			Return ; abort
+		Endif
+	ElseIf (sTaskName=="Training posture")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"Boots")) && (iSlaveLevel>=3) && (iSlaveLevel<=6)  
+			fctOutfit.QueueSlavePunishment(kSlave, "TrainingBoots", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Else
+			Return ; abort
+		Endif
 	Endif
 
-	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskID",  iTaskID )  
+	; Wash
+	; Ignore   
+
+	DisplaySlaveryTaskStartMessage(kSlave,fKeyword)
+
+	; Replace with form list of active task forms
 	_SDGVP_CurrentTaskID.SetValue(iTaskID)
-	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  0  )  
 	_SDGVP_CurrentTaskStatus.SetValue(0)  ; -1 fail / 0 started / 1 completed
-	StorageUtil.SetFloatValue(kSlave, "_SD_fCurrentTaskStartDate",  Game.QueryStat("Days Passed")  )
-	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskAmount", 0 )  ; current amount for task
 
-	If (iTaskID == 1)  ; default task - bring food
-		Debug.Trace("[SD] Start a new task - ID = 1 (Find food)")
+	StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskStartDate",   Utility.GetCurrentGameTime()  ); _SDGVP_gametime.GetValue() as Float  ) ; 
+	StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount",  0  ) 
+	StorageUtil.SetIntValue(fKeyword, "_SD_iTaskNegativeCount",  0  ) 
+	StorageUtil.SetIntValue(fKeyword, "_SD_iTaskForceCompletion",  0  ) 
 
-		StorageUtil.SetStringValue(kSlave, "_SD_sCurrentTaskTarget", "Food" )
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount", Utility.RandomInt(5,10) ) ; target amount to complete task
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", 1 ) ; 1 means player needs to go over target amount to succeed, -1 means player needs to remain under target amount to succeed
+	; reset past slavery task objectives
+	; while(i < valueCount)
+	; 	slaveryQuest.SetObjectiveDisplayed( 50 + iTaskID, abDisplayed = false)
+	; 	i += 1
+	; endwhile
 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) ; in days
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  1  )
+	; slaveryQuest.SetStage( 50 + iTaskID )
+	slaveryQuest.SetObjectiveDisplayed( 50 + iTaskID, abDisplayed = true)
 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  30  )  ; 30+ - used for tasks
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  30  ) 
-
-		Debug.MessageBox(" It's a new day.\n Your owner asks you to bring back at least " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") + " rations of food today.")
-
-	ElseIf (iTaskID == 2)  ; bring valuables
-		Debug.Trace("[SD] Start a new task - ID = 2 (Find valuables)")
-
-		StorageUtil.SetStringValue(kSlave, "_SD_sCurrentTaskTarget", "Valuables" )
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount", Utility.RandomInt(10,30) * 10) 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", 1 )  
-
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  2  )
-
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  31  )  
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  31  ) 
-
-		Debug.MessageBox(" It's a new day.\n Your owner asks you to bring back at least " + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount") + " Gold worth of valuables today.")
-
-	ElseIf (iTaskID == 3)  ; Entertain master
-		Debug.Trace("[SD] Start a new task - ID = 3 (MasterOnly)")
-
-		StorageUtil.SetStringValue(kSlave, "_SD_sCurrentTaskTarget", "MasterOnly" )
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount", 1 ) 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskImpact", -1 )  
-
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskDuration",  1  ) 
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskExposureGain",  3  )
-
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestStage",  32  )  
-		StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective",  32  ) 
-
-		Debug.MessageBox(" It's a new day.\n Your owner asks you to entertain nobody else today.")
-	Endif
-
-	slaveryQuest.SetStage( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskQuestStage"))
-	slaveryQuest.SetObjectiveDisplayed( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective"), abDisplayed = true)
+	StorageUtil.FormListAdd( none, "_SD_lCurrentTaskList", fKeyword)   
 
 EndFunction
 
-Function EvaluateCurrentTask(Actor kSlave)
-	Int iTaskID = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskID" )
-	; Int iTaskResult = 0 ; -1 fail / 0 started / 1 completed
-	Int iDaysPassed = Game.QueryStat("Days Passed") - (StorageUtil.GetFloatValue(kSlave, "_SD_fCurrentTaskStartDate")  as Int)
+Function EvaluateSlaveryTaskList(Actor kSlave)
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Form fKeyword = None 
+	Int iSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") 
+	Float fCurrentDate = _SDGVP_gametime.GetValue() as Float
+	Float fHoursCount = 0
+	String sTaskName
 
-	If (StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays")==0.0)
-		; No task on very first day
-		Debug.Trace("[SD] Evaluate task aborted - No task on first day: " + StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") as Int)
+	int valueCount = StorageUtil.FormListCount(none, "_SD_lCurrentTaskList")
+	int i = 0
+	int iTaskID = 0
+
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
+		Debug.Trace("[SD] Evaluate slavery task list - creature master found - aborting tasks")
 		Return
+	endif
+
+	Debug.Notification("[SD] Evaluate slavery task list: " + valueCount)
+	Debug.Trace("[SD] Evaluate slavery task list: " + valueCount )
+	while(i < valueCount)   
+		fKeyword = StorageUtil.FormListGet( none, "_SD_lCurrentTaskList", i)
+		EvaluateSlaveryTask( kSlave,  fKeyword)
+
+		i += 1
+	endwhile
+
+	valueCount = StorageUtil.FormListCount(none, "_SD_lCurrentTaskList")
+
+	If (valueCount < iSlaveLevel)
+		PickSlaveryTask(kSlave)
 	Endif
 
-	If (iDaysPassed>= StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskDuration"))  ; task expired
-		slaveryQuest.SetObjectiveDisplayed( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskQuestObjective"), abDisplayed = false)
+EndFunction
 
-		If ( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskImpact" ) == 1)
-			If (StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") >= StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount")); target amount is exceeded, task completed
-				CompleteCurrentTask( kSlave) 
+Function DisplayTaskTimer(Form fKeyword)
+	; Float fCurrentDate = _SDGVP_gametime.GetValue() as Float
 
-			else  ; task failed
-				FailCurrentTask( kSlave) 
-			EndIf
-		ElseIf ( StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskImpact" ) == -1)
-			If (StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskAmount") < StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskTargetAmount")); target amount is exceeded, task completed
-				CompleteCurrentTask( kSlave) 
-
-			else  ; task failed
-				FailCurrentTask( kSlave) 
-			EndIf
-		EndIf
-	EndIf
+	Debug.Trace("[SD] Evaluate slavery task: " + StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName") )
+	Debug.Trace("[SD]      _SD_fTaskDuration: " + StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskDuration") )
+	Debug.Trace("[SD]      _SD_fTaskStartDate: " + StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate") )
+	; Debug.Trace("[SD]      fCurrentDate: " + fCurrentDate )
 
 EndFunction
 
-	; - Master personality profile
-	; 
-	; 0 - Simple profile. No additional constraints
-	; 1 - Comfortable - Must complete or exceed food goal
-	; 2 - Horny - Must complete or exceed sex goal
-	; 3 - Sadistic - Must complete or exceed punishment goals
-	; 4 - Gambler - Must complete or exceed gold goals. 
-	; 5 - Caring - Seeks full compliance for one goal at least
-	; 6 - Perfectionist - Seeks full compliance for all goals
 
-Function CompleteCurrentTask(Actor kSlave) 
-	;-  Reward if succeed (remove punishment gear, add allowance, grant additional freedoms,heal,feed,make up, reward piercings)
-	Int iTaskID = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskID" )
+Function EvaluateSlaveryTask(Actor kSlave, Form fKeyword)
 	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
-	Int iSlaveExposure = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure")
-	Int iSlaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
-	Int iMasterPersonality = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile" )
-	Int iModTrust = 0
+	Float fCurrentDate = _SDGVP_gametime.GetValue() as Float
+	Int  iHoursCount = 0
+	Int iTimeLeft = 0
+	String sTaskName
 
-	; slavery exposure increases for being a good slave
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryExposure", iSlaveExposure + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskExposureGain") )
+	TaskTickerThisCallTime = Utility.GetCurrentGameTime()
 
-	If (iTaskID == 1)  ; default task - bring food
-		iModTrust = 1 + (((iMasterPersonality == 1) as Int) * 2) ; Master is happy
-		Debug.MessageBox("You succeeded your daily task. Your owner is happy with you and grants you some free time.")
+ 	fTimePassed =  TaskTickerThisCallTime - StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")
 
-	ElseIf (iTaskID == 2)  ; bring valuables
-		iModTrust = 2  + (((iMasterPersonality == 4) as Int) * 2)  
-		Debug.MessageBox("You succeeded your daily task. Your owner is happy with you and grants you some free time.")
-
-	ElseIf (iTaskID == 3)  ; Entertain master
-		iModTrust = 3  + (((iMasterPersonality == 2) as Int) * 2)  
-		Debug.MessageBox("You succeeded your daily task. Your owner is happy with you and grants you some free time.")
+	; if ((fTimePassed-TaskTickerLastCallTime)>= (TaskTickerPeriod * fSlaveLevel) ) ; same day - incremental updates
+	iHoursCount = ((fTimePassed)/ (TaskTickerPeriod) ) as Int
+	if (iHoursCount<1)
+		iHoursCount = 0
 	EndIf
 
-	; Trust is harder to gain and easy to lose at low slavery levels
-	iModTrust = 1 + (iModTrust * 2 * ( (iSlaveryLevel>3) as Int)) + (iModTrust / 2 * ( (iSlaveryLevel<=3) as Int))
-	ModMasterTrust(kMaster, iModTrust)  
+	sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+	iTimeLeft = ( (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskDuration") as Int) - iHoursCount )
 
+	; fHoursCount = (fCurrentDate - StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")) * 24
+	DisplayTaskTimer(fKeyword)
+	Debug.Trace("[SD]      fTimePassed: " + fTimePassed )
+	Debug.Trace("[SD]      iHoursCount: " + iHoursCount )
+	Debug.Trace("[SD]      Time Left: " + iTimeLeft )
 
-	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  1  )   
-	_SDGVP_CurrentTaskStatus.SetValue(1)  ; -1 fail / 0 started / 1 completed
+	If (_SDGVP_state_caged.GetValue( )== 1)
+		Debug.Trace("[SD] Evaluate slavery task - player is caged - skipping")
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskStartDate", StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate") + (TaskTickerThisCallTime - TaskTickerLastCallTime))
+
+	Elseif (iTimeLeft <= 0) || (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskForceCompletion") == 1)
+		If (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTargetDifference")<0)
+			Debug.Trace("[SD]      Evaluating negative task" )
+			If (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskNegativeCount" ) > StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTargetDifference") )
+				CompleteSlaveryTask( kSlave,  fKeyword)
+			Else
+				FailSlaveryTask( kSlave,  fKeyword)
+			Endif
+		Else
+			Debug.Trace("[SD]      Evaluating positive task" )
+			; check if training devices are still on
+			If (sTaskName=="Training vaginal")
+				if (fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal"))  
+					StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount", 1)
+				Endif
+			ElseIf (sTaskName=="Training anal")
+				if (fctOutfit.isDeviceEquippedString(kSlave,"PlugAnal"))  
+					StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount", 1)
+				Endif
+			ElseIf (sTaskName=="Training oral")
+				if (fctOutfit.isDeviceEquippedString(kSlave,"Gag"))  
+					StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount", 1)
+				Endif
+			ElseIf (sTaskName=="Training posture")
+				if (fctOutfit.isDeviceEquippedString(kSlave,"Boots"))  
+					StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount", 1)
+				Endif
+			Endif
+
+			Debug.Trace("[SD]      _SD_iTaskPositiveCount: " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount" ) )
+			Debug.Trace("[SD]      _SD_iTaskTarget: " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTarget") )
+
+			If (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount" ) > StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTarget") )
+				CompleteSlaveryTask( kSlave,  fKeyword)
+			Else
+				FailSlaveryTask( kSlave,  fKeyword)
+			Endif
+		Endif
+	endif
+
+	TaskTickerLastCallTime = Utility.GetCurrentGameTime()
 
 EndFunction
 
-Function FailCurrentTask(Actor kSlave) 
-	;-  Punishment if fail (punishment scene, punishment gear, remove allowance, remove freedoms, shave head, punishment piercings)
-	Int iTaskID = StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskID" )
+Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
-	Int iSlaveExposure = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure")
-	Int iSlaveryLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel")
-	Int iMasterPersonality = StorageUtil.GetIntValue(kMaster, "_SD_iPersonalityProfile" )
-	Int iModTrust = 0
+	String sTaskPositiveReward = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskPositiveReward")
+	Float fMasterDistance = kSlave.GetDistance( kMaster )
+	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
 
-	; slavery exposure increases faster for being a bad slave
-	StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryExposure", iSlaveExposure + StorageUtil.GetIntValue(kSlave, "_SD_iCurrentTaskExposureGain") * 2 )
+	Debug.Trace("[SD] Completing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
+	Debug.Notification("[SD] You succeded Task : " + sTaskName )
 
-	If (iTaskID == 1)  ; default task - bring food
-		iModTrust =  -2  - (((iMasterPersonality == 1) as Int) * 2) ; Master is disappointed
-		Debug.MessageBox("You failed your daily task. Your owner is disappointed and take some free time away from you.")
+	If (fMasterDistance >= 900)
+		Debug.Notification("Your owner is too far to reward you.")
+		ModMasterTrust(kMaster, -1) ; Master is disappointed
+		Return
+	endif
+
+
+	; clear training devices
+	If (sTaskName=="Training vaginal")
+		if (fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal"))  
+			fctOutfit.ClearSlavePunishment(kSlave,"PlugVaginal", true)
+		Endif
+	ElseIf (sTaskName=="Training anal")
+		if (fctOutfit.isDeviceEquippedString(kSlave,"PlugAnal"))  
+			fctOutfit.ClearSlavePunishment(kSlave,"PlugAnal", true)
+		Endif
+	ElseIf (sTaskName=="Training oral")
+		if (fctOutfit.isDeviceEquippedString(kSlave,"Gag"))  
+			fctOutfit.ClearSlavePunishment(kSlave,"Gag", true)
+		Endif
+	ElseIf (sTaskName=="Training posture")
+		if (fctOutfit.isDeviceEquippedString(kSlave,"Boots"))  
+			fctOutfit.ClearSlavePunishment(kSlave,"Boots", true)
+		Endif
+	Endif
+
+	; select reward based on label
+	If (sTaskPositiveReward=="Comment")
+		Debug.Notification("You succeeded your task, slave.")
+
+		; Add diverse comments based on task and mood of master
+
+	ElseIf (sTaskPositiveReward=="Food")
+		kMaster.SendModEvent("SLDGiftNPC","Hungry")
+
+	ElseIf (sTaskPositiveReward=="NipplePiercing")
+		fctOutfit.equipDeviceByString("NipplePiercing")
+
+	ElseIf (sTaskPositiveReward=="VaginalPiercing")
+		fctOutfit.equipDeviceByString("VaginalPiercing")
+	EndIf
+
+	ModMasterTrust(kMaster, StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveMod"))
+	; Debug.Notification("[SD]       Reward : " + sTaskPositiveReward )
+	Debug.Trace("[SD]       Reward : " + sTaskPositiveReward )
+
+	ResetSlaveryTask( fKeyword)
+
+	If (Utility.RandomInt(0,100) > 90)
+		PickSlaveryTask(kSlave)
+	Endif
+EndFunction
+
+Function FailSlaveryTask(Actor kSlave, Form fKeyword)
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	String sTaskNegativeReward = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskNegativeReward")
+	Float fMasterDistance = kSlave.GetDistance( kMaster )
+	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+
+	Debug.Trace("[SD] Failing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
+	Debug.Notification("[SD] You failed Task : " + sTaskName )
+
+	If (fMasterDistance >= 900)
+		Debug.Notification("Your owner is too far to punish you.")
+		ModMasterTrust(kMaster, -2) ; Master is disappointed
+		Return
+	endif
+
+	; select punishment based on label
+	If (sTaskNegativeReward=="Comment")
+		Debug.Notification("You failed your task, slave.")
+
+		; Add diverse comments based on task and mood of master
+
+	ElseIf (sTaskNegativeReward=="Whip")
+		funct.SanguineWhip( kMaster )
+
+	ElseIf (sTaskNegativeReward=="Punishment")
+		funct.SanguinePunishment( kMaster )
+
+	ElseIf (sTaskNegativeReward=="Belt")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"Belt"))  
+			fctOutfit.QueueSlavePunishment(kSlave, "Belt", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Endif
+
+	ElseIf (sTaskNegativeReward=="Yoke")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"Yoke"))  
+			fctOutfit.QueueSlavePunishment(kSlave, "Yoke", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Endif
+
+	ElseIf (sTaskNegativeReward=="WristRestraint")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"WristRestraint"))  
+			fctOutfit.QueueSlavePunishment(kSlave, "WristRestraint", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Endif
+
+	ElseIf (sTaskNegativeReward=="Gag")
+		if (!fctOutfit.isDeviceEquippedString(kSlave,"Gag"))  
+			fctOutfit.QueueSlavePunishment(kSlave, "Gag", 1.0 + Utility.RandomFloat(1.0, 23.0))
+		Endif
+	Endif
+
+
+	ModMasterTrust(kMaster, StorageUtil.GetIntValue(fKeyword, "_SD_iTaskNegativeMod"))
+	; Debug.Notification("[SD]       Punishment : " + sTaskNegativeReward )
+	Debug.Trace("[SD]       Punishment : " + sTaskNegativeReward )
 	
-	ElseIf (iTaskID == 2)  ; bring valuables
-		iModTrust =  -4 -  (((iMasterPersonality == 4) as Int) * 2) 
-		Debug.MessageBox("You failed your daily task. Your owner is disappointed and take some free time away from you.")
+	ResetSlaveryTask( fKeyword)
 
-	ElseIf (iTaskID == 3)  ; Entertain master
-		iModTrust = -6  - (((iMasterPersonality == 2) as Int) * 2)  
-		Debug.MessageBox("You failed your daily task. Your owner is disappointed and take some free time away from you.")
-		kMaster.SendModEvent("PCSubWhip")
-	EndIf
+	If (Utility.RandomInt(0,100) > 60)
+		PickSlaveryTask(kSlave)
+	Endif
+EndFunction
 
+Function ResetSlaveryTaskList(Actor kSlave)
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Form fKeyword = None 
+	Int iSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") 
+	Float fCurrentDate = _SDGVP_gametime.GetValue() as Float
+	Float fHoursCount = 0
+	String sTaskName
 
-	; Trust is harder to gain and easy to lose at low slavery levels
-	iModTrust = -1 + (iModTrust * 2 * ( (iSlaveryLevel<=3) as Int)) + (iModTrust / 2 * ( (iSlaveryLevel>3) as Int))
-	ModMasterTrust(kMaster, iModTrust)  
+	int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
+	int i = 0
+	int iTaskID = 0
 
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
+		Debug.Trace("[SD] Reset slavery task list - creature master found - aborting tasks")
+		Return
+	endif
 
-	StorageUtil.SetIntValue(kSlave, "_SD_iCurrentTaskStatus",  -1  )   
-	_SDGVP_CurrentTaskStatus.SetValue(-1)  ; -1 fail / 0 started / 1 completed
+	Debug.Notification("[SD] Reset slavery task list: " + valueCount)
+	Debug.Trace("[SD] Reset slavery task list: " + valueCount )
+	while(i < valueCount)   
+		fKeyword = StorageUtil.FormListGet( none, "_SD_lTaskList", i)
+		ResetSlaveryTask( fKeyword)
+
+		i += 1
+	endwhile
+
+	StorageUtil.FormListClear(none, "_SD_lCurrentTaskList")
 
 EndFunction
 
+Function ResetSlaveryTask(Form fKeyword)
+	Int iTaskID = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")
+	If (iTaskID>0)
+		Debug.Trace("[SD] Resetting Task : " + iTaskID )
+		; slaveryQuest.SetStage( 50 + iTaskID )
+		slaveryQuest.SetObjectiveDisplayed( 50 + iTaskID, abDisplayed = false)
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskStartDate",   0 ) ; 
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount",  0  ) 
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskNegativeCount",  0  ) 
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskForceCompletion",  0  ) 
+		StorageUtil.FormListRemove( none, "_SD_lCurrentTaskList", fKeyword)   
+	Else
+		Debug.Trace("[SD] Resetting Task - TaskID = 0 - aborting" )
+	Endif
+EndFunction
 
+Function ModSlaveryTask(Actor kSlave, String sTaskName, Int iModValue)
+	Form fKeyword = GetSlaveryTaskFromName( sTaskName)
+	Int iTaskID = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	Float fMasterDistance = kSlave.GetDistance( kMaster )
+	Int iTaskValue = 0
+	Int iCompletionPercent = 0
+	String sTaskMessage 
+
+	If (fKeyword != None)
+		; only increment active tasks
+		If (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")>0.0)
+			DisplayTaskTimer(fKeyword)
+
+			; force refresh of quest objective if it is missing
+			If (!slaveryQuest.IsObjectiveDisplayed(50 + iTaskID))
+				slaveryQuest.SetObjectiveDisplayed( 50 + iTaskID, abDisplayed = true)
+			Endif
+
+
+			If (iModValue > 0)
+				iTaskValue = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount") 
+				StorageUtil.SetIntValue(fKeyword, "_SD_iTaskPositiveCount", iTaskValue + iModValue)
+				iCompletionPercent = (100 * StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount") ) / StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTargetCount")
+
+				if (iCompletionPercent>100)
+					iCompletionPercent = 100
+				EndIf
+
+				sTaskMessage = "[" + sTaskName + "] completion before success: %" + iCompletionPercent 
+				Debug.Trace("[SD]   " + sTaskMessage )
+				Debug.Trace("[SD]  		Positive count : " + (iTaskValue + iModValue) )
+				Debug.Notification(sTaskMessage )
+
+				If (iCompletionPercent>=100) && ((fMasterDistance < 900))
+					; StorageUtil.SetIntValue(fKeyword, "_SD_iTaskForceCompletion", 1) 
+					; EvaluateSlaveryTask( kSlave,  fKeyword)
+					CompleteSlaveryTask( kSlave,  fKeyword)
+
+				Endif
+
+
+			else
+				iTaskValue = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskNegativeCount"  ) 
+				StorageUtil.SetIntValue(fKeyword, "_SD_iTaskNegativeCount", iTaskValue + iModValue)
+				iCompletionPercent = (100 * StorageUtil.GetIntValue(fKeyword, "_SD_iTaskNegativeCount") ) / StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTargetDifference")
+
+				if (iCompletionPercent>100)
+					iCompletionPercent = 100
+				EndIf
+				
+				sTaskMessage = "[" + sTaskName + "] completion before fail: %" + iCompletionPercent 
+				Debug.Trace("[SD]   " + sTaskMessage )
+				Debug.Trace("[SD]  		Negative count : " + (iTaskValue + iModValue) )
+
+				Debug.Notification(sTaskMessage )
+
+				If (iCompletionPercent>=100) && ((fMasterDistance < 900))
+					; StorageUtil.SetIntValue(fKeyword, "_SD_iTaskForceCompletion", 1) 
+					; EvaluateSlaveryTask( kSlave,  fKeyword)
+					FailSlaveryTask( kSlave,  fKeyword)
+				Endif
+
+
+			endif
+		Endif
+	Else
+		Debug.Trace("[SD]      Task not found: " + sTaskName )
+	EndIf
+EndFunction
+
+Form Function GetSlaveryTaskFromName(String sTaskName)
+	Form fKeyword = None
+	Bool bFound = false
+
+	int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
+	int i = 0
+
+	Debug.Trace("[SD] Looking up slavery task: " + sTaskName)
+	while(i < valueCount) && (!bFound)
+		fKeyword = StorageUtil.FormListGet( none, "_SD_lTaskList", i)
+		if (StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName")==sTaskName)
+			Debug.Trace("[SD]      Task found: " + fKeyword)
+			bFound = true
+		endif
+		i += 1
+	endwhile
+
+	Return fKeyword
+EndFunction
+
+Form Function GetSlaveryTaskFromID(Int iTaskID)
+	Form fKeyword = None
+	Bool bFound = false
+
+	int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
+	int i = 0
+
+	Debug.Trace("[SD] Looking up slavery task ID: " + iTaskID)
+	while(i < valueCount) && (!bFound)
+		fKeyword = StorageUtil.FormListGet( none, "_SD_lTaskList", i)
+		if (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")==iTaskID)
+			Debug.Trace("[SD]      Task found: " + fKeyword)
+			bFound = true
+		endif
+		i += 1
+	endwhile
+
+	Return fKeyword
+EndFunction
+
+Function DisplaySlaveryTaskStartMessage(Actor kSlave, Form fKeyword)
+	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	String	sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+
+	; customize display messages based on master mood / personality (pet names, from dog, to slave, to pet)
+
+	If (sTaskName=="Bring food")
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetCount",  Utility.RandomInt(5,10) )
+		Debug.MessageBox("I am starving. Bring me something to eat.")
+
+	ElseIf (sTaskName=="Bring gold")
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetCount",  Utility.RandomInt(50,100) )
+		Debug.MessageBox("You better earn your keep. Bring me some valuables.")
+
+	ElseIf (sTaskName=="Bring armor")
+		Debug.MessageBox("Fetch me an armor. I don't care where you find it.")
+
+	ElseIf (sTaskName=="Bring weapon")
+		Debug.MessageBox("Bring me something else to protect myself with.")
+
+	ElseIf (sTaskName=="Bring ingredient")
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetCount",  Utility.RandomInt(5,10) )
+		Debug.MessageBox("Bring me some ingredients. I would like to brew something.")
+ 
+	ElseIf (sTaskName=="Bring firewood")
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetCount",  Utility.RandomInt(1,5) )
+		Debug.MessageBox("We need new wood for the fire.")
+
+ 	ElseIf (sTaskName=="Bring book")
+		Debug.MessageBox("I am bored. Bring me something to read.")
+
+ 	ElseIf (sTaskName=="Dance")
+		Debug.MessageBox("It's too quiet here. We need some entertainment.")
+
+ 	ElseIf (sTaskName=="Solo")
+		Debug.MessageBox("Let's have some fun. Give us a good show.")
+   
+ 	ElseIf (sTaskName=="Sex")
+		Debug.MessageBox("Stay close. You are making me horny.")
+   
+ 	ElseIf (sTaskName=="Inspection")
+		Debug.MessageBox("Come closer. I want to see what you've got.")
+		kMaster.SendModEvent("SLDRobPlayer")
+   
+	ElseIf (sTaskName=="Training vaginal")
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  6.0 + Utility.RandomInt(0,18)*1.0 )
+		Debug.MessageBox("You need to learn to be lubricated at all times. This should do the trick.")
+
+	ElseIf (sTaskName=="Training anal")
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  6.0 + Utility.RandomInt(0,18)*1.0 )
+		Debug.MessageBox("Wear this for a while. That will stretch you a bit.")
+
+	ElseIf (sTaskName=="Training oral")
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  6.0 + Utility.RandomInt(0,18)*1.0 )
+		Debug.MessageBox("Your mouth is mine. Wear this for a while so you can put your tongue to good use.")
+		
+	ElseIf (sTaskName=="Training posture")
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  6.0 + Utility.RandomInt(0,18)*1.0 )
+		Debug.MessageBox("Stop slouching about. Here is something to improve your posture.")
+		
+ 	ElseIf (sTaskName=="Wash")
+		Debug.MessageBox("Look how horny you made me. Get on your knees and clean this up with your tongue.")
+		kMaster.SendModEvent("PCSubSex","Oral")
+
+ 	ElseIf (sTaskName=="Ignore")
+		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  Utility.RandomInt(4,8)*1.0 )
+		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetDifference",  -1 * Utility.RandomInt(1,5) )
+		Debug.MessageBox("Be quiet now. I am busy.")
+
+	Endif
+  
+EndFunction

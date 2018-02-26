@@ -36,6 +36,8 @@ Function Maintenance()
 	; Debug.Trace("Reset SexLab events")
 	; RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	; RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
+	
+	Debug.Trace("[SD] Loading SD+ version: " + iVersionNumber)
 
 	if (libs.GetVersion() < 2.83)
 	    Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
@@ -64,8 +66,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20180125 ; <--- Edit this value when updating
-		iVersionNumber = 20180125; and this
+	If iVersionNumber < 20180225 ; <--- Edit this value when updating
+		iVersionNumber = 20180225; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)
@@ -75,36 +77,6 @@ Function Maintenance()
 		
 		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableBeastMaster", _SDGVP_config_enable_beast_master.GetValue() as Int)
 		; Update Code
-
-		fctFactions.initHumanoidMastersList (  )
-		fctFactions.initBeastMastersList (  )
-		fctOutfit.initSlaveryGearByRace (  )
-		fctFactions.initSlaveryFactionByRace (  )
-
-		fctSlavery.InitPunishmentIdle()
-
-		If (!StorageUtil.HasIntValue(kPlayer, "_SD_iDisableDreamworld"))
-			StorageUtil.SetIntValue( kPlayer , "_SD_iDisableDreamworld", 0)
-			StorageUtil.SetIntValue( kPlayer, "_SD_iMasterTravelDelay", 1) ; in Days
-			StorageUtil.SetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction", 20)
-			StorageUtil.SetIntValue( kPlayer, "_SL_iPlayerSexAnim", 0)
-		endif
-
-		If (StorageUtil.GetIntValue( kPlayer  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kPlayer  , "_SD_iEnableAction") == 1) 
-			StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1 )
-			StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1 )			
-		Endif
-
-		If (!StorageUtil.HasStringValue(kPlayer, "_SD_sSanguineGender"))
-			StorageUtil.SetStringValue(kPlayer, "_SD_sSanguineGender","Both")
-		Endif
-
-		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", _SDGVP_config_ChanceDreamworldOnSleep.GetValue() as Int)
-
-		If (StorageUtil.FormListFind(kPlayer, "_SD_lBannedSlaveryFactions", SexLabProhibitedFaction as Form)<0)
-			StorageUtil.FormListAdd(kPlayer, "_SD_lBannedSlaveryFactions", SexLabProhibitedFaction as Form)
-		Endif
-
 
 		; kPlayer.SendModEvent( "PCSubStance" , "Standing")
 
@@ -147,6 +119,7 @@ Function Maintenance()
 		EndIf
 
 		If ( _SD_thugslave.IsRunning() )
+			_SD_thugslave.SetStage(50)
 			_SD_thugslave.Stop()
 		EndIf
 
@@ -168,6 +141,35 @@ Function Maintenance()
 			fctSlavery.InitSlaveryState( kPlayer )
 		EndIf
 
+		fctFactions.initHumanoidMastersList (  )
+		fctFactions.initBeastMastersList (  )
+		fctOutfit.initSlaveryGearByRace (  )
+		fctFactions.initSlaveryFactionByRace (  )
+
+		fctSlavery.InitPunishmentIdle()
+		fctSlavery.InitSlaveryTaskList()
+
+		If (!StorageUtil.HasIntValue(kPlayer, "_SD_iDisableDreamworld"))
+			StorageUtil.SetIntValue( kPlayer , "_SD_iDisableDreamworld", 0)
+			StorageUtil.SetIntValue( kPlayer, "_SD_iMasterTravelDelay", 1) ; in Days
+			StorageUtil.SetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction", 20)
+			StorageUtil.SetIntValue( kPlayer, "_SL_iPlayerSexAnim", 0)
+		endif
+
+		If (StorageUtil.GetIntValue( kPlayer  , "_SD_iHandsFree") == 0) && (StorageUtil.GetIntValue( kPlayer  , "_SD_iEnableAction") == 1) 
+			StorageUtil.SetIntValue( kPlayer  , "_SD_iHandsFree", 1 )
+			StorageUtil.SetIntValue( kPlayer  , "_SD_iEnableAction", 1 )			
+		Endif
+
+		If (!StorageUtil.HasStringValue(kPlayer, "_SD_sSanguineGender"))
+			StorageUtil.SetStringValue(kPlayer, "_SD_sSanguineGender","Both")
+		Endif
+
+		StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", _SDGVP_config_ChanceDreamworldOnSleep.GetValue() as Int)
+
+		If (StorageUtil.FormListFind(kPlayer, "_SD_lBannedSlaveryFactions", SexLabProhibitedFaction as Form)<0)
+			StorageUtil.FormListAdd(kPlayer, "_SD_lBannedSlaveryFactions", SexLabProhibitedFaction as Form)
+		Endif
 
 	EndIf
 
@@ -178,10 +180,15 @@ Function Maintenance()
 			; Debug.Notification("Master is dead." )
 
 			If ( _SDGVP_enslaved.GetValue() == 1)
-				Debug.Notification("You are still enslaved." )
-				Debug.Notification("Shutting down Enslavement Quest" )
+				Debug.Trace("You are still enslaved after your master died.." )
+				Debug.Trace("Shutting down Enslavement Quest" )
 				_SDGVP_enslaved.SetValue(0)
 				_SD_enslavement.Stop()
+
+				If ( _SD_thugslave.IsRunning() )
+					_SD_thugslave.SetStage(50)
+					_SD_thugslave.Stop()
+				EndIf
 			EndIf
 		EndIf
 	EndIf
