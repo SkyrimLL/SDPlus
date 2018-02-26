@@ -7,6 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 fctDialogue.SetNPCDialogueState ( akSpeaker )
+SendModEvent("SDModTaskAmount","Ignore", -1)
 ;END CODE
 EndFunction
 ;END FRAGMENT

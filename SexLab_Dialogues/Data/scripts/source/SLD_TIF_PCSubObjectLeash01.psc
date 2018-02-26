@@ -9,6 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Debug.Notification("Your owner attaches a leash to your collar")
 
 akSpeaker.SendModEvent( "PCSubLeash" )
+SendModEvent("SDPickNextTask","")
 ;END CODE
 EndFunction
 ;END FRAGMENT

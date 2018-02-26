@@ -69,6 +69,7 @@ Function _maintenance()
 
 	RegisterForModEvent("SLDRobPlayer",   "OnSLDRobPlayer")
 	RegisterForModEvent("SLDGiftPlayer",   "OnSLDGiftPlayer")
+	RegisterForModEvent("SLDGiftNPC",   "OnSLDGiftNPC")
 	RegisterForModEvent("SLDPayPlayer",   "OnSLDPayPlayer")
 
 	RegisterForModEvent("PCSubChangeLook",   "OnSDChangeLook")
@@ -169,23 +170,23 @@ EndFunction
 
 
 Function GiftFromNPC(Actor kActor, string sFilter)
-	If (sFIlter == "Thirsty")
+	If (sFilter == "Thirsty")
 		AddInventoryEventFilter(_SLD_GiftFilterThirsty)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterThirsty, True )
-	ElseIf (sFIlter == "Hungry")
+	ElseIf (sFilter == "Hungry")
 		AddInventoryEventFilter(_SLD_GiftFilterHungry)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterHungry, True )
-	ElseIf (sFIlter == "Hurt")
+	ElseIf (sFilter == "Hurt")
 		AddInventoryEventFilter(_SLD_GiftFilterHurt)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterHurt, True )
-	ElseIf (sFIlter == "Cold")
+	ElseIf (sFilter == "Cold")
 		AddInventoryEventFilter(_SLD_GiftFilterCold)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterCold, True )
 	EndIf
 
 	RemoveAllInventoryEventFilters()
 
-	SendModEvent("SDModMasterTrust", -1)
+	SendModEvent("SDModMasterTrust", 1)
 EndFunction
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
@@ -202,6 +203,18 @@ Event OnSLDRobPlayer(String _eventName, String _args, Float _argc, Form _sender)
 EndEvent
 
 Event OnSLDGiftPlayer(String _eventName, String _args, Float _argc, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	; _args = type of gift
+ 	; Hungry
+ 	; Thirsty
+ 	; Hurt
+ 	; Cold
+
+	GiftFromNPC(kActor, _args)
+EndEvent
+
+Event OnSLDGiftNPC(String _eventName, String _args, Float _argc, Form _sender)
  	Actor kActor = _sender as Actor
 
 	_SLD_Main.GiftPlayer(kActor)

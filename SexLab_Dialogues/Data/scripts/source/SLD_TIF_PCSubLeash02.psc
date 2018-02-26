@@ -9,6 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Debug.Notification("Your owner starts following you around.")
 
 akSpeaker.SendModEvent( "PCSubMasterFollow" )
+SendModEvent("SDPickNextTask","")
 ;END CODE
 EndFunction
 ;END FRAGMENT

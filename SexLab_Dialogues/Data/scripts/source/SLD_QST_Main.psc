@@ -119,6 +119,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	; ------ NPC is a Master
 	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
 
+
 		If (isSpeakerHuman) 
 			If (_SLD_humanMasterAlias.GetReference() != akSpeakerRef)
 				_SLD_humanMasterAlias.ForceRefTo(akSpeakerRef )
@@ -663,6 +664,7 @@ Function RobPlayer ( Actor akSpeaker  )
 	If IButton == 0  ; Show the thing.
 
 		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+		SendModEvent("SDModTaskAmount","Inspection", 1)
 
 		Actor _bandit = akSpeaker
 		Actor _target = Player
