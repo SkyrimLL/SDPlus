@@ -154,7 +154,7 @@ Function ProcessGoldEarned(Actor kMaster, Actor kSlave, Float fGoldAmount )
 	If (fGoldAmount > 0)
 		fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldAmount as Int)
 		StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldAmount as Int))
-		; _SDGVP_buyoutEarned.SetValue(fGoldAmount)
+		_SDGVP_buyoutEarned.SetValue(fGoldAmount)
 
 
 		_SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldAmount as Int,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)

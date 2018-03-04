@@ -13,7 +13,12 @@ ObjectReference arPortal = (akSpeaker as ObjectReference).PlaceAtMe(Game.GetForm
 ; SummonEffect.Cast( akSpeaker, akSpeaker )
 Utility.wait( 3.0 )
 
-dream.sendDreamerBack( 35 )
+If (Utility.RandomInt(0,100)>40)
+	dream.sendDreamerBack( 35 )
+Else
+	dream.sendDreamerBack( 15 ) ; back to where PC came from
+Endif
+
 ;END CODE
 EndFunction
 ;END FRAGMENT

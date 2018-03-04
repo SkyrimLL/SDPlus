@@ -1356,6 +1356,8 @@ Function _slaveStatusTicker()
 
 		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
+		enslavement.ResetCage( kSlave)
+
 		StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
 		StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
 

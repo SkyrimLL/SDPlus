@@ -12,6 +12,9 @@ _SDQS_fcts_slavery Property fctSlavery  Auto
 DialogueFollowerScript Property companionDialogue  Auto
 
 Quest Property _SDQP_enslavement  Auto
+Quest Property _SD_dream_destinations  Auto  
+_sdqs_dream_destinations property dreamDest Auto
+
 
 GlobalVariable Property _SDGVP_enslaved  Auto  
 GlobalVariable Property _SDGVP_positions  Auto  
@@ -40,6 +43,7 @@ ReferenceAlias Property _SDRAP_shackles Auto
 ReferenceAlias Property _SDRAP_collar Auto
 ReferenceAlias Property _SDRAP_key Auto
 ReferenceAlias Property _SDRAP_crop Auto
+ReferenceAlias Property _SDRAP_cage Auto
 
 FormList Property _SDFLP_allied  Auto
 FormList Property _SDFLP_slaver  Auto
@@ -362,6 +366,26 @@ Function TransferSlave(Actor akOldMaster, Actor akNewMaster, Actor akSlave)
 	Endif
 EndFunction
 
+Function ResetCage( Actor akSlave)
+	ObjectReference cageRef = _SDRAP_cage.GetReference() as  ObjectReference 
+	Bool bCageReset = false
+
+	_SD_dream_destinations.Start()
+	cageRef = dreamDest.getNewCage()
+	Utility.Wait( 1.0 )
+
+	; bCageReset = _SDRAP_cage.TryToReset()
+
+	If (cageRef!=None)
+		_SDRAP_cage.ForceRefTo( cageRef )
+	 	Debug.Trace("[_sdqs_enslavement] Cage alias successfully updated: " + cageRef)
+	 Else
+	 	Debug.Notification("[_sdqs_enslavement] Cage alias failed to update")
+	 	Debug.Trace("[_sdqs_enslavement] Cage alias failed to update")
+	EndIf
+
+	_SD_dream_destinations.Stop()
+EndFunction
 ; Auto State enslaved
 ;	Event OnUpdate()
 ;		While ( !Game.GetPlayer().Is3DLoaded() )

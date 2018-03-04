@@ -7,6 +7,11 @@ ReferenceAlias Property _SDRA_dest_ship  Auto
 ReferenceAlias Property _SDRA_dest_falmer  Auto  
 ReferenceAlias Property _SDRA_dest_house  Auto  
 ReferenceAlias Property _SDRA_dest_cemetary  Auto  
+ReferenceAlias Property _SDRA_dest_location  Auto  
+ReferenceAlias Property _SDRA_destination  Auto  
+ReferenceAlias Property _SDRA_dream_destination  Auto  
+ReferenceAlias Property _SDRA_dest_dungeon  Auto  
+ReferenceAlias Property _SDRA_new_cage  Auto  
 
 Function getDestination ( )
 	int RandomNum
@@ -32,6 +37,10 @@ Function getDestination ( )
 
 EndFunction
 
+ObjectReference Function getNewCage ( )
+	Return _SDRA_new_cage.GetReference() as ObjectReference
+EndFunction
+
 Event OnInit()
 	
 ;	Debug.Notification("[_sd_dream_dest] House: " +   _SDRA_dest_house.GetReference() as ObjectReference )
@@ -43,10 +52,3 @@ Event OnInit()
 EndEvent
 
  
-ReferenceAlias Property _SDRA_dest_location  Auto  
-
-ReferenceAlias Property _SDRA_destination  Auto  
-
-ReferenceAlias Property _SDRA_dream_destination  Auto  
-
-ReferenceAlias Property _SDRA_dest_dungeon  Auto  

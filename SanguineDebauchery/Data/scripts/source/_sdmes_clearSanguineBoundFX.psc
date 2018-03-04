@@ -24,7 +24,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	;	Utility.Wait(1.0)
 	;EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "WristRestraints"  )) && (Utility.RandomInt(0, 100) > 40)
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "WristRestraints"  ))
 		Debug.Trace("[SD] Removing Sanguine Cuffs")
 	;	fctOutfit.clearDeviceByString ( sDeviceString = "Armbinders", sOutfitString = "", skipEvents = true, skipMutex = true )
 		fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
@@ -44,11 +44,13 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 		; kDreamer.RemoveItem( _SDA_gag, 1, False  )
 	EndIf
 
-	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  ))  && (Utility.RandomInt(0, 100) > 95)
-		Debug.MessageBox("The spell fizzles before removing your piercing.")
-	elseif (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  ))  
-		Debug.Trace("[SD] Removing Sanguine Artifact")
-		fctOutfit.clearNonGenericDeviceByString ( "VaginalPiercing", "Sanguine" )
-		Utility.Wait(1.0)
+	if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  ))  
+		If (Utility.RandomInt(0, 100) > 97)
+			Debug.MessageBox("The spell fizzles before removing your piercing.")
+		else  
+			Debug.Trace("[SD] Removing Sanguine Artifact")
+			fctOutfit.clearNonGenericDeviceByString ( "VaginalPiercing", "Sanguine" )
+			Utility.Wait(1.0)
+		Endif
 	EndIf
 EndEvent

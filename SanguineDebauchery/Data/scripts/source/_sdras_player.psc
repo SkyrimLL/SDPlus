@@ -196,6 +196,7 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubEnslave",   "OnSDEnslave")
 	RegisterForModEvent("PCSubEnslaveRadius",   "OnSDEnslaveRadius")
 	RegisterForModEvent("PCSubEnslaveMenu",   "OnSDEnslaveMenu")
+	RegisterForModEvent("PCSubSubmit",   "OnSDSubmit")
 	RegisterForModEvent("PCSubSurrender",   "OnSDSurrender")
 	RegisterForModEvent("PCSubSex",   "OnSDStorySex")
 	RegisterForModEvent("PCSubEntertain",   "OnSDStoryEntertain")
@@ -581,6 +582,11 @@ Event OnSDSurrender(String _eventName, String _args, Float _argc = 1.0, Form _se
 	SDSurrender(_sender as Actor, _args )
 EndEvent
 
+Event OnSDSubmit(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	fctOutfit.initSlaveryGearByActor ( _sender as Actor )
+	SDSurrender(_sender as Actor, _args )
+EndEvent
+
 Function SDSurrender(Actor kActor, String SurrenderMode)
  	; Actor kActor = _sender as Actor
 	Actor kNewMaster = StorageUtil.GetFormValue( kPlayer , "_SD_TempAggressor") as Actor
@@ -838,12 +844,6 @@ Event OnSDPickNextTask(String _eventName = "", String _args ="", Float _argc = 1
 	String iEventString = _args
 
 	Debug.Trace("[_sdras_player] Receiving pick slavery task mod story event [" + _args  + "] [" + _argc as Int + "]")
-
-	If (StorageUtil.GetFloatValue(kActor, "_SD_iEnslavementDays")==0.0)
-		; No task on very first day
-		Debug.Trace("[SD] Pick Slavery Task Event - No task on first day: " + StorageUtil.GetFloatValue(kActor, "_SD_iEnslavementDays") as Int)
-		Return
-	Endif
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		If (iEventString=="") ; no task provided, pick at random
@@ -1117,7 +1117,8 @@ Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryPunishmentOn") == 1)
 			Actor kTempAggressor = _SD_Enslaved.GetMaster() as Actor
 			fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
-			_SD_Enslaved.RewardSlave(kTempAggressor, kPlayer, sDevice )
+			; _SD_Enslaved.RewardSlave(kTempAggressor, kPlayer, sDevice )
+			fctOutfit.ClearSlavePunishment(kPlayer, sDevice, true)
 		Else
 			Return
 		EndIf
@@ -1350,6 +1351,7 @@ Event OnSDMasterTravel(String _eventName, String _args, Float _argc = -1.0, Form
 		_SDGVP_state_isMasterTraveller.SetValue(0) 
 		_SDGVP_isLeashON.SetValue(0)
 		_SDGVP_state_isMasterInTransit.SetValue(0)
+		_SD_Enslaved.ResetCage( kPlayer)
 
 
 		kActor.EvaluatePackage()
@@ -1986,7 +1988,10 @@ EndState
 
 
 Function SetHandsFreeSlave(Actor kActor)
-	fctOutfit.clearDeviceByString ( "Armbinder" )
+	; fctOutfit.clearDeviceByString ( "Armbinder" )
+	if (fctOutfit.isWristRestraintEquipped( kActor ))  
+		fctOutfit.ClearSlavePunishment(kActor , "WristRestraints" , true )
+	Endif
 	StorageUtil.GetIntValue(kActor, "_SD_iHandsFree", 1)
 	Debug.Notification("Your owner releases your hands.")
 
@@ -1995,3 +2000,5 @@ EndFunction
 
 
 MiscObject Property Lockpick  Auto  
+
+ 

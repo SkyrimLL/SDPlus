@@ -510,7 +510,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		SendModEvent("SDModMasterTrust","Recover", 1)
 
 		; Masturbation scenes
-		If (SexLabInTags == "Masturbation") && (SexLab.ValidateActor( akSpeaker ) > 0)
+		If (SexLabInTags == "Masturbation") && ( !SexLab.IsActorActive( akSpeaker ) )
 
 			If (SexLabInTags == "Masturbation")  
 				If (speakerGender  == 0)
@@ -528,7 +528,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 			EndIf
 
-			If (SexLabOutTags == "Masturbation")  
+			If (SexLabOutTags == "Masturbation")   && ( !SexLab.IsActorActive( akTarget ) )
 				If (targetGender  == 0)
 					SexLabInTags = "Masturbation,M"
 				Else
@@ -570,7 +570,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			Debug.Trace("[_sd_naked] SexLabInTags= " + SexLabInTags )
 			Debug.Trace("[_sd_naked] SexLabOutTags= " + SexLabOutTags)
 
-			If  (SexLab.ValidateActor( akSpeaker ) > 0) &&  (SexLab.ValidateActor( akTarget ) > 0) 
+			If   ( !SexLab.IsActorActive( akSpeaker ) ) && ( !SexLab.IsActorActive( akTarget ) )
 
 				; actor[] sexActors = new actor[2]
 				; sexActors[0] = akTarget

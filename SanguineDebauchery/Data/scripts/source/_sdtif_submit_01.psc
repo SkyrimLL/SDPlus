@@ -11,7 +11,7 @@ Actor akPlayer = Game.GetPlayer()
 ; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
 StorageUtil.SetIntValue(akSpeaker, "_SD_iForcedSlavery", 0)
 
-akSpeaker.SendModEvent("PCSubEnslave")
+akSpeaker.SendModEvent("PCSubSubmit")
 ;END CODE
 EndFunction
 ;END FRAGMENT

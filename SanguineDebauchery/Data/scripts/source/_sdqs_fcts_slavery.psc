@@ -941,9 +941,9 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	masterTrust = StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") - StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold")
 
 	if (masterTrust>0)
-		ModMasterTrust(kMaster, 1)
+		ModMasterTrust(kMaster, slaveryLevel)
 	else
-		ModMasterTrust(kMaster, -1)
+		ModMasterTrust(kMaster, -1 * slaveryLevel)
 	endif
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", masterDisposition)
@@ -1431,6 +1431,7 @@ EndFunction
 
 Function PickSlaveryTask(Actor kSlave, String sTaskName = "")
 	Actor kMaster = StorageUtil.GetFormValue(kSlave, "_SD_CurrentOwner") as Actor
+	ObjectReference kSlaveRef = kSlave as ObjectReference
 	Form fKeyword = None
 	Bool bFound = false
 	Int iTaskID = 0
@@ -1445,6 +1446,16 @@ Function PickSlaveryTask(Actor kSlave, String sTaskName = "")
 		Debug.Trace("[SD] Evaluate slavery task list - player is caged - aborting tasks")
 		Return
 	endif
+
+	If ( kSlave.IsOnMount() || kSlave.IsInCombat() || kSlave.IsWeaponDrawn() ) ; || (kSlaveRef.GetCurrentScene()!=None) 
+		Debug.Notification("[SD] Evaluate slavery task list - player is busy - aborting tasks")
+		Debug.Trace("[SD] Evaluate slavery task list - player is busy - aborting tasks")
+		Debug.Trace("[SD]         IsOnMount:" +kSlave.IsOnMount() )
+		Debug.Trace("[SD]         IsInCombat:" +kSlave.IsInCombat() )
+		; Debug.Trace("[SD]         InScene:" +(kSlaveRef.GetCurrentScene()) )
+		Debug.Trace("[SD]         IsWeaponDrawn:" +kSlave.IsWeaponDrawn())
+		return
+	EndIf
 
 	If (sTaskName == "") ; pick random task
 		int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
@@ -1590,7 +1601,7 @@ Function EvaluateSlaveryTaskList(Actor kSlave)
 
 	valueCount = StorageUtil.FormListCount(none, "_SD_lCurrentTaskList")
 
-	If (valueCount < iSlaveLevel)
+	If (valueCount < iSlaveLevel) && (Utility.RandomInt(0,100)>(40 + iSlaveLevel*10))
 		PickSlaveryTask(kSlave)
 	Endif
 
