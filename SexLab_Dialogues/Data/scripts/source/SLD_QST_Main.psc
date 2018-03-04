@@ -497,7 +497,7 @@ Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
 		If (tags != "")
 			StorageUtil.SetIntValue( akSpeaker , "_SD_iSub", StorageUtil.GetIntValue( akSpeaker, "_SD_iSub") + 1)
 
-			If  (SexLab.ValidateActor( Player) > 0) &&  (SexLab.ValidateActor(akSpeaker) > 0) 
+			If  ( !SexLab.IsActorActive( akSpeaker ) ) && ( !SexLab.IsActorActive( Player ) )
 				Debug.Notification( "[Resists weakly]" )
 				If (isVictim)
 					SexLab.QuickStart(Player,  akSpeaker, Victim = akSpeaker , AnimationTags = tags)
@@ -557,13 +557,22 @@ Function ChangePlayerLook ( Actor akSpeaker, string type = "Racemenu" )
 	If IButton == 0  ; Show the thing.
 		StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 
-		If (type!="Racemenu") && (_SLD_PCSubShavedON.GetValue() ==1) && (Utility.RandomInt(0,100) > 30)  
+		If (type!="Racemenu") && (_SLD_PCSubShavedON.GetValue() ==1) 
+
 			If (StorageUtil.GetIntValue(none, "ypsHairControlEnabled") == 1)
-				SendModEvent("yps-OnHaircutEvent", "", 1) ; shaved - bald
+				If (Utility.RandomInt(0,100) > 30)
+					SendModEvent("yps-SetHaircutEvent", "", 1) ; shaved - bald
+				Else
+					Game.ShowLimitedRaceMenu()
+				Endif
 
 			ElseIf (StorageUtil.GetIntValue(kPlayer, "_SLH_iShavedHead")==0) 
-				kPlayer.SendModEvent("SLHShaveHead")
-				Debug.Notification("Your head is shaved to remind you of your place.")
+				If (Utility.RandomInt(0,100) > 30)
+					kPlayer.SendModEvent("SLHShaveHead")
+					Debug.Notification("Your head is shaved to remind you of your place.")
+				Else
+					Game.ShowLimitedRaceMenu()
+				Endif
 			Else
 				Game.ShowLimitedRaceMenu()
 			Endif

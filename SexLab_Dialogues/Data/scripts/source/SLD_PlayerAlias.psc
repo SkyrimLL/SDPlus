@@ -581,7 +581,7 @@ Event OnSDChangeLook(String _eventName, String _args, Float _argc = -1.0, Form _
 	Debug.Trace("[_sdras_player] Receiving slave change look story event [" + _args  + "] [" + _argc as Int + "]")
  
  	; Event currently defined in SexLab Dialogues... change that later
-	_SLD_Main.ChangePlayerLook(kActor)
+	_SLD_Main.ChangePlayerLook(kActor,"Shave")
 EndEvent
 
 
