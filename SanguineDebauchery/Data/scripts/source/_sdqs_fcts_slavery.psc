@@ -984,6 +984,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
+	StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", 0)
 
  	SlaveryRefreshGlobalValues( kMaster, kSlave)
 
@@ -1712,18 +1713,22 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	If (sTaskName=="Training vaginal")
 		if (fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal"))  
 			fctOutfit.ClearSlavePunishment(kSlave,"PlugVaginal", true)
+			ModMasterTrust(kMaster, 3)  
 		Endif
 	ElseIf (sTaskName=="Training anal")
 		if (fctOutfit.isDeviceEquippedString(kSlave,"PlugAnal"))  
 			fctOutfit.ClearSlavePunishment(kSlave,"PlugAnal", true)
+			ModMasterTrust(kMaster, 3)  
 		Endif
 	ElseIf (sTaskName=="Training oral")
 		if (fctOutfit.isDeviceEquippedString(kSlave,"Gag"))  
 			fctOutfit.ClearSlavePunishment(kSlave,"Gag", true)
+			ModMasterTrust(kMaster, 1)  
 		Endif
 	ElseIf (sTaskName=="Training posture")
 		if (fctOutfit.isDeviceEquippedString(kSlave,"Boots"))  
 			fctOutfit.ClearSlavePunishment(kSlave,"Boots", true)
+			ModMasterTrust(kMaster, 2)  
 		Endif
 	Endif
 

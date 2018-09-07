@@ -90,6 +90,7 @@ Thug1.addToFaction(kmyquest.WIs.WIPlayerEnemyFaction)
 Thug2.addToFaction(kmyquest.WIs.WIPlayerEnemyFaction)
 Thug3.addToFaction(kmyquest.WIs.WIPlayerEnemyFaction)
 
+; debug.Messagebox("Thugs found you and attack!")
 Thug1.startcombat(Player)
 Thug2.startcombat(Player)
 Thug3.startcombat(Player)

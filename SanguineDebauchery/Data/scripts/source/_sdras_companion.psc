@@ -27,6 +27,9 @@ Float fRFSU = 0.1
 Int idx = 0
 Armor nthArmor = None
 
+;CagedFollowers
+Keyword CagedFollowerQst = none
+
 ; everytime we add an item to a companion's inventory the weapon
 ; stack is also re evaluated. 
 Function DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( Actor akActor )
@@ -54,6 +57,9 @@ EndFunction
 Event OnInit()
 	kCompanion = Self.GetReference() as Actor
 	kMaster = _SDRAP_master.GetReference() as Actor
+
+	;CagedFollowers
+	CagedFollowerQst = StorageUtil.GetFormValue(none, "_SLS_getCagedFollowerQuestKeyword") as Keyword
 	
 	Debug.Trace("[_sdras_companion]  Enslaving follower: ") 
 	If ( kCompanion ) && (kCompanion!=kMaster)
@@ -126,12 +132,34 @@ Function enslaveCompanion( Actor kActor)
 
 		if (kActor.HasKeyword( _SDKP_actorTypeNPC ))
 			; Humanoid followers
-			If (Utility.RandomInt(0,100)>80)
-				Debug.MessageBox("Your follower is dragged away in bondage...") 
-				fctFollowers.sendCaptiveFollowerAway(kActor) 
-				; fctOutfit.equipDeviceNPCByString ( kActor, "Yoke", "", false, false, "")
 
-			Else
+			;;;Start CagedFollowers
+			bool processFollower = true
+			if CagedFollowerQst && (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON")==1)
+				if !kActor.HasKeyword(CagedFollowerQst) && (Utility.RandomInt(0,100)>50)
+					CagedFollowerQst.SendStoryEvent(akRef1 = kActor, aiValue1 = Utility.RandomInt(0,99))
+					; check if quest could be started
+					Utility.Wait(5.0)
+					if kActor.HasKeyword(CagedFollowerQst)
+						processFollower = false
+						Self.Clear()
+					endif
+				endif
+			else
+			;;;End CagedFollowers
+				If (Utility.RandomInt(0,100)>80)
+
+					Debug.MessageBox("Your follower is dragged away in bondage...") 
+					fctFollowers.sendCaptiveFollowerAway(kActor) 
+					; fctOutfit.equipDeviceNPCByString ( kActor, "Yoke", "", false, false, "")
+
+					;;;Start CagedFollowers
+					processFollower = false
+				endif
+			endif
+			if processFollower
+			;;;End CagedFollowers
+			;else
 				; kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
 				Debug.Notification("Your follower has been enslaved!")
 				; fctOutfit.equipDeviceNPCByString ( kActor, "WristRestraints", "", false, false, "zap")
@@ -145,43 +173,48 @@ Function enslaveCompanion( Actor kActor)
 			EndIf
 
 			Utility.Wait(1.0)
+			;;;CagedFollowers
+			if processFollower || CagedFollowerQst == none
 
-			; if (fctFactions.checkIfSlaverCreatureRace ( kMaster ))
-			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped")!=-1 )
-				StorageUtil.SetIntValue(kActor, "_SD_iCanBeStripped", 1)
-			EndIf
+				; if (fctFactions.checkIfSlaverCreatureRace ( kMaster ))
+				If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped")!=-1 )
+					StorageUtil.SetIntValue(kActor, "_SD_iCanBeStripped", 1)
+				EndIf
 
-			If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") == 1 )
-				; fctOutfit.clearDeviceNPCByString ( kActor, "Gag") 
-				funct.sexlabStripActor( kActor )
-				; kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
-				fctInventory.safeRemoveAllItems ( kActor, _SDRAP_playerStorage.GetReference() )
+				If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") == 1 )
+					; fctOutfit.clearDeviceNPCByString ( kActor, "Gag") 
+					funct.sexlabStripActor( kActor )
+					; kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
+					fctInventory.safeRemoveAllItems ( kActor, _SDRAP_playerStorage.GetReference() )
 
-				; kActor.SetOutfit( _SDOP_gagged )
-				; kActor.SetOutfit( _SDOP_gagged, True )
+					; kActor.SetOutfit( _SDOP_gagged )
+					; kActor.SetOutfit( _SDOP_gagged, True )
 
-				kActor.SetOutfit( _SDOP_naked )
-				kActor.SetOutfit( _SDOP_naked, True )
-			EndIf
-			
-			; Slave gear for Follower disabled for now ... potential issue with disabling all dialogues
+					kActor.SetOutfit( _SDOP_naked )
+					kActor.SetOutfit( _SDOP_naked, True )
+				EndIf
+				
+				; Slave gear for Follower disabled for now ... potential issue with disabling all dialogues
 
-			idx = 0
-			While idx < _SDFLP_companion_items.GetSize()
-			  	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
-			  	kActor.AddItem( nthArmor, 1 )
-			  	kActor.EquipItem( nthArmor, True, True )
-			  	idx += 1
-			EndWhile
+				idx = 0
+				While idx < _SDFLP_companion_items.GetSize()
+				  	nthArmor = _SDFLP_companion_items.GetAt(idx) as Armor
+				  	kActor.AddItem( nthArmor, 1 )
+				  	kActor.EquipItem( nthArmor, True, True )
+				  	idx += 1
+				EndWhile
 
-			DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
-			; kActor.playIdle(OffsetBoundStandingStart) 
+				DontUseWeaponsWhenIRemoveAllItemsIReallyMeanIt( kActor )
+				; kActor.playIdle(OffsetBoundStandingStart) 
 
-			; fctOutfit.equipDeviceNPCByString ( kActor, "WristRestraints", "", false, false, "zap")
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
-			; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
+				; fctOutfit.equipDeviceNPCByString ( kActor, "WristRestraints", "", false, false, "zap")
+				; fctOutfit.equipDeviceNPCByString ( kActor, "Collar", "", false, false, "zap")
+				; fctOutfit.equipDeviceNPCByString ( kActor, "Gag", "", false, false, "zap")
 
-			kActor.EvaluatePackage()
+				kActor.EvaluatePackage()
+
+			;;;CagedFollowers
+			endif
 		Else
 			; Animal / Creature followers
 			If (Utility.RandomInt(0,100)>0)

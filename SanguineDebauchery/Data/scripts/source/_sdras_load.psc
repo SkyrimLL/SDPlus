@@ -29,4 +29,30 @@ Event OnPlayerLoadGame()
 
 	_reset.Maintenance()
 
+	; Mod detection / compatibility
+	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  0) 
+
+	int idx = Game.GetModCount()
+	string modName = ""
+	while idx > 0
+		idx -= 1
+		modName = Game.GetModName(idx)
+		if modName == "EstrusChaurus.esp"
+			StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getEstrusChaurusBreederSpell",  Game.GetFormFromFile(0x00019121, modName)) ; as Spell
+
+		elseif modName == "BeeingFemale.esm"
+			StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getBeeingFemalePregnancySpell",  Game.GetFormFromFile(0x000028A0, modName)) ; as Spell
+
+		elseif modName == "CagedFollowers.esp"
+			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
+			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
+
+		endif
+	endWhile
 EndEvent
+
+

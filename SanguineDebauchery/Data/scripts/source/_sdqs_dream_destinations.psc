@@ -12,10 +12,13 @@ ReferenceAlias Property _SDRA_destination  Auto
 ReferenceAlias Property _SDRA_dream_destination  Auto  
 ReferenceAlias Property _SDRA_dest_dungeon  Auto  
 ReferenceAlias Property _SDRA_new_cage  Auto  
+Location Property _SDLOC_SanguineDreamworld  Auto  
 
 Function getDestination ( )
 	int RandomNum
 	ReferenceAlias destinationAlias = None
+	ObjectReference destinationRef 
+	Location kLocation 
 
 	RandomNum = Utility.RandomInt(0, 100)
 
@@ -34,6 +37,18 @@ Function getDestination ( )
 	EndIf
 
 	; _SDRA_dream_destination.ForceRefTo(  _SDRA_dest_list.GetReference() as ObjectReference )
+
+	; Final check for excluded locations
+	destinationRef = _SDRA_dream_destination.GetReference() as ObjectReference
+	kLocation = destinationRef.GetCurrentLocation()
+
+	if (kLocation.IsSameLocation(_SDLOC_SanguineDreamworld) )
+		Debug.Trace("[_sd_dream_dest] Destination Sanguine World detected " )
+		Debug.Trace("[_sd_dream_dest] Inn: " +   _SDRA_dest_inn.GetReference() as ObjectReference )
+		_SDRA_dream_destination.ForceRefTo(_SDRA_dest_inn.GetReference() as ObjectReference )
+	Else
+		Debug.Trace("[_sd_dream_dest] Ref: " +   destinationRef )
+	Endif
 
 EndFunction
 

@@ -187,7 +187,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		EndIf
 
 		; Increase chances when carrying Honningbrew mead
-		Int iHonningbrewMeadBottles = Game.GetPlayer().GetItemCount(HonningbrewMead)
+		Int iHonningbrewMeadBottles = kPlayer.GetItemCount(HonningbrewMead)
 		if ( iHonningbrewMeadBottles > 0)
 			Debug.Trace("[_sdras_dreamer]         Honningbrew mead in inventory - Bottles found: " + iHonningbrewMeadBottles )
 		    iDreamworldVisitModifier = iDreamworldVisitModifier + (iHonningbrewMeadBottles * 2)

@@ -27,7 +27,7 @@ ReferenceAlias Property Alias__SDRA_master  Auto
 GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 
 Float fVersion = 0.0 ; DEPRECATED
-Int iVersionNumber = 20180101
+Int iVersionNumber = 20180901
 
 Function Maintenance()
 	Actor kPlayer = Game.GetPlayer()
@@ -45,6 +45,10 @@ Function Maintenance()
 
 	if (!StorageUtil.HasIntValue( none, "_SLD_version") )
 	    Debug.Messagebox("SexLab Dialogues is updating. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery. Check your load order and mod versions if you see this message more than once." )
+	EndIf	
+ 
+	if (!StorageUtil.HasIntValue( none, "_SD_iSanguine") ) || (StorageUtil.GetIntValue( none, "_SLD_version")==0)
+	    Debug.Messagebox("SD+ is installing. Make sure to save and reload once all messages have stopped to complete the process." )
 	EndIf	
  
  	Faction DefeatDialogueBlockFaction = Game.GetFormFromFile(0x0008C862, "SexLabDefeat.esp") As Faction
@@ -66,8 +70,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20180225 ; <--- Edit this value when updating
-		iVersionNumber = 20180225; and this
+	If iVersionNumber < 20180717 ; <--- Edit this value when updating
+		iVersionNumber = 20180717; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)

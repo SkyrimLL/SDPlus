@@ -1273,9 +1273,7 @@ State caged
 
 			GoToState("monitor")
 
-		EndIf
-
-		If ( Self.GetOwningQuest() ) && ( _SDGVP_state_caged.GetValueInt() == 1)
+		ElseIf ( Self.GetOwningQuest() ) 
 			RegisterForSingleUpdate( fRFSU )
 		EndIf
 	EndEvent

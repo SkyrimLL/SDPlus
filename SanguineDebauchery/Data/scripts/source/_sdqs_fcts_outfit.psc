@@ -974,6 +974,8 @@ EndFunction
 Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keyword ddArmorKeyword, Bool bDestroy = False)
 	Actor kSlave = Game.GetPlayer() as Actor
 	Keyword kwWornKeyword
+	Bool bSkipEvents = False
+	Bool bSkipMutex = False
 	Bool bDeviceRemoveSuccess = False
 
 	If (bDestroy)
@@ -983,7 +985,12 @@ Bool Function clearDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 	endIf
 
 	; RemoveDevice(actor akActor, armor deviceInventory, armor deviceRendered, keyword zad_DeviousDevice, bool destroyDevice=false, bool skipEvents=false, bool skipMutex=false)
-	libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, bDestroy, False, True)
+	If (bDestroy)
+		; bSkipEvents = True
+		bSkipMutex = True
+	EndIf
+
+	libs.RemoveDevice(kSlave, ddArmorInventory , ddArmorRendered , ddArmorKeyword, bDestroy, bSkipEvents, bSkipMutex)
 
 	; libs.ManipulateGenericDevice(actor akActor, armor device, bool equipOrUnequip, bool skipEvents = false , bool skipMutex = false)
 	; libs.ManipulateGenericDevice(actor akActor, armor device, bool equipOrUnequip, bool skipEvents = false , bool skipMutex = false)
@@ -1846,11 +1853,11 @@ Function equipNonGenericDeviceByString ( String sDeviceString = "", String sOutf
 		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
 
 			if (sOutfitString!="")
-				Debug.Trace("[SD] clearNonGenericDeviceByString called with message: " + sOutfitString)  
+				Debug.Trace("[SD] equipNonGenericDeviceByString called with message: " + sOutfitString)  
 			Endif
 
-			Debug.Trace("[SD] clearing device string: " + sDeviceString)  
-			Debug.Trace("[SD] clearing device keyword: " + kwDeviceKeyword)  
+			Debug.Trace("[SD] equipping device string: " + sDeviceString)  
+			Debug.Trace("[SD] equipping device keyword: " + kwDeviceKeyword)  
 
 			if (sOutfitString == "Sanguine")
 				If ( sDeviceString == "Collar" )

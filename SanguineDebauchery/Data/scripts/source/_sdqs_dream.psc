@@ -134,7 +134,7 @@ Function sendDreamerBack( Int aiStage )
     Game.FadeOutGame(true, true, 5.0, 10.0)
 	StorageUtil.SetIntValue(none, "DN_ONOFF", 0)
 
-	If ((aiStage == 10) || (aiStage == 15)) && (kEnter.GetDistance(kLeave)>200)  ; sent back to where player started
+	If ((aiStage == 10) || (aiStage == 15)) && (kEnter.GetDistance(kLeave)>200) && !(kLeave.getCurrentLocation().IsSameLocation(_SD_MoonshadowDest.getCurrentLocation())) ; sent back to where player started
 		kDreamer.MoveTo( kLeave )
 		Utility.Wait( 1.0 )
 		kLeave.MoveTo( kEnter )
@@ -486,9 +486,10 @@ Function positionVictims( Int aiStage )
 	EndIf	
 
 
-	if (self.GetStageDone(230)==1)
+	if (self.GetStageDone(230)==1) && (StorageUtil.GetIntValue(kDreamer, "_SLH_iBimbo")==0)
 
 		Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
+		StorageUtil.SetIntValue(kDreamer, "_SD_iAliciaHair", 1 )  
 		StorageUtil.SetIntValue(kDreamer, "_SLH_iHairColor", iAliciaHairColor )  
 		StorageUtil.SetStringValue(kDreamer, "_SLH_sHairColorName", "Dark Red" ) 
 		kDreamer.SendModEvent("SLHRefreshHairColor","Dye")

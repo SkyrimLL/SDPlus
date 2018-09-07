@@ -105,7 +105,42 @@ Function safeRemoveAllItems ( ObjectReference akContainer, ObjectReference akTra
 
 EndFunction
 
+Function limitedRemoveAllKeys ( ObjectReference akContainer, ObjectReference akTransferTo = None, Bool abSilent = True, FormList akIgnored = None )
+	Int iFormIndex = 0
+	Bool bDeviousDeviceEquipped = False
+	Actor kPlayer = Game.GetPlayer()
+	Actor kActor = akContainer as Actor
 
+	; Send all items in Equipment to akTransferTo
+
+	Int[] uiTypes = New Int[12]
+	uiTypes[0] = 23; kScrollItem = 23
+	uiTypes[1] = 26; kArmor = 26
+	uiTypes[2] = 27; kBook = 27
+	uiTypes[3] = 30; kIngredient = 30
+	uiTypes[4] = 32; kMisc = 32
+	uiTypes[6] = 41; kWeapon = 41
+	uiTypes[7] = 42; kAmmo = 42
+	uiTypes[8] = 45; kKey = 45
+	uiTypes[9] = 46; kPotion = 46
+	uiTypes[10] = 48; kNote = 48
+	uiTypes[11] = 52; kSoulGem = 52
+
+	iFormIndex = akContainer.GetNumItems()
+
+	While ( iFormIndex > 0 )
+		iFormIndex -= 1
+		Form kForm = akContainer.GetNthForm(iFormIndex)
+
+		If ( kForm && akIgnored && akIgnored.HasForm( kForm ) ) || (uiTypes.Find( kForm.GetType() ) == 26)
+			; continue
+		ElseIf ( kForm &&  uiTypes.Find( kForm.GetType() ) > -1 ) 
+			if (kForm.GetType()==45) ; keys only
+				akContainer.RemoveItem(kForm, akContainer.GetItemCount( kForm ), abSilent, akTransferTo)
+			endif
+		EndIf
+	EndWhile
+EndFunction
 
 Function stashStolenGoods( Actor akThief, ObjectReference akContainer )
 	ActorBase kThiefBase = akThief.GetActorBase()
@@ -154,10 +189,11 @@ Function ProcessGoldEarned(Actor kMaster, Actor kSlave, Float fGoldAmount )
 	If (fGoldAmount > 0)
 		fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldAmount as Int)
 		StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldAmount as Int))
-		_SDGVP_buyoutEarned.SetValue(fGoldAmount)
 
+		; This is covered by ModObjectiveGlobal
+		; _SDGVP_buyoutEarned.SetValue(StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
-		_SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldAmount as Int,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)
+		_SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldAmount,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)
 		
 		if (fGoldAmount>100)
 			fctSlavery.ModMasterTrust( kMaster, 2)
@@ -211,6 +247,12 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 	iuType = akBaseItem.GetType()
 	fGoldEarned = 0.0
 
+ 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
+ 		fGoldEarned = akBaseItem.GetGoldValue()
+	Else
+		fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
+	EndIf
+
 	Debug.Trace( "[SD] Master receives an item from player" )
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
@@ -236,6 +278,8 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			endif
 		EndIf
 
+		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
+
 		If (Utility.RandomInt(0,100)<20)
 			kMaster.EquipItem(akBaseItem, True, True)
 		Endif
@@ -244,7 +288,6 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		; Weapon
 	ElseIf ( iuType == 30 || iuType == 46 || iuType == 32 || iuType == 52 )
 		; Creatures can accept natural ingredients
-		fGoldEarned = akBaseItem.GetGoldValue()
 
 		If (akBaseItem == (Firewood as Form))
 			fctSlavery.ModSlaveryTask( kSlave, "Bring firewood", 1)
@@ -257,6 +300,8 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		else
 			fctSlavery.ModMasterTrust( kMaster, 1)
 		endif
+
+		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
 
 		; TO DO - Master reaction if slave reaches buyout amount
 		If (!akBaseItem.hasKeywordString("zad_Lockable"))
@@ -282,11 +327,6 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			fctSlavery.ModSlaveryTask(kSlave, "Bring weapon", 1)
 		Endif
 
-	 	If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") > 0 )
-	 		fGoldEarned = akBaseItem.GetGoldValue()
-		Else
-			fGoldEarned = Math.Floor( akBaseItem.GetGoldValue() / 4 )
-		EndIf
 
 		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
 

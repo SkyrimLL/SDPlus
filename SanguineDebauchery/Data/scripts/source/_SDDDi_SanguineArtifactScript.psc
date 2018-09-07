@@ -67,7 +67,7 @@ int Function OnUnequippedFilter(actor akActor)
 	if akActor.WornHasKeyword(zad_DeviousBelt)
 	;	return 1
 	EndIf
-	return 1
+	; return 1
 EndFunction
 
 Function OnUnEquippedPost(actor akActor)

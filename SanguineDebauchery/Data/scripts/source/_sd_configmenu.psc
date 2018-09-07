@@ -563,11 +563,11 @@ event OnPageReset(string a_page)
 			; _SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
 			; _SDOID_config_B2 = AddToggleOption("Start after A Night to remember", _SDGVP_config_lust.GetValue() as Bool )
 			_SDOID_config_B14 = AddToggleOption("Immersive starts", _SDGVP_config_auto_start.GetValue() as Bool )
-			If (_SDGVP_enslaved.GetValue() as Bool) || (_SDGVP_sprigganenslaved.GetValue() as Bool)
+			; If (_SDGVP_enslaved.GetValue() as Bool) || (_SDGVP_sprigganenslaved.GetValue() as Bool)
 				_SDOID_config_B21 = AddToggleOption("SAFE WORD", False )
-			Else
-				AddToggleOption("SAFE WORD", _SDGVP_config_safeword.GetValue() as Bool, OPTION_FLAG_DISABLED )
-			EndIf
+			; Else
+			;	AddToggleOption("SAFE WORD", _SDGVP_config_safeword.GetValue() as Bool, OPTION_FLAG_DISABLED )
+			; EndIf
 
 			; ------ List slavery factions
 			; // iterate list from first added to last added
@@ -828,8 +828,13 @@ event OnOptionSelect(int a_option)
 		_SDGVP_config_auto_start.SetValue( Math.LogicalXor( 1, _SDGVP_config_auto_start.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_auto_start.GetValue() as Bool )
 	ElseIf ( a_option == _SDOID_config_B21 )
-		_SDGVP_config_safeword.SetValue(1) 
-		Debug.MessageBox("FPOON! (Safe word. Quit this menu to cancel your enslavement.)")
+		If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnslaved") == 1)  
+			_SDGVP_config_safeword.SetValue(1) 
+			Debug.MessageBox("FPOON! (Safe word. Quit this menu to cancel your enslavement.)")
+		Else
+			Debug.MessageBox("FPOON! (Safe word. Quit this menu to apply clean up events.)")
+		Endif
+		SendModEvent("SDClearSanguineDevices")
 	ElseIf ( a_option == _SDOID_config_B3 )
 		_SDGVP_config_itemRemovalType.SetValue( Math.LogicalXor( 1, _SDGVP_config_itemRemovalType.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_itemRemovalType.GetValue() as Bool )

@@ -716,10 +716,6 @@ Function ClearAllQuestObjectives()
 	SetObjectiveDisplayed(25, False)
 	SetObjectiveDisplayed(26, False)
 
-	SetObjectiveDisplayed(30, False)
-	SetObjectiveDisplayed(31, False)
-	SetObjectiveDisplayed(32, False)
-
 	SetObjectiveDisplayed(90, False)
 	SetObjectiveDisplayed(95, False)
 	SetObjectiveDisplayed(100, False)

@@ -8,6 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor PlayerActor = Game.GetPlayer()
 
+StorageUtil.SetIntValue(PlayerActor, "_SD_iAliciaHair", 1 )  
 Int iAliciaHairColor = Math.LeftShift(60, 16) + Math.LeftShift(16, 8) + 13
 StorageUtil.SetIntValue(PlayerActor, "_SLH_iHairColor", iAliciaHairColor )  
 StorageUtil.SetStringValue(PlayerActor, "_SLH_sHairColorName", "Dark Red" ) 

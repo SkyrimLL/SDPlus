@@ -221,6 +221,7 @@ Function _Maintenance()
 	RegisterForModEvent("SDHandsBoundSlave",   "OnSDHandsBoundSlave")
 	RegisterForModEvent("SDEquipDevice",   "OnSDEquipDevice")
 	RegisterForModEvent("SDClearDevice",   "OnSDClearDevice")
+	RegisterForModEvent("SDClearSanguineDevices",   "OnSDClearSanguineDevices")
 	RegisterForModEvent("SDEquipSlaveRags",   "OnSDEquipSlaveRags")
 	RegisterForModEvent("PCSubStance",   "OnSDStance")
 	RegisterForModEvent("PCSubTrustAction",   "OnSDTrustAction")
@@ -703,7 +704,7 @@ Event OnSDTransfer(String _eventName, String _args, Float _argc = 1.0, Form _sen
 EndEvent
 
 Event OnSDFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
-	Debug.Trace("[_sdras_slave] Receiving 'free slave' event")
+	Debug.Trace("[_sdras_player] Receiving 'free slave' event")
 	; _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 	SDFree()
@@ -711,10 +712,12 @@ EndEvent
 
 Function SDFree()
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		Debug.Trace("[_sdras_player] Receiving 'slavery end (free)' event")
 		_SDQP_enslavement.Stop()
 		If ( _SDQP_thugs.IsRunning() )
+			Debug.Trace("[_sdras_player] Stopping Thugs quest")
 			_SDQP_thugs.setstage(50)
-			_SDQP_thugs.Stop()
+			; _SDQP_thugs.Stop()
  		endif
 
 		Wait( fRFSU * 5.0 )
@@ -724,7 +727,7 @@ EndFunction
 Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Actor kActor
  
-	Debug.Trace("[_sdras_slave] Receiving 'slavery status update' event")
+	Debug.Trace("[_sdras_player] Receiving 'slavery status update' event")
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		kActor = _SD_Enslaved.GetMaster() as Actor
@@ -739,7 +742,7 @@ EndEvent
 Event OnSDMasterGold(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Actor kActor
  
-	Debug.Trace("[_sdras_slave] Receiving 'player gives gold to master' event")
+	Debug.Trace("[_sdras_player] Receiving 'player gives gold to master' event")
 
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
 		kActor = _SD_Enslaved.GetMaster() as Actor
@@ -955,7 +958,7 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 		kTempAggressor = kActor
 	EndIf
 
-	; Debug.Notification("[_sdras_slave] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
+	; Debug.Notification("[_sdras_player] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
 	Debug.Trace("[_sdras_player] Receiving dance story event [" + _args  + "] [" + _argc as Int + "]")
 
 	If (kTempAggressor != None)
@@ -975,12 +978,12 @@ Event OnSDStoryEntertain(String _eventName, String _args, Float _argc = 1.0, For
 	EndIf
 
 	if  (_args == "Gangbang")
-		; Debug.Notification("[_sdras_slave] Receiving Gangbang")
+		; Debug.Notification("[_sdras_player] Receiving Gangbang")
 		fctSlavery.ModSlaveryTask( kPlayer, "Sex", 2)
 		funct.SanguineGangRape( kTempAggressor, kPlayer, True, False)
 
 	Elseif (_args == "Soloshow")
-		; Debug.Notification("[_sdras_slave] Receiving Show")
+		; Debug.Notification("[_sdras_player] Receiving Show")
 
 		fctSlavery.ModSlaveryTask( kPlayer, "Sex", 2)
 		fctSlavery.ModSlaveryTask( kPlayer, "Solo", 1)
@@ -1266,6 +1269,22 @@ Event OnSDTrustFight(String _eventName, String _args, Float _argc = -1.0, Form _
 	SetHandsFreeSlave(kPlayer)
 EndEvent
  
+Event OnSDClearSanguineDevices(String _eventName, String _args, Float _argc = -1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventCode = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving Clear Sanguine Devices story event [" + _args  + "] [" + _argc as Int + "]")
+ 
+
+	If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0) 
+			Debug.Trace("[_sdras_player]  Clean up sanguine devices ")
+		_SDSP_SanguineBoundClear.RemoteCast( kPlayer, kPlayer, kPlayer )
+	Else
+			Debug.Trace("[_sdras_player]   No sanguine devices found")
+	EndIf
+EndEvent
+
 Event OnSDUnleash(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Int iEventCode = _argc as Int
@@ -1488,12 +1507,20 @@ State monitor
 			iGameDateLastCheck = daysPassed
 			iCountSinceLastCheck = 0
 
+			funct.checkGender(kPlayer)
+
 			; Cooldown of slavery exposure when released
 
 			; StorageUtil.GetIntValue( kPlayer , "_SD_iSlaveryLevel") - 0 to 6
 			; StorageUtil.GetIntValue( kPlayer, "_SD_iDominance") - -10 to 10
 			; _SDGVP_config_slavery_level_mult.GetValue() - 0 to 1
 
+			If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0) 
+	 			Debug.Trace("[_sdras_player]  Clean up sanguine devices at night")
+				_SDSP_SanguineBoundClear.RemoteCast( kPlayer, kPlayer, kPlayer )
+			Else
+	 			Debug.Trace("[_sdras_player]  No sanguine devices found")
+			EndIf
 
 			If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)   
 				fOldExposure = (StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryExposure") as Float)
@@ -1509,11 +1536,6 @@ State monitor
 		 			Debug.Trace("[_sdras_player]  Clean up thugs quest after enslavement")
 					_SDQP_thugs.SetStage(50)
 		 		endif
-
-				If (fctOutfit.countDeviousSlotsByKeyword (  kPlayer, "_SD_DeviousSanguine" )>0) 
-		 			Debug.Trace("[_sdras_player]  Clean up sanguine devices at night")
-					_SDSP_SanguineBoundClear.RemoteCast( kPlayer, kPlayer, kPlayer )
-				EndIf
 
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSlaveryExposure",  funct.intMax(0, fNewExposure as Int ))
 

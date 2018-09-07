@@ -78,6 +78,7 @@ ReferenceAlias[] Property _SDRAP_companions Auto
 Armor Property _SDA_bindings  Auto  
 
 ReferenceAlias Property _SDRAP_playerStorage  Auto  
+ObjectReference Property _SDRAP_playerStorageKeys  Auto  
 ReferenceAlias Property _SDAP_clothing  Auto  
 
 
@@ -274,6 +275,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	; If ( aiValue2 == 0 )
 	If ( bHardcoreMode )
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 1)
+		fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
 		fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
 
 		If ( kSlave.GetItemCount( kRags ) == 0 )
@@ -294,6 +296,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 		; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 0)
+		fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
 		kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
 	EndIf
@@ -334,7 +337,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
-		GameHour.Mod(Utility.RandomInt(1,6))
+		GameHour.Mod(Utility.RandomInt(1,4))
 	endif
 
 	; fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
@@ -380,8 +383,8 @@ Function ResetCage( Actor akSlave)
 		_SDRAP_cage.ForceRefTo( cageRef )
 	 	Debug.Trace("[_sdqs_enslavement] Cage alias successfully updated: " + cageRef)
 	 Else
-	 	Debug.Notification("[_sdqs_enslavement] Cage alias failed to update")
-	 	Debug.Trace("[_sdqs_enslavement] Cage alias failed to update")
+	 	; Debug.Notification("[_sdqs_enslavement] Cage alias failed to update")
+	 	; Debug.Trace("[_sdqs_enslavement] Cage alias failed to update")
 	EndIf
 
 	_SD_dream_destinations.Stop()
@@ -469,6 +472,14 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 			StorageUtil.SetIntValue(akSlave, "_SD_iDeviousGagOn", 1)
 		EndIf
 
+		If (!fctOutfit.isCollarEquipped(kSlave)) && (kSlave.GetDistance( kMaster )<900) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
+			Debug.Notification("Your master is disappointed to find you without a collar.")
+			fctOutfit.equipDeviceByString ( "Collar" )
+			fctOutfit.lockDeviceByString( kSlave,  "Collar")
+			fctSlavery.ModMasterTrust(kMaster, -5)
+		Else
+			Debug.Notification("Your master is too far to collar you again.")
+		EndIf
 	Else
 		If (akSlave != Game.GetPlayer())
 			Debug.Trace("[_sdqs_enslavement] Update punishment list: Target is not the player")

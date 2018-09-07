@@ -727,3 +727,70 @@ float Function GetCurrentHourOfDay()
 	Return Time
  
 EndFunction
+
+function checkGender(actor kActor) 
+	ActorBase kActorBase = kActor.GetActorBase()
+
+	; Debug.Trace("[SLH] Sex from Actorbase:" + kActorBase.GetSex())
+	; Debug.Trace("[SLH] Sex from Sexlab:" + Sexlab.GetGender(kActor))
+
+	if (kActorBase.GetSex() == 1) ; female
+		StorageUtil.SetIntValue(kActor, "_SLH_isFemale",  1) 
+		StorageUtil.SetIntValue(kActor, "_SLH_isMale",  0) 
+	Else
+		StorageUtil.SetIntValue(kActor, "_SLH_isFemale",  0) 
+		StorageUtil.SetIntValue(kActor, "_SLH_isMale",  1) 
+	EndIf
+ 
+EndFunction
+
+Bool function isFemale(actor kActor)
+	return (StorageUtil.GetIntValue(kActor, "_SLH_isFemale") as Bool)
+EndFunction
+
+Bool function isMale(actor kActor)
+	return (StorageUtil.GetIntValue(kActor, "_SLH_isMale") as Bool)
+EndFunction
+
+Bool function isSameSex(actor kActor1, actor kActor2)
+	Bool bIsSameSex = false
+
+	bIsSameSex = (isFemale(kActor1) && isFemale(kActor2)) || (isMale(kActor1) && isMale(kActor2)) 
+
+	return bIsSameSex
+EndFunction
+
+bool function isFHUCumFilledEnabled(actor kActor) 
+	Actor kPlayer = Game.GetPlayer()
+  	return (StorageUtil.GetIntValue(kPlayer, "CI_CumInflation_ON") == 1) 
+
+endFunction
+
+bool function isPregnantBySoulGemOven(actor kActor) 
+	Actor kPlayer = Game.GetPlayer()
+  	return (StorageUtil.GetIntValue(kPlayer, "sgo_IsBellyScaling") == 1) || (StorageUtil.GetIntValue(kPlayer, "sgo_IsBreastScaling ") == 1)
+
+endFunction
+
+bool function isPregnantBySimplePregnancy(actor kActor) 
+  	return StorageUtil.HasFloatValue(kActor, "SP_Visual")
+
+endFunction
+
+bool function isPregnantByBeeingFemale(actor kActor)
+  if ( (StorageUtil.GetIntValue(none, "_SLS_isBeeingFemaleON")==1 ) &&  ( (StorageUtil.GetIntValue(kActor, "FW.CurrentState")>=4) && (StorageUtil.GetIntValue(kActor, "FW.CurrentState")<=8))  )
+    return true
+  endIf
+  return false
+endFunction
+ 
+bool function isPregnantByEstrusChaurus(actor kActor)
+  spell  ChaurusBreeder 
+  if (StorageUtil.GetIntValue(none, "_SLS_isCagedFollowerON") ==  1) 
+  	ChaurusBreeder = StorageUtil.GetFormValue(none, "_SLS_getCagedFollowerQuestKeyword") as Spell
+  	if (ChaurusBreeder != none)
+    	return kActor.HasSpell(ChaurusBreeder)
+    endif
+  endIf
+  return false
+endFunction

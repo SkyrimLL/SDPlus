@@ -7,16 +7,18 @@ float fNext = 0.0
 float fNextAllowed = 0.02
 
 Function Commented()
+	Actor Player = Game.GetPlayer()
 	fNext = GameDaysPassed.GetValue() + fNextAllowed + Utility.RandomFloat( 0.125, 0.25 )
 	_SDGVP_naked_rape_delay.SetValue( fNext )
+	StorageUtil.SetIntValue( Player , "_SD_iCoveted", 1)
 EndFunction
 
 
 Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
 
-	akTarget = Game.GetPlayer()
+	Actor Player = Game.GetPlayer()
 	
-	if (akTarget.IsOnMount())
+	if (Player.IsOnMount())
 		return
 	EndIf
 
@@ -24,7 +26,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		Utility.Wait( 1.0 )
 	endWhile
 
-	If (funct.checkGenderRestriction( akSpeaker,  akTarget))
+	If (funct.checkGenderRestriction( akSpeaker,  Player))
 
 		Game.ForceThirdPerson()
 		; Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
@@ -35,13 +37,13 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 			; Debug.Messagebox("An overwhelming craving stops you in your tracks and feeds the lust of your aggressor.")
 			; Utility.Wait(2)
-			StorageUtil.SetIntValue( Game.GetPlayer() , "_SD_iSub", StorageUtil.GetIntValue( Game.GetPlayer(), "_SD_iSub") + 1)
+			StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
 			SendModEvent("PCSubCoveted")
-			funct.SanguineRape(akSpeaker, akTarget,SexLabInTags,SexLabOutTags )
+			funct.SanguineRape(akSpeaker, Player,SexLabInTags,SexLabOutTags )
 		Else
-			StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iDom", StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iDom") + 1)
+			StorageUtil.SetIntValue(Player, "_SD_iDom", StorageUtil.GetIntValue(Player, "_SD_iDom") + 1)
 			SendModEvent("PCSubStripped")
-			SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+			SexLab.ActorLib.StripActor( Player, DoAnimate= false)
 		EndIf
 	EndIf
 	
