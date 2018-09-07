@@ -325,7 +325,7 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 
 	; Prevent rapid fire attacks
 	if ( (GameTime.GetValue() - StorageUtil.GetFloatValue(Player, "_SD_iLastSexTime"))  < StorageUtil.GetFloatValue(Player, "_SD_iNextSexTime") )
-		Debug.Notification("(changes his mind...)")
+		; Debug.Notification("(changes his mind...)")
 		Debug.Trace("[SLD]    Sex aborted - too soon since last sex scene")
 		Debug.Trace("[SLD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
 		Debug.Trace("[SLD]      		fNextAllowed : " + fNextAllowed)
@@ -372,12 +372,14 @@ Function StartPlayerCreatureRape ( Actor akSpeaker, string tags = "Sex" )
 
 	; Prevent rapid fire attacks
 	if ( (GameTime.GetValue() - fLast) < (fNextAllowed) )
-		Debug.Notification("(changes his mind...)")
+		; Debug.Notification("(changes his mind...)")
 		Debug.Trace("[SLD]    Sex aborted - too soon since last sex scene")
 		Debug.Trace("[SLD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
 		Debug.Trace("[SLD]      		fNextAllowed : " + fNextAllowed)
 		Return
-	Else
+		
+	Elseif (StorageUtil.GetIntValue( Player , "_SD_iDominance")<=0) && (Utility.RandomInt(0,100)>60)
+		Debug.Notification(" (tries to hump you) ")
 		Int IButton = _SLD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -522,8 +524,9 @@ Function StartPlayerClaimed ( Actor akSpeaker, string tags = "" )
 
 	; If IButton == 0 ; Undress
 	;	StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+	if (StorageUtil.GetIntValue( Player , "_SD_iDominance")<=0) && (Utility.RandomInt(0,100)>80)
 		akSpeaker.SendModEvent("PCSubEnslaveMenu")
-
+	Endif
 	; else
 	;	StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 	;	akSpeaker.SendModEvent("PCSubSex")
@@ -538,8 +541,10 @@ Function StartPlayerClaimedBeast ( Actor akSpeaker, string tags = "" )
 
 	; If IButton == 0 ; Undress
 	;	StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+	if (StorageUtil.GetIntValue( Player , "_SD_iDominance")<=0) && (Utility.RandomInt(0,100)>30)
+		Debug.Notification(" (tries to overpower you) ")
 		akSpeaker.SendModEvent("PCSubEnslaveMenu")
-
+	Endif
 	; else
 	;	StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 	;	akSpeaker.SendModEvent("PCSubSex")

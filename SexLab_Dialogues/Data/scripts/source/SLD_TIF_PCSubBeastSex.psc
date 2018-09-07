@@ -32,7 +32,6 @@ If (StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iEnableBeastMaster") != 0)
 		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) && ((thisRace == speakerRaceForm) || (StringUtil.Find(sRaceName, sMasterRaceName)!= -1)); (StringUtil.Find(sRaceName, akActorBase.GetRace().GetName())!= -1)
 			Debug.Trace("	Race [" + i + "] = " + sRaceName + " Race formID: " + thisRace + " FormID to match: " + speakerRaceForm)
 			bRaceMatch = True
-			Debug.Notification(" (tries to hump you) ")
 
 			fctDialogue.SetNPCDialogueState ( akSpeaker )
 		 
