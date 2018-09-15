@@ -534,6 +534,10 @@ State monitor
 
 			If (Utility.RandomInt(0,100) > 70)
 				Debug.Notification( "Your owner is in combat. Stay close..." )
+				If ( kMaster.GetCurrentScene() )
+					kMaster.GetCurrentScene().Stop()
+				EndIf
+		 		kMaster.EvaluatePackage()
 
 				If (fMasterDistance >  StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
 					StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", 	funct.intWithinRange ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") - 1, -10, 10) )

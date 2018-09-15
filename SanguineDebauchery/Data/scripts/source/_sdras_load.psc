@@ -15,7 +15,7 @@ Event OnPlayerLoadGame()
 	; Debug.Trace("[_sdras_load] Calling _sd_player maintenance")
 	; _SD_Player._Maintenance()
 
-	Debug.Trace("[_sdras_load] Calling version check")
+	; Debug.Trace("[_sdras_load] Calling version check")
 
 	; Debug.Notification("[_sdras_load] Test storageUtil issue")
 	; Debug.Notification("[_sdras_load]     _SD_sSleepPose: " + StorageUtil.GetStringValue(kPlayer, "_SD_sSleepPose") )
@@ -28,6 +28,14 @@ Event OnPlayerLoadGame()
 	Debug.Trace("[_sdras_load]     SexLab.SavedVoice: " + StorageUtil.GetStringValue(kPlayer, "SexLab.SavedVoice") )
 
 	_reset.Maintenance()
+
+ 
+ 	Faction DefeatDialogueBlockFaction = Game.GetFormFromFile(0x0008C862, "SexLabDefeat.esp") As Faction
+	If (DefeatDialogueBlockFaction != None)
+		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", DefeatDialogueBlockFaction as Form)
+	Else
+		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", None)
+	Endif
 
 	; Mod detection / compatibility
 	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  0) 

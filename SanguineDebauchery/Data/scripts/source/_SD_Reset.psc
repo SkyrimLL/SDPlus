@@ -39,24 +39,18 @@ Function Maintenance()
 	
 	Debug.Trace("[SD] Loading SD+ version: " + iVersionNumber)
 
-	if (libs.GetVersion() < 2.83)
-	    Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
-	EndIf
+	; if (libs.GetVersion() < 2.83)
+	;     Debug.Messagebox("Your version of Devious Devices Integration is outdated. You have to upgrade it in order to run SD+ 3.0 correctly." )
+	; EndIf
 
-	if (!StorageUtil.HasIntValue( none, "_SLD_version") )
-	    Debug.Messagebox("SexLab Dialogues is updating. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery. Check your load order and mod versions if you see this message more than once." )
+	if (!StorageUtil.HasIntValue( none, "_SLD_version") ) || (StorageUtil.GetIntValue( none, "_SLD_version")==0)
+	    Debug.Trace("[SD] SexLab Dialogues is updating or missing. Sanguine Debauchery relies on SexLab Dialogues for topics during slavery. Check your load order and mod versions if you see this message more than once." )
 	EndIf	
  
-	if (!StorageUtil.HasIntValue( none, "_SD_iSanguine") ) || (StorageUtil.GetIntValue( none, "_SLD_version")==0)
-	    Debug.Messagebox("SD+ is installing. Make sure to save and reload once all messages have stopped to complete the process." )
+	if (!StorageUtil.HasIntValue( none, "_SD_iSanguine") ) || (StorageUtil.GetIntValue( none, "_SD_iSanguine")==0)
+	    Debug.Trace("[SD] SD+ is installing. Make sure to save and reload once all messages have stopped to complete the process." )
 	EndIf	
- 
- 	Faction DefeatDialogueBlockFaction = Game.GetFormFromFile(0x0008C862, "SexLabDefeat.esp") As Faction
-	If (DefeatDialogueBlockFaction != None)
-		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", DefeatDialogueBlockFaction as Form)
-	Else
-		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", None)
-	Endif
+
 
 	; initialize manual stances
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") != 1)  
@@ -70,8 +64,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20180717 ; <--- Edit this value when updating
-		iVersionNumber = 20180717; and this
+	If iVersionNumber < 20180912 ; <--- Edit this value when updating
+		iVersionNumber = 20180912; and this
 		_SDGVP_version.SetValue(fVersion)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)

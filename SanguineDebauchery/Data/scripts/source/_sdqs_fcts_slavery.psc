@@ -83,6 +83,10 @@ function InitSlaveryState( Actor kSlave )
 	_SDGVP_enslaved.SetValue( 0 )
 	StorageUtil.SetIntValue(kSlave, "_SD_iAPIInit", 1)
 
+	if (!StorageUtil.GetIntValue( none, "_SD_iSanguine")==1)
+	    Debug.MessageBox("[SD] SD+ is installing. Make sure to save and reload once all messages have stopped to complete the process." )
+	EndIf
+
 	; API variables
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslaved", 0)
 	StorageUtil.SetFormValue(kSlave, "_SD_CurrentOwner", None)

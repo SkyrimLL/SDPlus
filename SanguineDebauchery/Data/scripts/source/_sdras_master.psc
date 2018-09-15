@@ -159,6 +159,11 @@ EndEvent
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	If ( !kMaster )
 		kMaster = _SDRAP_master.GetReference() as Actor
+	Else
+		If ( kMaster.GetCurrentScene() )
+			kMaster.GetCurrentScene().Stop()
+		EndIf
+		kMaster.EvaluatePackage()
 	EndIf
 
 	; most likely to happen on a pickpocket failure.
@@ -229,7 +234,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
 	Else
-		; GoToState("combat")
+		GoToState("combat")
 	EndIf
 EndEvent
 
@@ -435,7 +440,7 @@ State monitor
 
 		ElseIf ( kMaster.IsInCombat() || kSlave.IsInCombat() )
 			; Combat state
-			; GoToState("combat")
+			GoToState("combat")
 
 		ElseIf (   kSlave.IsWeaponDrawn() && ( bSlaveDetectedByMaster || bSlaveDetectedByTarget ))
 			; Slave is drawing a weapon in front of master
@@ -804,6 +809,7 @@ State combat
 		If ( kMaster.GetCurrentScene() )
 			kMaster.GetCurrentScene().Stop()
 		EndIf
+		kMaster.EvaluatePackage()
 		enslavement.bSearchForSlave = False
 	EndEvent
 	
@@ -827,7 +833,7 @@ State combat
 			GoToState("doNothing")
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
-			kMaster.EvaluatePackage()
+			; kMaster.EvaluatePackage()
 			GoToState("waiting")
 
 		ElseIf ( !kMaster.IsInCombat() && !kSlave.IsInCombat() )
