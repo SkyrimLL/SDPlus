@@ -8,10 +8,10 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Debug.Messagebox("The ointment washes away the residual roots clinging to your body.")
 
-fctOutfit.clearDeviceSpriggan( sDeviceString = "ArmCuffs" )
-fctOutfit.clearDeviceSpriggan( sDeviceString = "LegCuffs"  )
-fctOutfit.clearDeviceSpriggan( sDeviceString = "Belt"  )
-fctOutfit.clearDeviceSpriggan( sDeviceString = "Blindfold"  )
+            fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
+            fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+            fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
+            fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

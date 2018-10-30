@@ -203,6 +203,13 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 		SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
+	If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+		Debug.Trace("[_sdras_slave] OnLocationChange safeguard - Master dead or disabled - Stop enslavement")
+		Debug.Notification( "Your owner is either dead or left you...")
+
+		SendModEvent("PCSubFree")
+	Endif
+
 EndEvent
  
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
@@ -358,7 +365,10 @@ State waiting
 			If (!kMaster.IsDead()) 
 				GoToState("monitor")
 			Else
-				GoToState("doNothing")
+				Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+				Debug.Notification( "Your owner is either dead or left you...")
+
+				SendModEvent("PCSubFree")
 			EndIf
 		EndIf
 		If ( Self.GetOwningQuest() )
@@ -476,7 +486,7 @@ State monitor
 			Debug.Notification( "Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
-			GoToState("doNothing")
+			; GoToState("doNothing")
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			; Park the slave in 'waiting' state while enslavement quest is shutting down
@@ -537,7 +547,7 @@ State monitor
 				If ( kMaster.GetCurrentScene() )
 					kMaster.GetCurrentScene().Stop()
 				EndIf
-		 		kMaster.EvaluatePackage()
+		 		; kMaster.EvaluatePackage()
 
 				If (fMasterDistance >  StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
 					StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", 	funct.intWithinRange ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") - 1, -10, 10) )
@@ -851,7 +861,7 @@ State escape_shock
 			endif
 		Endif
 
-		kMaster.EvaluatePackage()
+		; kMaster.EvaluatePackage()
 
 	EndEvent
 	
@@ -936,6 +946,13 @@ State escape_shock
 
 			SendModEvent("PCSubFree")
 			; Self.GetOwningQuest().Stop()
+
+		ElseIf !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			Debug.Notification( "Your owner is either dead or left you...")
+
+			SendModEvent("PCSubFree")
+			; GoToState("doNothing")
 
 		ElseIf  (kSlaveCell == kMasterCell) ; && (kMaster.GetParentCell().IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) )   
 			; Slave back in same cell as master, turn off escape mode
@@ -1034,7 +1051,7 @@ State escape_choke
 		; SD 3.3 - testing Master searching for slave during collar events
 		enslavement.bSearchForSlave = True
 
-		kMaster.EvaluatePackage()
+		; kMaster.EvaluatePackage()
 	EndEvent
 	
 	Event OnEndState()
@@ -1067,10 +1084,12 @@ State escape_choke
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 
-		If (kMaster.IsDead()) 
-			Debug.Notification( "[SD] Cage scene - choking collar - master is dead" )
-			Debug.Trace( "[SD] Cage scene - choking collar - master is dead" )
-			GoToState("doNothing")
+		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			Debug.Notification( "Your owner is either dead or left you...")
+
+			SendModEvent("PCSubFree")
+			; GoToState("doNothing")
 		Endif
 
 		_slaveStatusTicker()
@@ -1248,7 +1267,11 @@ State caged
 		enslavement.bSearchForSlave = False
 		; _SDGVP_state_caged.SetValue( 1 )
 		If (kMaster.IsDead()) 
-			GoToState("doNothing")
+			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			Debug.Notification( "Your owner is either dead or left you...")
+
+			SendModEvent("PCSubFree")
+			; GoToState("doNothing")
 		Endif
 
 	EndEvent
@@ -1265,8 +1288,12 @@ State caged
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 
-		If (kMaster.IsDead()) 
-			GoToState("doNothing")
+		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			Debug.Notification( "Your owner is either dead or left you...")
+
+			SendModEvent("PCSubFree")
+			; GoToState("doNothing")
 		Endif
 
 		_slaveStatusTicker()
@@ -1285,6 +1312,20 @@ EndState
 
 
 State doNothing
+	Event OnBeginState()
+		; needed?
+		Debug.Trace("[_sdras_slave] doNothing state - Master dead or disabled - Stop enslavement")
+		Debug.Notification( "Your owner is either dead or left you...")
+
+		SendModEvent("PCSubFree")
+
+	EndEvent
+	
+	Event OnEndState()
+	EndEvent
+
+	Event OnUpdate()	
+	EndEvent
 EndState
 
 Function _slaveStatusInit()

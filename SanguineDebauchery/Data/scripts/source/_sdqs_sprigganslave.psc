@@ -154,7 +154,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		akSlave.SendModEvent("SLHShaveHead")
 		akSlave.SendModEvent("SLHRefresh")
 		akSlave.SendModEvent("SLHRefreshColors")
-			
+
+		Debug.MessageBox("The roots start feeding on your flesh and alter your body.")
+		
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	     _SD_sprigganHusk.MoveTo( _SDRAP_grovemarker.GetReference() )
 	     ; _SD_sprigganHusk.Disable()
@@ -334,6 +336,8 @@ Event OnUpdateGameTime()
 			kPlayer.SendModEvent("SLHShaveHead")
 			kPlayer.SendModEvent("SLHRefresh")
 			kPlayer.SendModEvent("SLHRefreshColors")
+
+			Debug.MessageBox("The roots are taking their toll on your appearance.")
 		
 		EndIf
 

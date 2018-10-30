@@ -244,6 +244,7 @@ Function ProcessGoldAdded(Actor kMaster, Actor kSlave)
 EndFunction
 
 Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
+	Bool bIsMasterCreature = StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") as Bool
 	iuType = akBaseItem.GetType()
 	fGoldEarned = 0.0
 
@@ -255,7 +256,7 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 
 	Debug.Trace( "[SD] Master receives an item from player" )
 
-	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+	If (!bIsMasterCreature)
 		Debug.Notification( "Good slave." )
 	else
 		Debug.Notification( "Your owner seems pleased." )
@@ -267,15 +268,13 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		fctSlavery.ModMasterTrust( kMaster, 1)
 		fctSlavery.ModSlaveryTask( kSlave, "Bring food", 1)
 
-		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-				Debug.Notification("Mmm.. that should hit the spot.")
-			endif
-		Else
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 ) && (!bIsMasterCreature)
+			Debug.Notification("Mmm.. that should hit the spot.")
+		ElseIf (!bIsMasterCreature)
 				Debug.Notification("Well? What are you waiting for?.")
 				Debug.Notification("Get back to work slave!")
-			endif
+		Else
+				Debug.Notification("Your master groans happily.")
 		EndIf
 
 		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
@@ -315,7 +314,7 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		Debug.Notification("(seems pleased)")
 
 
-	ElseIf ((StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1) )
+	ElseIf ((!bIsMasterCreature) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1) )
 		; Add code to match received items against Master's needs
 		; Update Master's mood and trust
 

@@ -472,14 +472,19 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 			StorageUtil.SetIntValue(akSlave, "_SD_iDeviousGagOn", 1)
 		EndIf
 
-		If (!fctOutfit.isCollarEquipped(kSlave)) && (kSlave.GetDistance( kMaster )<900) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
-			Debug.Notification("Your master is disappointed to find you without a collar.")
-			fctOutfit.equipDeviceByString ( "Collar" )
-			fctOutfit.lockDeviceByString( kSlave,  "Collar")
-			fctSlavery.ModMasterTrust(kMaster, -5)
-		Else
-			Debug.Notification("Your master is too far to collar you again.")
+		If (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
+			If (kSlave.GetDistance( kMaster )<1500)
+				Debug.Notification("Your master is disappointed to find you without a collar.")
+				fctOutfit.equipDeviceByString ( "Collar" )
+				fctOutfit.lockDeviceByString( kSlave,  "Collar")
+				fctSlavery.ModMasterTrust(kMaster, -5)
+			Else
+				Debug.Notification("Your master is too far to collar you again.")
+			Endif
 		EndIf
+
+		fctSlavery.PickSlaveryTask(kSlave) ; evaluate tasks on enslavements
+
 	Else
 		If (akSlave != Game.GetPlayer())
 			Debug.Trace("[_sdqs_enslavement] Update punishment list: Target is not the player")
