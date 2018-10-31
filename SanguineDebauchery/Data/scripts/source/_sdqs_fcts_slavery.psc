@@ -5,6 +5,7 @@ _SDQS_fcts_constraints Property fctConstraints  Auto
 _SDQS_fcts_outfit Property fctOutfit  Auto
 _SDQS_fcts_factions Property fctFactions  Auto
 zbfSlaveControl Property ZazSlaveControl Auto
+_SDQS_enslavement Property enslavement  Auto
 
 SexLabFrameWork Property SexLab Auto
 
@@ -1072,6 +1073,12 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	Debug.Trace("[SD] Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
 	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
+	enslavement.UpdateSlaveState( kMaster, kSlave )
+EndFunction
+
+
+function ResetDailyCounts( Actor kMaster, Actor kSlave)
+
 	; Reset daily counts for slave
 	StorageUtil.SetIntValue(kSlave, "_SD_iSexCountToday", 0)
 	StorageUtil.SetIntValue(kSlave, "_SD_iPunishmentCountToday", 0)
@@ -1496,6 +1503,7 @@ Function StartSlaveryTask(Actor kSlave, Int iTaskID)
 	Int iSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") 
 	int i = 0
 	String sTaskName
+	Bool bIsFemale = funct.isFemale(kSlave)
 
 	If ((iTaskID < 1) || (iTaskID > iNumberTasks))
 		Debug.Trace("[SD] Start a new task - bad task ID: " + iTaskID)
@@ -1525,7 +1533,12 @@ Function StartSlaveryTask(Actor kSlave, Int iTaskID)
 	; Sex
 	; Inspection
 
-	If (sTaskName=="Training vaginal")
+	; redirect Vaginal tasks to Anal for males
+	If (sTaskName=="Training vaginal") && (bIsFemale)
+		sTaskName="Training anal"
+	EndIf
+
+	If (sTaskName=="Training vaginal") 
 		if (!fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal")) && (iSlaveLevel>=1) && (iSlaveLevel<=2)
 			fctOutfit.QueueSlavePunishment(kSlave, "TrainingPlugVaginal", 1.0 + Utility.RandomFloat(1.0, 23.0))
 		Else
@@ -1629,6 +1642,7 @@ Function EvaluateSlaveryTask(Actor kSlave, Form fKeyword)
 	Int  iHoursCount = 0
 	Int iTimeLeft = 0
 	String sTaskName
+	Bool bIsFemale = funct.isFemale(kSlave)
 
 	TaskTickerThisCallTime = Utility.GetCurrentGameTime()
 
@@ -1702,6 +1716,7 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskPositiveReward = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskPositiveReward")
 	Float fMasterDistance = kSlave.GetDistance( kMaster )
 	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+	Bool bIsFemale = funct.isFemale(kSlave)
 
 	Debug.Trace("[SD] Completing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
 	Debug.Notification("[SD] You succeded Task : " + sTaskName )
@@ -1768,6 +1783,7 @@ Function FailSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskNegativeReward = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskNegativeReward")
 	Float fMasterDistance = kSlave.GetDistance( kMaster )
 	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+	Bool bIsFemale = funct.isFemale(kSlave)
 
 	Debug.Trace("[SD] Failing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
 	Debug.Notification("[SD] You failed Task : " + sTaskName )

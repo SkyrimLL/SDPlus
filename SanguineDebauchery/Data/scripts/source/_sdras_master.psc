@@ -799,6 +799,13 @@ State search
 			SendModEvent("PCSubFree")
 			; GoToState("doNothing")
 
+		ElseIf ( !Self.GetOwningQuest().IsRunning() ) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+			Debug.Trace("[_sdras_master] search - Enslavement quest already stopped")
+			Debug.Notification( "[_sdras_master] cleaning up old scripts")
+
+			; SendModEvent("PCSubFree")
+			GoToState("doNothing")
+
 		ElseIf ( (kMaster.GetDistance( kSlave ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") / 2 ) ) && (( kMaster.HasLOS( kSlave )) ) )
 			; Slave is back, next to master
 			; Debug.Notification("[_sdras_master] Master close to slave with LOS")
@@ -831,7 +838,7 @@ State combat
 		kMaster.EvaluatePackage()
 		; Debug.Notification( "[_sdras_master] Combat ended - looking for slave" )
 		enslavement.bSearchForSlave = True
-		GoToState("search")
+		; GoToState("search")
 	EndEvent
 
 	Event OnUpdate()

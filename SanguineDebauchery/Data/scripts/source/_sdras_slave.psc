@@ -1389,6 +1389,18 @@ Function _slaveStatusTicker()
 				enslavement.UpdateSlaveFollowerState(kSlave)
 				iPunishmentCheck = 0
 			Endif
+
+			; Trigger only after an hour has passed from enslavement
+			If (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
+				If (kSlave.GetDistance( kMaster )<1500)
+					Debug.Notification("Your master is disappointed to find you without a collar.")
+					fctOutfit.equipDeviceByString ( "Collar" )
+					fctOutfit.lockDeviceByString( kSlave,  "Collar")
+					fctSlavery.ModMasterTrust(kMaster, -5)
+				Else
+					Debug.Notification("Your master is too far to collar you again.")
+				Endif
+			EndIf
 		endif
 	Else ; day change - full update
 		Debug.Trace( "[SD] Slavery status - daily update")
@@ -1396,6 +1408,7 @@ Function _slaveStatusTicker()
 		iCountSinceLastCheck = 0
 		; fctSlavery.UpdateStatusDaily( kMaster, kSlave)
 		kMaster.SendModEvent("PCSubStatus")
+		fctSlavery.ResetDailyCounts(  kMaster,  kSlave)
 
 		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 

@@ -745,10 +745,12 @@ function checkGender(actor kActor)
 EndFunction
 
 Bool function isFemale(actor kActor)
+	checkGender(kActor) 
 	return (StorageUtil.GetIntValue(kActor, "_SLH_isFemale") as Bool)
 EndFunction
 
 Bool function isMale(actor kActor)
+	checkGender(kActor) 
 	return (StorageUtil.GetIntValue(kActor, "_SLH_isMale") as Bool)
 EndFunction
 
