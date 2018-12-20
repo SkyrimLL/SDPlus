@@ -6,7 +6,7 @@ Scriptname SLD_TIF_PCSubStatus05 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-SendModEvent("PCSubStatus")
+SendModEvent("PCSubStatus","UpdateSlaveState")
 
 ; Debug.MessageBox("You are a slave, nothing more.")
 ;END CODE

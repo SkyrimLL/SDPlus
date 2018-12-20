@@ -557,6 +557,7 @@ Event OnSLDRefreshNPCDialogues(String _eventName, String _args, Float _argc, For
  	Actor kActor = _sender as Actor
 
  	if (kActor != None)
+		_updateGlobals()
  		_SLD_Main.SetNPCDialogueState( kActor )
 	EndIf
 EndEvent
@@ -566,6 +567,8 @@ Event OnSLDRefreshGlobals(String _eventName, String _args, Float _argc, Form _se
 	Actor PlayerActor= PlayerAlias.GetReference() as Actor
  	Actor kActor = _sender as Actor
 
+
+	_updateGlobals()
 
 	_SLD_CommentProbability.SetValue(StorageUtil.GetIntValue( PlayerActor, "_SLD_iCommentProbability"))
 	_SLD_AttackProbability.SetValue(StorageUtil.GetIntValue( PlayerActor, "_SLD_iAttackProbability"))

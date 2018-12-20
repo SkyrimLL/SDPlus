@@ -6,6 +6,8 @@ Scriptname SLD_TIF_PCSubStand04 Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
+; disabled for now
+
 akSpeaker.SendModEvent( "PCSubStance" , "Kneeling")
 ;END CODE
 EndFunction

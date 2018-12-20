@@ -8,6 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 fctDialogue.SetNPCDialogueState ( akSpeaker )
 SendModEvent("SDModTaskAmount","Ignore", -1)
+akSpeaker.EvaluatePackage()
 ;END CODE
 EndFunction
 ;END FRAGMENT
