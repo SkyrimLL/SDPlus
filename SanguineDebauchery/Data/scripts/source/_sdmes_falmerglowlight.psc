@@ -43,6 +43,14 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			StorageUtil.SetFloatValue(akTarget, "_SLH_fWeight", StorageUtil.GetFloatValue(akTarget, "_SLH_fWeight" ) + weightMod ) 
 			akTarget.SendModEvent("SLHRefresh")
 			akTarget.SendModEvent("SLHRefreshColors")
+
+			SendModEvent("SLHModHormone", "SexDrive", 1.0)
+			SendModEvent("SLHModHormone", "Growth", 2.0)
+			SendModEvent("SLHModHormone", "Metabolism", 2.0)
+			SendModEvent("SLHModHormone", "Lactation", 2.0)
+			SendModEvent("SLHModHormone", "Female", 2.0)
+			SendModEvent("SLHModHormone", "Pigmentation", -2.0)
+			SendModEvent("SLHModHormone", "Male", -2.0)
 		EndIf
 EndEvent
 

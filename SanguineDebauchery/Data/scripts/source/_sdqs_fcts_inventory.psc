@@ -186,35 +186,38 @@ EndFunction
 
 Function ProcessGoldEarned(Actor kMaster, Actor kSlave, Float fGoldAmount )
 
-	If (fGoldAmount > 0)
-		fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldAmount as Int)
-		StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldAmount as Int))
+	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 
-		; This is covered by ModObjectiveGlobal
-		; _SDGVP_buyoutEarned.SetValue(StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+		If (fGoldAmount > 0)
+			fctSlavery.UpdateSlaveStatus( kSlave, "_SD_iGoalGold", modValue = fGoldAmount as Int)
+			StorageUtil.SetIntValue(kMaster, "_SD_iGoldCountTotal", StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") + (fGoldAmount as Int))
 
-		_SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldAmount,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)
-		
-		if (fGoldAmount>100)
-			fctSlavery.ModMasterTrust( kMaster, 2)
-		else
-			fctSlavery.ModMasterTrust( kMaster, 1)
-		endif
+			_SDGVP_buyoutEarned.SetValue(StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
-		fctSlavery.ModSlaveryTask(kSlave, "Bring gold", fGoldAmount as Int) 
+			; _SDQP_enslavement.ModObjectiveGlobal( afModValue = fGoldAmount,  aModGlobal = _SDGVP_buyoutEarned, aiObjectiveID = 6, afTargetValue = _SDGVP_buyout.GetValue() as Float)
+			
+			if (fGoldAmount>100)
+				fctSlavery.ModMasterTrust( kMaster, 2)
+			else
+				fctSlavery.ModMasterTrust( kMaster, 1)
+			endif
 
-
-		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-			Debug.Notification("Good slave... keep it coming.")
+			fctSlavery.ModSlaveryTask(kSlave, "Bring gold", fGoldAmount as Int) 
 
 
-		Else
-			Debug.Notification("That's right.")
+			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
+				Debug.Notification("Good slave... keep it coming.")
+
+
+			Else
+				Debug.Notification("That's right.")
+
+			Endif
+
+		ElseIf (fGoldAmount == 0)
+			Debug.Notification("What is this junk!?.")
 
 		Endif
-
-	ElseIf (fGoldAmount == 0)
-		Debug.Notification("What is this junk!?.")
 
 	EndIf
 EndFunction

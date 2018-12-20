@@ -51,6 +51,8 @@ Bool Function addToQueue( ObjectReference akObject )
 					_SDORP_queue[iIdx] = akObject
 					_SDORP_queueAliasRef[iIdx].ForceRefTo( akObject )
 
+					SendModEvent("SLHModHormone", "Pheromones", 0.5)
+
 					Debug.Trace("[SD] Whore queue - Adding actor to queue: " + akObject)
 				EndIf
 				iIdx += 1

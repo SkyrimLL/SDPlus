@@ -27,7 +27,7 @@ ReferenceAlias Property Alias__SDRA_master  Auto
 GlobalVariable Property _SDGVP_config_enable_beast_master  Auto
 
 Float fVersion = 0.0 ; DEPRECATED
-Int iVersionNumber = 20180901
+Int iVersionNumber = 20180101
 
 Function Maintenance()
 	Actor kPlayer = Game.GetPlayer()
@@ -59,14 +59,17 @@ Function Maintenance()
 		StorageUtil.SetIntValue(kPlayer, "_SD_iEnableCrawl", 1)
 	Endif
 
-
+	If (StorageUtil.GetIntValue(none, "_SD_debugTraceON") != 1)  
+		StorageUtil.SetIntValue(none, "_SD_debugTraceON", 1) 
+	Endif
+ 
 	; Debug.Notification("Running SD+ version: " + fVersion as Int)
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20180912 ; <--- Edit this value when updating
-		iVersionNumber = 20180912; and this
-		_SDGVP_version.SetValue(fVersion)
+	If iVersionNumber < 20181215 ; <--- Edit this value when updating
+		iVersionNumber = 20181215; and this
+		_SDGVP_version.SetValue(iVersionNumber)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)
 		StorageUtil.SetIntValue( none, "_SD_version", iVersionNumber)

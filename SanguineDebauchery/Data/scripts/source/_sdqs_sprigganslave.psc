@@ -155,6 +155,14 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		akSlave.SendModEvent("SLHRefresh")
 		akSlave.SendModEvent("SLHRefreshColors")
 
+		SendModEvent("SLHModHormone", "SexDrive", 1.0)
+		SendModEvent("SLHModHormone", "Metabolism", 2.0)
+		SendModEvent("SLHModHormone", "Lactation", -2.0)
+		SendModEvent("SLHModHormone", "Pigmentation", -2.0)
+		SendModEvent("SLHModHormone", "Male", -2.0)
+		SendModEvent("SLHModHormone", "Female", -2.0)
+		SendModEvent("SLHModHormone", "Growth", -2.0)
+
 		Debug.MessageBox("The roots start feeding on your flesh and alter your body.")
 		
 		; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
@@ -336,6 +344,14 @@ Event OnUpdateGameTime()
 			kPlayer.SendModEvent("SLHShaveHead")
 			kPlayer.SendModEvent("SLHRefresh")
 			kPlayer.SendModEvent("SLHRefreshColors")
+
+			SendModEvent("SLHModHormone", "SexDrive", 1.0)
+			SendModEvent("SLHModHormone", "Metabolism", 2.0)
+			SendModEvent("SLHModHormone", "Lactation", -2.0)
+			SendModEvent("SLHModHormone", "Pigmentation", -2.0)
+			SendModEvent("SLHModHormone", "Male", -2.0)
+			SendModEvent("SLHModHormone", "Female", -2.0)
+			SendModEvent("SLHModHormone", "Growth", -2.0)
 
 			Debug.MessageBox("The roots are taking their toll on your appearance.")
 		

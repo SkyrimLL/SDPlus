@@ -124,6 +124,9 @@ Bool bDeviousDeviceEquipped
 Function sendDreamerBack( Int aiStage )
 	; kSafeHarbor = _SDLA_safeHarbor.GetReference() as ObjectReference
 	ReferenceAlias destinationAlias
+	kDreamer = Game.GetPlayer() as Actor
+	kEnter = _SDRAP_enter.GetReference() as ObjectReference
+	kLeave = _SDRAP_leave.GetReference() as ObjectReference
 
 	Game.EnablePlayerControls( abMenu = True )
 

@@ -95,6 +95,34 @@ Spell Property _SDSP_Weak  Auto
 
 Faction kCrimeFaction
 
+
+
+GlobalVariable Property _SDGVP_config_cage_enable  Auto 
+GlobalVariable Property _SDGVP_state_SlaveDominance  Auto  
+GlobalVariable Property _SDGVP_state_joined  Auto  
+GlobalVariable Property _SDGVP_state_housekeeping  Auto   
+GlobalVariable Property _SDGVP_config_disposition_threshold Auto
+
+SexLabFramework Property SexLab  Auto  
+
+Keyword Property _SDKP_collar  Auto  
+Keyword Property _SDKP_gag  Auto  
+
+ReferenceAlias Property _SDRAP_collar  Auto  
+
+Armor Property _SDA_gag  Auto  
+Armor Property _SDA_collar  Auto  
+Armor Property _SDA_bindings  Auto  
+Armor Property _SDA_shackles  Auto  
+
+Keyword Property _SDKP_hunt  Auto  
+Sound Property _SDSMP_choke  Auto  
+
+ImageSpaceModifier Property _SD_CollarStrangleImod  Auto  
+
+Sound Property _SDSMP_choke_m  Auto  
+slaUtilScr Property slaUtil  Auto  
+
 ; LOCAL
 Int iuType
 Float fCalcLeashLength
@@ -193,18 +221,18 @@ EndEvent
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	If ( _SDFLP_banned_locations.HasForm( akNewLoc ) )
-		Debug.Trace("[_sdras_slave] Banned location - Stop enslavement")
+		debugTrace(" Banned location - Stop enslavement")
 		SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
 	If ( _SDFLP_banned_worldspaces.HasForm( kSlave.GetWorldSpace() ) )
 
-		Debug.Trace("[_sdras_slave] Banned worldspace - Stop enslavement")
+		debugTrace(" Banned worldspace - Stop enslavement")
 		SendModEvent("PCSubFree") ; Self.GetOwningQuest().Stop()
 		Wait( fRFSU * 5.0 )
 	EndIf
 	If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
-		Debug.Trace("[_sdras_slave] OnLocationChange safeguard - Master dead or disabled - Stop enslavement")
+		debugTrace(" OnLocationChange safeguard - Master dead or disabled - Stop enslavement")
 		Debug.Notification( "Your owner is either dead or left you...")
 
 		SendModEvent("PCSubFree")
@@ -284,7 +312,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	If ( akItemReference == _SDRAP_masters_key.GetReference() ) && (akItemReference == (kSlave as ObjectReference))
 		; Slave equips master key - Escape
 
-		; Debug.Trace("[_sdras_slave] Master key stolen - Stop enslavement")
+		; debugTrace(" Master key stolen - Stop enslavement")
 		; This should be redundant - already handled by _sdks_bindings_key
 
 		Return
@@ -339,10 +367,10 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 	EndIf
 
 	if !akSourceContainer
-		Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from the world")
+		debugTrace(" Slave receives  " + aiItemCount + "x " + akBaseItem + " from the world")
 
 	elseif akSourceContainer == kMaster
-		Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from master")
+		debugTrace(" Slave receives  " + aiItemCount + "x " + akBaseItem + " from master")
 
 		If (kMaster.IsDead())
 			Debug.Trace( "[_sdras_slave] Item received from a dead master." )
@@ -350,7 +378,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 			kSlave.EquipItem( akBaseItem, aiItemCount )
 		EndIf
 	else
-		Debug.Trace("[_sdras_slave] Slave receives  " + aiItemCount + "x " + akBaseItem + " from another container")
+		debugTrace(" Slave receives  " + aiItemCount + "x " + akBaseItem + " from another container")
 
 	endIf
 
@@ -360,15 +388,19 @@ EndEvent
 
 State waiting
 	Event OnUpdate()
+		; Debug.Notification( "[SD] Waiting")
+		debugTrace(" Player is Waiting")
+
 		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster) && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			; fctConstraints.CollarUpdate()
 			If (!kMaster.IsDead()) 
 				GoToState("monitor")
 			Else
-				Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
-				Debug.Notification( "Your owner is either dead or left you...")
+				; debugTrace(" waiting:: Master dead or disabled - Stop enslavement")
+				; Debug.Notification( "Your owner is either dead or left you...")
 
-				SendModEvent("PCSubFree")
+				; SendModEvent("PCSubFree")
+				GoToState("doNothing")
 			EndIf
 		EndIf
 		If ( Self.GetOwningQuest() )
@@ -380,6 +412,7 @@ EndState
 
 State monitor
 	Event OnBeginState()
+		; debugTrace(" Begin Monitor State")
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 		kSlave = _SDRAP_slave.GetReference() as Actor
@@ -398,9 +431,11 @@ State monitor
 
 		; If ( RegisterForAnimationEvent(kSlave, "weaponDraw") )
 		; EndIf
+		; debugTrace(" ----> Monitor State")
 	EndEvent
 	
 	Event OnEndState()
+		; debugTrace(" End Monitor State")
 		; If ( UnregisterForAnimationEvent(kSlave, "weaponDraw") )
 		; EndIf
 	EndEvent
@@ -408,17 +443,22 @@ State monitor
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )  || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		; EndWhile
+		; debugTrace(" Player is Being Monitored")
 
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
 		; Debug.Notification("[SD] Punishment: " + fctOutfit.isPunishmentEquipped (  kSlave ) )
 		kMaster = _SDRAP_master.GetReference() as Actor
 
-		if (!kMaster) || ( !kMaster.Is3DLoaded() )
-			GoToState("monitor")
-		endif
+		; if (!kMaster) || ( !kMaster.Is3DLoaded() )
+		;	GoToState("monitor")
+		; endif
 
 		_slaveStatusTicker()
+
+		if (!kMaster) || ( !kMaster.Is3DLoaded() )
+			GoToState("waiting")
+		endif
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -473,7 +513,7 @@ State monitor
 		If (_SDGVP_config_safeword.GetValue() as bool)
 			; Safeword - abort enslavement
 
-			Debug.Trace("[_sdras_slave] Safeword - Stop enslavement")
+			debugTrace(" Safeword - Stop enslavement")
 			Debug.MessageBox( "Safeword: You are released from enslavement.")
 			_SDGVP_state_joined.SetValue( 0 )
 			_SDGVP_config_safeword.SetValue(0)
@@ -482,11 +522,11 @@ State monitor
 			; Self.GetOwningQuest().Stop()
 
 		ElseIf !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
-			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			debugTrace(" monitor: Master dead or disabled - Stop enslavement")
 			Debug.Notification( "Your owner is either dead or left you...")
 
-			SendModEvent("PCSubFree")
-			; GoToState("doNothing")
+			; SendModEvent("PCSubFree")
+			GoToState("doNothing")
 
 		ElseIf ( Self.GetOwningQuest().IsStopping() || Self.GetOwningQuest().IsStopped() )
 			; Park the slave in 'waiting' state while enslavement quest is shutting down
@@ -523,15 +563,15 @@ State monitor
 			enslavement.bSearchForSlave = False
 
 		; Disabled for now - issues with conditions to triger it
-		Elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==1) &&  ( _SDGVP_state_caged.GetValueInt() == 0 )
-			Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
-			Debug.Trace( "[SD] Cage state - slave out of cage during scene" )
+		Elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==1) &&  ( _SDGVP_state_caged.GetValueInt() == 0 ) && (StorageUtil.GetIntValue(none, "_SD_bEnableCageScene") == 1)
+			; Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
+			debugTrace(" Cage state - slave out of cage during scene" )
 			GoToState("escape_choke")
 
-		ElseIf ( _SDGVP_state_caged.GetValueInt() == 1 )
+		ElseIf ( _SDGVP_state_caged.GetValueInt() == 1 ) && (StorageUtil.GetIntValue(none, "_SD_bEnableCageScene") == 1)
 			; Slave is caged
-			Debug.Notification( "[SD] Cage state - caged detected" )
-			Debug.Trace( "[SD] Cage state - caged detected" )
+			; Debug.Notification( "[SD] Cage state - caged detected" )
+			debugTrace(" Cage state - caged detected" )
 
 			GoToState("caged")
 
@@ -819,8 +859,8 @@ State escape_shock
 	Event OnBeginState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
 		Debug.Notification( "Your collar vibrates as you wander off." )
-		Debug.Trace( "[SD] Escape attempt - shock collar" )
-		Debug.Trace( "[SD] starting timer" )
+		debugTrace(" Escape attempt - shock collar" )
+		debugTrace(" starting timer" )
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 
@@ -868,7 +908,7 @@ State escape_shock
 	Event OnEndState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
 		Debug.Notification( "Your collar stops vibrating." )
-		Debug.Trace( "[SD] Escape attempt - end" )
+		debugTrace(" Escape attempt - end" )
 
 		If (kSlave.GetDistance(kMaster)< (_SDGV_leash_length.GetValue() / 2) ) && (!kMaster.IsDead()) 
 			; Slave is close to master and master is not dead, stop escape state
@@ -928,6 +968,7 @@ State escape_shock
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		; debugTrace(" Player is Escaping (shocking collar)")
 		kMaster = _SDRAP_master.GetReference() as Actor
 
 		_slaveStatusTicker()
@@ -939,7 +980,7 @@ State escape_shock
 		If (_SDGVP_config_safeword.GetValue() as bool)
 			; Safeword detected - End enslavement
 
-			Debug.Trace("[_sdras_slave] Safeword on escape - Stop enslavement")
+			debugTrace(" Safeword on escape - Stop enslavement")
 			Debug.MessageBox( "Safeword: You are released from enslavement.")
 			_SDGVP_state_joined.SetValue( 0 )
 			_SDGVP_config_safeword.SetValue(0)
@@ -948,11 +989,11 @@ State escape_shock
 			; Self.GetOwningQuest().Stop()
 
 		ElseIf !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
-			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			debugTrace(" escape_shock: Master dead or disabled - Stop enslavement")
 			Debug.Notification( "Your owner is either dead or left you...")
 
-			SendModEvent("PCSubFree")
-			; GoToState("doNothing")
+			; SendModEvent("PCSubFree")
+			GoToState("doNothing")
 
 		ElseIf  (kSlaveCell == kMasterCell) ; && (kMaster.GetParentCell().IsInterior()) && (kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0)  || (StorageUtil.GetIntValue(kMAster, "_SD_iFollowSlave") > 0) )   
 			; Slave back in same cell as master, turn off escape mode
@@ -988,7 +1029,7 @@ State escape_shock
 				ElseIf ( GetCurrentRealTime() >= fEscapeTime )
 					; Escape timer is exceeded - player has escaped
 
-					; Debug.Trace("[_sdras_slave] Escaped from master - collar will send random shocks")
+					; debugTrace(" Escaped from master - collar will send random shocks")
 					_SDFP_slaversFaction.ModCrimeGold( 1000 )
 					enslavement.bEscapedSlave = True
 					enslavement.bSearchForSlave = True
@@ -1039,8 +1080,8 @@ State escape_choke
 	Event OnBeginState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
 		Debug.Notification( "Your collar tightens as you wander off from the cage." )
-		Debug.Trace( "[SD] Cage scene - choking collar - start" )
-		Debug.Trace( "[SD] starting timer" )
+		debugTrace(" Cage scene - choking collar - start" )
+		debugTrace(" starting timer" )
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 
@@ -1056,8 +1097,8 @@ State escape_choke
 	
 	Event OnEndState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
-		Debug.Notification( "[SD] Cage scene - choking collar - end" )
-		Debug.Trace( "[SD] Cage scene - choking collar - end" )
+		; Debug.Notification( "[SD] Cage scene - choking collar - end" )
+		debugTrace(" Cage scene - choking collar - end" )
 
 		SendModEvent("SDEscapeStop") 
 
@@ -1081,15 +1122,16 @@ State escape_choke
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		; debugTrace(" Player is Escaping (choking collar)")
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
-			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			debugTrace(" escape_choke: Master dead or disabled - Stop enslavement")
 			Debug.Notification( "Your owner is either dead or left you...")
 
-			SendModEvent("PCSubFree")
-			; GoToState("doNothing")
+			; SendModEvent("PCSubFree")
+			GoToState("doNothing")
 		Endif
 
 		_slaveStatusTicker()
@@ -1098,7 +1140,7 @@ State escape_choke
 
 		if (kCageRef == None)
 			; somehow, no cage detected
-			Debug.Trace( "[SD] Cage scene - no cage found" )
+			debugTrace(" Cage scene - no cage found" )
 			GoToState("waiting")
 		EndIf
 
@@ -1110,7 +1152,7 @@ State escape_choke
 		If (_SDGVP_config_safeword.GetValue() as bool)
 			; Safeword detected - End enslavement
 
-			Debug.Trace("[_sdras_slave] Safeword on escape - Stop enslavement")
+			debugTrace(" Safeword on escape - Stop enslavement")
 			Debug.MessageBox( "Safeword: You are released from enslavement.")
 			_SDGVP_state_joined.SetValue( 0 )
 			_SDGVP_config_safeword.SetValue(0)
@@ -1131,10 +1173,15 @@ State escape_choke
 				;	kSlave.PathToReference( kLeashCenter, 1.0 )
 				;	GoToState("cage")
 
-			elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==0) ||  ( _SDGVP_state_caged.GetValueInt() == 1 )
+			elseif (StorageUtil.GetIntValue( none, "_SD_iCageSceneActive" )==1) &&  ( _SDGVP_state_caged.GetValueInt() == 0 )
 				; Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
-				; Debug.Trace( "[SD] Cage state - slave out of cage during scene" )
-				GoToState("monitoring")
+				; debugTrace(" Cage state - slave out of cage during scene" )
+				GoToState("monitor")
+
+			elseif ( _SDGVP_state_caged.GetValueInt() == 1 )
+				; Debug.Notification( "[SD] Cage state - slave out of cage during scene" )
+				; debugTrace(" Cage state - slave out of cage during scene" )
+				GoToState("caged")
 
 			ElseIf ( fDistance > iCageRadius ) ; && ((kSlaveCell != kMasterCell) || (!kMasterCell.IsInterior())) )
 				; Slave is outside escape radius and master is outdoors or in a different cell
@@ -1150,7 +1197,7 @@ State escape_choke
 				ElseIf ( GetCurrentRealTime() >= fEscapeTime )
 					; Escape timer is exceeded - player has escaped
 
-					; Debug.Trace("[_sdras_slave] Escaped from master - collar will send random shocks")
+					; debugTrace(" Escaped from master - collar will send random shocks")
 					; _SDFP_slaversFaction.ModCrimeGold( 1000 )
 					enslavement.bEscapedSlave = True
 					enslavement.bSearchForSlave = True
@@ -1260,51 +1307,58 @@ EndState
 
 State caged
 	Event OnBeginState()
-		Debug.Notification( "[SD] Cage state - start" )
-		Debug.Trace( "[SD] Cage state - start" )
+		; Debug.Notification( "[SD] Cage state - start" )
+		debugTrace(" Cage state - start" )
 
 		enslavement.bEscapedSlave = False
 		enslavement.bSearchForSlave = False
 		; _SDGVP_state_caged.SetValue( 1 )
-		If (kMaster.IsDead()) 
-			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
-
-			SendModEvent("PCSubFree")
-			; GoToState("doNothing")
-		Endif
 
 	EndEvent
 	
 	Event OnEndState()
-		Debug.Notification( "[SD] Cage state - end" )
-		Debug.Trace( "[SD] Cage state - end" )
+		; Debug.Notification( "[SD] Cage state - end" )
+		debugTrace(" Cage state - end" )
 
 	EndEvent
 
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
+		; debugTrace(" Player is Caged")
+		ObjectReference cage_door = _SDRAP_cage.GetReference() as ObjectReference
 
 		kMaster = _SDRAP_master.GetReference() as Actor
 
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
-			Debug.Trace("[_sdras_slave] Master dead or disabled - Stop enslavement")
+			debugTrace(" caged: Master dead or disabled - Stop enslavement")
 			Debug.Notification( "Your owner is either dead or left you...")
 
-			SendModEvent("PCSubFree")
-			; GoToState("doNothing")
+			; SendModEvent("PCSubFree")
+			GoToState("doNothing")
 		Endif
 
 		_slaveStatusTicker()
-		
-		If ( _SDGVP_state_caged.GetValueInt() == 0)
-			Debug.Notification( "[SD] Cage state - slave is released - stop" )
-			Debug.Trace( "[SD] Cage state - slave is released - stop" )
+			
+		If ( StorageUtil.GetIntValue( none, "_SD_iCagedSlave") == 0)
+			; Debug.Notification( "[SD] Cage state - slave is released - stop" )
+			debugTrace(" Cage state - slave is released - stop" )
 
+			; If ( cage_door.IsLocked() )
+			;	cage_door.Lock( False )
+			; EndIf
+
+			; cage_door.SetOpen()
+
+			debugTrace(" Trigger Monitor State")
 			GoToState("monitor")
 
-		ElseIf ( Self.GetOwningQuest() ) 
+			; debugTrace(" Trigger Waiting State")
+			; GoToState("waiting")
+
+		EndIf
+
+		If ( Self.GetOwningQuest() ) 
 			RegisterForSingleUpdate( fRFSU )
 		EndIf
 	EndEvent
@@ -1313,18 +1367,16 @@ EndState
 
 State doNothing
 	Event OnBeginState()
-		; needed?
-		Debug.Trace("[_sdras_slave] doNothing state - Master dead or disabled - Stop enslavement")
-		Debug.Notification( "Your owner is either dead or left you...")
-
-		SendModEvent("PCSubFree")
-
 	EndEvent
 	
 	Event OnEndState()
 	EndEvent
 
-	Event OnUpdate()	
+	Event OnUpdate()
+		debugTrace(" doNothing state - Master dead or disabled - Stop enslavement")
+		Debug.Notification( "Your owner is either dead or left you...")
+
+		SendModEvent("PCSubFree")	
 	EndEvent
 EndState
 
@@ -1340,8 +1392,12 @@ Function _slaveStatusTicker()
 	Float fSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") as Float
 	Int iPunishmentCheck = 0 
 
+	;	Debug.Notification( "[SD] Tick")
+
  	daysPassed = Game.QueryStat("Days Passed")
  	timePassed = Utility.GetCurrentGameTime()
+	kMasterCell = kMaster.GetParentCell()
+	kSlaveCell = kSlave.GetParentCell()
 
  	if (iGameDateLastCheck == -1)
  		iGameDateLastCheck = daysPassed
@@ -1350,9 +1406,12 @@ Function _slaveStatusTicker()
 
  	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
 
+	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
+	StorageUtil.SetFloatValue(kMaster, "_SD_iMasterBuyOut", fBuyout ) 
+
  	if (iDaysSinceLastCheck==0)
 		if ((timePassed-HourlyTickerLastCallTime)>= (HourlyTickerPeriod ) ) ; same day - incremental updates
-			Debug.Notification( "[SD] Slavery status - hourly update")
+			; Debug.Notification( "[SD] Slavery status - hourly update")
 			; Disabled for now - daily update makes more sense
 			; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
 			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/ (HourlyTickerPeriod ) ) as Int
@@ -1360,7 +1419,11 @@ Function _slaveStatusTicker()
 				iHoursLastCheck = 1
 			EndIf
 
-			Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
+			; if (StorageUtil.GetIntValue( none, "_SD_iCagedSlave")==0)
+			;	enslavement.ResetCage( kSlave)
+			; endIf
+
+			; Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
 
 			If (_SDGVP_state_caged.GetValue()==1)
 				fctSlavery.ModMasterTrust( kMaster, 1 ); add trust point for being caged
@@ -1368,6 +1431,8 @@ Function _slaveStatusTicker()
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedSleepToken") == 1)
 					; prevent loss of trust if player was sleeping while enslaved
 					StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedSleepToken", 0)
+				elseif  funct.sexlabIsActive( kSlave )
+					; Skip trust allowance update if player is in a sexlab animation
 				Else
 					fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
 				Endif
@@ -1403,16 +1468,17 @@ Function _slaveStatusTicker()
 			EndIf
 		endif
 	Else ; day change - full update
-		Debug.Trace( "[SD] Slavery status - daily update")
+		debugTrace(" Slavery status - daily update")
 		iGameDateLastCheck = daysPassed
-		iCountSinceLastCheck = 0
-		; fctSlavery.UpdateStatusDaily( kMaster, kSlave)
+		iCountSinceLastCheck = 0 
 		kMaster.SendModEvent("PCSubStatus")
 		fctSlavery.ResetDailyCounts(  kMaster,  kSlave)
 
 		kMaster.SendModEvent("SLDRefreshNPCDialogues")
 
-		enslavement.ResetCage( kSlave)
+		if (StorageUtil.GetIntValue( none, "_SD_iCagedSlave")==0)
+			enslavement.ResetCage( kSlave)
+		endIf
 
 		StorageUtil.SetFloatValue(kSlave, "_SD_iEnslavementDays", 	StorageUtil.GetFloatValue(kSlave, "_SD_iEnslavementDays") + 1)
 		StorageUtil.SetFloatValue(kSlave, "_SD_fPunishmentDuration", 0.0)
@@ -1421,10 +1487,11 @@ Function _slaveStatusTicker()
 		StorageUtil.SetFloatValue(kMaster, "_SD_iMinJoinDays", _SDGVP_join_days.GetValue() as Int) 
 
 		_SDGVP_config_min_days_before_master_travel.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iMasterTravelDelay"))
+		_SDGVP_config_cage_enable.SetValue( StorageUtil.GetIntValue(none, "_SD_bEnableCageScene")  ) 
 
 		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
-			If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0)
-				Debug.Trace( "[SD] Master is bored - starting travel package")
+			If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0) && (!kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) 
+				debugTrace(" Master is bored - starting travel package")
 				_SDGVP_isMasterTraveller.SetValue(1)
 			endif
 		Endif
@@ -1470,25 +1537,29 @@ Function _slaveStatusTicker()
 			StorageUtil.SetIntValue( kSlave  , "_SD_iEnableAction", 1 )			
 		Endif
 
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (!kSlave.GetCurrentScene()) && (Utility.RandomInt(0,100)>60)   
-
-			If (_SDGVP_join_days.GetValue() < 100) || ((_SDGVP_join_days.GetValue() == 100) && (Utility.RandomInt(0,100)>95))
+		If (StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition") < (-1 * (_SDGVP_config_disposition_threshold.GetValue() as Int)) ) && (StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") > _SDGVP_join_days.GetValue() ) && (!kSlave.GetCurrentScene())  && (Utility.RandomInt(0,100)>(60 - ((StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") as Int) * 5 )) )     
+			If (_SDGVP_join_days.GetValue() < 100) || ((_SDGVP_join_days.GetValue() == 100) && (Utility.RandomInt(0,100)>(95 - ((StorageUtil.GetFloatValue(kSlave, "_SD_fEnslavementDuration") as Int) )) ) ) 
 				; 5% chance of end game if master is unhappy with long term slavery option
 				_slaveEndGame()
+			Else
+				debugTrace(" END GAME - No luck")
+				; _slaveEndGame()
+
 			Endif
+		Else
+			debugTrace(" END GAME - Not yet")
+				; _slaveEndGame()
 		Endif
 
 		fctSlavery.EvaluateSlaveryTaskList(kSlave) ; First evaluate current task in case it can be completed 
 
-		Debug.Trace( "[SD] Slavery status - END daily update")
+		debugTrace(" Slavery status - END daily update")
 
 
 
 
 	EndIf
 
-	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
-	StorageUtil.SetFloatValue(kMaster, "_SD_iMasterBuyOut", fBuyout ) 
 
 	; enslavement.UpdateSlaveState(kMaster ,kSlave)
 	; enslavement.UpdateSlaveFollowerState(kSlave)
@@ -1520,16 +1591,21 @@ Function _slaveEndGame()
 
 	; Debug.Notification("[SD] Endgame: " + kSlaver )
 	; Debug.Notification("[SD] Buyout: " + fBuyout)
-
-	kMaster.SendModEvent("PCSubMasterTravel", "Start")
-
+	fBuyout = (StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal") as Float) - _SDGVP_buyout.GetValue() 
+	StorageUtil.SetFloatValue(kMaster, "_SD_iMasterBuyOut", fBuyout ) 
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
 		; Endgame for creatures
 		If (Utility.RandomInt(0,100)>80)
+			debugTrace(" END GAME - Master fights slave" )
 			Debug.MessageBox( "Your owner is fed up with your resistance and turns against you." )
 			kMaster.StartCombat(kSlave)
 			SendModEvent("PCSubFree")
+		Else
+			debugTrace(" END GAME - Master ignore slave" )
+			Debug.MessageBox( "Your owner is fed up with you and turns away from you." )
+			SendModEvent("PCSubFree")
+
 		Endif
 	Else
 		; genderRestrictions = 0 - any / 1 - same / 2 - opposite
@@ -1560,23 +1636,27 @@ Function _slaveEndGame()
 
 		If (_SD_dreamQuest.GetStage() != 0) && ( (Utility.RandomInt(0,100)>90)  ||  (!kSlaverDest) || (kMaster == kSlaverDest) )
 			; Player saved by Sanguine
+			debugTrace(" END GAME - Player saved by Sanguine" )
 			Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
 			_SD_dreamQuest.SetStage(20)
 		
 		ElseIf (_SD_dreamQuest.GetStage() == 0) && (!kSlaverDest)
 			; Player saved by Sanguine
 			; Debug.MessageBox( "Sanguine takes pity on you and spirits you away." )
+			debugTrace(" END GAME - Player pulled by Sanguine for first time" )
+			Debug.MessageBox( "You find yourself transported to a strange garden..." )
 			_SD_dreamQuest.SetStage(10)
 
-		ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout < 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
-			; Master made profit - slave can be sold
+		ElseIf kSlaverDest && (kMaster != kSlaverDest)  && (fBuyout <= 0) && (!fctFactions.checkIfFalmer(kSlaverDest as Actor)) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
+			; Master lost money - slave to be sold
+			debugTrace(" END GAME - Master lost money - slave to be sold" )
+
 			if (iPlayerGender==0)
 				_SDSMP_choke_m.Play( Game.GetPlayer() )
 			else
 				_SDSMP_choke.Play( Game.GetPlayer() )
 			endif
 
-			Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
 			; Reset to 0 to avoid loop with endgame situations
 			StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", 0)
 			fctSlavery.UpdateSlavePrivilege(kSlave, "_SD_iEnableLeash", False)
@@ -1614,6 +1694,7 @@ Function _slaveEndGame()
 			EndIf
 
 			If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
+				Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner. " )
 
                 Game.FadeOutGame(true, true, 0.5, 5)
 				(kSlave as ObjectReference).MoveTo( kSlaverDest )
@@ -1621,15 +1702,18 @@ Function _slaveEndGame()
 				kActor.SendModEvent("PCSubTransfer")
 				Game.FadeOutGame(false, true, 2.0, 20)
 			Else
-				SendModEvent("PCSubFree")
+				kMaster.SendModEvent("PCSubMasterTravel", "Start")
+				; SendModEvent("PCSubFree")
 			Endif
 
 
 			Utility.Wait( 1.0 )
 
 
-		ElseIf kSlaverDest &&  ((fBuyout >= 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
-			; Master lost money - get rid of slave
+		ElseIf kSlaverDest &&  ((fBuyout > 0) || fctFactions.checkIfFalmer(kSlaverDest as Actor)  || (kMaster == kSlaverDest))
+			; Master made profit - get rid of slave
+			debugTrace(" END GAME - Master made profit - get rid of slave" )
+
 			if (iPlayerGender==0)
 				_SDSMP_choke_m.Play( Game.GetPlayer() )
 			else
@@ -1645,21 +1729,18 @@ Function _slaveEndGame()
             ; Game.FadeOutGame(true, true, 0.5, 5)
 			; (kSlave as ObjectReference).MoveTo( kSlaverDest )
 			; Replace by code to dreamDestination
-			Bool bWolfClub = False
+			dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
 
-			If (Utility.RandomInt(0,100) > 70) 
-				bWolfClub = WolfClubEnslave() 
-			EndIf
-
-			If (!bWolfClub)
-				dreamQuest.sendDreamerBack( 50 ) ; 50 - random location
-			Endif
 			; Game.FadeOutGame(false, true, 2.0, 20)
 
 			If (Utility.RandomInt(0,100) > 90) 
 				; Send PC some help
 				SendModEvent("da_StartSecondaryQuest", "Both")
 			EndIf
+
+		Else
+				kMaster.SendModEvent("PCSubMasterTravel", "Start")
+				; SendModEvent("PCSubFree")
 
 		EndIf
 	Endif
@@ -1669,17 +1750,24 @@ EndFunction
 
 
 		
-bool function WolfClubEnslave() global
+bool function WolfClubEnslave() 
 	int handle = ModEvent.Create("WolfClubEnslavePlayer")
 	if handle
+		debugTrace(" END GAME - Wolfclub scenario triggered" )
+
+		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself in a dark and camp cave... " )
+
 		return ModEvent.Send(handle)
 	endif
 	return false
 endfunction
 
-bool function SimpleSlaveryEnslave() global
+bool function SimpleSlaveryEnslave() 
 	int idx = Game.GetModByName( "SimpleSlavery.esp" )
 	if ( idx != 255 )
+		debugTrace(" END GAME - Simple Slavery scenario triggered" )
+
+		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself in a cage and about to be sold off at a slave market... " )
 	    ;; The mod is loaded, so we can use it:
 	    ObjectReference PlayerActorRef = Game.GetPlayer() as ObjectReference
 	    PlayerActorRef.SendModEvent("SSLV Entry")
@@ -1691,9 +1779,13 @@ bool function SimpleSlaveryEnslave() global
 	return false
 endfunction
 
-bool function MariaEdenEnslave(Actor newMaster) global
+bool function MariaEdenEnslave(Actor newMaster) 
 	int handle = ModEvent.Create("MariaEnslavePlayer")
 	if handle
+		debugTrace(" END GAME - Maria Eden scenario triggered" )
+
+		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner... " )
+
 		ModEvent.PushForm(handle, newMaster as Form)
 		return ModEvent.Send(handle)
 	endif
@@ -1703,6 +1795,10 @@ endfunction
 bool function RedWaveEnslave( )  
 
 	IF (StorageUtil.GetIntValue(none, "_SLS_iStories")==1)
+		debugTrace(" END GAME - Redwave scenario triggered" )
+
+		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself inside a ship... " )
+
 		SendModEvent("_SLS_PCStartRedWave")
 		return True
 	Else
@@ -1726,28 +1822,9 @@ function UpdateSlaveArousal()
 
 Endfunction
 
-GlobalVariable Property _SDGVP_state_SlaveDominance  Auto  
-GlobalVariable Property _SDGVP_state_joined  Auto  
-GlobalVariable Property _SDGVP_state_housekeeping  Auto   
-GlobalVariable Property _SDGVP_config_disposition_threshold Auto
 
-SexLabFramework Property SexLab  Auto  
-
-Keyword Property _SDKP_collar  Auto  
-Keyword Property _SDKP_gag  Auto  
-
-ReferenceAlias Property _SDRAP_collar  Auto  
-
-Armor Property _SDA_gag  Auto  
-Armor Property _SDA_collar  Auto  
-Armor Property _SDA_bindings  Auto  
-Armor Property _SDA_shackles  Auto  
-
-Keyword Property _SDKP_hunt  Auto  
-Sound Property _SDSMP_choke  Auto  
-
-ImageSpaceModifier Property _SD_CollarStrangleImod  Auto  
-
-Sound Property _SDSMP_choke_m  Auto  
-slaUtilScr Property slaUtil  Auto  
- 
+Function debugTrace(string traceMsg)
+	if (StorageUtil.GetIntValue(none, "_SD_debugTraceON")==1)
+		Debug.Trace("[_sdras_slave]"  + traceMsg)
+	endif
+endFunction

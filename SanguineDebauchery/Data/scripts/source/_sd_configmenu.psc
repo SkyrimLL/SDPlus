@@ -468,6 +468,7 @@ event OnPageReset(string a_page)
 
 	; Config overrides
 	_SDOID_config_S7_inc = 1.0
+	_SDGVP_config_RemovePunishment.SetValue(StorageUtil.GetIntValue(none, "_SD_bEnableCageScene"))
 
 	; CONFIG
 	If ( a_page == Pages[0] )
@@ -874,6 +875,7 @@ event OnOptionSelect(int a_option)
 	ElseIf ( a_option == _SDOID_config_B12 )
 		_SDGVP_config_RemovePunishment.SetValue( Math.LogicalXor( 1, _SDGVP_config_RemovePunishment.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_RemovePunishment.GetValue() as Bool )
+		StorageUtil.SetIntValue(none, "_SD_bEnableCageScene", _SDGVP_config_RemovePunishment.GetValue() as Int) 
 	ElseIf ( a_option == _SDOID_config_B13 )
 		_SDGVP_config_GagType.SetValue( Math.LogicalXor( 1, _SDGVP_config_GagType.GetValueInt() ) )
 		SetToggleOptionValue(a_option, _SDGVP_config_GagType.GetValue() as Bool )

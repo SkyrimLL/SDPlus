@@ -69,6 +69,9 @@ Event OnInit()
 		If (kCompanion.IsChild())
 			Debug.Trace("[_sdras_companion]     Follower is a child - Aborting") 
 			GoToState("null")
+		ElseIf (kCompanion == kMaster)
+			Debug.Trace("[_sdras_companion]     Follower is the Master! - Aborting") 
+			GoToState("null")
 		Else
 			GoToState("monitor")
 			bEnslaved = False

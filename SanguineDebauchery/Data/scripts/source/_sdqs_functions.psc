@@ -423,9 +423,33 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 
 EndFunction
 
-Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
+INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo") 
+	;Making this a return function will force the game to wait until it returns.
 	Actor Player = Game.GetPlayer()
+	Actor kActor
+	Bool bIsTargetVictim = true
+	Bool bIsSpeakerVictim = false
 
+	INT iLimit = 222
+	If (!akSpeaker && !akTarget) ;Only one actor required (masturbation scene?). 
+		Debug.Trace("[sdras_player] Sex scene aborted - no actor available")
+		RETURN 0
+	EndIf
+
+	Debug.Trace("[sdras_player] Waiting for slave to be ready")
+	While ((StorageUtil.GetIntValue(Player, "_SD_SlaveBusy", 0) != 0) && (iLimit > 0) && \
+		(StorageUtil.GetIntValue(Player, "_SD_iEnslaved", 0) != 0)) ;Slave busy, wait a while.
+		Wait(1.1)
+		iLimit -= 1
+	EndWhile
+	If (StorageUtil.GetIntValue(Player, "_SD_SlaveBusy", 0) == 0) ;Slave available, mark her as busy. 
+		StorageUtil.SetIntValue(Player, "_SD_SlaveBusy", 1)
+	Else
+		Debug.Trace("[sdras_player] Cannot have fun! Slave busy!")
+		; Debug.Notification("Cannot have fun! Slave busy!")
+		RETURN 0
+	EndIf
+	
 	if (fLast == 0.0)	
 		fLast = GameTime.GetValue() 
 		fNextAllowed = 0.0
@@ -437,16 +461,17 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		Debug.Trace("[SD]    Sex aborted - too soon since last sex scene")
 		Debug.Trace("[SD]      		(GameTime.GetValue() - fLast) : " + (GameTime.GetValue() - fLast))
 		Debug.Trace("[SD]      		fNextAllowed : " + fNextAllowed)
-		Return
+		StorageUtil.SetIntValue(Player, "_SD_SlaveBusy", 0)
+		Return 0
 	Endif	
 
-	If (!akSpeaker)
-		Return
-	EndIf
+	;If (!akSpeaker)
+	;	Return
+	;EndIf
 	
-	If (!akTarget)
-		Return
-	EndIf
+	;If (!akTarget)
+	;	Return
+	;EndIf
 
 	fLast = GameTime.GetValue() 
 	fNextAllowed = 0.005 + Utility.RandomFloat( 0.005, 0.01 ) ; Utility.RandomFloat( 0.125, 0.25 )
@@ -456,7 +481,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	Int    speakerGender = akSpeaker.GetLeveledActorBase().GetSex() as Int
 	Int    targetGender = akTarget.GetLeveledActorBase().GetSex() as Int
 	Int    genderRestrictions = _SDGVP_gender_restrictions.GetValue() as Int
-	Int 	IButton = 0
+	Int    IButton = 0
+	INT    iReturn = 0
 
 	; Handling of enslaved followers
 	If (StorageUtil.GetIntValue(Player, "_SD_iEnslaved") ==1)
@@ -510,7 +536,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		SendModEvent("SDModMasterTrust","Recover", 1)
 
 		; Masturbation scenes
-		If (SexLabInTags == "Masturbation") && ( !SexLab.IsActorActive( akSpeaker ) )
+		If (SexLabInTags == "Masturbation") && ( SexLab.ValidateActor( akSpeaker ) > 0 )
+			SendModEvent("SLHModHormone", "Pheromones", 1.0)
 
 			If (SexLabInTags == "Masturbation")  
 				If (speakerGender  == 0)
@@ -522,13 +549,13 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				actor[] sexActors = new actor[1]
 				sexActors[0] = akSpeaker
 				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags, "Estrus,Dwemer")
-				SexLab.StartSex(sexActors, animations)
+				iReturn += SexLab.StartSex(sexActors, animations)
 
 				; SexLab.QuickStart(akSpeaker, AnimationTags = SexLabInTags)
 
 			EndIf
 
-			If (SexLabOutTags == "Masturbation")   && ( !SexLab.IsActorActive( akTarget ) )
+			If (SexLabOutTags == "Masturbation")   && ( SexLab.ValidateActor( akSpeaker ) > 0 )
 				If (targetGender  == 0)
 					SexLabInTags = "Masturbation,M"
 				Else
@@ -538,7 +565,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 				actor[] sexActors = new actor[1]
 				sexActors[0] = akTarget
 				sslBaseAnimation[] animations = SexLab.GetAnimationsByTags(1,  SexLabInTags, "Estrus,Dwemer")
-				SexLab.StartSex(sexActors, animations)
+				iReturn += SexLab.StartSex(sexActors, animations)
 
 				; SexLab.QuickStart(akTarget, AnimationTags = SexLabInTags)
 
@@ -546,6 +573,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 		; Gender restrictions - 2 actors
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
+			SendModEvent("SLHModHormone", "Pheromones", 1.0)
 
 			; SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
 		
@@ -557,12 +585,19 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 					SexLabInTags = "Lesbian"
 				EndIf
 			ElseIf ( (genderRestrictions  != 1) && (speakerGender  != targetGender ) ) && (Utility.RandomInt(0,100)>30)
+					; switching dominant position'
+					kActor = akTarget
+					akTarget = akSpeaker
+					akSpeaker = kActor
+					bIsTargetVictim = false
+					bIsSpeakerVictim = true
 					
 					If (speakerGender == 1) ; Mistress and Male slave
 						SexLabInTags = "Cowgirl"
 
 					ElseIf  (speakerGender == 0) ; Master and Female slave
 						SexLabInTags = "Doggystyle"
+
 					EndIf
 			EndIf
 
@@ -570,7 +605,7 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			Debug.Trace("[_sd_naked] SexLabInTags= " + SexLabInTags )
 			Debug.Trace("[_sd_naked] SexLabOutTags= " + SexLabOutTags)
 
-			If   ( !SexLab.IsActorActive( akSpeaker ) ) && ( !SexLab.IsActorActive( akTarget ) )
+			If  (SexLab.ValidateActor( akSpeaker ) > 0) &&  (SexLab.ValidateActor( akTarget ) > 0) 
 
 				; actor[] sexActors = new actor[2]
 				; sexActors[0] = akTarget
@@ -584,10 +619,10 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 
 				sslThreadModel Thread = SexLab.NewThread()
-				Thread.AddActor(akTarget, true) ; // IsVictim = true
-				Thread.AddActor(akSpeaker)
+				Thread.AddActor(akTarget, bIsTargetVictim) ; // IsVictim = true
+				Thread.AddActor(akSpeaker, bIsSpeakerVictim)
 				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
-				Thread.StartThread()
+				iReturn += ((Thread.StartThread() AS BOOL) AS INT)
 			Else
 				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
 				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
@@ -599,6 +634,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 	; Else
 	; 	Debug.Notification("[_sd_naked] Target is not the player")
 	; EndIf
+	StorageUtil.SetIntValue(Player, "_SD_SlaveBusy", 0)
+	RETURN iReturn
 EndFunction
 
 Function SanguineGangRape(Actor akSpeaker, Actor akTarget, Bool includeSpeaker = True, Bool includeTarget = False)
@@ -685,6 +722,10 @@ Function sexlabStripActor( Actor akActor )
 	SexLab.StripActor(akActor, DoAnimate= false) 
 EndFunction
 
+Bool Function sexlabIsActive( Actor akActor )
+	Return ( SexLab.IsActorActive( akActor ) )
+EndFunction
+
 Function removeItemsInList( Actor akActor, FormList akItemList )
 	Int idx = 0
 	Int iCount = 0
@@ -731,8 +772,8 @@ EndFunction
 function checkGender(actor kActor) 
 	ActorBase kActorBase = kActor.GetActorBase()
 
-	; Debug.Trace("[SLH] Sex from Actorbase:" + kActorBase.GetSex())
-	; Debug.Trace("[SLH] Sex from Sexlab:" + Sexlab.GetGender(kActor))
+	Debug.Trace("[SLH] Sex from Actorbase:" + kActorBase.GetSex())
+	Debug.Trace("[SLH] Sex from Sexlab:" + Sexlab.GetGender(kActor))
 
 	if (kActorBase.GetSex() == 1) ; female
 		StorageUtil.SetIntValue(kActor, "_SLH_isFemale",  1) 
@@ -741,6 +782,8 @@ function checkGender(actor kActor)
 		StorageUtil.SetIntValue(kActor, "_SLH_isFemale",  0) 
 		StorageUtil.SetIntValue(kActor, "_SLH_isMale",  1) 
 	EndIf
+
+	Debug.Trace("[SLH] Sex from Hormones:" + StorageUtil.GetIntValue(kActor, "_SLH_isFemale"))
  
 EndFunction
 

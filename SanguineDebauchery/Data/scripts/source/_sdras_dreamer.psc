@@ -186,11 +186,24 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			EndIf
 		EndIf
 
+		; Increase chances from praying to the gods
+		Int iNumberPrayersToGods = StorageUtil.GetIntValue(kPlayer, "_SD_iNumberPrayersToGods" )
+		if ( iNumberPrayersToGods >= 25) ; cap prayers modifier to 25%
+			iNumberPrayersToGods = 25 
+		Endif
+
+		if ( iNumberPrayersToGods > 0)
+			Debug.Trace("[_sdras_dreamer]         Player prayers to Gods - iNumberPrayersToGods: " + iNumberPrayersToGods )
+		    iDreamworldVisitModifier = iDreamworldVisitModifier + iNumberPrayersToGods
+			bSendToDreamworld = True
+		endIf
+
 		; Increase chances when carrying Honningbrew mead
 		Int iHonningbrewMeadBottles = kPlayer.GetItemCount(HonningbrewMead)
 		if ( iHonningbrewMeadBottles > 0)
 			Debug.Trace("[_sdras_dreamer]         Honningbrew mead in inventory - Bottles found: " + iHonningbrewMeadBottles )
 		    iDreamworldVisitModifier = iDreamworldVisitModifier + (iHonningbrewMeadBottles * 2)
+			bSendToDreamworld = True
 		endIf
 
 		; Chance of visits to Dreamworld on plain sleep based on exposure
@@ -205,6 +218,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		EndIf		
 
 		; Force start of Dreamworld if other conditions are met daedric quests completed or daedra killed
+		Int iDragonSouls = Game.QueryStat("Dragon Souls Collected")
 		if ((!bSendToDreamworld) && ((_SDGVP_sanguine_blessing.GetValue() as Int)==0) )
 			if ((Game.QueryStat("Daedric Quests Completed") >= 1) || (Game.QueryStat("Daedra Killed") >= 1))
 				Debug.Trace("[_sdras_dreamer]         OnSleep event - exposure to daedra killed or Daedric quest completed bonus" )
@@ -212,9 +226,9 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				bSendToDreamworld = True
 			endif
 
-			if ((Game.QueryStat("Dragon Souls Collected") >= 1) && (Game.QueryStat("Dragon Souls Collected") < 5)) 
+			if ((iDragonSouls >= 1) && (iDragonSouls < 5)) 
 				Debug.Trace("[_sdras_dreamer]         OnSleep event - Dragon Souls collected bonus" )
-				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
+				iDreamworldVisitModifier = iDreamworldVisitModifier + iDragonSouls * 5
 				bSendToDreamworld = True
 			endif
 

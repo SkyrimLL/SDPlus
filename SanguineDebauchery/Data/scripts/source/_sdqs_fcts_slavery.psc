@@ -389,7 +389,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 	; Set slave constraints based on master's race
 	if (masterRace!= none) && ((StorageUtil.GetStringValue( masterRace, "_SD_sRaceType") == "Beast"  ) || (StorageUtil.GetStringValue( masterRace, "_SD_sRaceType") == "Humanoid"  ))
-		Debug.Trace("[SD] Master race found - using racial settings for " + masterRace)
+		debugTrace(" Master race found - using racial settings for " + masterRace)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryCollarOn") )
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryBindingsOn"))
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentOn",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaveryPunishmentOn"))
@@ -404,7 +404,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  StorageUtil.GetIntValue(masterRace, "_SD_iSlaverySlaveTatDuration"))
 	else
 		If (fctFactions.checkIfNPC ( kMaster )) ; Defaults for humanoid masters
-			Debug.Trace("[SD] Master race not recognized - using default settings for humanoids " )
+			debugTrace(" Master race not recognized - using default settings for humanoids " )
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", 1 )
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  1)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentOn",  1)
@@ -421,7 +421,7 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaverySlaveTatDuration",  0)
 
 		Else 									; Defaults for beast masters
-			Debug.Trace("[SD] Master race not recognized - using default settings for beasts " )
+			debugTrace(" Master race not recognized - using default settings for beasts " )
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryCollarOn", 0 )
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryBindingsOn",  0)
 			StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryPunishmentOn",  0)
@@ -441,8 +441,8 @@ function StartSlavery( Actor kMaster, Actor kSlave)
 
 ;	StorageUtil.SetIntValue(kMaster, "_SD_iOutfitID", outfitID)
 ;	StorageUtil.SetIntValue(kSlave, "_SD_iOutfitID", outfitID)
-;	Debug.Trace("[SD] Master outfit: " + outfitID)
-;	Debug.Trace("[SD] Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
+;	debugTrace(" Master outfit: " + outfitID)
+;	debugTrace(" Init master devices: List count: " + StorageUtil.StringListCount( kMaster, "_SD_lDevices"))
 
 	If fctFactions.checkIfFalmer ( kMaster)
 		If StorageUtil.HasIntValue(kSlave, "_SD_iFalmerEnslavedCount")
@@ -639,34 +639,8 @@ function UpdateSlavePrivilege( Actor kSlave, string modVariable, bool modValue =
 	EndIf
 
 
-	If (modVariable == "_SD_iEnableSpellEquip")
-			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
-			; Augment OnEquip event for slave based on this storageUtil value
-	EndIf
-
-	If (modVariable == "_SD_iEnableShoutEquip")
-			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
-			; Augment OnEquip event for slave based on this storageUtil value
-	EndIf
-
-	If (modVariable == "_SD_iEnableClothingEquip")
-			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
-			; Augment OnEquip event for slave based on this storageUtil value
-	EndIf
-
-	If (modVariable == "_SD_iEnableArmorEquip")
-			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
-			; Augment OnEquip event for slave based on this storageUtil value
-	EndIf
-
-	If (modVariable == "_SD_iEnableWeaponEquip")
-			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
-			; Augment OnEquip event for slave based on this storageUtil value
-	EndIf
-
-	If (modVariable == "_SD_iEnableMoney")
-			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int)
-			; Augment OnItemAdded event for slave based on this storageUtil value
+	If (modVariable == "_SD_iEnableSpellEquip") || (modVariable == "_SD_iEnableShoutEquip") || (modVariable == "_SD_iEnableClothingEquip") ||(modVariable == "_SD_iEnableArmorEquip") || (modVariable == "_SD_iEnableWeaponEquip") || (modVariable == "_SD_iEnableMoney")
+			StorageUtil.SetIntValue(kSlave, modVariable,  modValue as Int) 
 	EndIf
 
  
@@ -737,7 +711,7 @@ Function UpdateSlaveryLevel(Actor kSlave)
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLevel", _SDGVP_config_max_slavery_level.GetValue() as Int )
 	EndIf
 
-	Debug.Trace("[SD] SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
+	debugTrace(" SLavery exposure: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryExposure") + " - level: " + StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel"))
 EndFunction
 
 Function UpdateSlaveryRelationshipType(Actor kMaster, Actor kSlave)
@@ -1061,19 +1035,19 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	statusMessage =  statusMessage + "\n Trust: " + masterTrust 
 	statusMessage =  statusMessage + "\n (Exposure: " + exposure + ")"
 
-	Debug.Trace("[SD] --- Slavery update" )
-	Debug.Trace("[SD] " + statusMessage)
-	Debug.Trace("[SD] Slavery level: " + slaveryLevel  + " (Exposure: " + exposure + ")")
-	Debug.Trace("[SD] iSexComplete: " + iSexComplete + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex") + " - Need: " + masterSexNeed + " +/- " + masterNeedRange)
-	Debug.Trace("[SD] iPunishComplete: " + iPunishComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunishment") + " - Need: " + masterPunishNeed + " +/- " + masterNeedRange)
-	Debug.Trace("[SD] iFoodComplete: " + iFoodComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood") + " - Need: " + masterFoodNeed + " +/- " + masterNeedRange)
-	Debug.Trace("[SD] iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
-	Debug.Trace("[SD] Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Personality Type: " + masterPersonalityType)
-	Debug.Trace("[SD] Master: Overall Disposition: " + overallMasterDisposition )
-	Debug.Trace("[SD] Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
-	Debug.Trace("[SD] Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
+	debugTrace(" --- Slavery update" )
+	debugTrace(" " + statusMessage)
+	debugTrace(" Slavery level: " + slaveryLevel  + " (Exposure: " + exposure + ")")
+	debugTrace(" iSexComplete: " + iSexComplete + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalSex") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalSex") + " - Need: " + masterSexNeed + " +/- " + masterNeedRange)
+	debugTrace(" iPunishComplete: " + iPunishComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalPunishment") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalPunishment") + " - Need: " + masterPunishNeed + " +/- " + masterNeedRange)
+	debugTrace(" iFoodComplete: " + iFoodComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalFood") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalFood") + " - Need: " + masterFoodNeed + " +/- " + masterNeedRange)
+	debugTrace(" iGoldComplete: " + iGoldComplete  + " Count: " + StorageUtil.GetIntValue(kSlave, "_SD_iGoalGold") + " / " + StorageUtil.GetIntValue(kMaster, "_SD_iGoalGold") + " - Need: " + masterGoldNeed + " +/- " + masterNeedRange)
+	debugTrace(" Master: Mood: " + masterDisposition + " - Trust: " + masterTrust + " - Personality Type: " + masterPersonalityType)
+	debugTrace(" Master: Overall Disposition: " + overallMasterDisposition )
+	debugTrace(" Master: Slave trust points: " + StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + " - Master trust threshold: " + StorageUtil.GetIntValue(kMaster, "_SD_iTrustThreshold") )
+	debugTrace(" Master: GoldTotal: " + StorageUtil.GetIntValue(kMaster, "_SD_iGoldCountTotal"))
 
-	enslavement.UpdateSlaveState( kMaster, kSlave )
+
 EndFunction
 
 
@@ -1205,7 +1179,7 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 		iModValue = iModValue * 2
 	Endif
 
-	Debug.Trace("[SD] Trust pool before update: " + iTrust)
+	debugTrace(" Trust pool before update: " + iTrust)
 
 	iTrust = iTrust + iModValue
 
@@ -1224,9 +1198,9 @@ Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", iTrust)
-	Debug.Notification("Slave allowance points: " + iTrust)
+	Debug.Notification("[SD] Slave allowance points: " + iTrust)
 
-	Debug.Trace("[SD] Trust pool after update: " + iTrust + "(Min:" + iMinTrust + " / Max:" + iMaxTrust + ")")
+	debugTrace(" Trust pool after update: " + iTrust + "(Min:" + iMinTrust + " / Max:" + iMaxTrust + ")")
 
 	Return iTrust
 EndFunction
@@ -1236,7 +1210,7 @@ function InitPunishmentIdle( )
 	ObjectReference kPlayerRef = Game.getPlayer() as ObjectReference
 	Int iRandomNum  
 
-	Debug.Trace("[SD] Init punishment idles")
+	debugTrace(" Init punishment idles")
 
 	if (StorageUtil.StringListCount( kPlayer, "_SD_lPunishmentsIndoors") == 0)
 		StorageUtil.StringListAdd( kPlayer, "_SD_lPunishmentsIndoors", "ZazAPCAO301")
@@ -1353,7 +1327,7 @@ function PlayPunishmentIdle( string sPunishmentIdle = "" )
 		EndIf
 	Endif
 
-	Debug.Trace("[SD] Play punishment idle: " + sPunishmentIdle)
+	debugTrace(" Play punishment idle: " + sPunishmentIdle)
 
 EndFunction
 
@@ -1364,7 +1338,7 @@ EndFunction
 ;----- Enslavement task system
 
 Function InitSlaveryTaskList()
-	Debug.Trace("[SD] Initialize tasks list")
+	debugTrace(" Initialize tasks list")
 
 	StorageUtil.FormListClear(none, "_SD_lSlaveryTaskList")
 	StorageUtil.FormListClear(none, "_SD_lSlaveryCurrentTaskList")
@@ -1393,7 +1367,7 @@ Function InitSlaveryTaskList()
 	; Entertain - Sex   
 	RegisterSlaveryTask(iTaskID= 10, fKeyword=_SDTSK_ENTERTAIN_SEX as Form, sTaskName = "Sex", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Punishment", sTaskTags="creature master" )  
 	; Inspection   
-	RegisterSlaveryTask(iTaskID= 11, fKeyword=_SDTSK_INSPECTION  as Form, sTaskName = "Inspection", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )     
+	RegisterSlaveryTask(iTaskID= 11, fKeyword=_SDTSK_INSPECTION  as Form, sTaskName = "Inspection", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="WristRestraint", sTaskTags="" )     
 	; Training anal
 	RegisterSlaveryTask(iTaskID= 12, fKeyword=_SDTSK_TRAINING_ANAL  as Form, sTaskName = "Training anal", fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
 	; Training vaginal
@@ -1405,14 +1379,14 @@ Function InitSlaveryTaskList()
 	; Wash
 	RegisterSlaveryTask(iTaskID= 16, fKeyword=_SDTSK_WASH  as Form, sTaskName = "Wash", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Gag", sTaskTags="" )     
 	; Ignore
-	RegisterSlaveryTask(iTaskID= 17, fKeyword=_SDTSK_IGNORE  as Form, sTaskName = "Ignore", fTaskDuration=Utility.RandomInt(4,8)*1.0, fTaskTargetItem=None, iTaskTargetCount=0, iTaskTargetDifference= -1 * Utility.RandomInt(1,5), iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="WristRestraint", sTaskTags="creature master" )     
+	RegisterSlaveryTask(iTaskID= 17, fKeyword=_SDTSK_IGNORE  as Form, sTaskName = "Ignore", fTaskDuration=Utility.RandomInt(4,8)*1.0, fTaskTargetItem=None, iTaskTargetCount=0, iTaskTargetDifference= -1 * Utility.RandomInt(1,5), iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Gag", sTaskTags="creature master" )     
 
 	iNumberTasks = StorageUtil.FormListCount( none, "_SD_lTaskList")
 EndFunction
 
 Function RegisterSlaveryTask(Int iTaskID, Form fKeyword, String sTaskName, Float fTaskDuration, Form fTaskTargetItem, Int iTaskTargetCount, Int iTaskTargetDifference, Int iTaskPositiveMod, String sTaskPositiveReward, Int iTaskNegativeMod, String sTaskNegativeReward, String sTaskTags)
 	if (StorageUtil.FormListFind( none, "_SD_lTaskList", fKeyword) <0)
-		Debug.Trace("[SD] Registering slavery task: " + iTaskID)
+		debugTrace(" Registering slavery task: " + iTaskID)
 
 		StorageUtil.FormListAdd( none, "_SD_lTaskList", fKeyword)  ; form ID / keyword - anchor for task parameters
 
@@ -1450,22 +1424,22 @@ Function PickSlaveryTask(Actor kSlave, String sTaskName = "")
 	Int iSlaveLevel = StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") 
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
-		Debug.Trace("[SD] Evaluate slavery task list - creature master found - aborting tasks")
+		debugTrace(" Evaluate slavery task list - creature master found - aborting tasks")
 		Return
 	endif
 
 	If (_SDGVP_state_caged.GetValue( )== 1)
-		Debug.Trace("[SD] Evaluate slavery task list - player is caged - aborting tasks")
+		debugTrace(" Evaluate slavery task list - player is caged - aborting tasks")
 		Return
 	endif
 
 	If ( kSlave.IsOnMount() || kSlave.IsInCombat() || kSlave.IsWeaponDrawn() ) ; || (kSlaveRef.GetCurrentScene()!=None) 
-		Debug.Notification("[SD] Evaluate slavery task list - player is busy - aborting tasks")
-		Debug.Trace("[SD] Evaluate slavery task list - player is busy - aborting tasks")
-		Debug.Trace("[SD]         IsOnMount:" +kSlave.IsOnMount() )
-		Debug.Trace("[SD]         IsInCombat:" +kSlave.IsInCombat() )
-		; Debug.Trace("[SD]         InScene:" +(kSlaveRef.GetCurrentScene()) )
-		Debug.Trace("[SD]         IsWeaponDrawn:" +kSlave.IsWeaponDrawn())
+		; Debug.Notification("[SD] Evaluate slavery task list - player is busy - aborting tasks")
+		debugTrace(" Evaluate slavery task list - player is busy - aborting tasks")
+		debugTrace("         IsOnMount:" +kSlave.IsOnMount() )
+		debugTrace("         IsInCombat:" +kSlave.IsInCombat() )
+		; debugTrace("         InScene:" +(kSlaveRef.GetCurrentScene()) )
+		debugTrace("         IsWeaponDrawn:" +kSlave.IsWeaponDrawn())
 		return
 	EndIf
 
@@ -1473,23 +1447,23 @@ Function PickSlaveryTask(Actor kSlave, String sTaskName = "")
 		int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
 		int i = 0
 
-		Debug.Trace("[SD] Pick random slavery task: " )
+		debugTrace(" Pick random slavery task: " )
 		while(i < iSlaveLevel) && (!bFound) ; allow for iSlaveLevel attempts at picking a task - ie. up to iSlaveLevel tasks active at a time
 			iTaskID = Utility.RandomInt(1,valueCount)
 			fKeyword = GetSlaveryTaskFromID(iTaskID)
 			if (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")==0)
-				Debug.Trace("[SD]      Task found: " + iTaskID + " [" + fKeyword + "]")
+				debugTrace("      Task found: " + iTaskID + " [" + fKeyword + "]")
 				bFound = true
 				StartSlaveryTask(kSlave, iTaskID)
 			endif
 			i += 1
 		endwhile
 	Else
-		Debug.Trace("[SD] Pick slavery task by name: " + sTaskName )
+		debugTrace(" Pick slavery task by name: " + sTaskName )
 		fKeyword = GetSlaveryTaskFromName(sTaskName)
 		iTaskID = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")
 		if (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")==0)
-			Debug.Trace("[SD]      Task found: " + iTaskID + " [" + fKeyword + "]")
+			debugTrace("      Task found: " + iTaskID + " [" + fKeyword + "]")
 			StartSlaveryTask(kSlave, iTaskID)
 		Endif
 	Endif
@@ -1506,18 +1480,24 @@ Function StartSlaveryTask(Actor kSlave, Int iTaskID)
 	Bool bIsFemale = funct.isFemale(kSlave)
 
 	If ((iTaskID < 1) || (iTaskID > iNumberTasks))
-		Debug.Trace("[SD] Start a new task - bad task ID: " + iTaskID)
-		Debug.Trace("[SD]                  - iNumberTasks: " + iNumberTasks)
+		debugTrace(" Start a new task - bad task ID: " + iTaskID)
+		debugTrace("                  - iNumberTasks: " + iNumberTasks)
 		Return
 	endif
 
 	If (_SDGVP_state_caged.GetValue( )== 1)
-		Debug.Trace("[SD] Evaluate slavery task list - player is caged - aborting tasks")
+		debugTrace(" Evaluate slavery task list - player is caged - aborting tasks")
 		Return
 	endif
 
 	fKeyword = GetSlaveryTaskFromID(iTaskID)
 	sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
+
+	; Test task compatibility with player
+	If (StorageUtil.GetStringValue(fKeyword, "_SD_sTaskTags" )=="female player") && (!bIsFemale)
+		debugTrace(" Evaluate slavery task list - Task is for female only - player is not female")
+		Return
+	EndIf
 
 	; grant rights, remove or equip items based on task (training devices for example)
 
@@ -1534,10 +1514,6 @@ Function StartSlaveryTask(Actor kSlave, Int iTaskID)
 	; Inspection
 
 	; redirect Vaginal tasks to Anal for males
-	If (sTaskName=="Training vaginal") && (bIsFemale)
-		sTaskName="Training anal"
-	EndIf
-
 	If (sTaskName=="Training vaginal") 
 		if (!fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal")) && (iSlaveLevel>=1) && (iSlaveLevel<=2)
 			fctOutfit.QueueSlavePunishment(kSlave, "TrainingPlugVaginal", 1.0 + Utility.RandomFloat(1.0, 23.0))
@@ -1604,12 +1580,12 @@ Function EvaluateSlaveryTaskList(Actor kSlave)
 	int iTaskID = 0
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
-		Debug.Trace("[SD] Evaluate slavery task list - creature master found - aborting tasks")
+		debugTrace(" Evaluate slavery task list - creature master found - aborting tasks")
 		Return
 	endif
 
-	Debug.Notification("[SD] Evaluate slavery task list: " + valueCount)
-	Debug.Trace("[SD] Evaluate slavery task list: " + valueCount )
+	; Debug.Notification("[SD] Evaluate slavery task list: " + valueCount)
+	debugTrace(" Evaluate slavery task list: " + valueCount )
 	while(i < valueCount)   
 		fKeyword = StorageUtil.FormListGet( none, "_SD_lCurrentTaskList", i)
 		EvaluateSlaveryTask( kSlave,  fKeyword)
@@ -1628,10 +1604,10 @@ EndFunction
 Function DisplayTaskTimer(Form fKeyword)
 	; Float fCurrentDate = _SDGVP_gametime.GetValue() as Float
 
-	Debug.Trace("[SD] Evaluate slavery task: " + StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName") )
-	Debug.Trace("[SD]      _SD_fTaskDuration: " + StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskDuration") )
-	Debug.Trace("[SD]      _SD_fTaskStartDate: " + StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate") )
-	; Debug.Trace("[SD]      fCurrentDate: " + fCurrentDate )
+	debugTrace(" Evaluate slavery task: " + StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName") )
+	debugTrace("      _SD_fTaskDuration: " + StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskDuration") )
+	debugTrace("      _SD_fTaskStartDate: " + StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate") )
+	; debugTrace("      fCurrentDate: " + fCurrentDate )
 
 EndFunction
 
@@ -1659,24 +1635,24 @@ Function EvaluateSlaveryTask(Actor kSlave, Form fKeyword)
 
 	; fHoursCount = (fCurrentDate - StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")) * 24
 	DisplayTaskTimer(fKeyword)
-	Debug.Trace("[SD]      fTimePassed: " + fTimePassed )
-	Debug.Trace("[SD]      iHoursCount: " + iHoursCount )
-	Debug.Trace("[SD]      Time Left: " + iTimeLeft )
+	debugTrace("      fTimePassed: " + fTimePassed )
+	debugTrace("      iHoursCount: " + iHoursCount )
+	debugTrace("      Time Left: " + iTimeLeft )
 
 	If (_SDGVP_state_caged.GetValue( )== 1)
-		Debug.Trace("[SD] Evaluate slavery task - player is caged - skipping")
+		debugTrace(" Evaluate slavery task - player is caged - skipping")
 		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskStartDate", StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate") + (TaskTickerThisCallTime - TaskTickerLastCallTime))
 
 	Elseif (iTimeLeft <= 0) || (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskForceCompletion") == 1)
 		If (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTargetDifference")<0)
-			Debug.Trace("[SD]      Evaluating negative task" )
+			debugTrace("      Evaluating negative task" )
 			If (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskNegativeCount" ) > StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTargetDifference") )
 				CompleteSlaveryTask( kSlave,  fKeyword)
 			Else
 				FailSlaveryTask( kSlave,  fKeyword)
 			Endif
 		Else
-			Debug.Trace("[SD]      Evaluating positive task" )
+			debugTrace("      Evaluating positive task" )
 			; check if training devices are still on
 			If (sTaskName=="Training vaginal")
 				if (fctOutfit.isDeviceEquippedString(kSlave,"PlugVaginal"))  
@@ -1696,8 +1672,8 @@ Function EvaluateSlaveryTask(Actor kSlave, Form fKeyword)
 				Endif
 			Endif
 
-			Debug.Trace("[SD]      _SD_iTaskPositiveCount: " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount" ) )
-			Debug.Trace("[SD]      _SD_iTaskTarget: " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTarget") )
+			debugTrace("      _SD_iTaskPositiveCount: " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount" ) )
+			debugTrace("      _SD_iTaskTarget: " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTarget") )
 
 			If (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveCount" ) > StorageUtil.GetIntValue(fKeyword, "_SD_iTaskTarget") )
 				CompleteSlaveryTask( kSlave,  fKeyword)
@@ -1718,8 +1694,8 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
 	Bool bIsFemale = funct.isFemale(kSlave)
 
-	Debug.Trace("[SD] Completing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
-	Debug.Notification("[SD] You succeded Task : " + sTaskName )
+	debugTrace(" Completing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
+	; Debug.Notification("[SD] You succeded Task : " + sTaskName )
 
 	If (fMasterDistance >= 900)
 		Debug.Notification("Your owner is too far to reward you.")
@@ -1769,7 +1745,7 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 
 	ModMasterTrust(kMaster, StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveMod"))
 	; Debug.Notification("[SD]       Reward : " + sTaskPositiveReward )
-	Debug.Trace("[SD]       Reward : " + sTaskPositiveReward )
+	debugTrace("       Reward : " + sTaskPositiveReward )
 
 	ResetSlaveryTask( fKeyword)
 
@@ -1785,8 +1761,8 @@ Function FailSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
 	Bool bIsFemale = funct.isFemale(kSlave)
 
-	Debug.Trace("[SD] Failing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
-	Debug.Notification("[SD] You failed Task : " + sTaskName )
+	debugTrace(" Failing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
+	; Debug.Notification("[SD] You failed Task : " + sTaskName )
 
 	If (fMasterDistance >= 900)
 		Debug.Notification("Your owner is too far to punish you.")
@@ -1830,7 +1806,7 @@ Function FailSlaveryTask(Actor kSlave, Form fKeyword)
 
 	ModMasterTrust(kMaster, StorageUtil.GetIntValue(fKeyword, "_SD_iTaskNegativeMod"))
 	; Debug.Notification("[SD]       Punishment : " + sTaskNegativeReward )
-	Debug.Trace("[SD]       Punishment : " + sTaskNegativeReward )
+	debugTrace("       Punishment : " + sTaskNegativeReward )
 	
 	ResetSlaveryTask( fKeyword)
 
@@ -1852,12 +1828,12 @@ Function ResetSlaveryTaskList(Actor kSlave)
 	int iTaskID = 0
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")== 1)
-		Debug.Trace("[SD] Reset slavery task list - creature master found - aborting tasks")
+		debugTrace(" Reset slavery task list - creature master found - aborting tasks")
 		Return
 	endif
 
-	Debug.Notification("[SD] Reset slavery task list: " + valueCount)
-	Debug.Trace("[SD] Reset slavery task list: " + valueCount )
+	; Debug.Notification("[SD] Reset slavery task list: " + valueCount)
+	debugTrace(" Reset slavery task list: " + valueCount )
 	while(i < valueCount)   
 		fKeyword = StorageUtil.FormListGet( none, "_SD_lTaskList", i)
 		ResetSlaveryTask( fKeyword)
@@ -1872,7 +1848,7 @@ EndFunction
 Function ResetSlaveryTask(Form fKeyword)
 	Int iTaskID = StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")
 	If (iTaskID>0)
-		Debug.Trace("[SD] Resetting Task : " + iTaskID )
+		debugTrace(" Resetting Task : " + iTaskID )
 		; slaveryQuest.SetStage( 50 + iTaskID )
 		slaveryQuest.SetObjectiveDisplayed( 50 + iTaskID, abDisplayed = false)
 		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskStartDate",   0 ) ; 
@@ -1881,7 +1857,7 @@ Function ResetSlaveryTask(Form fKeyword)
 		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskForceCompletion",  0  ) 
 		StorageUtil.FormListRemove( none, "_SD_lCurrentTaskList", fKeyword)   
 	Else
-		Debug.Trace("[SD] Resetting Task - TaskID = 0 - aborting" )
+		debugTrace(" Resetting Task - TaskID = 0 - aborting" )
 	Endif
 EndFunction
 
@@ -1915,8 +1891,8 @@ Function ModSlaveryTask(Actor kSlave, String sTaskName, Int iModValue)
 				EndIf
 
 				sTaskMessage = "[" + sTaskName + "] completion before success: %" + iCompletionPercent 
-				Debug.Trace("[SD]   " + sTaskMessage )
-				Debug.Trace("[SD]  		Positive count : " + (iTaskValue + iModValue) )
+				debugTrace("   " + sTaskMessage )
+				debugTrace("  		Positive count : " + (iTaskValue + iModValue) )
 				Debug.Notification(sTaskMessage )
 
 				If (iCompletionPercent>=100) && ((fMasterDistance < 900))
@@ -1937,8 +1913,8 @@ Function ModSlaveryTask(Actor kSlave, String sTaskName, Int iModValue)
 				EndIf
 				
 				sTaskMessage = "[" + sTaskName + "] completion before fail: %" + iCompletionPercent 
-				Debug.Trace("[SD]   " + sTaskMessage )
-				Debug.Trace("[SD]  		Negative count : " + (iTaskValue + iModValue) )
+				debugTrace("   " + sTaskMessage )
+				debugTrace("  		Negative count : " + (iTaskValue + iModValue) )
 
 				Debug.Notification(sTaskMessage )
 
@@ -1952,7 +1928,7 @@ Function ModSlaveryTask(Actor kSlave, String sTaskName, Int iModValue)
 			endif
 		Endif
 	Else
-		Debug.Trace("[SD]      Task not found: " + sTaskName )
+		debugTrace("      Task not found: " + sTaskName )
 	EndIf
 EndFunction
 
@@ -1963,11 +1939,11 @@ Form Function GetSlaveryTaskFromName(String sTaskName)
 	int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
 	int i = 0
 
-	Debug.Trace("[SD] Looking up slavery task: " + sTaskName)
+	debugTrace(" Looking up slavery task: " + sTaskName)
 	while(i < valueCount) && (!bFound)
 		fKeyword = StorageUtil.FormListGet( none, "_SD_lTaskList", i)
 		if (StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName")==sTaskName)
-			Debug.Trace("[SD]      Task found: " + fKeyword)
+			debugTrace("      Task found: " + fKeyword)
 			bFound = true
 		endif
 		i += 1
@@ -1983,11 +1959,11 @@ Form Function GetSlaveryTaskFromID(Int iTaskID)
 	int valueCount = StorageUtil.FormListCount(none, "_SD_lTaskList")
 	int i = 0
 
-	Debug.Trace("[SD] Looking up slavery task ID: " + iTaskID)
+	debugTrace(" Looking up slavery task ID: " + iTaskID)
 	while(i < valueCount) && (!bFound)
 		fKeyword = StorageUtil.FormListGet( none, "_SD_lTaskList", i)
 		if (StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID")==iTaskID)
-			Debug.Trace("[SD]      Task found: " + fKeyword)
+			debugTrace("      Task found: " + fKeyword)
 			bFound = true
 		endif
 		i += 1
@@ -2068,3 +2044,10 @@ Function DisplaySlaveryTaskStartMessage(Actor kSlave, Form fKeyword)
 	Endif
   
 EndFunction
+
+
+Function debugTrace(string traceMsg)
+	if (StorageUtil.GetIntValue(none, "_SD_debugTraceON")==1)
+		Debug.Trace("[_sdqs_fcts_slavery]"  + traceMsg)
+	endif
+endFunction 

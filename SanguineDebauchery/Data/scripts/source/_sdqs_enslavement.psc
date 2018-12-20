@@ -44,6 +44,7 @@ ReferenceAlias Property _SDRAP_collar Auto
 ReferenceAlias Property _SDRAP_key Auto
 ReferenceAlias Property _SDRAP_crop Auto
 ReferenceAlias Property _SDRAP_cage Auto
+ReferenceAlias Property _SDRAP_cage_door Auto
 
 FormList Property _SDFLP_allied  Auto
 FormList Property _SDFLP_slaver  Auto
@@ -122,11 +123,11 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	kMaster = akRef1 as Actor
 	kSlave = akRef2 as Actor
 
-	Debug.Trace("[SD] Receiving enslavement story.")
- 	Debug.Trace("_SDQS_enslavement:: bQuestActive == " + bQuestActive)
+	debugTrace(" Receiving enslavement story.")
+ 	debugTrace(" bQuestActive == " + bQuestActive)
 
 	If ( !bQuestActive )
-		Debug.Trace("[SD] Starting enslavement story.")
+		debugTrace(" Starting enslavement story.")
 		bQuestActive = True		
 
 		; _SDGVP_demerits.SetValueInt( aiValue1 )
@@ -140,7 +141,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		if (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature")==0)
 			SetObjectiveDisplayed( 1 )
 			; SetObjectiveDisplayed( 2 )
-			SetObjectiveDisplayed( 6 )
+			; SetObjectiveDisplayed( 6 )
 		EndIf
 
 		; If ( Self )
@@ -149,7 +150,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; EndIf
 	ElseIf ( _SDGVP_config[0].GetValue() )
 ;		kSlave.GetActorBase().SetEssential( False )
-		Debug.Trace("[SD] Aborting enslavement story - already active.")
+		debugTrace(" Aborting enslavement story - already active.")
 	EndIf
 
 EndEvent
@@ -166,6 +167,9 @@ EndFunction
 Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False)
 	ObjectReference kRags = _SDAP_clothing.GetReference() as  ObjectReference 
 	ActorBase akActorBase  
+	Bool bIsCollarded = false
+	Bool bIsArmBound = false
+	Bool bIsLegsBound = false
 
 	_SDGVP_buyout.SetValue( (_SDGVP_buyout.GetValue() as Int)  - 100 + Utility.RandomInt(0,500) )
 	_SDGVP_demerits_join.SetValue(  - 20 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) )
@@ -186,7 +190,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",1)
 
-	Debug.Trace("[SD] You submit to a new owner.")
+	debugTrace(" You submit to a new owner.")
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
 		Debug.Notification("You submit to a new owner.")
 	Else
@@ -216,12 +220,12 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 
 	fctSlavery.StartSlavery( kMaster, kSlave)
 
-	Debug.Trace("[SD] Your new owner strips you naked.")
+	debugTrace(" Your new owner strips you naked.")
 	Debug.Notification("Your new owner strips you naked.")
 
 	SexLab.StripActor( kSlave, DoAnimate= false)
 
-	Debug.Trace("[SD] Your owner inspects you carefully.")
+	debugTrace(" Your owner inspects you carefully.")
 	Debug.Notification("Your owner inspects you carefully.")
 
 	kMaster.AllowPCDialogue( True )
@@ -270,6 +274,17 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	EndIf
 
 	; fctOutfit.toggleActorClothing (  kSlave,  bStrip = True,  bDrop = False )
+	if (fctOutfit.isCollarEquipped(kSlave))
+		bIsCollarded = true
+	endif
+
+	if (fctOutfit.isArmbinderEquipped(kSlave))
+		bIsArmBound = true
+	endif
+
+	if (fctOutfit.isShacklesEquipped(kSlave))
+		bIsLegsBound = true
+	EndIf
 
 	; Transfer of inventory
 	; If ( aiValue2 == 0 )
@@ -302,22 +317,24 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	EndIf
 	; EndIf
 
-	Debug.Trace("[SD] You are chained and collared.")
+	Utility.Wait(1.0)
+
+	debugTrace(" You are chained and collared.")
 	Debug.Notification("You are chained and collared.")
 
 	StorageUtil.FormListClear( kSlave, "_SD_lActivePunishmentDevices" )
 
-	if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
+	if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1) && (!bIsCollarded)
 		fctOutfit.equipDeviceByString ( "Collar" )
 		fctOutfit.lockDeviceByString( kSlave,  "Collar")
 	EndIf
 
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
-		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1) && (!bIsArmBound)
 			; fctOutfit.equipDeviceByString ( "Armbinder" )
 			PunishSlave(kMaster, kSlave, "WristRestraint")
 		EndIf
-		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1) && (!bIsLegsBound)
 			; fctOutfit.equipDeviceByString ( "LegCuffs" )
 			PunishSlave(kMaster, kSlave, "LegCuffs")
 		EndIf
@@ -328,7 +345,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	; EndIf
 
 	; Test slaver tattoo
-	Debug.Trace("[SD] You are marked as your owner's property.")
+	debugTrace(" You are marked as your owner's property.")
 	Debug.Notification("You are marked as your owner's property.")
 	fctOutfit.sendSlaveTatModEvent(kMaster, "SD+","Slavers Hand (back)" )
 
@@ -336,9 +353,9 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 
 	fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
-	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
-		GameHour.Mod(Utility.RandomInt(1,4))
-	endif
+	; if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
+	;	GameHour.Mod(Utility.RandomInt(1,4))
+	; endif
 
 	; fctSlavery.DisplaySlaveryLevel(  kMaster, kSlave)
 	kMaster.SendModEvent("PCSubStatus")
@@ -370,36 +387,36 @@ Function TransferSlave(Actor akOldMaster, Actor akNewMaster, Actor akSlave)
 EndFunction
 
 Function ResetCage( Actor akSlave)
-	ObjectReference cageRef = _SDRAP_cage.GetReference() as  ObjectReference 
+	ObjectReference cageDoorRef = _SDRAP_cage_door.GetReference() as  ObjectReference 
+	ObjectReference cageDoorNewRef
+	Form fOldCageDoorID = cageDoorRef as Form
+	Form fNewCageDoorID = None
 	Bool bCageReset = false
 
+	if (_SDRAP_cage != None)
+		; debug.Notification("[SD] Old Cage Door ID: " + fOldCageDoorID.GetFormID() )
+		debugTrace(" Old Cage Door ID: " + cageDoorRef )
+	endif
+
+	debugTrace(" Looking for a nearby cage")
 	_SD_dream_destinations.Start()
-	cageRef = dreamDest.getNewCage()
+	cageDoorNewRef = dreamDest.getNewCage()
 	Utility.Wait( 1.0 )
 
-	; bCageReset = _SDRAP_cage.TryToReset()
-
-	If (cageRef!=None)
-		_SDRAP_cage.ForceRefTo( cageRef )
-	 	Debug.Trace("[_sdqs_enslavement] Cage alias successfully updated: " + cageRef)
+	If (cageDoorNewRef!=None)
+		_SDRAP_cage_door.ForceRefTo( cageDoorNewRef )
+	 	debugTrace(" Cage alias successfully updated: " + cageDoorNewRef)
+		fNewCageDoorID = cageDoorNewRef as Form
+		; debug.Notification("[_sdqs_enslavement] New Cage ID: " + fNewCageDoorID.GetFormID() )
 	 Else
-	 	; Debug.Notification("[_sdqs_enslavement] Cage alias failed to update")
-	 	; Debug.Trace("[_sdqs_enslavement] Cage alias failed to update")
+	 	Debug.Notification("[_sdqs_enslavement] Cage alias failed to update")
+	 	debugTrace(" Cage alias failed to update")
 	EndIf
 
 	_SD_dream_destinations.Stop()
+
+
 EndFunction
-; Auto State enslaved
-;	Event OnUpdate()
-;		While ( !Game.GetPlayer().Is3DLoaded() )
-;		EndWhile
-
-;		If ( Self.IsRunning() )
-;			RegisterForSingleUpdate( fRFSU )
-;		EndIf
-;	EndEvent
-
-; EndState
 
 Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 	Int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lActivePunishmentDevices")
@@ -413,10 +430,10 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 	If (akSlave == Game.GetPlayer()) && (!akSlave.IsInCombat()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1) && ( (_SDGVP_snp_busy.GetValue() as Int)<0 )
 
 	 	; Debug.Notification("[_sdqs_enslavement] Update punishment list")
-	 	Debug.Trace("[_sdqs_enslavement] Update punishment list")
+	 	debugTrace(" Update punishment list")
 
 		fTimeEnslaved = GetCurrentGameTime() - fEnslavementStart
-	 	Debug.Trace("[_sdqs_enslavement] Time enslaved: " + fTimeEnslaved)
+	 	debugTrace(" Time enslaved: " + fTimeEnslaved)
 		
 		If ( _SDGVP_demerits.GetValueInt() < uiLowestDemerits )
 			uiLowestDemerits = _SDGVP_demerits.GetValueInt()
@@ -435,18 +452,18 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 			fPunishmentRemainingtime = fPunishmentDuration - (_SDGVP_gametime.GetValue() - fPunishmentStartGameTime)
 
 			If (fPunishmentDuration > 0)
-				; Debug.Trace("[SD]   Punishment time:" + fPunishmentRemainingtime  )
+				; debugTrace("   Punishment time:" + fPunishmentRemainingtime  )
 
-				; Debug.Trace("[SD] _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
-				; Debug.Trace("[SD]   fPunishmentDuration:" + fPunishmentDuration)
-				; Debug.Trace("[SD]   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
+				; debugTrace(" _SD_fPunishmentGameTime:" + fPunishmentStartGameTime)
+				; debugTrace("   fPunishmentDuration:" + fPunishmentDuration)
+				; debugTrace("   _SDGVP_gametime:" + _SDGVP_gametime.GetValue())
 
-				Debug.Trace("[_sdqs_enslavement]		Device [" + i + "] = " + sDeviceName + " - Remaining time: " + fPunishmentRemainingtime)
+				debugTrace("		Device [" + i + "] = " + sDeviceName + " - Remaining time: " + fPunishmentRemainingtime)
 
 				If ( fPunishmentRemainingtime <= 0 ) 
 
 					RewardSlave(  akMaster,   akSlave, sDeviceName)
-					Debug.Trace("[_sdqs_enslavement]			Clear punishment duration")
+					debugTrace("			Clear punishment duration")
 				Else
 					; Debug.Trace("Your punishment is not over yet.")
 				EndIf				
@@ -477,7 +494,7 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 
 	Else
 		If (akSlave != Game.GetPlayer())
-			Debug.Trace("[_sdqs_enslavement] Update punishment list: Target is not the player")
+			debugTrace(" Update punishment list: Target is not the player")
 		endif
 	EndIf
 
@@ -500,14 +517,14 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 				punishmentAdded = True
 
 			Else
-				Debug.Trace("[_sdqs_enslavement] Punish slave: Nothing to add. Device already equipped - " + sDevice)
+				debugTrace(" Punish slave: Nothing to add. Device already equipped - " + sDevice)
 			EndIf
 
 		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
 			Debug.Notification("Your owner is too far to punish you.")
 		EndIf
 	Else
-		Debug.Trace("[_sdqs_enslavement] Punish slave: Target is not the player")
+		debugTrace(" Punish slave: Target is not the player")
 	EndIf
 
 	Return 	punishmentAdded 
@@ -524,14 +541,14 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 			; Debug.Notification("[SD] Slave Reward")
 
 			if (fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
-				Debug.Trace("[_sdqs_enslavement] Reward slave: Trying to remove - " + sDevice)
+				debugTrace(" Reward slave: Trying to remove - " + sDevice)
 				; RemoveSlavePunishment( akSlave, sDevice)
 				fctOutfit.ClearSlavePunishment(akSlave, sDevice, false)
 
 				punishmentRemoved = True
 
 			Else
-				Debug.Trace("[_sdqs_enslavement] Reward slave: Nothing to remove. Device missing - " + sDevice)
+				debugTrace(" Reward slave: Nothing to remove. Device missing - " + sDevice)
 
 			EndIf
 
@@ -539,7 +556,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 			Debug.Notification("Your owner is too far to remove your punishment.")
 		EndIf
 	Else
-		Debug.Trace("[_sdqs_enslavement] Reward slave: Target is not the player")
+		debugTrace(" Reward slave: Target is not the player")
 	EndIf
 
 	Return punishmentRemoved 
@@ -590,10 +607,10 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 			Faction DefeatDialogueBlockFaction = StorageUtil.GetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction") As Faction
 			If (DefeatDialogueBlockFaction != None)
 				If (nthActor.IsInFaction(DefeatDialogueBlockFaction))
-			 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is in Dialogue Blocking Faction from Defeat" )
+			 		debugTrace(" 		Debug - NPC is in Dialogue Blocking Faction from Defeat" )
 			 		nthActor.RemoveFromFaction(DefeatDialogueBlockFaction)
 				Else
-			 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is NOT in Dialogue Blocking Faction from Defeat" )
+			 		debugTrace(" 		Debug - NPC is NOT in Dialogue Blocking Faction from Defeat" )
 				Endif
 			Endif
 			nthActor.EvaluatePackage()
@@ -644,3 +661,9 @@ Function EquipSlaveRags(Actor akSlave)
 	akSlave.EquipItem( kRags, True, True )
 EndFunction
 
+
+Function debugTrace(string traceMsg)
+	if (StorageUtil.GetIntValue(none, "_SD_debugTraceON")==1)
+		Debug.Trace("[_sdqs_enslavement]"  + traceMsg)
+	endif
+endFunction
