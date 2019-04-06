@@ -849,7 +849,7 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 
 				; if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
 				if ((kForm.HasKeyword(libs.zad_BlockGeneric) ) || (kForm.HasKeyword(libs.zad_QuestItem) ))
-					; Debug.Notification("[SD] removing zad_BlockGeneric device!")  
+					Debug.Notification("The device remains locked in place (Non generic))")  
 					debugTrace("    zad_BlockGeneric keyword detected - Can't clear device")  
 				else
 					clearDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword, true)
@@ -2411,14 +2411,14 @@ Function expireSlaveTats( Actor akSlave )
 	debugTrace(" Expire Slave Tats for " + akSlave)
 
 	int currentDaysPassed = Game.QueryStat("Days Passed")
-	int valueCount = StorageUtil.FormListCount(akSlave, "_SD_lSlaveryTatList")
+	int valueCount = StorageUtil.FormListCount(none, "_SD_lSlaveryTatList")
 	int i = 0
 	int daysJoined 
 	Form fOverride 
 	Actor PlayerActor = Game.GetPlayer()
 
 	while(i < valueCount)
-		fOverride = StorageUtil.FormListGet(akSlave, "_SD_lSlaveryTatList", i)
+		fOverride = StorageUtil.FormListGet(none, "_SD_lSlaveryTatList", i)
 		If (fOverride != none)
 
 			daysJoined = currentDaysPassed - StorageUtil.GetIntValue( fOverride, "_SD_iSlaveryTatDay")

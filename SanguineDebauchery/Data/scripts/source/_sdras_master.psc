@@ -319,7 +319,7 @@ EndEvent
 
 State waiting
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster)  && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster)  ; && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			distanceAverage = 0
 			GoToState("monitor")
 		ElseIf ( Self.GetOwningQuest().IsRunning() ) &&  (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
@@ -365,7 +365,7 @@ State monitor
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 		kMaster = _SDRAP_master.GetReference() as Actor
-		if (!kMaster)  || ( !kMaster.Is3DLoaded() )
+		if (!kMaster)  ; || ( !kMaster.Is3DLoaded() )
 			GoToState("monitor")
 		endif
 

@@ -6,7 +6,7 @@ Scriptname _sdtif_join_01s Extends TopicInfo Hidden
 Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-SLS_PlayerAliciaQuest.SetStage(20)
+; SLS_PlayerAliciaQuest.SetStage(20)
 
 fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Sanguine" )
 fctOutfit.clearNonGenericDeviceByString ( "Gag", "Sanguine" )

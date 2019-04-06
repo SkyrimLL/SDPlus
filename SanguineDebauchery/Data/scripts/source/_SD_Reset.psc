@@ -67,8 +67,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20181215 ; <--- Edit this value when updating
-		iVersionNumber = 20181215; and this
+	If iVersionNumber < 20190311 ; <--- Edit this value when updating
+		iVersionNumber = 20190311; and this
 		_SDGVP_version.SetValue(iVersionNumber)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)

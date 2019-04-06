@@ -757,25 +757,28 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	int masterTrustRange =  StorageUtil.GetIntValue(kMaster, "_SD_iTrustRange")
 
 	Int iSub = StorageUtil.GetIntValue( kSlave , "_SD_iSub")
-	if (iSub>10)
-		iSub = 10
-	elseif (iSub<-10)
-		iSub = -10
-	EndIf
-
-	Int iDom = StorageUtil.GetIntValue( kSlave , "_SD_iDom") 
-	if (iDom>10)
-		iDom = 10
-	elseif (iDom<-10)
-		iDom = -10
-	EndIf
-
+	Int iDom = StorageUtil.GetIntValue( kSlave , "_SD_iDom") - 2 ; cooldown of dominance during slavery
 	Int iDominance = iDom - iSub
 
 	int iSexComplete = 0
 	int iPunishComplete = 0
 	int iFoodComplete = 0
 	int iGoldComplete = 0
+	
+	if (iSub>10)
+		iSub = 10
+	elseif (iSub<-10)
+		iSub = -10
+	EndIf
+
+	if (iDom>10)
+		iDom = 10
+	elseif (iDom<-10)
+		iDom = -10
+	EndIf
+
+	StorageUtil.SetIntValue( kSlave , "_SD_iSub",iSub)
+	StorageUtil.SetIntValue( kSlave , "_SD_iDom",iDom)
 
 	UpdateSlaveryLevel(kSlave)
 	UpdateSlaveryRelationshipType(kMaster, kSlave)
@@ -884,7 +887,7 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 		masterDisposition = -10
 	EndIf
 
-	; :: If master mood between -5 and +5, trust +1
+	; :: If master mood > 0, trust +1
 	if (masterDisposition >= 0)
 		StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") + 2 + (slaveryLevel / 2))
 	EndIf
@@ -956,10 +959,12 @@ function UpdateStatusDaily( Actor kMaster, Actor kSlave, Bool bDisplayStatus = t
 	overallMasterDisposition = StorageUtil.GetIntValue(kMaster, "_SD_iOverallDisposition")
 
 	Int iGoalsComplete = iSexComplete + iPunishComplete + iFoodComplete + iGoldComplete
-	If (( iGoalsComplete >=2 ) &&  ( iGoalsComplete <=4 )) || (masterDisposition > 0)
-		overallMasterDisposition += 1
+	If ( iGoalsComplete >=2 ) || (masterDisposition > 0)
+		overallMasterDisposition += 2
 	ElseIf ( iGoalsComplete <= 1 )  || (masterDisposition < 0)
 		overallMasterDisposition -= 1
+	Else
+		overallMasterDisposition += 1
 	EndIf
 
 	StorageUtil.SetIntValue(kMaster, "_SD_iOverallDisposition", overallMasterDisposition)
@@ -1347,44 +1352,44 @@ Function InitSlaveryTaskList()
 	; _SDGVP_CurrentTaskStatus.SetValue(0)  ; -1 fail / 0 started / 1 completed
 
 	; Bring food
-	RegisterSlaveryTask(iTaskID= 1, fKeyword=_SDTSK_BRING_FOOD  as Form, sTaskName = "Bring food", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(5,10), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Food", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="creature master" )  
+	RegisterSlaveryTask(iTaskID= 1, fKeyword=_SDTSK_BRING_FOOD  as Form, sTaskName = "Bring food", iTaskChance = 90, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(5,10), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Food", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="creature master" )  
 	; Bring Gold
-	RegisterSlaveryTask(iTaskID= 2, fKeyword=_SDTSK_BRING_GOLD  as Form, sTaskName = "Bring gold", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(50,100), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )  
+	RegisterSlaveryTask(iTaskID= 2, fKeyword=_SDTSK_BRING_GOLD  as Form, sTaskName = "Bring gold", iTaskChance = 90, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(50,100), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )  
 	; Bring armor  
-	RegisterSlaveryTask(iTaskID= 3, fKeyword=_SDTSK_BRING_ARMOR  as Form, sTaskName = "Bring armor", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Comment", sTaskTags="" )  
+	RegisterSlaveryTask(iTaskID= 3, fKeyword=_SDTSK_BRING_ARMOR  as Form, sTaskName = "Bring armor", iTaskChance = 50, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Comment", sTaskTags="" )  
 	; Bring weapon   
-	RegisterSlaveryTask(iTaskID= 4, fKeyword=_SDTSK_BRING_WEAPON  as Form, sTaskName = "Bring weapon", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=3, sTaskPositiveReward="Comment", iTaskNegativeMod= -3, sTaskNegativeReward="Comment", sTaskTags="" ) 
+	RegisterSlaveryTask(iTaskID= 4, fKeyword=_SDTSK_BRING_WEAPON  as Form, sTaskName = "Bring weapon", iTaskChance = 50, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=3, sTaskPositiveReward="Comment", iTaskNegativeMod= -3, sTaskNegativeReward="Comment", sTaskTags="" ) 
 	; Bring ingredient    
-	RegisterSlaveryTask(iTaskID= 5, fKeyword=_SDTSK_BRING_INGREDIENT  as Form, sTaskName = "Bring ingredient", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(5,10), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="creature master" )     
+	RegisterSlaveryTask(iTaskID= 5, fKeyword=_SDTSK_BRING_INGREDIENT  as Form, sTaskName = "Bring ingredient", iTaskChance = 70, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(5,10), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="creature master" )     
 	; Bring firewood
-	RegisterSlaveryTask(iTaskID= 6, fKeyword=_SDTSK_BRING_FIREWOOD  as Form, sTaskName = "Bring firewood", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(1,5), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )    
+	RegisterSlaveryTask(iTaskID= 6, fKeyword=_SDTSK_BRING_FIREWOOD  as Form, sTaskName = "Bring firewood", iTaskChance = 40, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=Utility.RandomInt(1,5), iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )    
 	; Bring book
-	RegisterSlaveryTask(iTaskID= 7, fKeyword=_SDTSK_BRING_BOOK  as Form, sTaskName = "Bring book", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )    
+	RegisterSlaveryTask(iTaskID= 7, fKeyword=_SDTSK_BRING_BOOK  as Form, sTaskName = "Bring book", iTaskChance = 30, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Comment", sTaskTags="" )    
 	; Entertain - Dance 
-	RegisterSlaveryTask(iTaskID= 8, fKeyword=_SDTSK_ENTERTAIN_DANCE  as Form, sTaskName = "Dance", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="NipplePiercing", iTaskNegativeMod= -1, sTaskNegativeReward="Whip", sTaskTags="" )  
+	RegisterSlaveryTask(iTaskID= 8, fKeyword=_SDTSK_ENTERTAIN_DANCE  as Form, sTaskName = "Dance", iTaskChance = 70, fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="NipplePiercing", iTaskNegativeMod= -1, sTaskNegativeReward="Whip", sTaskTags="" )  
 	; Entertain - Solo show   
-	RegisterSlaveryTask(iTaskID= 9, fKeyword=_SDTSK_ENTERTAIN_SOLO  as Form, sTaskName = "Solo", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="VaginalPiercing", iTaskNegativeMod= -2, sTaskNegativeReward="Whip", sTaskTags="" )  
+	RegisterSlaveryTask(iTaskID= 9, fKeyword=_SDTSK_ENTERTAIN_SOLO  as Form, sTaskName = "Solo", iTaskChance = 90, fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="VaginalPiercing", iTaskNegativeMod= -2, sTaskNegativeReward="Whip", sTaskTags="" )  
 	; Entertain - Sex   
-	RegisterSlaveryTask(iTaskID= 10, fKeyword=_SDTSK_ENTERTAIN_SEX as Form, sTaskName = "Sex", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Punishment", sTaskTags="creature master" )  
+	RegisterSlaveryTask(iTaskID= 10, fKeyword=_SDTSK_ENTERTAIN_SEX as Form, sTaskName = "Sex", iTaskChance = 90, fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Punishment", sTaskTags="creature master" )  
 	; Inspection   
-	RegisterSlaveryTask(iTaskID= 11, fKeyword=_SDTSK_INSPECTION  as Form, sTaskName = "Inspection", fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="WristRestraint", sTaskTags="" )     
+	RegisterSlaveryTask(iTaskID= 11, fKeyword=_SDTSK_INSPECTION  as Form, sTaskName = "Inspection", iTaskChance = 80, fTaskDuration=6.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="WristRestraint", sTaskTags="" )     
 	; Training anal
-	RegisterSlaveryTask(iTaskID= 12, fKeyword=_SDTSK_TRAINING_ANAL  as Form, sTaskName = "Training anal", fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
+	RegisterSlaveryTask(iTaskID= 12, fKeyword=_SDTSK_TRAINING_ANAL  as Form, sTaskName = "Training anal", iTaskChance = 20, fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
 	; Training vaginal
-	RegisterSlaveryTask(iTaskID= 13, fKeyword=_SDTSK_TRAINING_VAGINAL  as Form, sTaskName = "Training vaginal", fTaskDuration= 6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="female player" )     
+	RegisterSlaveryTask(iTaskID= 13, fKeyword=_SDTSK_TRAINING_VAGINAL  as Form, sTaskName = "Training vaginal", iTaskChance = 20, fTaskDuration= 6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="female player" )     
 	; Training oral
-	RegisterSlaveryTask(iTaskID= 14, fKeyword=_SDTSK_TRAINING_ORAL  as Form, sTaskName = "Training oral", fTaskDuration= 6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
+	RegisterSlaveryTask(iTaskID= 14, fKeyword=_SDTSK_TRAINING_ORAL  as Form, sTaskName = "Training oral", iTaskChance = 20, fTaskDuration= 6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Belt", sTaskTags="" )     
 	; Training posture
-	RegisterSlaveryTask(iTaskID= 15, fKeyword=_SDTSK_TRAINING_POSTURE  as Form, sTaskName = "Training posture", fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Yoke", sTaskTags="" )     
+	RegisterSlaveryTask(iTaskID= 15, fKeyword=_SDTSK_TRAINING_POSTURE  as Form, sTaskName = "Training posture", iTaskChance = 20, fTaskDuration=6.0 + Utility.RandomInt(0,18)*1.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Yoke", sTaskTags="" )     
 	; Wash
-	RegisterSlaveryTask(iTaskID= 16, fKeyword=_SDTSK_WASH  as Form, sTaskName = "Wash", fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Gag", sTaskTags="" )     
+	RegisterSlaveryTask(iTaskID= 16, fKeyword=_SDTSK_WASH  as Form, sTaskName = "Wash", iTaskChance = 20, fTaskDuration=4.0, fTaskTargetItem=None, iTaskTargetCount=1, iTaskTargetDifference=0, iTaskPositiveMod=1, sTaskPositiveReward="Comment", iTaskNegativeMod= -1, sTaskNegativeReward="Gag", sTaskTags="" )     
 	; Ignore
-	RegisterSlaveryTask(iTaskID= 17, fKeyword=_SDTSK_IGNORE  as Form, sTaskName = "Ignore", fTaskDuration=Utility.RandomInt(4,8)*1.0, fTaskTargetItem=None, iTaskTargetCount=0, iTaskTargetDifference= -1 * Utility.RandomInt(1,5), iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Gag", sTaskTags="creature master" )     
+	RegisterSlaveryTask(iTaskID= 17, fKeyword=_SDTSK_IGNORE  as Form, sTaskName = "Ignore", iTaskChance = 10, fTaskDuration=Utility.RandomInt(4,8)*1.0, fTaskTargetItem=None, iTaskTargetCount=0, iTaskTargetDifference= -1 * Utility.RandomInt(1,5), iTaskPositiveMod=2, sTaskPositiveReward="Comment", iTaskNegativeMod= -2, sTaskNegativeReward="Gag", sTaskTags="creature master" )     
 
 	iNumberTasks = StorageUtil.FormListCount( none, "_SD_lTaskList")
 EndFunction
 
-Function RegisterSlaveryTask(Int iTaskID, Form fKeyword, String sTaskName, Float fTaskDuration, Form fTaskTargetItem, Int iTaskTargetCount, Int iTaskTargetDifference, Int iTaskPositiveMod, String sTaskPositiveReward, Int iTaskNegativeMod, String sTaskNegativeReward, String sTaskTags)
+Function RegisterSlaveryTask(Int iTaskID, Form fKeyword, String sTaskName, Int iTaskChance, Float fTaskDuration, Form fTaskTargetItem, Int iTaskTargetCount, Int iTaskTargetDifference, Int iTaskPositiveMod, String sTaskPositiveReward, Int iTaskNegativeMod, String sTaskNegativeReward, String sTaskTags)
 	if (StorageUtil.FormListFind( none, "_SD_lTaskList", fKeyword) <0)
 		debugTrace(" Registering slavery task: " + iTaskID)
 
@@ -1392,6 +1397,7 @@ Function RegisterSlaveryTask(Int iTaskID, Form fKeyword, String sTaskName, Float
 
 		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskID",  iTaskID ) ; task ID - easier to handle than form for conditions, dialogue topcis...
 		StorageUtil.SetStringValue(fKeyword, "_SD_sTaskName",  sTaskName ) ; task name - for more readable coding
+		StorageUtil.SetFloatValue(fKeyword, "_SD_iTaskChance",  iTaskChance ) ; chance of triggering the task
 		StorageUtil.SetFloatValue(fKeyword, "_SD_fTaskDuration",  fTaskDuration ) ; duration of task, roughly in hours
 		StorageUtil.SetFormValue(fKeyword, "_SD_fTaskTargetItem",  fTaskTargetItem ) ; Form - can be direct item Form ID or Form List to pick from. If None, detection should be handled according to taks ID
 		StorageUtil.SetIntValue(fKeyword, "_SD_iTaskTargetCount",  iTaskTargetCount ) ; number of expected items to complete task 
@@ -1451,7 +1457,7 @@ Function PickSlaveryTask(Actor kSlave, String sTaskName = "")
 		while(i < iSlaveLevel) && (!bFound) ; allow for iSlaveLevel attempts at picking a task - ie. up to iSlaveLevel tasks active at a time
 			iTaskID = Utility.RandomInt(1,valueCount)
 			fKeyword = GetSlaveryTaskFromID(iTaskID)
-			if (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")==0)
+			if (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")==0) && (Utility.RandomInt(0,100) <= StorageUtil.GetIntValue(fKeyword, "_SD_fTaskChance"))
 				debugTrace("      Task found: " + iTaskID + " [" + fKeyword + "]")
 				bFound = true
 				StartSlaveryTask(kSlave, iTaskID)
@@ -1620,6 +1626,13 @@ Function EvaluateSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskName
 	Bool bIsFemale = funct.isFemale(kSlave)
 
+	if (fKeyword != None)
+		; Debug.MessageBox("Good slave, you COMPLETED your task (" + sTaskName + ")")
+	Else
+		Debug.Notification("[SD] Error - empty task keyword - check logs for details")
+		Return
+	Endif
+
 	TaskTickerThisCallTime = Utility.GetCurrentGameTime()
 
  	fTimePassed =  TaskTickerThisCallTime - StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")
@@ -1694,8 +1707,15 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
 	Bool bIsFemale = funct.isFemale(kSlave)
 
+	debugTrace("[SD] You succeded Task : " + sTaskName )
 	debugTrace(" Completing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
-	; Debug.Notification("[SD] You succeded Task : " + sTaskName )
+
+	if (sTaskName != "")
+		Debug.MessageBox("Good slave, you COMPLETED your task (" + sTaskName + ")")
+	Else
+		Debug.Notification("[SD] Error - task name is empty - check logs for details")
+		Return
+	Endif
 
 	If (fMasterDistance >= 900)
 		Debug.Notification("Your owner is too far to reward you.")
@@ -1727,10 +1747,9 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 		Endif
 	Endif
 
+
 	; select reward based on label
 	If (sTaskPositiveReward=="Comment")
-		Debug.Notification("You succeeded your task, slave.")
-
 		; Add diverse comments based on task and mood of master
 
 	ElseIf (sTaskPositiveReward=="Food")
@@ -1761,8 +1780,16 @@ Function FailSlaveryTask(Actor kSlave, Form fKeyword)
 	String sTaskName = StorageUtil.GetStringValue(fKeyword, "_SD_sTaskName" )
 	Bool bIsFemale = funct.isFemale(kSlave)
 
+	debugTrace("[SD] You failed Task : " + sTaskName )
 	debugTrace(" Failing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
 	; Debug.Notification("[SD] You failed Task : " + sTaskName )
+
+	if (sTaskName != "")
+		Debug.MessageBox("Bad slave, you FAILED your task (" + sTaskName + ")")
+	Else
+		Debug.Notification("[SD] Error - task name is empty - check logs for details")
+		Return
+	Endif
 
 	If (fMasterDistance >= 900)
 		Debug.Notification("Your owner is too far to punish you.")
@@ -1770,9 +1797,9 @@ Function FailSlaveryTask(Actor kSlave, Form fKeyword)
 		Return
 	endif
 
+
 	; select punishment based on label
 	If (sTaskNegativeReward=="Comment")
-		Debug.Notification("You failed your task, slave.")
 
 		; Add diverse comments based on task and mood of master
 

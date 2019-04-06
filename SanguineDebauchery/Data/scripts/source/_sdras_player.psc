@@ -287,9 +287,9 @@ Function _Maintenance()
 	isPlayerEnslaved = StorageUtil.GetIntValue( kPlayer, "_SD_iEnslaved") as Bool
 	isPlayerPregnant = StorageUtil.GetIntValue( kPlayer, "_SLH_isPregnant") as Bool
 	isPlayerSuccubus = StorageUtil.GetIntValue( kPlayer, "_SLH_isSuccubus") as Bool
-	isPlayerHRT = StorageUtil.GetIntValue( kPlayer, "_SLH_isHRT") as Bool
-	isPlayerTG = StorageUtil.GetIntValue( kPlayer, "_SLH_isTG") as Bool
-	isPlayerBimbo = StorageUtil.GetIntValue( kPlayer, "_SLH_isBimbo") as Bool
+	isPlayerHRT = StorageUtil.GetIntValue( kPlayer, "_SLH_iHRT") as Bool
+	isPlayerTG = StorageUtil.GetIntValue( kPlayer, "_SLH_iTG") as Bool
+	isPlayerBimbo = StorageUtil.GetIntValue( kPlayer, "_SLH_iBimbo") as Bool
 	allowPlayerHRT = StorageUtil.GetIntValue( kPlayer, "_SLH_allowHRT") as Bool
 	allowPlayerTG = StorageUtil.GetIntValue( kPlayer, "_SLH_allowTG") as Bool
 	allowPlayerBimbo = StorageUtil.GetIntValue( kPlayer, "_SLH_allowBimbo") as Bool
@@ -1783,6 +1783,9 @@ State monitor
 			EndIf
  
 		EndIf
+		If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance")=="")
+			StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
+		EndIf
 		If ( aiKeyCode == keys[2] )
 			
 			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling") ; && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnableKneel") == 1 )
@@ -1809,7 +1812,7 @@ State monitor
 			Else
 			 	debugTrace(" Problem with position: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 			 	Debug.Notification("[SD] Problem with position: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
-
+			 	StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 			endif
 
 			StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStanceFollower", StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") ) 
@@ -1841,6 +1844,7 @@ State monitor
 			Else
 			 	debugTrace(" Problem with position: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 			 	Debug.Notification("[SD] Problem with position: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
+			 	StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 
 			endif
 

@@ -290,7 +290,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	; If ( aiValue2 == 0 )
 	If ( bHardcoreMode )
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 1)
-		fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
+		; fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
 		fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
 
 		If ( kSlave.GetItemCount( kRags ) == 0 )
@@ -430,7 +430,7 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 	If (akSlave == Game.GetPlayer()) && (!akSlave.IsInCombat()) && (StorageUtil.GetIntValue(akSlave, "_SD_iSlaveryPunishmentOn") == 1) && ( (_SDGVP_snp_busy.GetValue() as Int)<0 )
 
 	 	; Debug.Notification("[_sdqs_enslavement] Update punishment list")
-	 	debugTrace(" Update punishment list")
+	 	debugTrace(" Update slave state")
 
 		fTimeEnslaved = GetCurrentGameTime() - fEnslavementStart
 	 	debugTrace(" Time enslaved: " + fTimeEnslaved)

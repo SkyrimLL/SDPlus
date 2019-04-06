@@ -131,6 +131,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 				Debug.Trace("[_sdras_dreamer]         OnSleep event by location - Sanguine Shrine" )
 				iDreamworldVisitModifier = iDreamworldVisitModifier + 100
 				iDreamworldVisitModifierMax = 100
+				_SD_dreamQuest.SetObjectiveDisplayed(226,false)
 				bSendToDreamworld = True
 			  	
 			elseif kLocation.IsSameLocation(_SDLOC_HaelgaBasement) 

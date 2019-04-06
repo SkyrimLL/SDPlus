@@ -389,9 +389,9 @@ EndEvent
 State waiting
 	Event OnUpdate()
 		; Debug.Notification( "[SD] Waiting")
-		debugTrace(" Player is Waiting")
 
-		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster) && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster) ; && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+			debugTrace(" Player is Waiting")
 			; fctConstraints.CollarUpdate()
 			If (!kMaster.IsDead()) 
 				GoToState("monitor")
@@ -456,7 +456,7 @@ State monitor
 
 		_slaveStatusTicker()
 
-		if (!kMaster) || ( !kMaster.Is3DLoaded() )
+		if (!kMaster) ; || ( !kMaster.Is3DLoaded() )
 			GoToState("waiting")
 		endif
 
@@ -1411,7 +1411,7 @@ Function _slaveStatusTicker()
 
  	if (iDaysSinceLastCheck==0)
 		if ((timePassed-HourlyTickerLastCallTime)>= (HourlyTickerPeriod ) ) ; same day - incremental updates
-			; Debug.Notification( "[SD] Slavery status - hourly update")
+			debugTrace( " Slavery status - hourly update")
 			; Disabled for now - daily update makes more sense
 			; fctSlavery.UpdateStatusHourly( kMaster, kSlave)
 			iHoursLastCheck = ((timePassed-HourlyTickerLastCallTime)/ (HourlyTickerPeriod ) ) as Int
@@ -1754,6 +1754,7 @@ bool function WolfClubEnslave()
 	int handle = ModEvent.Create("WolfClubEnslavePlayer")
 	if handle
 		debugTrace(" END GAME - Wolfclub scenario triggered" )
+		SendModEvent("PCSubFree")
 
 		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself in a dark and camp cave... " )
 
@@ -1766,6 +1767,7 @@ bool function SimpleSlaveryEnslave()
 	int idx = Game.GetModByName( "SimpleSlavery.esp" )
 	if ( idx != 255 )
 		debugTrace(" END GAME - Simple Slavery scenario triggered" )
+		SendModEvent("PCSubFree")
 
 		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself in a cage and about to be sold off at a slave market... " )
 	    ;; The mod is loaded, so we can use it:
@@ -1783,6 +1785,7 @@ bool function MariaEdenEnslave(Actor newMaster)
 	int handle = ModEvent.Create("MariaEnslavePlayer")
 	if handle
 		debugTrace(" END GAME - Maria Eden scenario triggered" )
+		SendModEvent("PCSubFree")
 
 		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner... " )
 
@@ -1796,6 +1799,7 @@ bool function RedWaveEnslave( )
 
 	IF (StorageUtil.GetIntValue(none, "_SLS_iStories")==1)
 		debugTrace(" END GAME - Redwave scenario triggered" )
+		SendModEvent("PCSubFree")
 
 		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself inside a ship... " )
 

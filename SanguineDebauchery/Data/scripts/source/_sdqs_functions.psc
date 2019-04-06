@@ -573,30 +573,32 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 
 		; Gender restrictions - 2 actors
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
-			SendModEvent("SLHModHormone", "Pheromones", 1.0)
+			SendModEvent("SLHModHormone", "Pheromones", 0.2)
 
-			; SexLabInTags = "Sex"  ; Reset tags for now - working on compatibility with DDi filters
-		
-			; Testing sexlab 1.6 - disabling gender restrictions for now / testing new 'gay filter' from sexlab
-			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) && (Utility.RandomInt(0,100)>50)
+			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) 
 				If (speakerGender  == 0)
 					SexLabInTags = "Anal"
 				Else
 					SexLabInTags = "Lesbian"
 				EndIf
-			ElseIf ( (genderRestrictions  != 1) && (speakerGender  != targetGender ) ) && (Utility.RandomInt(0,100)>30)
+			ElseIf ( (genderRestrictions  != 1) && (speakerGender  != targetGender ) ) 
 					; switching dominant position'
-					kActor = akTarget
-					akTarget = akSpeaker
-					akSpeaker = kActor
-					bIsTargetVictim = false
-					bIsSpeakerVictim = true
 					
-					If (speakerGender == 1) ; Mistress and Male slave
+					If (speakerGender == 1) ; Female Mistress and Male slave
 						SexLabInTags = "Cowgirl"
+						If (utility.RandomInt(0,100)>90)
+							SexLabInTags = "Anal"
+						Endif
+						kActor = akTarget
+						akTarget = akSpeaker
+						akSpeaker = kActor
+					 	bIsTargetVictim = false
+						bIsSpeakerVictim = true
 
-					ElseIf  (speakerGender == 0) ; Master and Female slave
+					ElseIf  (speakerGender == 0) ; Male Master and Female slave
 						SexLabInTags = "Doggystyle"
+					 	bIsTargetVictim = false
+						bIsSpeakerVictim = true
 
 					EndIf
 			EndIf
