@@ -66,16 +66,20 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	self.RegisterForKey(Input.GetMappedKey("Jump"))
 	
 	if(sleepType == 1) ; Kneeling
-		Debug.MessageBox("You sit back on your knees and take a rest. \n [Press Jump to cancel]")
+		Debug.Notification("You sit back on your knees and take a rest.")
+		Debug.Notification("[Press Jump to cancel]")
 		self.GoToState("Kneeling")
 	elseif(sleepType == 2) ; Sitting	
-		Debug.MessageBox("You sit back for a while. \n [Press Jump to cancel]")
+		Debug.Notification("You sit back for a while.")
+		Debug.Notification("[Press Jump to cancel]")
 		self.GoToState("Sitting")
 	elseif(sleepType == 3) ; Sleeping sideway
-		Debug.MessageBox("You lie down on the ground and sleep for a while. \n [Press Jump to cancel]")
+		Debug.Notification("You lie down on the ground and sleep for a while.")
+		Debug.Notification("[Press Jump to cancel]")
 		self.GoToState("EnterSleepingSideway")
 	elseif(sleepType == 4) ; Sleeping 
-		Debug.MessageBox("Your owner lets you sleep on the ground. \n [Press Jump to cancel]")
+		Debug.Notification("Your owner lets you sleep on the ground.")
+		Debug.Notification("[Press Jump to cancel]")
 		self.GoToState("EnterSleeping")
 	endif
 endEvent

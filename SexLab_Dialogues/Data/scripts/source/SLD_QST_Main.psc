@@ -84,6 +84,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	ObjectReference akSpeakerRef = akSpeaker as objectReference
 	Form kSpeakerForm = akSpeaker as Form
 	Actor Player = Game.GetPlayer()
+	Actor kMaster
 	Bool isPCBimbo = False
 	Bool isSpeakerHuman = kSpeakerForm.HasKeywordString("ActorTypeNPC")
 	Bool isSpeakerMasterHuman = False
@@ -115,6 +116,15 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 		; (DialogueFollower as DialogueFollowerScript).SetAnimal(akSpeaker as ObjectReference)
 		; akSpeaker.SetHeadTracking(true)
 	Endif
+
+	; Force Master relationship to override Pet relationship in case of Succubus seduction
+	If (StorageUtil.GetIntValue(Player, "_SD_iEnslaved") == 1)
+		kMaster = StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as Actor
+		if (kMaster == akSpeakerRef)
+			_SLD_NPCRelationshipType.SetValue(-5)
+		EndIf
+	Endif
+
 
 	; ------ NPC is a Master
 	If (_SLD_NPCRelationshipType.GetValue() < -4) && ( (StorageUtil.GetFormValue(Player, "_SD_CurrentOwner") as ObjectReference) == akSpeakerRef)
