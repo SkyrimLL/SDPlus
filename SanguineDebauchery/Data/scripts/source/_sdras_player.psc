@@ -1767,9 +1767,13 @@ State monitor
 					; Game.EnablePlayerControls( abMovement = True )
 					fctOutfit.DDSetAnimating( kPlayer, false )
 
+					kPlayer.StopCombat()
+					kPlayer.StopCombatAlarm()
+
 					; Find a way to detect and fix situations when player is stuck 'flying' above ground
 
 					Debug.SendAnimationEvent(kPlayer, "IdleForceDefaultState")
+					SendModEvent("da_PacifyNearbyEnemies")
 
 
 				ElseIf (IButton == 4)
