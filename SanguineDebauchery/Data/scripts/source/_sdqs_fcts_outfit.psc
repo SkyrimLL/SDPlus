@@ -1897,11 +1897,11 @@ Function equipNonGenericDeviceByString ( String sDeviceString = "", String sOutf
 				EndIf
 
 			elseif (sOutfitString == "Web")
-				If ( sDeviceString == "Collar" )
+				If( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
 					aRenderedDevice = zazWebCuffsRendered 
 					aWornDevice = zazWebCuffs
 
-				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
+				ElseIf ( sDeviceString == "Collar" )  
 					aRenderedDevice = zazWebCollarRendered 
 					aWornDevice = zazWebCollar
 
@@ -1909,11 +1909,11 @@ Function equipNonGenericDeviceByString ( String sDeviceString = "", String sOutf
 
 
 			elseif (sOutfitString == "Spriggan")
-				If ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
+				If( sDeviceString == "Gloves" )
 					aRenderedDevice = zazSprigganHandsRendered 
 					aWornDevice = zazSprigganHands
 
-				ElseIf ( sDeviceString == "LegCuffs" )
+				ElseIf ( sDeviceString == "Boots" )
 					aRenderedDevice = zazSprigganFeetRendered 
 					aWornDevice = zazSprigganFeet
 				

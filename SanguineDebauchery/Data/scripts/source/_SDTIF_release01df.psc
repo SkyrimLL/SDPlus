@@ -15,7 +15,7 @@ kPlayer.RemoveItem(Gold, 400 )
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
         fctOutfit.clearNonGenericDeviceByString ( "Collar", "Falmer" )
-        fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Falmer" )
+        fctOutfit.clearNonGenericDeviceByString ( "Armbinder", "Falmer" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

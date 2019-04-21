@@ -2,26 +2,6 @@
 ;NEXT FRAGMENT INDEX 26
 Scriptname _sdqf_sprigganslave_01 Extends Quest Hidden
 
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb_b
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_unpb_b Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_safetysprigganmarker
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_safetysprigganmarker Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_unpb Auto
-;END ALIAS PROPERTY
-
 ;BEGIN ALIAS PROPERTY _SDQA_host
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDQA_host Auto
@@ -32,9 +12,9 @@ ReferenceAlias Property Alias__SDQA_host Auto
 ReferenceAlias Property Alias__SDQA_hostarmor_cbbe Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY _SDQA_spriggangrove
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDQA_spriggangrove Auto
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_unpb Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDQA_sprigganbook
@@ -42,24 +22,19 @@ LocationAlias Property Alias__SDQA_spriggangrove Auto
 ReferenceAlias Property Alias__SDQA_sprigganbook Auto
 ;END ALIAS PROPERTY
 
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor Auto
+;END ALIAS PROPERTY
+
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_unpb_b
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_unpb_b Auto
+;END ALIAS PROPERTY
+
 ;BEGIN ALIAS PROPERTY _SDQA_sprigganmarker
 ;ALIAS PROPERTY TYPE ReferenceAlias
 ReferenceAlias Property Alias__SDQA_sprigganmarker Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_companion
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_companion Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe_b
-;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias__SDQA_hostarmor_cbbe_b Auto
-;END ALIAS PROPERTY
-
-;BEGIN ALIAS PROPERTY _SDLA_book_location
-;ALIAS PROPERTY TYPE LocationAlias
-LocationAlias Property Alias__SDLA_book_location Auto
 ;END ALIAS PROPERTY
 
 ;BEGIN ALIAS PROPERTY _SDQA_spriggan
@@ -67,99 +42,30 @@ LocationAlias Property Alias__SDLA_book_location Auto
 ReferenceAlias Property Alias__SDQA_spriggan Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_13
-Function Fragment_13()
-;BEGIN CODE
-; stage 80
-aHost = Alias__SDQA_host.GetReference() as Actor
-oHost = Alias__SDQA_host.GetReference() as ObjectReference
-oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
+;BEGIN ALIAS PROPERTY _SDQA_hostarmor_cbbe_b
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_hostarmor_cbbe_b Auto
+;END ALIAS PROPERTY
 
-oSpriggan.Disable()
-; oSpriggan.placeAtMe( _SDABP_sprigganmatron )
-oSpriggan.Delete()
+;BEGIN ALIAS PROPERTY _SDQA_companion
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_companion Auto
+;END ALIAS PROPERTY
 
-_SDSP_cum.RemoteCast( oHost, aHost, aHost )
-;END CODE
-EndFunction
-;END FRAGMENT
+;BEGIN ALIAS PROPERTY _SDQA_spriggangrove
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDQA_spriggangrove Auto
+;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_10
-Function Fragment_10()
-;BEGIN CODE
-; stage 70
+;BEGIN ALIAS PROPERTY _SDQA_safetysprigganmarker
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SDQA_safetysprigganmarker Auto
+;END ALIAS PROPERTY
 
-; Fix end sequence with Matron
-Actor kPlayer = Game.GetPlayer()
-
-aHost = Alias__SDQA_host.GetReference() as Actor
-aSpriggan = Alias__SDQA_spriggan.GetReference() as Actor
-oHost = Alias__SDQA_host.GetReference() as ObjectReference
-oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
-oHostArmor = Alias__SDQA_hostarmor.GetReference() as ObjectReference
-
-_SDS_spriggan_bloom.RemoteCast( oHost, aHost, aHost )
-_SD_sprigganHusk.moveto( oHost )
-Pacify.RemoteCast( oHost, aHost, aHost )
-
-; Game.GetPlayer().AddToFaction(SprigganFaction)
-; _SDSP_cum.RemoteCast( oHost, aHost, aHost )
-
-; Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk...")
-; aHost.RemoveItem( oHostArmor.GetBaseObject(), aHost.GetItemCount( oHostArmor.GetBaseObject() )  )
-	
-	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Harness"  )
-		Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
-        fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
-	EndIf
-
-	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Gag"  )
-        fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
-   	Endif
-
-; _SD_sprigganHusk.Enable()
-
-; aSpriggan.SetRestrained(false)
-; oSpriggan.Enable()
-If ( aSpriggan.IsDead() )
-;	aSpriggan.Resurrect()
-EndIf
-
-fctConstraints.actorCombatShutdown( aSpriggan )
-fctConstraints.actorCombatShutdown( aHost )
-
-; _SDSP_cum.RemoteCast( oHost, aHost, aHost )
-
-; _SDKP_sex.SendStoryEvent( akRef1 = oSpriggan, akRef2 = oHost, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, 4 ) )
-
-	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
-		; HACK: select rough sexlab animations 
-		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTag(1, "Masturbation", "Female")
-
-		; HACK: get actors for sexlab
-		; actor[] sexActors = new actor[1]
-		; sexActors[0] = SexLab.PlayerRef
-
-		; HACK: start sexlab animation
-		; SexLab.StartSex(sexActors, animations)
-
-
-		sslThreadModel Thread = SexLab.NewThread()
-		Thread.AddActor(SexLab.PlayerRef, true) ; // IsVictim = true
-		Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F","Estrus,Dwemer"))
-		Thread.StartThread()
-	EndIf
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_19
-Function Fragment_19()
-;BEGIN CODE
-SetObjectiveDisplayed( 60 )
-;END CODE
-EndFunction
-;END FRAGMENT
+;BEGIN ALIAS PROPERTY _SDLA_book_location
+;ALIAS PROPERTY TYPE LocationAlias
+LocationAlias Property Alias__SDLA_book_location Auto
+;END ALIAS PROPERTY
 
 ;BEGIN FRAGMENT Fragment_21
 Function Fragment_21()
@@ -190,7 +96,10 @@ Utility.Wait(0.5)
 ; fctFactions.resetAllyToActor( oHost as Actor, _SDFLP_forced_allied )
 CompleteAllObjectives()
 
-Stop()
+; Stop()
+; Utility.Wait(120)
+
+setstage(100)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -203,6 +112,11 @@ _sdqs_sprigganslave kmyQuest = __temp as _sdqs_sprigganslave
 ;END AUTOCAST
 ;BEGIN CODE
 ; stage 100
+debug.notification("The last traces of the roots are cleared from your body.")
+debug.trace("[SD] Spriggan quest - clean up")
+UnregisterForUpdate()
+
+
 Alias__SDQA_spriggan.Clear()
 Alias__SDQA_host.Clear()
 Alias__SDQA_spriggangrove.Clear()
@@ -215,8 +129,8 @@ Game.GetPlayer().RemoveFromFaction(SprigganFaction)
 Game.GetPlayer().RemoveFromFaction(GiantFaction)
 StorageUtil.SetIntValue(Game.GetPlayer(),"_SD_iDisableDreamworldOnSleep", 0)
 
-        fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Spriggan" )        
-        fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+        fctOutfit.clearNonGenericDeviceByString ( "Boots", "Spriggan" )        
+        fctOutfit.clearNonGenericDeviceByString ( "Gloves", "Spriggan" )
 
 SendModEvent("SDSprigganStop")
 
@@ -224,20 +138,42 @@ _SDGVP_sprigganEnslaved.SetValue(0)
 _SD_spriggan_punishment.SetValue(0)
 StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iSprigganInfected", 0)
 
-If ( kmyQuest.IsObjectiveDisplayed(10) )
-	kmyQuest.SetObjectiveDisplayed(10, False)
-EndIf
-
 ; Resume Deviously Helpless attacks.
 SendModEvent("dhlp-Resume")
 
 _SDGVP_sprigganenslaved.SetValue(0)
-UnregisterForUpdate()
 
+SetObjectiveDisplayed(10, False)
 SetObjectiveDisplayed(20, False)
 SetObjectiveDisplayed(30, False)
 SetObjectiveDisplayed(60, False)
-Reset()
+; Reset()
+Stop()
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_19
+Function Fragment_19()
+;BEGIN CODE
+SetObjectiveDisplayed( 60 )
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_13
+Function Fragment_13()
+;BEGIN CODE
+; stage 80
+aHost = Alias__SDQA_host.GetReference() as Actor
+oHost = Alias__SDQA_host.GetReference() as ObjectReference
+oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
+
+oSpriggan.Disable()
+; oSpriggan.placeAtMe( _SDABP_sprigganmatron )
+oSpriggan.Delete()
+
+_SDSP_cum.RemoteCast( oHost, aHost, aHost )
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -284,6 +220,75 @@ Pacify.RemoteCast( oHost, aHost, aHost )
 		; fctOutfit.setDeviousOutfitBlindfold ( iDevOutfit = 7,  bDevEquip = False, sDevMessage = "")	
         fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
 	Endif
+
+; _SD_sprigganHusk.Enable()
+
+; aSpriggan.SetRestrained(false)
+; oSpriggan.Enable()
+If ( aSpriggan.IsDead() )
+;	aSpriggan.Resurrect()
+EndIf
+
+fctConstraints.actorCombatShutdown( aSpriggan )
+fctConstraints.actorCombatShutdown( aHost )
+
+; _SDSP_cum.RemoteCast( oHost, aHost, aHost )
+
+; _SDKP_sex.SendStoryEvent( akRef1 = oSpriggan, akRef2 = oHost, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, 4 ) )
+
+	If  (SexLab.ValidateActor( SexLab.PlayerRef ) > 0)
+		; HACK: select rough sexlab animations 
+		; sslBaseAnimation[] animations = SexLab.GetAnimationsByTag(1, "Masturbation", "Female")
+
+		; HACK: get actors for sexlab
+		; actor[] sexActors = new actor[1]
+		; sexActors[0] = SexLab.PlayerRef
+
+		; HACK: start sexlab animation
+		; SexLab.StartSex(sexActors, animations)
+
+
+		sslThreadModel Thread = SexLab.NewThread()
+		Thread.AddActor(SexLab.PlayerRef, true) ; // IsVictim = true
+		Thread.SetAnimations(SexLab.GetAnimationsByTags(1, "Solo,F","Estrus,Dwemer"))
+		Thread.StartThread()
+	EndIf
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_10
+Function Fragment_10()
+;BEGIN CODE
+; stage 70
+
+; Fix end sequence with Matron
+Actor kPlayer = Game.GetPlayer()
+
+aHost = Alias__SDQA_host.GetReference() as Actor
+aSpriggan = Alias__SDQA_spriggan.GetReference() as Actor
+oHost = Alias__SDQA_host.GetReference() as ObjectReference
+oSpriggan = Alias__SDQA_spriggan.GetReference() as ObjectReference
+oHostArmor = Alias__SDQA_hostarmor.GetReference() as ObjectReference
+
+_SDS_spriggan_bloom.RemoteCast( oHost, aHost, aHost )
+_SD_sprigganHusk.moveto( oHost )
+Pacify.RemoteCast( oHost, aHost, aHost )
+
+; Game.GetPlayer().AddToFaction(SprigganFaction)
+; _SDSP_cum.RemoteCast( oHost, aHost, aHost )
+
+; Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk...")
+; aHost.RemoveItem( oHostArmor.GetBaseObject(), aHost.GetItemCount( oHostArmor.GetBaseObject() )  )
+	
+	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Harness"  )
+		Debug.MessageBox("The spriggan roots crawl away from your body and into the ground around the fertile husk, leaving residues on your hands and feet...")	
+        fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
+	EndIf
+
+	if fctOutfit.isDeviceEquippedKeyword( kPlayer,  "_SD_DeviousSpriggan", "Gag"  )
+        fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
+   	Endif
 
 ; _SD_sprigganHusk.Enable()
 

@@ -19,8 +19,8 @@ Event OnActivate(ObjectReference akActivator)
         If (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 0) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
             Debug.Messagebox("The spring waters wash away the residual roots clinging to your body.")
 
-            fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
-            fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+            fctOutfit.clearNonGenericDeviceByString ( "Gloves", "Spriggan" )
+            fctOutfit.clearNonGenericDeviceByString ( "Boots", "Spriggan" )
             fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
             fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
 

@@ -115,10 +115,9 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		fSprigganPunish = -1.0
 
 		If ( _SDGVP_config[3].GetValue() as Bool )
-			fctInventory.limitedRemoveAllItems ( kSlave, _SD_sprigganHusk, True, _SDFLP_ignore_items )
-		Else
-			; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
-			kSlave.RemoveAllItems(akTransferTo = _SD_sprigganHusk, abKeepOwnership = True)
+			; fctInventory.limitedRemoveAllItems ( kSlave, _SD_sprigganHusk, True, _SDFLP_ignore_items )
+		Else 
+			; kSlave.RemoveAllItems(akTransferTo = _SD_sprigganHusk, abKeepOwnership = True)
 
 			; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
 			; funct.limitedRemoveAllItems ( kSlave, kMaster, True )
@@ -137,10 +136,10 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 
 		if (!fctOutfit.isArmsEquipped(kSlave as Actor))
 			Debug.MessageBox("Roots swarm around you.")	
-			fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
+			fctOutfit.equipNonGenericDeviceByString ( "Gloves", "Spriggan" )
 		EndIf
 		if (!fctOutfit.isLegsEquipped(kSlave as Actor))
-			fctOutfit.equipNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+			fctOutfit.equipNonGenericDeviceByString ( "Boots", "Spriggan" )
 		EndIf	
 
 		Utility.Wait(1.0)
@@ -300,13 +299,13 @@ Event OnUpdateGameTime()
 		Debug.Trace( "[SD] Spriggan punishment: " + _SD_spriggan_punishment.GetValue() )
 
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isCuffsEquipped (  kSlave as Actor ))
-			fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Spriggan" )
+			fctOutfit.equipNonGenericDeviceByString ( "Gloves", "Spriggan" )
  
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1 )
 			Debug.Trace("[SD] Skipping spriggan hands - slot in use")
 		EndIf
 		If (_SD_spriggan_punishment.GetValue() >= 1 ) && (!fctOutfit.isShacklesEquipped (  kSlave as Actor ))
-			fctOutfit.equipNonGenericDeviceByString ( "LegCuffs", "Spriggan" )
+			fctOutfit.equipNonGenericDeviceByString ( "Boots", "Spriggan" )
 	
 		ElseIf (_SD_spriggan_punishment.GetValue() >= 1)
 			Debug.Trace("[SD] Skipping spriggan feet - slot in use")
@@ -371,7 +370,7 @@ Event OnUpdateGameTime()
 	EndIf
 	
 	; ends the punishment period after arriving at the grove
-	If ( (GetCurrentGameTime() - fDaysUpdate > fSprigganPower) && ( (GetStage() == 70) || (GetStage() == 75)) )
+	If ( (GetCurrentGameTime() - fDaysUpdate > fSprigganPower) && ( (GetStage() == 70) || (GetStageDone(75) == 1)) )
 		While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 		EndWhile
 		fDaysUpdate = GetCurrentGameTime()
@@ -389,12 +388,13 @@ Event OnUpdateGameTime()
 	EndIf
 	
 	; keep spriggans friendly for a while to let the player move away
-	If ( (GetCurrentGameTime() - fDaysUpdate > 0.25) && ( GetStage() == 80) )
+	If ( (GetCurrentGameTime() - fDaysUpdate > 0.25) && ( GetStageDone(80) == 1) )
 		While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
 		EndWhile
 		SetStage( 90 )
-	EndIf
-	If ( Self )
+	EndIf	
+
+	If ( ( Self ) && ( GetStageDone(90) == 0) )
 		RegisterForSingleUpdateGameTime( 0.25 )
 	EndIf
 EndEvent
