@@ -11,6 +11,10 @@ FormList Property _SLD_GiftFilterHungry  Auto
 FormList Property _SLD_GiftFilterHurt  Auto  
 FormList Property _SLD_GiftFilterCold  Auto    
 
+Potion Property Potato Auto  
+Potion Property Meat  Auto  
+MiscObject Property Gold  Auto  
+
 GlobalVariable Property _SLD_CommentProbability Auto  
 GlobalVariable Property _SLD_AttackProbability Auto  
 GlobalVariable Property _SLD_BeggingProbability Auto
@@ -170,18 +174,34 @@ EndFunction
 
 
 Function GiftFromNPC(Actor kActor, string sFilter)
+	Actor kPlayer= Game.GetPlayer()
+
 	If (sFilter == "Thirsty")
 		AddInventoryEventFilter(_SLD_GiftFilterThirsty)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterThirsty, True )
+		
 	ElseIf (sFilter == "Hungry")
 		AddInventoryEventFilter(_SLD_GiftFilterHungry)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterHungry, True )
+
 	ElseIf (sFilter == "Hurt")
 		AddInventoryEventFilter(_SLD_GiftFilterHurt)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterHurt, True )
+
 	ElseIf (sFilter == "Cold")
 		AddInventoryEventFilter(_SLD_GiftFilterCold)
 		kActor.ShowGiftMenu( false, _SLD_GiftFilterCold, True )
+
+	Else ; for general charity
+		kPlayer.AddItem( Gold, Utility.RandomInt(1,5), False )
+		If (Utility.RandomInt(0,100)>60) 
+			kActor.AddItem( Meat, Utility.RandomInt(1,3), True )
+		Endif
+		If (Utility.RandomInt(0,100)>40) 
+			kActor.AddItem( Potato, Utility.RandomInt(1,3), True )
+		Endif
+		AddInventoryEventFilter(_SLD_GiftFilterHungry)
+		kActor.ShowGiftMenu( false, _SLD_GiftFilterHungry, True )
 	EndIf
 
 	RemoveAllInventoryEventFilters()
@@ -191,7 +211,7 @@ EndFunction
 
 Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	ObjectReference akActorREF= Game.GetPlayer() as ObjectReference
-	Actor akActor= Game.GetPlayer()
+	Actor kPlayer= Game.GetPlayer()
 
 	_updateGlobals()
 EndEvent

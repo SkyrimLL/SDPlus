@@ -15,6 +15,9 @@ GlobalVariable Property _SLD_BeggingDialogueON Auto
 GlobalVariable Property _SLD_GiftDialogueON Auto  
 GlobalVariable Property _SLD_BeastMenuDialogueON Auto  
 GlobalVariable Property _SLD_BlacksmithQuestON Auto  
+GlobalVariable Property _SLD_MageQuestON Auto  
+GlobalVariable Property _SLD_MagickaMasteryON Auto  
+GlobalVariable Property _SLD_PriestQuestON Auto  
 
 Book Property _SLD_debugSpell Auto
 
@@ -55,7 +58,10 @@ bool	_PCSubEnableRobbery		= false
 bool	_BeggingDialogueON		= true
 bool	_GiftDialogueON		= true
 bool	_BeastMenuDialogueON		= true
-bool	_BlacksmithQuestON		= true
+bool	_BlacksmithQuestON		= false
+bool	_MageQuestON		= false
+bool	_MagickaMasteryON		= false
+bool	_PriestQuestON		= false
 bool	_RegisterCustomRaces		= false
 bool	_ClearGiantRaces		= false
 bool	_GetDebugSpell		= false
@@ -119,6 +125,9 @@ event OnPageReset(string a_page)
 	_GiftDialogueON			= _SLD_GiftDialogueON.GetValue() as Int
 	_BeastMenuDialogueON	= _SLD_BeastMenuDialogueON.GetValue() as Int
 	_BlacksmithQuestON		= _SLD_BlacksmithQuestON.GetValue() as Int
+	_MageQuestON			= _SLD_MageQuestON.GetValue() as Int
+	_MagickaMasteryON		= _SLD_MagickaMasteryON.GetValue() as Int
+	_PriestQuestON			= _SLD_PriestQuestON.GetValue() as Int
 	; _RegisterCustomRaces		= false
 	; _ClearGiantRaces = false
 	; _GetDebugSpell	= false
@@ -163,8 +172,13 @@ event OnPageReset(string a_page)
 	ElseIf (a_page == "Quests")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
-		AddHeaderOption(" Role play ")
+		AddHeaderOption(" Blacksmit Apprentice ")
 		AddToggleOptionST("STATE_BlacksmithQuestON","Become a Blacksmith", _BlacksmithQuestON as Float)
+		AddHeaderOption(" Mage Apprentice ")
+		AddToggleOptionST("STATE_MageQuestON","Become a Mage", _MageQuestON as Float)
+		AddToggleOptionST("STATE_MagickaMasteryON","Magicka Mastery System", _MagickaMasteryON as Float)
+		AddHeaderOption(" Priest Apprentice ")
+		AddToggleOptionST("STATE_PriestQuestON","Become a Priest", _PriestQuestON as Float)
 	
 	endIf
 endEvent
@@ -435,13 +449,80 @@ state STATE_BlacksmithQuestON ; TOGGLE
 	endEvent
 
 	event OnDefaultST()
-		_SLD_BlacksmithQuestON.SetValueInt( 1 )
-		SetToggleOptionValueST( True )
+		_SLD_BlacksmithQuestON.SetValueInt( 0 )
+		SetToggleOptionValueST( False )
 		ForcePageReset()
 	endEvent
 
 	event OnHighlightST()
 		SetInfoText("Guided progression from an apprentice to a master Blacksmith.")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_MageQuestON","Become a Blacksmith", _MageQuestON as Float)
+state STATE_MageQuestON ; TOGGLE
+	event OnSelectST()
+		_SLD_MageQuestON.SetValueInt( Math.LogicalXor( 1, _SLD_MageQuestON.GetValueInt() ) )
+		SetToggleOptionValueST( _SLD_MageQuestON.GetValueInt() as Bool )
+
+		if (_SLD_MageQuestON.GetValueInt() == 1)
+			SendModEvent("SLDRefreshMagicka")
+		EndIf
+
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_SLD_MageQuestON.SetValueInt( 0 )
+		SetToggleOptionValueST( False )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Guided progression from an apprentice to a master Mage.")
+	endEvent
+
+endState
+
+; AddToggleOptionST("STATE_MagickaMasteryON","Become a Blacksmith", _MagickaMasteryON as Float)
+state STATE_MagickaMasteryON ; TOGGLE
+	event OnSelectST()
+		_SLD_MagickaMasteryON.SetValueInt( Math.LogicalXor( 1, _SLD_MagickaMasteryON.GetValueInt() ) )
+		SetToggleOptionValueST( _SLD_MagickaMasteryON.GetValueInt() as Bool )
+ 
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_SLD_MagickaMasteryON.SetValueInt( 0 )
+		SetToggleOptionValueST( False )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Magicka level is linked to Mage Mastery progression.")
+	endEvent
+
+endState
+
+
+; AddToggleOptionST("STATE_PriestQuestON","Become a Blacksmith", _PriestQuestON as Float)
+state STATE_PriestQuestON ; TOGGLE
+	event OnSelectST()
+		_SLD_PriestQuestON.SetValueInt( Math.LogicalXor( 1, _SLD_PriestQuestON.GetValueInt() ) )
+		SetToggleOptionValueST( _SLD_PriestQuestON.GetValueInt() as Bool )
+		ForcePageReset()
+	endEvent
+
+	event OnDefaultST()
+		_SLD_PriestQuestON.SetValueInt( 0 )
+		SetToggleOptionValueST( False )
+		ForcePageReset()
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Guided progression from an apprentice to a Holy Scholar.")
 	endEvent
 
 endState
