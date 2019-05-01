@@ -1141,17 +1141,17 @@ EndEvent
 
 Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
-	; Int iOutfitID = _argc as Int
+	Int iOutfitID = _argc as Int
 	String sDevice = _args
 	String sTags = ""
 	Int iTagsIndex 
 
-	; Example: akSpeaker forcing a gag on player using additional tags
-	; akSpeaker.SendModEvent("SDEquipDevice", "Gag:harness,panel") 
+	; Example:  forcing a gag on akSpeaker using additional tags
+	; akSpeaker.SendModEvent("SDEquipDevice", "Gag|harness,panel") 
 
 	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "] [" + _argc + "]")
 
-	; Split _args between Device and Tags (separated by ':')
+	; Split _args between Device and Tags (separated by '|')
 	iTagsIndex = StringUtil.Find(_args, "|")
 	if (iTagsIndex==-1)
 	 	sDevice = _args
@@ -1165,26 +1165,43 @@ Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 	If (kActor == kPlayer)
 		Debug.Trace("[_sdras_player] 	sDevice = "+ sDevice +" - sTags = " + sTags )
 
-		fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
-		fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sDeviceTags = sTags )
+		if (iOutfitID == 1) ; Sanguine outfit - ignore tags
+			fctOutfit.equipNonGenericDeviceByString ( sDeviceString = sDevice, sOutfitString = "Sanguine"  )
+		else
+			fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
+			fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sDeviceTags = sTags )
+		endif
 	else
-		fctOutfit.equipDeviceNPCByString (kActor, sDeviceString = sDevice, sDeviceTags = sTags )
+		if (iOutfitID == 1) ; Sanguine outfit - ignore tags
+			fctOutfit.equipNonGenericDeviceNPCByString ( kActor, sDeviceString = sDevice, sOutfitString = "Sanguine"  )
+		else
+			fctOutfit.equipDeviceNPCByString (kActor, sDeviceString = sDevice, sDeviceTags = sTags )
+		endif
 	endIf
 
 EndEvent
 
 Event OnSDClearDevice(String _eventName, String _args, Float _argc = -1.0, Form _sender)
  	Actor kActor = _sender as Actor
+	Int iOutfitID = _argc as Int
 	String sDevice = _args 
 
 	Debug.Trace("[_sdras_player] Receiving device clear story event [" + _args  + "] [" + _argc as Int + "]")
 
 	If (kActor == kPlayer)
 
-		fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
-		fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
+		if (iOutfitID == 1) ; Sanguine outfit - ignore tags
+			fctOutfit.clearNonGenericDeviceByString ( sDeviceString = sDevice, sOutfitString = "Sanguine"  )
+		else
+			fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
+			fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
+		endif
 	Else
-		fctOutfit.clearDeviceNPCByString (kActor, sDeviceString = sDevice )
+		if (iOutfitID == 1) ; Sanguine outfit - ignore tags
+			fctOutfit.clearNonGenericDeviceNPCByString ( kActor, sDeviceString = sDevice, sOutfitString = "Sanguine"  )
+		else
+			fctOutfit.clearDeviceNPCByString (kActor, sDeviceString = sDevice )
+		endif
 	Endif
 
 

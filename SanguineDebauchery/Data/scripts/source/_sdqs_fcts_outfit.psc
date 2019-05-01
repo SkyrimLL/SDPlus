@@ -2003,6 +2003,178 @@ Function clearNonGenericDeviceByString ( String sDeviceString = "", String sOutf
 	endif
 EndFunction
 
+Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+	; Test for unique, non generic keyword should be done before calling this function
+
+	Keyword kwDeviceKeyword = none
+	Actor PlayerActor = Game.GetPlayer() as Actor
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Bool bDeviceOverride = False
+
+	; If master Race is set, check if override device is set for this race and use it first
+
+	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+ 
+	If (kwDeviceKeyword != None)
+
+		if !kActor.WornHasKeyword(kwDeviceKeyword)
+
+			if (sOutfitString!="")
+				debugTrace(" equipNonGenericDeviceNPCByString called with message: " + sOutfitString)  
+			Endif
+
+			debugTrace(" equipping device string: " + sDeviceString)  
+			debugTrace(" equipping device keyword: " + kwDeviceKeyword)  
+
+			if (sOutfitString == "Sanguine")
+				If ( sDeviceString == "Collar" )
+					aRenderedDevice = zazSanguineCollarRendered 
+					aWornDevice = zazSanguineCollar
+
+				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
+					aRenderedDevice = zazSanguineCuffsRendered 
+					aWornDevice = zazSanguineCuffs
+				
+				ElseIf ( sDeviceString == "LegCuffs" )
+					aRenderedDevice = zazSanguineShacklesRendered 
+					aWornDevice = zazSanguineShackles
+				
+				ElseIf ( sDeviceString == "Gag" )
+					aRenderedDevice = zazSanguineWoodenBitRendered
+					aWornDevice = zazSanguineWoodenBit
+				
+				ElseIf ( sDeviceString == "Blindfold" )
+					aRenderedDevice = zazSanguineBlindsRendered
+					aWornDevice = zazSanguineBlinds
+				
+				ElseIf ( sDeviceString == "VaginalPiercing" )
+					aRenderedDevice = zazSanguineArtifactRendered
+					aWornDevice = zazSanguineArtifact
+				EndIf
+
+			elseif (sOutfitString == "Falmer")
+				If ( sDeviceString == "Collar" )
+					aRenderedDevice = zazFalmerCollarRendered 
+					aWornDevice = zazFalmerCollar
+
+				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
+					aRenderedDevice = zazFalmerCuffsRendered 
+					aWornDevice = zazFalmerCuffs
+
+				EndIf
+
+			elseif (sOutfitString == "Web")
+				If( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
+					aRenderedDevice = zazWebCuffsRendered 
+					aWornDevice = zazWebCuffs
+
+				ElseIf ( sDeviceString == "Collar" )  
+					aRenderedDevice = zazWebCollarRendered 
+					aWornDevice = zazWebCollar
+
+				EndIf
+
+
+			elseif (sOutfitString == "Spriggan")
+				If( sDeviceString == "Gloves" )
+					aRenderedDevice = zazSprigganHandsRendered 
+					aWornDevice = zazSprigganHands
+
+				ElseIf ( sDeviceString == "Boots" )
+					aRenderedDevice = zazSprigganFeetRendered 
+					aWornDevice = zazSprigganFeet
+				
+				ElseIf ( sDeviceString == "Gag" )
+					aRenderedDevice = zazSprigganMaskRendered 
+					aWornDevice = zazSprigganMask
+				
+				ElseIf ( sDeviceString == "Harness" )
+					aRenderedDevice = zazSprigganBodyRendered
+					aWornDevice = zazSprigganBody
+				EndIf
+
+			Endif
+
+			if ( (aWornDevice!=none) && (aRenderedDevice!=none))
+				; preferred device
+
+				debugTrace(" 		equipNonGenericDeviceNPCByString - preferred: " + aRenderedDevice + " - Device inventory: "  + aWornDevice  )
+
+				equipDeviceNPC (kActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword)
+
+			else
+				debugTrace("    equipNonGenericDeviceNPCByString - Can't get worn device")
+			endif
+			
+			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
+
+
+		else
+			debugTrace(" equipNonGenericDeviceNPCByString - player is not wearing: " + sDeviceString)  
+		endIf
+
+	else
+		debugTrace(" equipNonGenericDeviceNPCByString - unknown device to clear " )  
+
+	endif
+EndFunction
+
+Function clearNonGenericDeviceNPCByString ( Actor kActor,  String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+	; Test for unique, non generic keyword should be done before calling this function
+
+	Keyword kwDeviceKeyword = none
+	Actor PlayerActor = Game.GetPlayer() as Actor
+	Armor aWornDevice = none
+	Armor aRenderedDevice = none
+	String sGenericDeviceTags = ""
+	Form kForm
+	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
+	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
+	Bool bDeviceOverride = False
+
+	; If master Race is set, check if override device is set for this race and use it first
+
+	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
+ 
+	If (kwDeviceKeyword != None)
+
+		if kActor.WornHasKeyword(kwDeviceKeyword)
+
+			if (sOutfitString!="")
+				debugTrace(" clearNonGenericDeviceNPCByString called with message: " + sOutfitString)  
+			Endif
+
+			debugTrace(" clearing device string: " + sDeviceString)  
+			debugTrace(" clearing device keyword: " + kwDeviceKeyword)  
+
+			aWornDevice = libs.GetWornDeviceFuzzyMatch(kActor, kwDeviceKeyword) as Armor
+			if (aWornDevice != None)
+				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
+				kForm = aWornDevice as Form
+
+				clearDeviceNPC ( kActor, aWornDevice,  aRenderedDevice,  kwDeviceKeyword, true)
+			else
+				debugTrace("    clearNonGenericDeviceNPCByString - Can't get worn device")
+			endif
+			
+			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
+
+
+		else
+			debugTrace(" clearNonGenericDeviceNPCByString - player is not wearing: " + sDeviceString)  
+		endIf
+
+	else
+		debugTrace(" clearNonGenericDeviceNPCByString - unknown device to clear " )  
+
+	endif
+EndFunction
+
 ; ======================== Punishment items
 
 Function QueueSlavePunishment(Actor kActor , String sDevice, Float fPunishmentLength = 1.0)
