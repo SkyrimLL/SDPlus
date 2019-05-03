@@ -10,6 +10,10 @@ Actor kPlayer = Game.GetPlayer()
 
 kPlayer.RemoveItem(Dagger, 1) 
 Self.GetOwningQuest().SetStage(79)
+
+if (Self.GetOwningQuest().GetStageDone(69))
+Self.GetOwningQuest().SetStage(81)
+endif
 ;END CODE
 EndFunction
 ;END FRAGMENT
