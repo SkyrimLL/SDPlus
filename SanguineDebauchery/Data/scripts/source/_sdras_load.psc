@@ -1,4 +1,4 @@
-Scriptname _sdras_load extends ReferenceAlias  
+Scriptname _sdras_load extends ReferenceAlias
  
 _SD_reset Property _reset Auto
 _SDQS_enslavement Property _SD_Enslavement Auto
@@ -29,18 +29,11 @@ Event OnPlayerLoadGame()
 
 	_reset.Maintenance()
 
- 
- 	Faction DefeatDialogueBlockFaction = Game.GetFormFromFile(0x0008C862, "SexLabDefeat.esp") As Faction
-	If (DefeatDialogueBlockFaction != None)
-		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", DefeatDialogueBlockFaction as Form)
-	Else
-		StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", None)
-	Endif
-
 	; Mod detection / compatibility
-	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON",  0) 
-	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON",  0) 
-	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  0) 
+	StorageUtil.SetIntValue(none, "_SLS_isEstrusChaurusON", 0)
+	StorageUtil.SetIntValue(none, "_SLS_isBeeingFemaleON", 0)
+	StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON", 0)
+	StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", None)
 
 	int idx = Game.GetModCount()
 	string modName = ""
@@ -59,8 +52,10 @@ Event OnPlayerLoadGame()
 			StorageUtil.SetIntValue(none, "_SLS_isCagedFollowerON",  1) 
 			StorageUtil.SetFormValue(none, "_SLS_getCagedFollowerQuestKeyword",  Game.GetFormFromFile(0x0000184d, modName)) ; as Keyword
 
+		elseif modName == "SexLabDefeat.esp"
+			Faction DefeatDialogueBlockFaction = Game.GetFormFromFile(0x0008C862, modName) As Faction
+			StorageUtil.SetFormValue( none, "_SD_SexLabDefeatDialogueBlockFaction", DefeatDialogueBlockFaction as Form)
+
 		endif
 	endWhile
 EndEvent
-
-
