@@ -572,6 +572,7 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 			EndIf
 
 		; Gender restrictions - 2 actors
+		; In general, Target = Player, speaker = Master
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
 			SendModEvent("SLHModHormone", "Pheromones", 0.2)
 
@@ -592,13 +593,13 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 						kActor = akTarget
 						akTarget = akSpeaker
 						akSpeaker = kActor
-					 	bIsTargetVictim = false
-						bIsSpeakerVictim = true
+					 	bIsTargetVictim = true
+						bIsSpeakerVictim = false
 
 					ElseIf  (speakerGender == 0) ; Male Master and Female slave
 						SexLabInTags = "Doggystyle"
-					 	bIsTargetVictim = false
-						bIsSpeakerVictim = true
+					 	bIsTargetVictim = true
+						bIsSpeakerVictim = false
 
 					EndIf
 			EndIf
