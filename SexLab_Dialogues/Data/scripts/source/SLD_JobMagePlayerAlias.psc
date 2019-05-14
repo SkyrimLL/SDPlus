@@ -18,15 +18,23 @@ MagicEffect Property METoxicityDiseaseImmunity  Auto
 
 Int iRejuvenationPotionCount = 0
 
+
+int daysPassed
+int iGameDateLastCheck = -1
+int iDaysSinceLastCheck
+int iDebtLastCheck
+
 Event OnPlayerLoadGame()
 
 	_maintenance()
+	RegisterForSingleUpdate(10)
 
 EndEvent
 
 Event Init()
 
 	_maintenance()
+	RegisterForSingleUpdate(10)
 
 EndEvent
 
@@ -104,6 +112,38 @@ Event OnSleepStop(bool abInterrupted)
 	_updateMagicka()
 	_updateMageMastery()
 endEvent
+
+Event OnUpdate()
+ 	Actor PlayerActor= Game.GetPlayer() as Actor
+	Location currentLocation = Game.GetPlayer().GetCurrentLocation()
+
+	If  !Self || (_SLD_jobMageON.GetValue()==0)
+		Return
+	EndIf
+
+ 	daysPassed = Game.QueryStat("Days Passed")
+
+ 	; Initial values
+ 	if (iGameDateLastCheck == -1)
+ 		iGameDateLastCheck = daysPassed
+ 	endIf
+ 
+	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
+
+	If (iDaysSinceLastCheck > 0)
+		; New day
+
+	else
+		_updateMagicka()
+		_updateMageMastery()
+
+	endIf
+
+	iGameDateLastCheck = daysPassed  
+
+	RegisterForSingleUpdate(10)
+EndEvent
+
 
 Function _updateMagicka(Int iBonus = 1)
 	Actor PlayerActor = Game.GetPlayer()
