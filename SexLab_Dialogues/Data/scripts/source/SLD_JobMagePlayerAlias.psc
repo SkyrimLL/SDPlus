@@ -6,6 +6,9 @@ GlobalVariable Property _SLD_jobMageON Auto
 GlobalVariable Property _SLD_jobMageMastery Auto  
 GlobalVariable Property _SLD_MagickaMasteryON Auto  
 
+ObjectReference Property _SLD_SkyShardRef  Auto  
+ReferenceAlias Property _SLD_SkyShardRefAlias  Auto  
+
 Potion Property RejuvenationPotion  Auto  
 Keyword Property RejuvenationPotionKeyword  Auto  
 
@@ -17,6 +20,8 @@ MagicEffect Property METoxicityDiseaseHigh  Auto
 MagicEffect Property METoxicityDiseaseImmunity  Auto  
 
 Int iRejuvenationPotionCount = 0
+Int iNumberPotionsToday
+Int iLastNumberPotionsUsed = -1
 
 
 int daysPassed
@@ -48,6 +53,17 @@ Function _maintenance()
 
 	_updateMagicka() 
 	_updateMageMastery()
+
+	; Fixing missing aliases from baked in game/quest
+	if (_SLD_SkyShardRefAlias.GetReference() == None)
+		debug.notification("Fixing missing Sky Shard ref " + _SLD_SkyShardRef)
+		_SLD_SkyShardRefAlias.ForceRefTo(_SLD_SkyShardRef)
+	Endif
+
+	; Initialize potions count for today
+	If (iLastNumberPotionsUsed == -1)
+		iLastNumberPotionsUsed = Game.QueryStat("Potions Used")
+	EndIf
 
 	RegisterForSleep()
 EndFunction
@@ -132,6 +148,8 @@ Event OnUpdate()
 
 	If (iDaysSinceLastCheck > 0)
 		; New day
+		iNumberPotionsToday=0
+		iLastNumberPotionsUsed = Game.QueryStat("Potions Used")
 
 	else
 		_updateMagicka()
@@ -150,7 +168,6 @@ Function _updateMagicka(Int iBonus = 1)
 	Float fJobMageMastery = 1.0 + (_SLD_jobMageMastery.GetValue() as Float)
 	float fPlayersHealthPercent = PlayerActor.GetActorValuePercentage("health") 
 	Int iAVMod
-	Int iPotionToxicity
 	Int iPotionToxicityTolerance
 	Float  fAVMod
 
@@ -175,16 +192,17 @@ Function _updateMagicka(Int iBonus = 1)
 	EndIf 
 		
 	PlayerActor.ForceAV("MagickaRate", fAVMod )
-	
-	iPotionToxicity = (Game.QueryStat("Potions Used") / Game.QueryStat("Days Passed")) 
-	iPotionToxicityTolerance = 3 + ((fJobMageMastery as Int) / 10)
+
+	iNumberPotionsToday= iLastNumberPotionsUsed - Game.QueryStat("Potions Used")
+
+	iPotionToxicityTolerance = 1 + (Game.QueryStat("Potions Used") / Game.QueryStat("Days Passed"))  + ((fJobMageMastery as Int) / 40)
 
 	if (fJobMageMastery < 100)
-		if (iPotionToxicity > (iPotionToxicityTolerance * 2) ) && (!PlayerActor.HasMagicEffect(METoxicityDiseaseHigh))
+		if (iNumberPotionsToday > (iPotionToxicityTolerance * 2) ) && (!PlayerActor.HasMagicEffect(METoxicityDiseaseHigh))
 			Debug.MessageBox("You contracted Rockjoint from drinking too many potions in a day.")
 			PotionToxicityDiseaseHigh.RemoteCast(PlayerActor as ObjectReference, PlayerActor, PlayerActor as ObjectReference)
 			
-		elseif (iPotionToxicity > iPotionToxicityTolerance ) && (!PlayerActor.HasMagicEffect(METoxicityDiseaseLow))
+		elseif (iNumberPotionsToday > iPotionToxicityTolerance ) && (!PlayerActor.HasMagicEffect(METoxicityDiseaseLow))
 			Debug.MessageBox("You contracted the Rattles from drinking too many potions in a day.")
 			PotionToxicityDiseaseLow.RemoteCast(PlayerActor as ObjectReference, PlayerActor, PlayerActor as ObjectReference)
 			
@@ -198,7 +216,7 @@ Function _updateMagicka(Int iBonus = 1)
 
 	Debug.Trace("[SLD] Magicka: " + iAVMod)
 	Debug.Trace("[SLD] MagickaRate: " + fAVMod)
-	Debug.Trace("[SLD] iPotionToxicity: " + iPotionToxicity)
+	Debug.Trace("[SLD] iNumberPotionsToday: " + iNumberPotionsToday)
 	Debug.Trace("[SLD] iPotionToxicityTolerance: " + iPotionToxicityTolerance)
 	Debug.Trace("[SLD] fJobMageMastery: " + fJobMageMastery)
 	Debug.Trace("[SLD] fPlayersHealthPercent: " + fPlayersHealthPercent) 
@@ -257,5 +275,6 @@ Function _updateMageMastery(Int iBonus = 1)
 
 	Debug.Trace("[SLD] Mage Mastery: " + iJobMageMastery)
 EndFunction
+
 
 

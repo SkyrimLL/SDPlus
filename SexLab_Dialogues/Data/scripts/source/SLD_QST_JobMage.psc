@@ -1,5 +1,5 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
-;NEXT FRAGMENT INDEX 26
+;NEXT FRAGMENT INDEX 30
 Scriptname SLD_QST_JobMage Extends Quest Hidden
 
 ;BEGIN ALIAS PROPERTY _SLD_SkyShardBonecrestRef
@@ -7,36 +7,38 @@ Scriptname SLD_QST_JobMage Extends Quest Hidden
 ReferenceAlias Property Alias__SLD_SkyShardBonecrestRef Auto
 ;END ALIAS PROPERTY
 
-;BEGIN ALIAS PROPERTY JobMagePlayerRef
+;BEGIN ALIAS PROPERTY _SLD_JobMagePlayerRef
 ;ALIAS PROPERTY TYPE ReferenceAlias
-ReferenceAlias Property Alias_JobMagePlayerRef Auto
+ReferenceAlias Property Alias__SLD_JobMagePlayerRef Auto
 ;END ALIAS PROPERTY
 
-;BEGIN FRAGMENT Fragment_4
-Function Fragment_4()
+;BEGIN ALIAS PROPERTY _SLD_AnnotatedShockTheoryRef
+;ALIAS PROPERTY TYPE ReferenceAlias
+ReferenceAlias Property Alias__SLD_AnnotatedShockTheoryRef Auto
+;END ALIAS PROPERTY
+
+;BEGIN FRAGMENT Fragment_7
+Function Fragment_7()
 ;BEGIN CODE
-SetObjectiveDisplayed(10, false)
-SetObjectiveDisplayed(20, false)
-SetObjectiveDisplayed(49, false)
-SetObjectiveDisplayed(50)
+SetObjectiveDisplayed(50, false)
+SetObjectiveDisplayed(70)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_20
-Function Fragment_20()
+;BEGIN FRAGMENT Fragment_28
+Function Fragment_28()
 ;BEGIN CODE
-SetObjectiveDisplayed(90, false)
-SetObjectiveDisplayed(200)
+SetObjectiveDisplayed(120, false)
+SetObjectiveDisplayed(125)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_16
-Function Fragment_16()
+;BEGIN FRAGMENT Fragment_0
+Function Fragment_0()
 ;BEGIN CODE
-SetObjectiveDisplayed(95, false)
-SetObjectiveDisplayed(100)
+;
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -50,43 +52,11 @@ SetObjectiveDisplayed(80)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_24
-Function Fragment_24()
+;BEGIN FRAGMENT Fragment_22
+Function Fragment_22()
 ;BEGIN CODE
-SetObjectiveDisplayed(120, false)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_3
-Function Fragment_3()
-;BEGIN CODE
-SetObjectiveDisplayed(20)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_0
-Function Fragment_0()
-;BEGIN CODE
-;
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_15
-Function Fragment_15()
-;BEGIN CODE
-SetObjectiveDisplayed(90)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_8
-Function Fragment_8()
-;BEGIN CODE
-SetObjectiveDisplayed(60, false)
-SetObjectiveDisplayed(65)
+SetObjectiveDisplayed(100, false)
+SetObjectiveDisplayed(105, false)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -101,27 +71,18 @@ SetObjectiveDisplayed(49)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_22
-Function Fragment_22()
+;BEGIN FRAGMENT Fragment_15
+Function Fragment_15()
 ;BEGIN CODE
-SetObjectiveDisplayed(100, false)
+SetObjectiveDisplayed(90)
 ;END CODE
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_19
-Function Fragment_19()
+;BEGIN FRAGMENT Fragment_17
+Function Fragment_17()
 ;BEGIN CODE
-SetObjectiveDisplayed(130)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_9
-Function Fragment_9()
-;BEGIN CODE
-SetObjectiveDisplayed(70, false)
-SetObjectiveDisplayed(75)
+SetObjectiveDisplayed(110)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -135,10 +96,89 @@ SetObjectiveDisplayed(68)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_10
-Function Fragment_10()
+;BEGIN FRAGMENT Fragment_4
+Function Fragment_4()
 ;BEGIN CODE
-SetObjectiveDisplayed(75, false)
+SetObjectiveDisplayed(10, false)
+SetObjectiveDisplayed(20, false)
+SetObjectiveDisplayed(49, false)
+SetObjectiveDisplayed(50)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_19
+Function Fragment_19()
+;BEGIN CODE
+SetObjectiveDisplayed(130)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_8
+Function Fragment_8()
+;BEGIN CODE
+SetObjectiveDisplayed(60, false)
+SetObjectiveDisplayed(65)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_24
+Function Fragment_24()
+;BEGIN CODE
+SetObjectiveDisplayed(120, false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_27
+Function Fragment_27()
+;BEGIN CODE
+SetObjectiveDisplayed(110, false)
+SetObjectiveDisplayed(115)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_18
+Function Fragment_18()
+;BEGIN CODE
+SetObjectiveDisplayed(120)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_21
+Function Fragment_21()
+;BEGIN CODE
+SetObjectiveDisplayed(95)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_9
+Function Fragment_9()
+;BEGIN CODE
+SetObjectiveDisplayed(70, false)
+SetObjectiveDisplayed(75)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_2
+Function Fragment_2()
+;BEGIN CODE
+SetObjectiveDisplayed(10)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_20
+Function Fragment_20()
+;BEGIN CODE
+SetObjectiveDisplayed(90, false)
+SetObjectiveDisplayed(200)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -160,19 +200,11 @@ SetObjectiveDisplayed(60)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_7
-Function Fragment_7()
+;BEGIN FRAGMENT Fragment_29
+Function Fragment_29()
 ;BEGIN CODE
-SetObjectiveDisplayed(50, false)
-SetObjectiveDisplayed(70)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_11
-Function Fragment_11()
-;BEGIN CODE
-SetObjectiveDisplayed(68, false)
+SetObjectiveDisplayed(130, false)
+SetObjectiveDisplayed(135)
 ;END CODE
 EndFunction
 ;END FRAGMENT
@@ -185,42 +217,52 @@ SetObjectiveDisplayed(81)
 EndFunction
 ;END FRAGMENT
 
-;BEGIN FRAGMENT Fragment_2
-Function Fragment_2()
-;BEGIN CODE
-SetObjectiveDisplayed(10)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_21
-Function Fragment_21()
-;BEGIN CODE
-SetObjectiveDisplayed(95)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_18
-Function Fragment_18()
-;BEGIN CODE
-SetObjectiveDisplayed(120)
-;END CODE
-EndFunction
-;END FRAGMENT
-
-;BEGIN FRAGMENT Fragment_17
-Function Fragment_17()
-;BEGIN CODE
-SetObjectiveDisplayed(110)
-;END CODE
-EndFunction
-;END FRAGMENT
-
 ;BEGIN FRAGMENT Fragment_23
 Function Fragment_23()
 ;BEGIN CODE
 SetObjectiveDisplayed(110, false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_16
+Function Fragment_16()
+;BEGIN CODE
+SetObjectiveDisplayed(95, false)
+SetObjectiveDisplayed(100)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_11
+Function Fragment_11()
+;BEGIN CODE
+SetObjectiveDisplayed(68, false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_10
+Function Fragment_10()
+;BEGIN CODE
+SetObjectiveDisplayed(75, false)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_26
+Function Fragment_26()
+;BEGIN CODE
+SetObjectiveDisplayed(100, false)
+SetObjectiveDisplayed(105)
+;END CODE
+EndFunction
+;END FRAGMENT
+
+;BEGIN FRAGMENT Fragment_3
+Function Fragment_3()
+;BEGIN CODE
+SetObjectiveDisplayed(20)
 ;END CODE
 EndFunction
 ;END FRAGMENT

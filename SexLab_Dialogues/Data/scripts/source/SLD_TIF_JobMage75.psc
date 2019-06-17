@@ -11,7 +11,7 @@ Actor kPlayer = Game.GetPlayer()
 kPlayer.AddItem(Dagger, 1)
 kPlayer.AddItem(FilledSoulGem, 1)
 kPlayer.AddItem(FarengarBook, 1)
-kPlayer.AddItem(FarengarRing, 1)
+kPlayer.AddItem(FarengarItem  , 1)
 Self.GetOwningQuest().SetStage(75)
 ;END CODE
 EndFunction
@@ -25,4 +25,4 @@ SoulGem Property FilledSoulGem  Auto
 
 Book Property FarengarBook  Auto  
 
-Armor Property FarengarRing  Auto  
+Weapon Property FarengarItem  Auto  
