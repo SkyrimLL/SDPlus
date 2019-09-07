@@ -56,38 +56,45 @@ EndFunction
 
 Event OnInit()
 	kCompanion = Self.GetReference() as Actor
-	kMaster = _SDRAP_master.GetReference() as Actor
+	kMaster = _SDRAP_master.GetReference() as Actor ; StorageUtil.GetFormValue(none, "_SD_CurrentOwner") as Actor 
 
-	;CagedFollowers
-	CagedFollowerQst = StorageUtil.GetFormValue(none, "_SLS_getCagedFollowerQuestKeyword") as Keyword
-	
-	Debug.Trace("[_sdras_companion]  Enslaving follower: ") 
-	If ( kCompanion ) && (kCompanion!=kMaster)
-		Debug.Trace("[_sdras_companion]     Follower name is being enslaved : " + kCompanion.GetName()) 
-		Debug.Trace("[_sdras_companion]     		Follower ID : " + kCompanion ) 
-
-		If (kCompanion.IsChild())
-			Debug.Trace("[_sdras_companion]     Follower is a child - Aborting") 
-			GoToState("null")
-		ElseIf (kCompanion == kMaster)
-			Debug.Trace("[_sdras_companion]     Follower is the Master! - Aborting") 
-			GoToState("null")
-		Else
-			GoToState("monitor")
-			bEnslaved = False
-			kCompanion.SetNoBleedoutRecovery( True )
-			; kCompanion.StartCombat( kMaster )
-			kCompanion.AddToFaction( _SDFP_slaverResistance )
-
-			; Force proper enslavement of companions for now - add better behaviors later
-			enslaveCompanion(  kCompanion )
-
-			RegisterForSingleUpdate( fRFSU )
-		EndIf
-	Else
-		Debug.Trace("[_sdras_companion]     Follower isn't initialized - Aborting") 
+	If (!kMaster)
+		; Master quest alias is empty - abort
+		Debug.Trace("[_sdras_companion]     Master isn't initialized - Aborting") 
 		GoToState("null")
-	EndIf
+	else 
+
+		;CagedFollowers
+		CagedFollowerQst = StorageUtil.GetFormValue(none, "_SLS_getCagedFollowerQuestKeyword") as Keyword
+		
+		If ( kCompanion ) && (kCompanion!=kMaster) && (StorageUtil.GetIntValue(kCompanion, "_SD_iFollowerEnslaved")==0)
+			Debug.Trace("[_sdras_companion]  Enslaving follower: ") 
+			Debug.Trace("[_sdras_companion]     Follower name is being enslaved : " + kCompanion.GetName()) 
+			Debug.Trace("[_sdras_companion]     		Follower ID : " + kCompanion ) 
+
+			If (kCompanion.IsChild())
+				Debug.Trace("[_sdras_companion]     Follower is a child - Aborting") 
+				GoToState("null")
+			ElseIf (kCompanion == kMaster)
+				Debug.Trace("[_sdras_companion]     Follower is the Master! - Aborting") 
+				GoToState("null")
+			Else
+				GoToState("monitor")
+				bEnslaved = False
+				kCompanion.SetNoBleedoutRecovery( True )
+				; kCompanion.StartCombat( kMaster )
+				kCompanion.AddToFaction( _SDFP_slaverResistance )
+
+				; Force proper enslavement of companions for now - add better behaviors later
+				enslaveCompanion(  kCompanion )
+
+				RegisterForSingleUpdate( fRFSU )
+			EndIf
+		Else
+			Debug.Trace("[_sdras_companion]     Follower isn't initialized - Aborting") 
+			GoToState("null")
+		EndIf
+	Endif
 EndEvent
 
 State null
@@ -95,32 +102,45 @@ State null
 EndState
 
 State monitor
-	Event OnCellAttach()
-		If ( bEnslaved )
+	;Event OnCellAttach()
+	;	If ( bEnslaved )
 			;kCompanion.playIdle(OffsetBoundStandingStart)
-		EndIf
-	EndEvent
+	;	EndIf
+	;EndEvent
 
 	Event OnEnterBleedout()
-		If (!bEnslaved)
-			enslaveCompanion(  kCompanion )
-		EndIf
+		If (StorageUtil.GetIntValue(kCompanion, "_SD_iFollowerEnslaved")==0)
+			If (!bEnslaved)
+				enslaveCompanion(  kCompanion )
+			EndIf
+		Endif
 	EndEvent
 	
 	Event OnUpdate()
-		If ( !bEnslaved )
-			enslaveCompanion(  kCompanion )
-			; If ( !kMaster.IsDead() && kCompanion.GetCombatTarget() != kMaster )
-			;	kCompanion.StartCombat( kMaster )
-			; EndIf
-			RegisterForSingleUpdate( fRFSU )
-		EndIf
+		If (StorageUtil.GetIntValue(kCompanion, "_SD_iFollowerEnslaved")==0)
+			If ( !bEnslaved )
+				enslaveCompanion(  kCompanion )
+				; If ( !kMaster.IsDead() && kCompanion.GetCombatTarget() != kMaster )
+				;	kCompanion.StartCombat( kMaster )
+				; EndIf
+				RegisterForSingleUpdate( fRFSU )
+			EndIf
+		Endif
 	EndEvent
 
 EndState
 
 Function enslaveCompanion( Actor kActor)
+	kMaster = _SDRAP_master.GetReference() as Actor ; StorageUtil.GetFormValue(none, "_SD_CurrentOwner") as Actor 
+
+	If (!kMaster)
+		; Master quest alias is empty - abort
+		Debug.Trace("[_sdras_companion]     Master isn't initialized - Aborting") 
+		GoToState("null")
+	else 
 		bEnslaved = True
+		StorageUtil.SetIntValue(kCompanion, "_SD_iFollowerEnslaved",1 )
+
 		kPlayer = Game.GetPlayer()
 
 		Debug.Trace("[_sdras_companion]       Enslavement starting for " + kActor.GetName()) 
@@ -231,7 +251,7 @@ Function enslaveCompanion( Actor kActor)
 		EndIf
 
 		Debug.Trace("[_sdras_companion]       Enslavement complete for " + kActor.GetName()) 
-
+	endif
 EndFunction
 
 

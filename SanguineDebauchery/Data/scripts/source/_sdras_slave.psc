@@ -187,6 +187,17 @@ Form fGagDevice = None
 
 Int iCageRadius = 3500
 
+Function UpdateMasterSlave()
+	; kMaster = _SDRAP_master.GetReference() as Actor
+	; kSlave = _SDRAP_slave.GetReference() as Actor
+
+	kMaster = StorageUtil.GetFormValue(none, "_SD_CurrentOwner") as Actor 
+	kSlave  = StorageUtil.GetFormValue(none, "_SD_CurrentSlave") as Actor 
+	; _SDRAP_master.ForceRefTo(kMaster)
+	; _SDRAP_slave.ForceRefTo(kSlave)
+EndFunction
+
+
 Function freedomTimer( Float afTime )
 	If ( afTime >= 60.0 )
 		; Debug.Notification( Math.Floor( afTime / 60.0 ) + " min.," + ( Math.Floor( afTime ) % 60 ) + " sec. and you're free!" )
@@ -205,8 +216,8 @@ EndFunction
 
 
 Event OnInit()
-	kMaster = _SDRAP_master.GetReference() as Actor
-	kSlave = _SDRAP_slave.GetReference() as Actor
+
+  	UpdateMasterSlave()
 
 	_slaveStatusInit()
 	
@@ -245,7 +256,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	Weapon klHand = kSlave.GetEquippedWeapon( True )
 
 	If ( !kMaster )
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 	EndIf
 
 	; most likely to happen on a pickpocket failure.
@@ -389,6 +400,7 @@ EndEvent
 State waiting
 	Event OnUpdate()
 		; Debug.Notification( "[SD] Waiting")
+		UpdateMasterSlave()
 
 		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster) ; && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
 			debugTrace(" Player is Waiting")
@@ -414,8 +426,7 @@ State monitor
 	Event OnBeginState()
 		; debugTrace(" Begin Monitor State")
 
-		kMaster = _SDRAP_master.GetReference() as Actor
-		kSlave = _SDRAP_slave.GetReference() as Actor
+		UpdateMasterSlave()
 
 		kSlaver = _SDRAP_slaver.GetReference() as ObjectReference
 		kSlaver2_m = _SDRAP_slaver2_m.GetReference() as ObjectReference
@@ -448,7 +459,7 @@ State monitor
 		; Debug.Notification("[SD] Slave: Monitor")
 		; Debug.Notification("[SD] Restraints: "  + fctOutfit.isRestraintEquipped (  kSlave ) )
 		; Debug.Notification("[SD] Punishment: " + fctOutfit.isPunishmentEquipped (  kSlave ) )
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		; if (!kMaster) || ( !kMaster.Is3DLoaded() )
 		;	GoToState("monitor")
@@ -862,7 +873,7 @@ State escape_shock
 		debugTrace(" Escape attempt - shock collar" )
 		debugTrace(" starting timer" )
 
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		; Calculate distance to reference - set to Master for now. 
 		; Could be set to a location marker later if needed
@@ -969,7 +980,7 @@ State escape_shock
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 		; debugTrace(" Player is Escaping (shocking collar)")
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		_slaveStatusTicker()
 
@@ -1083,7 +1094,7 @@ State escape_choke
 		debugTrace(" Cage scene - choking collar - start" )
 		debugTrace(" starting timer" )
 
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		freedomTimer ( 20 ) ; _SDGVP_escape_timer.GetValue() )
 		fEscapeTime = GetCurrentRealTime() + 20 ; forced to 30 s for choking - funct.intMin( StorageUtil.GetIntValue(kSlave, "_SD_iTimeBuffer") as Int, _SDGVP_escape_timer.GetValue() as Int)
@@ -1124,7 +1135,7 @@ State escape_choke
 		; EndWhile
 		; debugTrace(" Player is Escaping (choking collar)")
 
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" escape_choke: Master dead or disabled - Stop enslavement")
@@ -1328,7 +1339,7 @@ State caged
 		; debugTrace(" Player is Caged")
 		ObjectReference cage_door = _SDRAP_cage.GetReference() as ObjectReference
 
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" caged: Master dead or disabled - Stop enslavement")

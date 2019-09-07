@@ -9,7 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
 ; funct.removeItemsInList( kPlayer, _SDFLP_sex_items )
 ; funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
-_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
+;_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 kPlayer.RemoveItem(Gold, 200 )
  

@@ -692,6 +692,8 @@ Function removeSlaveItems(  Bool bCollar = True,  Bool bBindings = True, Bool bP
 				 		Debug.Trace("[_sdqs_enslavement] 		Debug - NPC is NOT in Dialogue Blocking Faction from Defeat" )
 					Endif
 				Endif
+
+				StorageUtil.SetIntValue(nthActor, "_SD_iFollowerEnslaved",0 )
 			EndIf
 			idx += 1
 		EndWhile

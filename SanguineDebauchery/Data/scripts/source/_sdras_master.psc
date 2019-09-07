@@ -101,17 +101,30 @@ Bool bAttackedBySlave = False
 Float fRFSU = 2.0
 Float fRFSUGT = 1.0
 
+
+Function UpdateMasterSlave()
+	; kMaster = _SDRAP_master.GetReference() as Actor
+	; kSlave = _SDRAP_slave.GetReference() as Actor
+
+	kMaster = StorageUtil.GetFormValue(none, "_SD_CurrentOwner") as Actor 
+	kSlave  = StorageUtil.GetFormValue(none, "_SD_CurrentSlave") as Actor 
+	; _SDRAP_master.ForceRefTo(kMaster)
+	; _SDRAP_slave.ForceRefTo(kSlave)
+EndFunction
+
 Event OnDeath(Actor akKiller)
 	; Master dead - Escape and transfer of ownership 
 	debugTrace(" Master dead - Stop enslavement")
 
 	ObjectReference  kPlayerStorage = _SDRAP_playerStorage.GetReference()
 
-	If (kSlave.GetDistance( kMaster ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") * 3.0))
-		; Move all items back from Sanguine Storage into Master if slave is nearby
-		kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
-		Wait(2.0)
-	EndIf
+	; Move all items back from Sanguine Storage into Master if slave is nearby
+	; DISABLED in July 2019 version to prevent confusion and lost items
+
+	; If (kSlave.GetDistance( kMaster ) <= (StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength") * 3.0))
+	;	kPlayerStorage.RemoveAllItems(akTransferTo = kMaster as ObjectReference, abKeepOwnership = True)
+	;	Wait(2.0)
+	; EndIf
 	
 	; SendModEvent("PCSubFree")
 	; It may be better to directly stop the quest here instead of relying on Mod Events
@@ -129,6 +142,7 @@ Event OnDeath(Actor akKiller)
 
 			ElseIf (akKiller != kMaster)
 				; Send all items back to Dreamworld storage
+				; .. in case Master grabbed quest items
 				kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
 				Debug.Notification( "A new owner grabs you." )
@@ -158,7 +172,7 @@ EndEvent
 
 Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 	If ( !kMaster )
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 	Else
 		If ( kMaster.GetCurrentScene() )
 			kMaster.GetCurrentScene().Stop()
@@ -288,7 +302,7 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	if !akSourceContainer
 		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from the world")
 	elseif akSourceContainer == Game.GetPlayer()
-		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem)
+		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from player")
 	else
 		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from another container")
 	endIf
@@ -306,8 +320,10 @@ EndEvent
 
 Event OnInit()
 
-	kMaster = _SDRAP_master.GetReference() as Actor
-	kSlave = _SDRAP_slave.GetReference() as Actor
+  	UpdateMasterSlave()
+
+	debugTrace("[_sdras_master]  waiting - Init")
+	debugTrace("     kMaster: " + kMaster)
 
 	Utility.Wait(5.0)
 		
@@ -319,16 +335,39 @@ EndEvent
 
 State waiting
 	Event OnUpdate()
-		If ( Self.GetOwningQuest().IsRunning() ) && (kMaster)  ; && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
-			distanceAverage = 0
-			GoToState("monitor")
-		ElseIf ( Self.GetOwningQuest().IsRunning() ) &&  (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
-			debugTrace(" waiting - Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+		If ( Self.GetOwningQuest().IsRunning() ) 
+		  	UpdateMasterSlave()
 
-			SendModEvent("PCSubFree")
-			; GoToState("doNothing")
+			If(kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
+				debugTrace("[_sdras_master]  waiting - Master dead or disabled - Stop enslavement")
+				debugTrace("     kMaster: " + kMaster)
+				debugTrace("     kSlave: " + kSlave)
+				debugTrace("     kMaster.IsDisabled(): " + kMaster.IsDisabled())
+				debugTrace("     kMaster.IsDead(): " + kMaster.IsDead())
+
+				Debug.Notification( "Your owner is either dead or left you...")
+
+				SendModEvent("PCSubFree")
+				; GoToState("doNothing")
+
+			ElseIf (!kMaster || !kSlave)
+				debugTrace("[_sdras_master] waiting - Master is empty - Stop enslavement")
+				debugTrace("     kMaster: " + kMaster)
+				debugTrace("     kSlave: " + kSlave)
+				debugTrace("     kMaster.IsDisabled(): " + kMaster.IsDisabled())
+				debugTrace("     kMaster.IsDead(): " + kMaster.IsDead())
+
+				Debug.Notification( "Your owner is missing...")
+
+				SendModEvent("PCSubFree")
+				; GoToState("doNothing")
+			ElseIf (kMaster)  ; && ( kMaster.Is3DLoaded() ); && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) ; wait for end of enslavement sequence
+				distanceAverage = 0
+				GoToState("monitor")
+
+			EndIf
 		EndIf
+
 		If ( Self.GetOwningQuest() )
 			RegisterForSingleUpdate( fRFSU )
 		EndIf
@@ -348,8 +387,7 @@ State monitor
 		fSlaveLastSeen = GetCurrentRealTime()
 		; fLibido = 0.0
 		
-		kMaster = _SDRAP_master.GetReference() as Actor
-		kSlave = _SDRAP_slave.GetReference() as Actor
+	  	UpdateMasterSlave()
 		; kBindings = _SDRAP_bindings.GetReference() as ObjectReference
 		kCrop = _SDRAP_crop.GetReference().GetBaseObject() as Weapon
 
@@ -364,7 +402,8 @@ State monitor
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
+
 		if (!kMaster)  ; || ( !kMaster.Is3DLoaded() )
 			GoToState("monitor")
 		endif
@@ -790,7 +829,7 @@ State search
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 		
 		If ( Self.GetOwningQuest().IsRunning() ) &&  (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" search - Master dead or disabled - Stop enslavement")
@@ -844,7 +883,7 @@ State combat
 	Event OnUpdate()
 		; While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 		; EndWhile
-		kMaster = _SDRAP_master.GetReference() as Actor
+		UpdateMasterSlave()
 
 		If ( Self.GetOwningQuest().IsRunning() ) && (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" combat - Master dead or disabled - Stop enslavement")
@@ -881,8 +920,8 @@ State caged
 	Event OnUpdate()
 	;	While ( !Game.GetPlayer().Is3DLoaded() ) || (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==1)
 	;	EndWhile
-		kMaster = _SDRAP_master.GetReference() as Actor
-		
+		UpdateMasterSlave()
+
 		If ( Self.GetOwningQuest().IsRunning() ) && (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" caged - Master dead or disabled - Stop enslavement")
 			Debug.Notification( "Your owner is either dead or left you...")

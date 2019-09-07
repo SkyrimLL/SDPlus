@@ -119,6 +119,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	; ObjectReference shackles = _SDRAP_shackles.GetReference() as ObjectReference
 	; ObjectReference bindings = _SDRAP_bindings.GetReference() as ObjectReference
 	; ObjectReference collar = _SDRAP_collar.GetReference() as ObjectReference
+	Actor MasterQuestAlias = _SDRAP_master.GetReference() as Actor
 
 	kMaster = akRef1 as Actor
 	kSlave = akRef2 as Actor
@@ -126,13 +127,42 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 	debugTrace(" Receiving enslavement story.")
  	debugTrace(" bQuestActive == " + bQuestActive)
 
+	If ( kMaster != MasterQuestAlias )
+		debug.Notification("[_sdqs_enslavement] OnStoryScript - Master quest alias empty")
+		debugTrace("[_sdqs_enslavement] OnStoryScript - Master quest alias empty - aborting enslavement")
+		debugTrace("[_sdqs_enslavement]     kMaster: " + kMaster)
+		debugTrace("[_sdqs_enslavement]     MasterQuestAlias: " + MasterQuestAlias)
+		_SDQP_enslavement.Stop()
+		Return
+	EndIf
+
+	If ( !kMaster )
+		debugTrace("[_sdqs_enslavement] OnStoryScript - Master is empty - aborting enslavement")
+		_SDQP_enslavement.Stop()
+		Return
+	EndIf
+
+	If ( !kSlave )
+		debugTrace("[_sdqs_enslavement] OnStoryScript - Slave is empty - aborting enslavement")
+		_SDQP_enslavement.Stop()
+		Return
+	EndIf
+
+	; kMaster = _SDRAP_master.GetReference() as Actor
+	; kSlave = _SDRAP_slave.GetReference() as Actor
+
+
 	If ( !bQuestActive )
-		debugTrace(" Starting enslavement story.")
+		debugTrace("[_sdqs_enslavement]  Starting enslavement story.")
 		bQuestActive = True		
 
 		; _SDGVP_demerits.SetValueInt( aiValue1 )
 
 		; ---------------------------------------------------------------------------
+		debugTrace("[_sdqs_enslavement]  kMaster:" + kMaster)
+		debugTrace("[_sdqs_enslavement]  kSlave:" + kSlave)
+		StorageUtil.SetFormValue(none, "_SD_CurrentOwner", kMaster)
+		StorageUtil.SetFormValue(none, "_SD_CurrentSlave", kSlave)
 		EnslavePlayer(kMaster, kSlave, _SDGVP_config[3].GetValue() as Bool)
 		; ---------------------------------------------------------------------------
 
@@ -150,7 +180,7 @@ Event OnStoryScript(Keyword akKeyword, Location akLocation, ObjectReference akRe
 		; EndIf
 	ElseIf ( _SDGVP_config[0].GetValue() )
 ;		kSlave.GetActorBase().SetEssential( False )
-		debugTrace(" Aborting enslavement story - already active.")
+		debugTrace("[_sdqs_enslavement] Aborting enslavement story - already active.")
 	EndIf
 
 EndEvent

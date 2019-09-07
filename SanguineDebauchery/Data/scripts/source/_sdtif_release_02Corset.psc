@@ -1,6 +1,6 @@
 ;BEGIN FRAGMENT CODE - Do not edit anything between this and the end comment
 ;NEXT FRAGMENT INDEX 5
-Scriptname _sdtif_release_01brasg Extends TopicInfo Hidden
+Scriptname _sdtif_release_02Corset Extends TopicInfo Hidden
 
 ;BEGIN FRAGMENT Fragment_4
 Function Fragment_4(ObjectReference akSpeakerRef)
@@ -13,7 +13,7 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 ;Game.GetPlayer().RemoveItem(Gold, 200 )
  
-fctOutfit.clearDeviceByString( sDeviceString = "Bra" )
+fctOutfit.clearDeviceByString( sDeviceString = "Corset" )
 
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Breast")
