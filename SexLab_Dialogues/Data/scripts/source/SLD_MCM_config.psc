@@ -35,7 +35,7 @@ Book Property _SLD_debugSpell Auto
 ; 3 - Added keymap option
 
 int function GetVersion()
-	return 2019 ; Default version
+	return 201901 ; Default version
 endFunction
 
 
@@ -81,10 +81,11 @@ event OnVersionUpdate(int a_version)
 	{Called when a version update of this script has been detected}
 
 	; Version 2 specific updating code
-	if (a_version >= 2019 && CurrentVersion < 2019)
-		Pages = new string[2]
+	if (a_version >= 201901 && CurrentVersion < 201901)
+		Pages = new string[3]
 		Pages[0] = "Features"
 		Pages[1] = "Quests"
+		Pages[2] = "Debug"
 	endIf
 
 
@@ -158,13 +159,6 @@ event OnPageReset(string a_page)
 		AddSliderOptionST("STATE_CommentProbability","Comment Probability",  _CommentProbability	 as Float,"{0} %")
 		AddSliderOptionST("STATE_AttackProbability","Attack Probability",  _AttackProbability	 as Float,"{0} %")
 
-		AddHeaderOption(" Compatibility settings")
-		AddToggleOptionST("STATE_RegisterCustomRaces","Register custom races", _RegisterCustomRaces	 as Float) 
-		AddToggleOptionST("STATE_ClearGiantRaces","Clear giant races", _ClearGiantRaces	 as Float) 
-
-		AddHeaderOption(" Debug")
-		AddToggleOptionST("STATE_GetDebugSpell","Get debug spell book", _GetDebugSpell	 as Float) 
-
 
 	ElseIf (a_page == "Quests")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -175,7 +169,17 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_MageQuestON","Become a Mage", _MageQuestON as Float)
 		AddToggleOptionST("STATE_MagickaMasteryON","Magicka Mastery System", _MagickaMasteryON as Float)
 		AddHeaderOption(" Priest Apprentice ")
-		AddToggleOptionST("STATE_PriestQuestON","Become a Priest", _PriestQuestON as Float)
+		AddToggleOptionST("STATE_PriestQuestON","Become a Priest", _PriestQuestON as Float, OPTION_FLAG_DISABLED)
+
+	ElseIf (a_page == "Debug")
+		SetCursorFillMode(TOP_TO_BOTTOM)
+
+		AddHeaderOption(" Compatibility settings")
+		AddToggleOptionST("STATE_RegisterCustomRaces","Register custom races", _RegisterCustomRaces	 as Float) 
+		AddToggleOptionST("STATE_ClearGiantRaces","Clear giant races", _ClearGiantRaces	 as Float) 
+
+		AddHeaderOption(" Debug")
+		AddToggleOptionST("STATE_GetDebugSpell","Get debug spell book", _GetDebugSpell	 as Float) 
 	
 	endIf
 endEvent
