@@ -1,5 +1,7 @@
 Scriptname SLD_beastFollowerScript extends ReferenceAlias  
 
+GlobalVariable Property _SLD_BeastDialogueON Auto  
+
 ; DialogueFollowerScript Property DialogueFollower Auto
 GlobalVariable Property _SLD_GiftDialogueON Auto  
 Message Property _SLD_beastMenu  Auto  
@@ -15,6 +17,10 @@ event onActivate(objectReference AkActivator)
 	ObjectReference kActorRef = self.GetReference()
 	Actor kActor = kActorRef as Actor
 
+	If (_SLD_BeastDialogueON.GetValue() == 0)
+		Return
+	EndIf
+	
 	If (kActor.IsDead())
 		Debug.Trace( "[SLD] Attemping to activate a dead creature." )
 		Return
