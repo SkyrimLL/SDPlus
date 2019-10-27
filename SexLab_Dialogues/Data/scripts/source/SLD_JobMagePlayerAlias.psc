@@ -12,12 +12,22 @@ ReferenceAlias Property _SLD_SkyShardRefAlias  Auto
 Potion Property RejuvenationPotion  Auto  
 Keyword Property RejuvenationPotionKeyword  Auto  
 
-Spell Property PotionToxicityDiseaseLow  Auto  
-Spell Property PotionToxicityDiseaseHigh  Auto  
-Spell Property PotionToxicityDiseaseImmunity  Auto  
+Spell Property PotionToxicityLow  Auto    
+Spell Property PotionToxicityHigh  Auto  
+Spell Property PotionToxicityImmunity  Auto  
+
 MagicEffect Property METoxicityDiseaseLow  Auto  
 MagicEffect Property METoxicityDiseaseHigh  Auto  
 MagicEffect Property METoxicityDiseaseImmunity  Auto  
+
+ImageSpaceModifier Property PotionToxicityLowImod  Auto  
+ImageSpaceModifier Property PotionToxicityHighImod  Auto  
+
+; ----- Old spells - unused - diseases cannot be cast as normal spells
+Spell Property PotionToxicityDiseaseLow  Auto    
+Spell Property PotionToxicityDiseaseHigh  Auto  
+Spell Property PotionToxicityDiseaseImmunity  Auto  
+; -----
 
 Int iRejuvenationPotionCount = 0
 Int iNumberPotionsToday
@@ -28,6 +38,10 @@ int daysPassed
 int iGameDateLastCheck = -1
 int iDaysSinceLastCheck
 int iDebtLastCheck
+
+float fDateSleep 
+float fHoursSleep 
+
 
 Event OnPlayerLoadGame()
 
@@ -77,9 +91,9 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	      If ( akBaseItem.GetName() == "Potion of Rejuvenation"  )
 	      ;  akActor.Equipitem(HypnosisCirclet)
 	      	; Debug.Notification("Rejuvenation potion crafted.")
-	      	If (JobMageQuest.GetStageDone(65)==1) && (JobMageQuest.GetStageDone(70)==0)
-	      		iRejuvenationPotionCount = iRejuvenationPotionCount + 1
-	      		if (iRejuvenationPotionCount==10)
+	      	If (JobMageQuest.GetStageDone(65)==1) && (JobMageQuest.GetStageDone(69)==0)
+	      		iRejuvenationPotionCount = iRejuvenationPotionCount + aiItemCount
+	      		if (iRejuvenationPotionCount>=10)
 	      			JobMageQuest.SetStage(68)
 	      		endif
 	      	endif
@@ -124,7 +138,22 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	_updateMageMastery()
 EndEvent
 
+Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
+	fDateSleep = afSleepStartTime
+endEvent
+
 Event OnSleepStop(bool abInterrupted)
+	fHoursSleep = (Utility.GetCurrentGameTime() - fDateSleep) * 24.0
+	iNumberPotionsToday= iNumberPotionsToday - (fHoursSleep as Int)
+
+	if (iNumberPotionsToday<0)
+		iNumberPotionsToday=0
+		iLastNumberPotionsUsed = Game.QueryStat("Potions Used")
+	Endif
+
+	PotionToxicityLowImod.Remove( )
+	PotionToxicityHighImod.Remove( )
+
 	_updateMagicka()
 	_updateMageMastery()
 endEvent
@@ -168,8 +197,11 @@ Function _updateMagicka(Int iBonus = 1)
 	Float fJobMageMastery = 1.0 + (_SLD_jobMageMastery.GetValue() as Float)
 	float fPlayersHealthPercent = PlayerActor.GetActorValuePercentage("health") 
 	Int iAVMod
+	Int iAVMax
+	Int iAVMin
 	Int iPotionToxicityTolerance
 	Float  fAVMod
+	Float fImod
 
 	If (_SLD_jobMageON.GetValue()==0)
 		return
@@ -181,45 +213,81 @@ Function _updateMagicka(Int iBonus = 1)
 
 	; Actor values - https://en.uesp.net/wiki/Tes5Mod:Actor_Value_Indices
 
-	iAVMod = iBonus + ((10 * fJobMageMastery * (1.0 - fPlayersHealthPercent)) as Int )
+	iAVMod = iBonus + StorageUtil.GetIntValue( PlayerActor , "_SLD_baseMagicka") + ((10 * fJobMageMastery * (1.0 - fPlayersHealthPercent)) as Int )
+	iAVMax = 200 + ((PlayerActor.GetLevel() as Int) * 20)
+	iAVMin = ((fJobMageMastery as Int) / 10) - 150
+
+	If (JobMageQuest.IsStageDone(415))
+		; Debug.Trace("[SLD] 	Glowing SkyShard")
+		iAVMin = iAVMin / 2
+	endif
+
+	If (JobMageQuest.IsStageDone(425))
+		; Debug.Trace("[SLD] 	Shimering SkyShard")
+		iAVMin = ((fJobMageMastery as Int) / 20) 
+	endif
+
+	; If (JobMageQuest.IsStageDone(425)) ; update stage when known
+	;	iAVMin = (fJobMageMastery as Int) / 10) 
+	; endif
+
+	; Debug.Trace("[SLD] Magicka: " + iAVMod)
+	; Debug.Trace("[SLD] 		Min: " + iAVMin + " Max:" + iAVMax)
+
+	If (iAVMod > iAVMax)
+		iAVMod = iAVMax
+	EndIf 
+
+	If (iAVMod < iAVMin)
+		iAVMod = iAVMin
+	EndIf 
 
 	PlayerActor.ForceAV("Magicka", iAVMod)
 
 	fAVMod = ((iBonus as Float) / 10.0) + ( (fJobMageMastery / 100.0)  +  (100.0 - (100 * fPlayersHealthPercent)) ) / 2.0
+	; Debug.Trace("[SLD] MagickaRate: " + fAVMod)
 
 	If (fAVMod < 200.0)
 		fAVMod = 200.0
 	EndIf 
 		
-	PlayerActor.ForceAV("MagickaRate", fAVMod )
+	; PlayerActor.ForceAV("MagickaRate", fAVMod )
 
-	iNumberPotionsToday= iLastNumberPotionsUsed - Game.QueryStat("Potions Used")
+	iNumberPotionsToday= Game.QueryStat("Potions Used") - iLastNumberPotionsUsed
 
-	iPotionToxicityTolerance = 1 + (Game.QueryStat("Potions Used") / Game.QueryStat("Days Passed"))  + ((fJobMageMastery as Int) / 40)
+	iPotionToxicityTolerance = 1 + (Game.QueryStat("Potions Used") / Game.QueryStat("Days Passed"))  + (Game.QueryStat("Ingredients Eaten") / 10) + (Game.QueryStat("Dragon Souls Collected") / 5) + (Game.QueryStat("Shouts Learned") / 5)
 
-	if (fJobMageMastery < 100)
-		if (iNumberPotionsToday > (iPotionToxicityTolerance * 2) ) && (!PlayerActor.HasMagicEffect(METoxicityDiseaseHigh))
-			Debug.MessageBox("You contracted Rockjoint from drinking too many potions in a day.")
-			PotionToxicityDiseaseHigh.RemoteCast(PlayerActor as ObjectReference, PlayerActor, PlayerActor as ObjectReference)
-			
-		elseif (iNumberPotionsToday > iPotionToxicityTolerance ) && (!PlayerActor.HasMagicEffect(METoxicityDiseaseLow))
-			Debug.MessageBox("You contracted the Rattles from drinking too many potions in a day.")
-			PotionToxicityDiseaseLow.RemoteCast(PlayerActor as ObjectReference, PlayerActor, PlayerActor as ObjectReference)
-			
+	fImod = (((iNumberPotionsToday - iPotionToxicityTolerance) as Float)/((iPotionToxicityTolerance) as Float))
+
+	; Debug.Notification("[SLD] fImod: " + fImod )
+	; Debug.Trace("[SLD] fImod: " + fImod )
+
+	if (fImod < 0.0) 
+		fImod = 0.0
+	Endif
+
+	if (iNumberPotionsToday > (iPotionToxicityTolerance * 2) )
+		fImod = fImod - 1.0
+		if (fImod > 1.0) 
+			fImod = 1.0
 		Endif
-	else
-		if (!PlayerActor.HasMagicEffect(METoxicityDiseaseImmunity))
-			PotionToxicityDiseaseImmunity.RemoteCast(PlayerActor as ObjectReference, PlayerActor, PlayerActor as ObjectReference)
-			
+		PotionToxicityHighImod.Apply( fImod )
+		
+	elseif (iNumberPotionsToday > iPotionToxicityTolerance ) 
+		if (fImod > 1.0) 
+			fImod = 1.0
 		Endif
-	EndIf
+		PotionToxicityLowImod.Apply( fImod )
 
-	Debug.Trace("[SLD] Magicka: " + iAVMod)
-	Debug.Trace("[SLD] MagickaRate: " + fAVMod)
-	Debug.Trace("[SLD] iNumberPotionsToday: " + iNumberPotionsToday)
-	Debug.Trace("[SLD] iPotionToxicityTolerance: " + iPotionToxicityTolerance)
-	Debug.Trace("[SLD] fJobMageMastery: " + fJobMageMastery)
-	Debug.Trace("[SLD] fPlayersHealthPercent: " + fPlayersHealthPercent) 
+	Endif
+
+	StorageUtil.SetIntValue( PlayerActor , "_SLD_potionToxicityTolerance", iPotionToxicityTolerance)
+	StorageUtil.SetIntValue( PlayerActor , "_SLD_numberPotionsToday", iNumberPotionsToday)
+
+	; Debug.Trace("[SLD] iNumberPotionsToday: " + iNumberPotionsToday)
+	; Debug.Trace("[SLD] iPotionToxicityTolerance: " + iPotionToxicityTolerance)
+	; Debug.Trace("[SLD] fJobMageMastery: " + fJobMageMastery)
+	; Debug.Trace("[SLD] fPlayersHealthPercent: " + fPlayersHealthPercent) 
 EndFunction
 
 Function _updateMageMastery(Int iBonus = 1)
@@ -233,6 +301,9 @@ Function _updateMageMastery(Int iBonus = 1)
 		return
 	endif
 
+	If (_SLD_MagickaMasteryON.GetValue()==0)
+		return
+	endif
 	; Favorite Spell -    The spell that is most often used.
 	; Favorite School - The school of magic that is most often used.
 	; Times Shouted -     
@@ -273,7 +344,7 @@ Function _updateMageMastery(Int iBonus = 1)
 	_SLD_jobMageMastery.SetValue(iJobMageMastery)
 	StorageUtil.SetIntValue( PlayerActor , "_SLD_jobMageMastery", iJobMageMastery)
 
-	Debug.Trace("[SLD] Mage Mastery: " + iJobMageMastery)
+	; Debug.Trace("[SLD] Mage Mastery: " + iJobMageMastery)
 EndFunction
 
 

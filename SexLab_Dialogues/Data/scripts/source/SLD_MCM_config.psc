@@ -21,6 +21,8 @@ GlobalVariable Property _SLD_PriestQuestON Auto
 
 Book Property _SLD_debugSpell Auto
 
+Int iAVMod
+Float  fAVMod
 ; SexLabFramework     property SexLab Auto
 
 ; SCRIPT VERSION ----------------------------------------------------------------------------------
@@ -49,6 +51,7 @@ endFunction
 float	_CommentProbability		= 30.0
 float	_AttackProbability		= 30.0
 float	_BeggingProbability		= 30.0
+float	_BaseMagicka			= 0.0
 bool	_BeastDialogueON		= true
 bool	_PCDomDialogueON		= true
 bool	_PCSubDialogueON		= true
@@ -65,6 +68,8 @@ bool	_PriestQuestON		= false
 bool	_RegisterCustomRaces		= false
 bool	_ClearGiantRaces		= false
 bool	_GetDebugSpell		= false
+
+Actor PlayerActor 
 
 ; INITIALIZATION ----------------------------------------------------------------------------------
 
@@ -109,9 +114,12 @@ event OnPageReset(string a_page)
 		UnloadCustomContent()
 	endIf
 
+	PlayerActor = Game.GetPlayer()
+
 	_CommentProbability			= fMin( fMax( (_SLD_CommentProbability.GetValue() as Float) , 0.0), 100.0 )
 	_AttackProbability			= fMin( fMax( (_SLD_AttackProbability.GetValue() as Float) , 0.0), 100.0 )
 	_BeggingProbability			= fMin( fMax( (_SLD_BeggingProbability.GetValue() as Float) , 0.0), 100.0 )
+	_BaseMagicka				= fMin( fMax( (StorageUtil.GetIntValue( PlayerActor , "_SLD_baseMagicka")) , 0.0), 200.0 )
  
 	_BeastDialogueON		= _SLD_BeastDialogueON.GetValue() as Int
 	_PCDomDialogueON		= _SLD_PCDomDialogueON.GetValue() as Int
@@ -168,8 +176,25 @@ event OnPageReset(string a_page)
 		AddHeaderOption(" Mage Apprentice ")
 		AddToggleOptionST("STATE_MageQuestON","Become a Mage", _MageQuestON as Float)
 		AddToggleOptionST("STATE_MagickaMasteryON","Magicka Mastery System", _MagickaMasteryON as Float)
+		AddSliderOptionST("STATE_BaseMagicka","Base Magicka",  _BaseMagicka	 as Float,"{0}")
 		AddHeaderOption(" Priest Apprentice ")
 		AddToggleOptionST("STATE_PriestQuestON","Become a Priest", _PriestQuestON as Float, OPTION_FLAG_DISABLED)
+
+		SetCursorPosition(1)
+		AddHeaderOption(" Magicka Mastery Status")
+
+		AddTextOption(" Magicka: " + PlayerActor.GetAV("Magicka") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" MagickaRate: " + PlayerActor.GetAV("MagickaRate" ) as Int, "", OPTION_FLAG_DISABLED)
+
+		AddTextOption(" NumberPotionsToday: " + StorageUtil.GetIntValue( PlayerActor , "_SLD_numberPotionsToday") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" PotionToxicityTolerance: " + StorageUtil.GetIntValue( PlayerActor , "_SLD_potionToxicityTolerance") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" JobMageMastery: " + StorageUtil.GetIntValue( PlayerActor , "_SLD_jobMageMastery") as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" PlayersHealthPercent: " + PlayerActor.GetActorValuePercentage("health") as Float, "", OPTION_FLAG_DISABLED)
+
+		AddHeaderOption(" Magic items crafted")
+
+		AddTextOption(" Enchantments: " + Game.QueryStat("Magic Items Made")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Potions: " + Game.QueryStat("Potions Mixed")  as Int, "", OPTION_FLAG_DISABLED)
 
 	ElseIf (a_page == "Debug")
 		SetCursorFillMode(TOP_TO_BOTTOM)
@@ -469,6 +494,9 @@ state STATE_MageQuestON ; TOGGLE
 
 		if (_SLD_MageQuestON.GetValueInt() == 1)
 			SendModEvent("SLDRefreshMagicka")
+		else
+			_SLD_MagickaMasteryON.SetValueInt(0)
+			_ResetMagicka()
 		EndIf
 
 		ForcePageReset()
@@ -486,11 +514,20 @@ state STATE_MageQuestON ; TOGGLE
 
 endState
 
+
 ; AddToggleOptionST("STATE_MagickaMasteryON","Become a Blacksmith", _MagickaMasteryON as Float)
 state STATE_MagickaMasteryON ; TOGGLE
 	event OnSelectST()
+
 		_SLD_MagickaMasteryON.SetValueInt( Math.LogicalXor( 1, _SLD_MagickaMasteryON.GetValueInt() ) )
 		SetToggleOptionValueST( _SLD_MagickaMasteryON.GetValueInt() as Bool )
+
+		if (_SLD_MagickaMasteryON.GetValueInt()==0)
+			_ResetMagicka()
+			Debug.MessageBox(" Magicka Mastery system OFF\n Your Magicka has been restored to a default state.")
+		Else
+			Debug.MessageBox(" Magicka Mastery system ON\n Your Magicka value is dynamic and based on damages received plus progress as a Mage Apprentice. Good luck.")
+		endif
  
 		ForcePageReset()
 	endEvent
@@ -502,11 +539,35 @@ state STATE_MagickaMasteryON ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Magicka level is linked to Mage Mastery progression.")
+		SetInfoText("Magicka level is linked to Mage Mastery progression. This feature is still experimental!")
 	endEvent
 
 endState
 
+; AddSliderOptionST("STATE_BaseMagicka","Base Magicka",  _BaseMagicka	 as Float,"{0} %")
+state STATE_BaseMagicka ; SLIDER
+	event OnSliderOpenST()
+		SetSliderDialogStartValue( _BaseMagicka )
+		SetSliderDialogDefaultValue( 0.0 )
+		SetSliderDialogRange( 0.0, 200.0 )
+		SetSliderDialogInterval( 10.0 )
+	endEvent
+
+	event OnSliderAcceptST(float value)
+		_BaseMagicka = value 
+		StorageUtil.SetIntValue( PlayerActor , "_SLD_baseMagicka", _BaseMagicka as Int)
+		SetSliderOptionValueST( _BaseMagicka,"{0}" )
+	endEvent
+
+	event OnDefaultST()
+		StorageUtil.SetIntValue( PlayerActor , "_SLD_baseMagicka", 0)
+		SetSliderOptionValueST( 0.0,"{0}" )
+	endEvent
+
+	event OnHighlightST()
+		SetInfoText("Base amount of Magicka - Increase to account for racial affinity with Magicka.")
+	endEvent
+endState
 
 ; AddToggleOptionST("STATE_PriestQuestON","Become a Blacksmith", _PriestQuestON as Float)
 state STATE_PriestQuestON ; TOGGLE
@@ -605,6 +666,14 @@ float function fMax(float a, float b)
 EndFunction
 ;--------------------------------------
  
+Function _ResetMagicka()
+
+	iAVMod = 50 + (PlayerActor.GetLevel() as Int) * 10
+	PlayerActor.ForceAV("Magicka", iAVMod)
+	fAVMod = 3.0
+	PlayerActor.ForceAV("MagickaRate", fAVMod )	
+EndFunction
+
 function _RegisterRaces()
 	; Adds races from Immersive Creatires, JackGa monsters and Skyrim MonsterMod
 

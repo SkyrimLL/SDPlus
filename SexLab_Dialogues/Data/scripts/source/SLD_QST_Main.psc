@@ -469,16 +469,16 @@ Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
 	Int randomNum = Utility.RandomInt(0, 100)
 
 	; Game.ForceThirdPerson()
-	Debug.SendAnimationEvent( akSpeaker as ObjectReference, "bleedOutStart")
+	; Debug.SendAnimationEvent( akSpeaker as ObjectReference, "bleedOutStart")
 
 	; if ( akSpeakerRef.GetAnimationVariableInt("iDrunkVariable") == 1)
 	;	If ( Utility.RandomInt(0, 100) > 30 )
 	;		isVictim = False
 	;	Endif
 	; else
-		If ( Utility.RandomInt(0, 100) > 80 )
-			isVictim = False
-		Endif
+	;	If ( Utility.RandomInt(0, 100) > 80 )
+	;		isVictim = False
+	;	Endif
 	; endif
 
 	Int IButton = _SLD_rapistMenu.Show()
@@ -512,9 +512,9 @@ Function StartPlayerRapist ( Actor akSpeaker, string tags = "" )
 			If  ( !SexLab.IsActorActive( akSpeaker ) ) && ( !SexLab.IsActorActive( Player ) )
 				Debug.Notification( "[Resists weakly]" )
 				If (isVictim)
-					SexLab.QuickStart(Player,  akSpeaker, Victim = akSpeaker , AnimationTags = tags)
+					SexLab.QuickStart(akSpeaker,  Player, Victim = akSpeaker , AnimationTags = tags)
 				Else
-					SexLab.QuickStart(Player,  akSpeaker, AnimationTags = tags)
+					SexLab.QuickStart(akSpeaker, Player,  AnimationTags = tags)
 				Endif
 			EndIf
 		Endif
