@@ -370,9 +370,9 @@ Event OnUpdateGameTime()
 	EndIf
 	
 	; ends the punishment period after arriving at the grove
-	If ( (GetCurrentGameTime() - fDaysUpdate > fSprigganPower) && ( (GetStage() == 70) || (GetStageDone(75) == 1)) )
-		While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
-		EndWhile
+	If ( (GetCurrentGameTime() - fDaysUpdate > fSprigganPower) && ( (GetStageDone(70) == 1) || (GetStageDone(75) == 1)) )
+		; While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
+		; EndWhile
 		fDaysUpdate = GetCurrentGameTime()
 
 		If (StorageUtil.GetIntValue(kSlave, "_SD_iSprigganEnslavedCount") >= 1) && (!(kSlave as Actor).HasSpell( CallSpriggan ))
@@ -389,8 +389,9 @@ Event OnUpdateGameTime()
 	
 	; keep spriggans friendly for a while to let the player move away
 	If ( (GetCurrentGameTime() - fDaysUpdate > 0.25) && ( GetStageDone(80) == 1) )
-		While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
-		EndWhile
+		; While ( kMaster.GetCurrentScene() || kSlave.GetCurrentScene() )
+		; EndWhile
+		Debug.Messagebox("The power of the sap begins to fade inside you.")
 		SetStage( 90 )
 	EndIf	
 

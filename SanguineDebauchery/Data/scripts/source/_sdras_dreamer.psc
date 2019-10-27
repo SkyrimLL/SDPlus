@@ -270,7 +270,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitModifier: " + iDreamworldVisitModifier )
 		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitModifierMax: " + iDreamworldVisitModifierMax )
 
-		If ( (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )!= 0) && (Utility.RandomInt(0,100)<  iDreamworldVisitModifier  )  )  
+		If ( (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )!= 0) && (Utility.RandomInt(0,iDreamworldVisitModifierMax)<  iDreamworldVisitModifier  )  )  
 			; 	Debug.Notification("Reality slips away...")
 			; 	Debug.Notification("[dream] Sanguine finds you in your dream")
 	 		;	Game.FadeOutGame(true, true, 5.0, 10.0)

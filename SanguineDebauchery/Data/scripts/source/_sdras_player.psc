@@ -212,6 +212,7 @@ Function _Maintenance()
 	RegisterForModEvent("PCSubMasterGold",   "OnSDMasterGold")
 	RegisterForModEvent("SDSprigganEnslave",   "OnSDSprigganEnslave")
 	RegisterForModEvent("SDSprigganPunish",   "OnSDSprigganPunish")
+	RegisterForModEvent("SDSprigganFree",   "OnSDSprigganFree")
 	; RegisterForModEvent("SDParasiteVag",   "OnSDParasiteVag")
 	; RegisterForModEvent("SDParasiteAn",   "OnSDParasiteAn")
 	RegisterForModEvent("SDDreamworldPull",   "OnSDDreamworldPull")
@@ -245,6 +246,8 @@ Function _Maintenance()
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
+
+	RegisterForSleep()
 
 	; Release player from enslavement if sent to Simple slavery cell
 	RegisterForModEvent("SSLV Entry",   "OnSDFree")
@@ -306,6 +309,12 @@ Function _Maintenance()
  
 EndFunction
 
+Event OnSleepStop(bool abInterrupted)
+	If ( (_SD_spriggan.IsRunning()) && (_SD_spriggan.GetStageDone(80)==1) )
+		debug.Messagebox("The last of the Spriggan Sap flows out of your body.")
+		SendModEvent("SDSprigganFree")
+	Endif
+EndEvent
 
 Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 	ObjectReference PlayerREF= kPlayer
@@ -545,6 +554,18 @@ Event SDSprigganPunish(String _eventName, String _args, Float _argc = 1.0, Form 
 	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 8, aiValue2 = 0 )
 EndEvent
 
+
+Event OnSDSprigganFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
+	Debug.Trace("[_sdras_player] Receiving 'free spriggan slave' event") 
+
+	If ( _SD_spriggan.IsRunning() )
+		Debug.Trace("[_sdras_player] Stopping Spriggan quest")
+		_SD_spriggan.setstage(90)
+		endif
+
+	Wait( fRFSU * 5.0 )
+EndEvent
+
 Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
@@ -727,6 +748,8 @@ Function SDFree()
 		Wait( fRFSU * 5.0 )
 	Endif
 EndFunction
+
+
 
 Event OnSDStatusUpdate(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Actor kActor
@@ -1729,23 +1752,47 @@ State monitor
 						_SDGVP_state_caged.SetValue(0)
 						kPlayer.AddItem(Lockpick, 5)
 					
-					ElseIf (Utility.RandomInt(0,100) > 95) && (_SD_dreamQuest.GetStage() != 0) 
-						; Send PC to Dreamworld
+					ElseIf (StorageUtil.GetStringValue( kPlayer, "_SD_sDefaultStance") == "Kneeling")
+						If (Utility.RandomInt(0,100) > 75) && (_SD_dreamQuest.GetStage() != 0) 
+							; Send PC to Dreamworld
 
-						_SD_dreamQuest.SetStage(100)
+							_SD_dreamQuest.SetStage(100)
 
-					ElseIf (Utility.RandomInt(0,100) > 70) && (!isInKWeakenedState)	
-						; Send PC some help
+						ElseIf (Utility.RandomInt(0,100) > 50) && (!isInKWeakenedState)	
+							; Send PC some help
 
-						SendModEvent("da_StartSecondaryQuest", "Both")
+							SendModEvent("da_StartSecondaryQuest", "Both")
 
-					ElseIf (Utility.RandomInt(0,100) > 40) && (isInKWeakenedState)	
-						; Send PC some help
+						ElseIf (Utility.RandomInt(0,100) > 30) && (isInKWeakenedState)	
+							; Send PC some help
 
-						SendModEvent("da_StartSecondaryQuest", "Both")
-						SendModEvent("da_StartRecoverSequence")
+							SendModEvent("da_StartSecondaryQuest", "Both")
+							SendModEvent("da_StartRecoverSequence")
+						Else
+							Debug.Notification("Your prayer goes unanswered...")
+						Endif
 
-					ElseIf (Utility.RandomInt(0,100) > 30)	&& (isInKWeakenedState)
+					ElseIf (StorageUtil.GetStringValue( kPlayer, "_SD_sDefaultStance") != "Kneeling")
+						If (Utility.RandomInt(0,100) > 95) && (_SD_dreamQuest.GetStage() != 0) 
+							; Send PC to Dreamworld
+
+							_SD_dreamQuest.SetStage(100)
+
+						ElseIf (Utility.RandomInt(0,100) > 70) && (!isInKWeakenedState)	
+							; Send PC some help
+
+							SendModEvent("da_StartSecondaryQuest", "Both")
+
+						ElseIf (Utility.RandomInt(0,100) > 40) && (isInKWeakenedState)	
+							; Send PC some help
+
+							SendModEvent("da_StartSecondaryQuest", "Both")
+							SendModEvent("da_StartRecoverSequence")
+						Else
+							Debug.Notification("Your prayer goes unanswered...")
+						Endif
+
+					;ElseIf (Utility.RandomInt(0,100) > 30)	&& (isInKWeakenedState)
 						; restore all hp	
 						; Monitor.BufferDamageReceived(9999.0)  	
 

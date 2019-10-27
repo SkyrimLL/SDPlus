@@ -20,50 +20,56 @@ Event OnTriggerEnter(ObjectReference akActionRef)
 	Actor akTwilightGuardian = TwilightGuardianRef as Actor
 	Form fSanguineRose = SanguineRoseRef as Form
 
-	If (DA01.GetStageDone(100)==0)
-		akTwilightGuardian.RemoveFromFaction(WEPlayerFriend)
-		akTwilightGuardian.AddToFaction(WEPlayerEnemy)
-	Endif
+	If (akActionRef == akPlayer as ObjectReference)
 
-	If ((StorageUtil.GetIntValue(fSanguineRose, "_SD_iRandomRose") == 1) && (!bCloneFound))
-		; Debug.MessageBox("This is the one!")
-		arPortal = SanguineRoseRef.PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) 
-		Utility.wait( 3.0 )
-		; testObject = Game.GetForm(0xBA0CB) as ObjectReference		
-		bCloneFound = True
-		pClone = SanguineRoseRef.PlaceAtMe(Game.GetForm(0x00000007)) as Actor
-		pCloneRef = pClone as ObjectReference
+		If (DA01.GetStageDone(100)==0)
+			akTwilightGuardian.RemoveFromFaction(WEPlayerFriend)
+			akTwilightGuardian.AddToFaction(WEPlayerEnemy)
+		Endif
 
-		pClone.RemoveAllItems(akTransferTo = TempStorageRef, abKeepOwnership = True)
-		
-		pClone.SetRelationShipRank(akPlayer, 4); Because one loves him/herself
-		pClone.AllowPCDialogue(false)	
-		pClone.SetPlayerTeammate()
-		;pClone.AddToFaction(CurrentFollowerFaction)
-		;pClone.SetFactionRank(CurrentFollowerFaction, -1)
-		;DialogueFollower.SetFollower(clone as ObjectReference)
-		;FollowerAlias.ForceRefTo(pClone)
-		pClone.EvaluatePackage()
-		tempFollowerAlias.ForceRefTo(pClone)
-		SanguineRoseRef.Disable()
+		If ((StorageUtil.GetIntValue(fSanguineRose, "_SD_iRandomRose") == 1) && (!bCloneFound))
+			; Debug.MessageBox("This is the one!")
+			arPortal = SanguineRoseRef.PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) 
+			Utility.wait( 3.0 )
+			; testObject = Game.GetForm(0xBA0CB) as ObjectReference		
+			bCloneFound = True
+			pClone = SanguineRoseRef.PlaceAtMe(Game.GetForm(0x00000007)) as Actor
+			pCloneRef = pClone as ObjectReference
 
-		Debug.Messagebox("The rose reacts to your presence and lets go of your soul shard. Wait until it is fully materialized before returning back to Sanguine.")
+			pClone.RemoveAllItems(akTransferTo = TempStorageRef, abKeepOwnership = True)
+			
+			pClone.SetRelationShipRank(akPlayer, 4); Because one loves him/herself
+			pClone.AllowPCDialogue(false)	
+			pClone.SetPlayerTeammate()
+			;pClone.AddToFaction(CurrentFollowerFaction)
+			;pClone.SetFactionRank(CurrentFollowerFaction, -1)
+			;DialogueFollower.SetFollower(clone as ObjectReference)
+			;FollowerAlias.ForceRefTo(pClone)
+			pClone.EvaluatePackage()
+			tempFollowerAlias.ForceRefTo(pClone)
+			SanguineRoseRef.Disable()
 
-		pClone.SetAlpha(0.5)
-		Utility.wait( 5.0 )
+			Debug.Messagebox("The rose reacts to your presence and lets go of your soul shard. Wait until it is fully materialized before returning back to Sanguine.")
 
-		pClone.SetAlpha(0.7, true)
-		Utility.wait( 10.0 )
+			pClone.SetAlpha(0.5)
+			Utility.wait( 5.0 )
 
-		pClone.SetAlpha(0.9, true)
-		Utility.wait( 15.0 )
+			pClone.SetAlpha(0.7, true)
+			Utility.wait( 10.0 )
 
-		pClone.SetAlpha(1.0, true)
+			pClone.SetAlpha(0.9, true)
+			Utility.wait( 15.0 )
 
-		arPortal = pCloneRef.PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) 
-		Utility.wait( 3.0 )
-		_SD_dreamQuest.SetStage(256)
-		SendModEvent("SDDreamworldPull")
+			pClone.SetAlpha(1.0, true)
+
+			arPortal = pCloneRef.PlaceAtMe(Game.GetFormFromFile(0x0007CD55, "Skyrim.ESM")) 
+			Utility.wait( 3.0 )
+			_SD_dreamQuest.SetStage(256)
+			SendModEvent("SDDreamworldPull")
+		Else
+			Debug.Messagebox("The rose shrinks from your presence and only seems to anger its guardian.")
+
+		Endif
 	Endif
 
 	; Debug.MessageBox("You chose poorly.")

@@ -34,7 +34,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			Debug.Trace("The spectral collar remain locked around your neck.")
 		EndIf
 
-		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "WristRestraints"  )) && (Utility.RandomInt(0,100) > 50)
+		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "WristRestraints"  )) && (Utility.RandomInt(0,100) > 10)
 			Debug.Trace("[SD] Removing Sanguine Cuffs") 
 			fctOutfit.clearNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
 			Utility.Wait(1.0)
@@ -42,7 +42,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			Debug.Trace("The spectral cuffs remain locked around your wrists.")
 		EndIf
 
-		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "LegCuffs"  )) && (Utility.RandomInt(0,100) > 20)  
+		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "LegCuffs"  )) && (Utility.RandomInt(0,100) > 10)  
 			Debug.Trace("[SD] Removing Sanguine Shackles")
 			fctOutfit.clearNonGenericDeviceByString ( "LegCuffs", "Sanguine" )
 			Utility.Wait(1.0)
@@ -50,7 +50,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			Debug.Trace("The spectral shackles remain locked around your ankles.")
 		EndIf
 
-		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Gag"  )) && (Utility.RandomInt(0,100) > 30) 
+		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "Gag"  )) && (Utility.RandomInt(0,100) > 20) 
 			Debug.Trace("[SD] Removing Sanguine Gag")
 			fctOutfit.clearNonGenericDeviceByString ( "Gag", "Sanguine" )
 			Utility.Wait(1.0)
@@ -59,7 +59,7 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 			Debug.Trace("Your mouth remains filled with the spectral gag.")
 		EndIf
 
-		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  )) && (Utility.RandomInt(0,100) > 80)
+		if (fctOutfit.isDeviceEquippedKeyword (  akTarget, "_SD_DeviousSanguine", "VaginalPiercing"  )) && (Utility.RandomInt(0,100) > 90)
 			Debug.Trace("[SD] Removing Sanguine Artifact")
 			fctOutfit.clearNonGenericDeviceByString ( "VaginalPiercing", "Sanguine" )
 			Utility.Wait(1.0)
