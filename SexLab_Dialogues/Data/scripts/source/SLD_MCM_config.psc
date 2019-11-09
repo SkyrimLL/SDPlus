@@ -539,7 +539,7 @@ state STATE_MagickaMasteryON ; TOGGLE
 	endEvent
 
 	event OnHighlightST()
-		SetInfoText("Magicka level is linked to Mage Mastery progression. This feature is still experimental!")
+		SetInfoText("Magicka level is linked to Mage Mastery progression. This feature is still EXPERIMENTAL!")
 	endEvent
 
 endState
@@ -668,7 +668,7 @@ EndFunction
  
 Function _ResetMagicka()
 
-	iAVMod = 50 + (PlayerActor.GetLevel() as Int) * 10
+	iAVMod = 100 + (PlayerActor.GetLevel() as Int) * 10
 	PlayerActor.ForceAV("Magicka", iAVMod)
 	fAVMod = 3.0
 	PlayerActor.ForceAV("MagickaRate", fAVMod )	
