@@ -41,7 +41,9 @@ _SD_ConfigMenu Property kConfig  Auto
  
 Spell Property _SDSP_freedom  Auto  
 
-
+int daysPassed
+int iGameDateLastCheck = -1
+int iDaysSinceLastCheck
 
 ; _SDQS_dream dream
 
@@ -258,6 +260,26 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			; iDreamworldVisitModifier = 100
 		; Endif
 	EndIf
+
+	; Send player to dreamworld only once a day
+ 	daysPassed = Game.QueryStat("Days Passed")
+
+ 	; Initial values
+ 	if (iGameDateLastCheck == -1)
+ 		iGameDateLastCheck = daysPassed
+ 	endIf
+ 
+	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
+
+	If (iDaysSinceLastCheck > 0) && (bSendToDreamworld)
+		; New day - allow thw player to go to Dreamworld
+
+	elseif (bSendToDreamworld)
+		; Maybe add a small chance of multiple trips to dreamworld in the same day later
+		bSendToDreamworld = False
+	endIf
+
+	iGameDateLastCheck = daysPassed  
 
 	; Send player to Dreamworld if true
 	If (bSendToDreamworld)
