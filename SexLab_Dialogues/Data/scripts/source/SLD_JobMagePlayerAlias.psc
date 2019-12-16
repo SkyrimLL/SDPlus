@@ -255,7 +255,7 @@ Function _updateMagicka(Int iBonus = 1)
 
 	iNumberPotionsToday= Game.QueryStat("Potions Used") - iLastNumberPotionsUsed
 
-	iPotionToxicityTolerance = 1 + (Game.QueryStat("Potions Used") / Game.QueryStat("Days Passed"))  + (Game.QueryStat("Ingredients Eaten") / 10) + (Game.QueryStat("Dragon Souls Collected") / 5) + (Game.QueryStat("Shouts Learned") / 5)
+	iPotionToxicityTolerance = 1 + (Game.QueryStat("Potions Used") / (Game.QueryStat("Days Passed") + 1))  + (Game.QueryStat("Ingredients Eaten") / 10) + (Game.QueryStat("Dragon Souls Collected") / 5) + (Game.QueryStat("Shouts Learned") / 5)
 
 	fImod = (((iNumberPotionsToday - iPotionToxicityTolerance) as Float)/((iPotionToxicityTolerance) as Float))
 
