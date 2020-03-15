@@ -83,12 +83,13 @@ Function _maintenance()
 EndFunction
 
 Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemReference, ObjectReference akSourceContainer)
+	Form fPotionform = RejuvenationPotion as Form
 	  ; debug.Notification(" Player receives  " + aiItemCount + "x " + akBaseItem + " from the world")
 	  if (akBaseItem != None)
 		  ; debug.Notification(" Player receives  " + akBaseItem.GetName() )
 		  ; debug.Notification(" Is object a rejunevation potion  " + akBaseItem.HasKeyword(RejuvenationPotionKeyword))
 
-	      If ( akBaseItem.GetName() == "Potion of Rejuvenation"  )
+	      If ( akBaseItem.GetName() == "Potion of Rejuvenation"  ) || ( akBaseItem.GetName() == "Rejuvenation"  ) || (fPotionform==akBaseItem)
 	      ;  akActor.Equipitem(HypnosisCirclet)
 	      	; Debug.Notification("Rejuvenation potion crafted.")
 	      	If (JobMageQuest.GetStageDone(65)==1) && (JobMageQuest.GetStageDone(69)==0)

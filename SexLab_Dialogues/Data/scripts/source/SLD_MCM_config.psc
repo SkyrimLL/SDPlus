@@ -196,6 +196,11 @@ event OnPageReset(string a_page)
 		AddTextOption(" Enchantments: " + Game.QueryStat("Magic Items Made")  as Int, "", OPTION_FLAG_DISABLED)
 		AddTextOption(" Potions: " + Game.QueryStat("Potions Mixed")  as Int, "", OPTION_FLAG_DISABLED)
 
+		AddHeaderOption(" Blacksmith items forged")
+
+		AddTextOption(" Weapons: " + Game.QueryStat("Weapons Made")  as Int, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Armors: " + Game.QueryStat("Armors Made")  as Int, "", OPTION_FLAG_DISABLED)
+
 	ElseIf (a_page == "Debug")
 		SetCursorFillMode(TOP_TO_BOTTOM)
 
