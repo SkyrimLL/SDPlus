@@ -872,7 +872,8 @@ State escape_shock
 		Debug.Notification( "Your collar vibrates as you wander off." )
 		debugTrace(" Escape attempt - shock collar" )
 		debugTrace(" starting timer" )
-
+		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
+		
 		UpdateMasterSlave()
 
 		; Calculate distance to reference - set to Master for now. 
@@ -1093,6 +1094,7 @@ State escape_choke
 		Debug.Notification( "Your collar tightens as you wander off from the cage." )
 		debugTrace(" Cage scene - choking collar - start" )
 		debugTrace(" starting timer" )
+		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
 
 		UpdateMasterSlave()
 
@@ -1320,6 +1322,7 @@ State caged
 	Event OnBeginState()
 		; Debug.Notification( "[SD] Cage state - start" )
 		debugTrace(" Cage state - start" )
+		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
 
 		enslavement.bEscapedSlave = False
 		enslavement.bSearchForSlave = False
@@ -1692,16 +1695,16 @@ Function _slaveEndGame()
 			Bool bRedWave = False
 
 			If (Utility.RandomInt(0,100) > 70) 
-				bWolfClub = WolfClubEnslave() 
+				bWolfClub = funct.WolfClubEnslave() 
 				
 			ElseIf (Utility.RandomInt(0,100) > 40) 
-				bSimpleSlavery = SimpleSlaveryEnslave() 
+				bSimpleSlavery = funct.SimpleSlaveryEnslave() 
 
 			ElseIf (Utility.RandomInt(0,100) > 50) 
-				bRedWave = RedWaveEnslave()
+				bRedWave = funct.RedWaveEnslave()
 
 			ElseIf (Utility.RandomInt(0,100) > 70) 
-			 	bMariaEden = MariaEdenEnslave(kSlaverDest as Actor) 
+			 	bMariaEden = funct.MariaEdenEnslave(kSlaverDest as Actor) 
 			EndIf
 
 			If (!bWolfClub) && (!bSimpleSlavery) && (!bMariaEden) && (!bRedWave)
@@ -1761,66 +1764,7 @@ EndFunction
 
 
 		
-bool function WolfClubEnslave() 
-	int handle = ModEvent.Create("WolfClubEnslavePlayer")
-	if handle
-		debugTrace(" END GAME - Wolfclub scenario triggered" )
-		SendModEvent("PCSubFree")
 
-		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself in a dark and camp cave... " )
-
-		return ModEvent.Send(handle)
-	endif
-	return false
-endfunction
-
-bool function SimpleSlaveryEnslave() 
-	int idx = Game.GetModByName( "SimpleSlavery.esp" )
-	if ( idx != 255 )
-		debugTrace(" END GAME - Simple Slavery scenario triggered" )
-		SendModEvent("PCSubFree")
-
-		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself in a cage and about to be sold off at a slave market... " )
-	    ;; The mod is loaded, so we can use it:
-	    ObjectReference PlayerActorRef = Game.GetPlayer() as ObjectReference
-	    PlayerActorRef.SendModEvent("SSLV Entry")
-	    return true
-	    ;; ... other stuff for your mod ...
-	else
-	    ;; ... other stuff for your mod ...
-	endIf
-	return false
-endfunction
-
-bool function MariaEdenEnslave(Actor newMaster) 
-	int handle = ModEvent.Create("MariaEnslavePlayer")
-	if handle
-		debugTrace(" END GAME - Maria Eden scenario triggered" )
-		SendModEvent("PCSubFree")
-
-		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself sold to a new owner... " )
-
-		ModEvent.PushForm(handle, newMaster as Form)
-		return ModEvent.Send(handle)
-	endif
-	return false
-endfunction
-
-bool function RedWaveEnslave( )  
-
-	IF (StorageUtil.GetIntValue(none, "_SLS_iStories")==1)
-		debugTrace(" END GAME - Redwave scenario triggered" )
-		SendModEvent("PCSubFree")
-
-		Debug.MessageBox( "Your owner is very disappointed of your attitude and suddenly draws a bag over your head and renders you unconsious.\n When you wake up again, you find yourself inside a ship... " )
-
-		SendModEvent("_SLS_PCStartRedWave")
-		return True
-	Else
-		return False
-	Endif
-
-EndFunction
 
 function UpdateSlaveArousal()
 

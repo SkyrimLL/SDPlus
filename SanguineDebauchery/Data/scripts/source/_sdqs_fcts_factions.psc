@@ -290,6 +290,7 @@ Bool Function checkIfSlaver ( Actor akActor )
 	Bool isActorAlreadySlaver
 	Bool isPlayerAlreadyOwned
 	int indexBannedActors = -1
+	Race actorRace = akActor.GetRace()
 
 	; If (akActor == akPlayer)
 		; Debug.Notification("[SD] Slaver is Player!" )
@@ -364,6 +365,11 @@ Bool Function checkIfSlaver ( Actor akActor )
 		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverHumanoid") as Bool
 	endIf
 
+	if (isSlaver)
+		Debug.Trace("[SD] 		Updating actor race flag for actorRace: " + actorRace)
+		StorageUtil.SetIntValue(actorRace as Form, "_SD_iSlaveryRace", 1)
+	endif
+
 	return isSlaver
 EndFunction
 
@@ -372,7 +378,9 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 	Int  playerGender = akPlayer.GetLeveledActorBase().GetSex() as Int
 	Bool isSlaver
 	int indexBannedActors = -1
+	Race actorRace = akActor.GetRace()
 
+				
 	; If (akActor == akPlayer)
 	;	Debug.Notification("[SD] Slaver is Player!" )
 	;	return False
@@ -431,10 +439,20 @@ Bool Function checkIfSlaverCreature ( Actor akActor )
 
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaver", isSlaver as Int) 
 		StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverCreature", isSlaver as Int) 
+
+		if (checkIfFalmer ( akActor))
+			StorageUtil.SetIntValue( akActor, "_SD_bIsSlaverFalmer", 1) 
+		endif
+
 		StorageUtil.SetIntValue( akActor, "_SD_iDateBeastSlaverChecked", Game.QueryStat("Days Passed"))
 	else
 		isSlaver = StorageUtil.GetIntValue( akActor, "_SD_bIsSlaverCreature") as Bool
 	endIf
+
+	if (isSlaver)
+		Debug.Trace("[SD] 		Updating actor race flag for actorRace: " + actorRace)
+		StorageUtil.SetIntValue(actorRace as Form, "_SD_iSlaveryRace", 1)
+	endif
 
 	return isSlaver
 EndFunction

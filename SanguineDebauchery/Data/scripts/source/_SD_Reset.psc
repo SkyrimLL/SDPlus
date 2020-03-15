@@ -19,6 +19,7 @@ Quest Property _SD_sprigganslave  Auto
 Quest Property _SD_thugslave  Auto
 Quest Property _SD_watcher  Auto
 Quest Property _SD_whore  Auto
+Quest Property _SDDA_register  Auto
 GlobalVariable Property _SDGVP_enslaved Auto
 GlobalVariable Property _SDGVP_naked_rape_delay Auto
 GlobalVariable Property _SDGVP_config_ChanceDreamworldOnSleep  Auto
@@ -67,8 +68,8 @@ Function Maintenance()
 	; Reload every time
 	fctOutfit.registerDeviousOutfits ( )
 
-	If iVersionNumber < 20190311 ; <--- Edit this value when updating
-		iVersionNumber = 20190311; and this
+	If iVersionNumber < 20200310 ; <--- Edit this value when updating
+		iVersionNumber = 20200310; and this
 		_SDGVP_version.SetValue(iVersionNumber)
 		Debug.Notification("Updating to SD+ version: " + iVersionNumber )
 		Debug.Trace("[SD] Updating to SD+ version: " + iVersionNumber)
@@ -136,6 +137,13 @@ Function Maintenance()
 			; Utility.Wait(2.0)
 			; _SD_dream.Start()
 		; EndIf
+
+		; Disabling former DA quest registration script for a new one
+		If ( _SDDA_register.IsRunning() )
+			_SDDA_register.Stop()
+			; Utility.Wait(2.0)
+			; _SDDA_register.Start()
+		EndIf
 
 		; Init slavery API
 		If (StorageUtil.GetIntValue(kPlayer, "_SD_iAPIInit")!=1)

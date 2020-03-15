@@ -240,6 +240,7 @@ Function _Maintenance()
 	RegisterForModEvent("SDModMasterTrust",   "OnSDModMasterTrust")
 	RegisterForModEvent("SDPickNextTask",   "OnSDPickNextTask")
 	RegisterForModEvent("SDModTaskAmount",   "OnSDModTaskAmount")
+	RegisterForModEvent("SDEndGame",   "OnSDEndGame")
 
 
 	Debug.Trace("SexLab Dialogues: Reset SexLab events")
@@ -922,6 +923,53 @@ Event OnSDModTaskAmount(String _eventName = "", String _args ="", Float _argc = 
 	EndIf
 EndEvent
 
+Event OnSDEndGame(String _eventName = "", String _args ="", Float _argc = 1.0, Form _sender)
+ 	Actor kActor = _sender as Actor
+	Int iEventAmount = _argc as Int
+	String iEventString = _args
+
+	Debug.Trace("[_sdras_player] Receiving EndGame mod story event [" + _args  + "] [" + _argc as Int + "]")
+
+ 
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1)
+		SDFree()
+	EndIf
+	
+	Bool bMariaEden = False
+	Bool bWolfClub = False
+	Bool bSimpleSlavery = False
+	Bool bRedWave = False
+
+	If (Utility.RandomInt(0,100) > 90) 
+        ; Game.FadeOutGame(true, true, 0.5, 5)
+		; (kSlave as ObjectReference).MoveTo( kSlaverDest )
+		; Replace by code to dreamDestination
+
+
+		If (Utility.RandomInt(0,100) > 70) 
+			bWolfClub = funct.WolfClubEnslave() 
+			
+		ElseIf (Utility.RandomInt(0,100) > 50) 
+			bSimpleSlavery = funct.SimpleSlaveryEnslave() 
+
+		Else 
+			bRedWave = funct.RedWaveEnslave()
+		EndIf
+	Endif 
+		
+	If (!bWolfClub) && (!bSimpleSlavery) && (!bRedWave)
+        Game.FadeOutGame(true, true, 0.5, 5)
+
+		funct.sendPlayerToSafety(kPlayer) 
+
+		Game.FadeOutGame(false, true, 2.0, 20)
+
+		Utility.Wait( 1.0 )
+
+	Endif
+ 
+EndEvent
+
 Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sender)
  	Actor kActor = _sender as Actor
 	Actor kTempAggressor = StorageUtil.GetFormValue( kPlayer, "_SD_TempAggressor") as Actor
@@ -1598,10 +1646,13 @@ State monitor
 
 				; Release player if enslaved to a race that has been since removed from list of master races
 				Actor kCurrentMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
-				ActorBase akActorBase = kCurrentMaster.GetLeveledActorBase() as ActorBase
-				Race actorRace = akActorBase.GetRace()
+				; ActorBase akActorBase = kCurrentMaster.GetLeveledActorBase() as ActorBase
+				; Race actorRace = akActorBase.GetRace()
+				Race actorRace = kCurrentMaster.GetRace()
 
+				; check if race is properly filled for a generic NPC
 				if (StorageUtil.GetIntValue(actorRace as Form, "_SD_iSlaveryRace")==0)
+		 			Debug.Trace("[_sdras_player]  Race of Master has no _SD_iSlaveryRace value: " + actorRace as Form)
 					Debug.MessageBox("[You are enslaved to a master that has been removed from master races. Your enslavement was terminated.]")
 					; kPlayer.SendModEvent("PCSubFree")
 					SDFree()
@@ -1800,12 +1851,15 @@ State monitor
 						Debug.Notification("Your prayer goes unanswered...")
 					EndIf
 				ElseIf IButton == 2
-					; Resist
+					; Debug
 
 					; SendModEvent("da_UpdateBleedingDebuff")
 					; SendModEvent("da_EndNearDeathDebuff")	
 
 					Debug.SetGodMode( False )
+
+					kPlayer.StopCombat()
+					kPlayer.StopCombatAlarm()
 
 					fctConstraints.actorCombatShutdown( kPlayer )
 
@@ -1821,7 +1875,7 @@ State monitor
 
 
 				ElseIf (IButton == 3)
-					; Debug
+					; Ragdoll
 
 					kPlayer.PushActorAway(kPlayer, 10.0)
 
@@ -1841,6 +1895,11 @@ State monitor
 
 
 				ElseIf (IButton == 4)
+					; Teleport
+
+					SendModEvent("SDEndGame")
+
+				ElseIf (IButton == 5)
 					; Cancel
 
 				Else
