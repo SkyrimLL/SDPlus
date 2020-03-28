@@ -203,6 +203,7 @@ Function _updateMagicka(Int iBonus = 1)
 	Int iPotionToxicityTolerance
 	Float  fAVMod
 	Float fImod
+	Int iRandom
 
 	If (_SLD_jobMageON.GetValue()==0)
 		return
@@ -273,12 +274,28 @@ Function _updateMagicka(Int iBonus = 1)
 			fImod = 1.0
 		Endif
 		PotionToxicityHighImod.Apply( fImod )
+
+		iRandom = Utility.RandomInt(0,100)
+
+		if (iRandom >= 97)
+			Debug.Notification("Your headache is blinding you.")
+		elseif (iRandom >= 95)
+			Debug.Notification("Find a bed.. now!")
+		endif
 		
 	elseif (iNumberPotionsToday > iPotionToxicityTolerance ) 
 		if (fImod > 1.0) 
 			fImod = 1.0
 		Endif
 		PotionToxicityLowImod.Apply( fImod )
+
+		iRandom = Utility.RandomInt(0,100)
+
+		if (iRandom >= 97)
+			Debug.Notification("Your head is throbbing.")
+		elseif (iRandom >= 95)
+			Debug.Notification("You need some rest.")
+		endif
 
 	Endif
 
