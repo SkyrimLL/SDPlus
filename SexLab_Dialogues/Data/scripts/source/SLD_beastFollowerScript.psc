@@ -11,6 +11,10 @@ SLD_PlayerAlias Property _SLD_Player Auto
 SPELL Property RestSpell  Auto  
 FormList Property _SLD_GiftFilter  Auto  
 
+Potion Property FoodVeg  Auto  
+Potion Property FoodMeat  Auto  
+Potion Property FoodDrink  Auto  
+
 ;Actor property dog auto
 
 event onActivate(objectReference AkActivator)
@@ -85,6 +89,17 @@ EndFunction
 
 
 Function _beastHungry(Actor akSpeaker)
+
+	int randomVar = Utility.RandomInt( 0, 10 ) 
+
+	If (Utility.RandomInt(0,100)>50) 
+		akSpeaker.AddItem( FoodMeat, Utility.RandomInt(1,3), True )
+	ElseIf (Utility.RandomInt(0,100)>30) 
+		akSpeaker.AddItem( FoodVeg, Utility.RandomInt(1,3), True )
+	else
+		akSpeaker.AddItem( FoodDrink, Utility.RandomInt(1,3), True )
+	Endif
+
 	_SLD_Player.GiftFromNPC(akSpeaker, "Hungry")
 EndFunction
 
