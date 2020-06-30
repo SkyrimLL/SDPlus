@@ -1900,6 +1900,12 @@ State monitor
 					SendModEvent("SDEndGame")
 
 				ElseIf (IButton == 5)
+					; Safeword
+					Debug.MessageBox( "FPOON!: You are released from enslavement.")
+
+					SendModEvent("PCSubFree")
+
+				ElseIf (IButton == 6)
 					; Cancel
 
 				Else

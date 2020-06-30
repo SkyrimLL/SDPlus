@@ -53,6 +53,9 @@ Faction Property  KhajiitFaction  Auto 		; KhajiitCaravanFaction
 Faction Property  ArgonianFaction  Auto 	; HunterFaction
 Faction Property  DremoraFaction  Auto 		; DremoraFaction
 
+Faction Property BanditFaction  Auto  		; BanditFaction
+
+
 Faction Property _SDFP_slaverCrimeFaction  Auto 
 
 int TYPE_FACTION = 11
@@ -1026,3 +1029,4 @@ Function resetAllyToActor( Actor akSlave, FormList alFactionListIn )
 
 	; alFactionListIn.Revert()
 EndFunction
+
