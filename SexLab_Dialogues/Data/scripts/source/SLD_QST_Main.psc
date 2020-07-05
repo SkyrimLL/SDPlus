@@ -341,6 +341,8 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 		Debug.Trace("[SLD]      		fNextAllowed : " + fNextAllowed)
 		Return
 	Else
+		int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+		int VictimStamina = Player.GetActorValue("stamina") as int
 		Int IButton = _SLD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -361,8 +363,15 @@ Function StartPlayerRape ( Actor akSpeaker, string tags = "Sex" )
 			SendModEvent("PCSubStripped")
 
 			SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
+				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+				akSpeaker.SendModEvent("PCSubSex") ; Sex
+			endIf
+			akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+			Player.DamageActorValue("stamina",AttackerStamina)
 
-			If (Utility.RandomInt(0, 100)>40)
+			If (Utility.RandomInt(0, 100)>40) && (AttackerStamina < VictimStamina)
 				akSpeaker.SendModEvent("PCSubWhip")
 			EndIf
 		EndIf
@@ -390,6 +399,8 @@ Function StartPlayerCreatureRape ( Actor akSpeaker, string tags = "Sex" )
 		
 	Elseif (StorageUtil.GetIntValue( Player , "_SD_iDominance")<=0) && (Utility.RandomInt(0,100)>60)
 		Debug.Notification(" (tries to hump you) ")
+		int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+		int VictimStamina = Player.GetActorValue("stamina") as int
 		Int IButton = _SLD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -407,7 +418,13 @@ Function StartPlayerCreatureRape ( Actor akSpeaker, string tags = "Sex" )
 
 		Else
 			StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
-
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
+				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+				akSpeaker.SendModEvent("PCSubSex") ; Sex
+			endIf
+			akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+			Player.DamageActorValue("stamina",AttackerStamina)
 		EndIf
 	Endif
 
@@ -418,6 +435,8 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
+	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	int VictimStamina = Player.GetActorValue("stamina") as int
 	Int IButton = _SLD_rapeMenu.Show()
 
 	If IButton == 0 ; Show the thing.
@@ -454,7 +473,16 @@ Function StartPlayerGangRape ( Actor akSpeaker, string tags = "Sex" )
 
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
 
-		If (Utility.RandomInt(0, 100)>40)
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
+			Debug.MessageBox("You try to resist with all your strength, but at the end the aggressors overwhelm you...")
+			akSpeaker.SendModEvent("PCSubSex") ; Sex
+		endIf
+		
+		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+		Player.DamageActorValue("stamina",AttackerStamina)
+			
+		If (Utility.RandomInt(0, 100)>40) && (AttackerStamina < VictimStamina)
 			SendModEvent("PCSubWhip")
 		EndIf
 	EndIf
@@ -683,6 +711,9 @@ Function RobPlayer ( Actor akSpeaker  )
 	Actor Player = Game.GetPlayer()
 	Utility.Wait(0.5)
 
+	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	int AttackerPickpocket = (akSpeaker.GetActorValue("Pickpocket") * 0.1) as int
+	int VictimStamina = Player.GetActorValue("stamina") as int
 	Int IButton = _SLD_robMenu.Show()
 
 	If IButton == 0  ; Show the thing.
@@ -762,6 +793,13 @@ Function RobPlayer ( Actor akSpeaker  )
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 		SendModEvent("PCSubStripped")
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)			
+		if (AttackerStamina * AttackerPickpocket) as int > VictimStamina
+			AttackerStamina = VictimStamina
+			Debug.MessageBox("You try to resist with all your strength, but at the end the thief manage to get all your money...")
+			Player.RemoveItem(Gold001, Player.GetItemCount(Gold001), true, akSpeaker)
+		endIf
+		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+		Player.DamageActorValue("stamina",AttackerStamina)
 	EndIf
 
 	Utility.Wait(1.0)

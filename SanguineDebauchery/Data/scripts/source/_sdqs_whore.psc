@@ -69,6 +69,8 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 	Int iThreesome = 0
 	Int iRandomNum 
 	Int IButton  
+	int AttackerStamina
+	int VictimStamina = (akWhore as actor).GetActorValue("stamina") as int
 	; Debug.SendAnimationEvent(akWhore, "ZazAPC205")
 	If ( !Self.IsRunning() )
 		Debug.Trace("[SD] Whore queue - Quest disabled - aborting")
@@ -127,6 +129,8 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 								Debug.Notification("You feel helpless as they take turns on you.")
 							EndIf
 
+							AttackerStamina = ((_SDORP_queue[iIdx]  as actor).GetActorValue("stamina") + (_SDORP_queue[iIdx+1]  as actor).GetActorValue("stamina")) as int
+							VictimStamina = (akWhore as actor).GetActorValue("stamina") as int
 							IButton = _SD_whoreQueueMenu.Show()
 							If IButton == 0 ; Undress
 								StorageUtil.SetIntValue( akWhore as actor , "_SD_iSub", StorageUtil.GetIntValue( akWhore as actor, "_SD_iSub") + 1)
@@ -142,6 +146,22 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 							else
 								StorageUtil.SetIntValue( akWhore as actor , "_SD_iDom", StorageUtil.GetIntValue( akWhore as actor, "_SD_iDom") + 1)
+								if AttackerStamina > VictimStamina
+									AttackerStamina = VictimStamina
+									Debug.MessageBox("You try to resist with all your strength, but at the end the aggressors overwhelm you...")
+									actor[] sexActorsA = new actor[3]
+									sexActorsA[0] = akWhore as actor
+									sexActorsA[1] = _SDORP_queue[iIdx]  as actor
+									sexActorsA[2] = _SDORP_queue[iIdx+1]  as actor
+	 
+									sslBaseAnimation[] animsA
+									animsA = SexLab.GetAnimationsByTags(3,"Aggressive" )
+	 
+									SexLab.StartSex(sexActorsA, animsA, victim=akWhore as actor  )
+								endIf
+								(_SDORP_queue[iIdx]  as actor).DamageActorValue("stamina",AttackerStamina / 2) 
+								(_SDORP_queue[iIdx+1]  as actor).DamageActorValue("stamina",AttackerStamina / 2) 
+								(akWhore as actor).DamageActorValue("stamina",AttackerStamina)
 
 							EndIf
 
@@ -160,6 +180,8 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 							; sexActors[0] = akWhore as actor
 							; sexActors[1] = _SDORP_queue[iIdx]  as actor
 
+							AttackerStamina = (_SDORP_queue[iIdx]  as actor).GetActorValue("stamina") as int
+							VictimStamina = (akWhore as actor).GetActorValue("stamina") as int
 							IButton = _SD_whoreQueueMenu.Show()
 							If IButton == 0 ; Undress
 								StorageUtil.SetIntValue( akWhore as actor , "_SD_iSub", StorageUtil.GetIntValue( akWhore as actor, "_SD_iSub") + 1)
@@ -168,6 +190,14 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 							else
 								StorageUtil.SetIntValue( akWhore as actor , "_SD_iDom", StorageUtil.GetIntValue( akWhore as actor, "_SD_iDom") + 1)
+								
+								if AttackerStamina > VictimStamina
+									AttackerStamina = VictimStamina
+									Debug.MessageBox("You try to resist with all your strength, but at the end the aggressors overwhelm you...")
+									funct.SanguineRape( _SDORP_queue[iIdx] as actor, akWhore as actor, "Agressive")
+								endIf
+								(_SDORP_queue[iIdx]  as actor).DamageActorValue("stamina",AttackerStamina) 
+								(akWhore as actor).DamageActorValue("stamina",AttackerStamina)
 
 							EndIf							
 						Else

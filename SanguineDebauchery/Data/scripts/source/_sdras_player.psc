@@ -267,6 +267,10 @@ Function _Maintenance()
 
 	; Restore compatibility flags with Deviously Helpless on load if enslaved or infected
 
+	kPlayer = Self.GetReference() as Actor
+	If !kPlayer || kPlayer == none
+		return
+	EndIf
 	If (StorageUtil.GetIntValue(kPlayer, "_SD_iSprigganInfected") == 1) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved")==1)
 
 		SendModEvent("dhlp-Suspend")
@@ -276,8 +280,7 @@ Function _Maintenance()
 		; Suspend Deviously Helpless attacks.
 		SendModEvent("dhlp-Suspend")
 	EndIf
-
-	kPlayer = Self.GetReference() as Actor
+ 
 
 	fctConstraints.InitAA()
 
@@ -587,6 +590,9 @@ Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _
 	Endif
 
 	; New enslavement - changing ownership
+	int AttackerStamina = kTempAggressor.GetActorValue("stamina") as int
+	int VictimStamina = kPlayer.GetActorValue("stamina") as int
+
 	Int IButton = _SD_enslaveMenu.Show()
 
 	If IButton == 0 ; Enslaved
@@ -600,7 +606,15 @@ Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _
 
 	else
 		StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
-
+		If IButton == 2 ; Resist
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
+				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+				SDSurrender(kTempAggressor, "" )
+			endIf
+		EndIf
+		kTempAggressor.DamageActorValue("stamina",AttackerStamina) 
+		kPlayer.DamageActorValue("stamina",AttackerStamina)
 
 	EndIf
 EndEvent

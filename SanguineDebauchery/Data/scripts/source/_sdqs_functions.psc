@@ -354,6 +354,8 @@ Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex"
 	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
+	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	int VictimStamina = akTarget.GetActorValue("stamina") as int
 	Int IButton = _SD_rapeMenu.Show()
 
 	If IButton == 0 ; Show the thing.
@@ -374,8 +376,15 @@ Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex"
 		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
+			Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+			SanguineRape( akSpeaker, Player , "Sex")
+		endIf
+		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+		akTarget.DamageActorValue("stamina",AttackerStamina)
 
-		If (Utility.RandomInt(0, 100)>40)
+		If (Utility.RandomInt(0, 100)>40) && (AttackerStamina < VictimStamina)
 			akSpeaker.SendModEvent("PCSubWhip")
 		EndIf
 	EndIf
@@ -401,6 +410,8 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 		Return
 	Else
 
+		int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+		int VictimStamina = akTarget.GetActorValue("stamina") as int
 		Int IButton = _SD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -417,6 +428,13 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 
 		Else
 			StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
+				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+				SanguineRape( akSpeaker, Player , "Sex")
+			endIf
+			akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+			akTarget.DamageActorValue("stamina",AttackerStamina)
 
 		EndIf
 	Endif
@@ -622,7 +640,7 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 
 
 				sslThreadModel Thread = SexLab.NewThread()
-				Thread.AddActor(akTarget, bIsTargetVictim) ; // IsVictim = true
+				Thread.AddActor(akTarget, bIsTargetVictim) ; IsVictim = true
 				Thread.AddActor(akSpeaker, bIsSpeakerVictim)
 				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
 				iReturn += ((Thread.StartThread() AS BOOL) AS INT)

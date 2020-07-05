@@ -30,7 +30,8 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 		Game.ForceThirdPerson()
 		; Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
-
+		int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+		int VictimStamina = akTarget.GetActorValue("stamina") as int
 		Int IButton = _SD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -44,6 +45,13 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 			StorageUtil.SetIntValue(Player, "_SD_iDom", StorageUtil.GetIntValue(Player, "_SD_iDom") + 1)
 			SendModEvent("PCSubStripped")
 			SexLab.ActorLib.StripActor( Player, DoAnimate= false)
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
+				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+				funct.SanguineRape(akSpeaker, Player,SexLabInTags,SexLabOutTags )
+			endIf
+			akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+			akTarget.DamageActorValue("stamina",AttackerStamina)
 		EndIf
 	EndIf
 	
@@ -53,6 +61,9 @@ EndFunction
 Function RobPlayer ( Actor akSpeaker  )
 	Actor Player = Game.GetPlayer()
 	Utility.Wait(0.5)
+	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	int AttackerPickpocket = (akSpeaker.GetActorValue("Pickpocket") * 0.1) as int
+	int VictimStamina = Player.GetActorValue("stamina") as int
 
 	Int IButton = _SD_robMenu.Show()
 
@@ -132,6 +143,13 @@ Function RobPlayer ( Actor akSpeaker  )
 		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
 		SendModEvent("PCSubStripped")
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)			
+		if (AttackerStamina * AttackerPickpocket) as int > VictimStamina
+			AttackerStamina = VictimStamina
+			Debug.MessageBox("You try to resist with all your strength, but at the end the thief manage to get all your money...")
+			Player.RemoveItem(Gold001, Player.GetItemCount(Gold001), true, akSpeaker)
+		endIf
+		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+		Player.DamageActorValue("stamina",AttackerStamina)
 	EndIf
 
 	Utility.Wait(1.0)
@@ -222,7 +240,8 @@ Function DrugPlayer(Actor akSpeaker)
 	Actor kSlave = game.GetPlayer()
 	Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
-
+	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	int VictimStamina = kSlave.GetActorValue("stamina") as int
 	Int IButton = _SD_drugMenu.Show()
 
 	If IButton == 0 ; Show the thing.
@@ -273,6 +292,19 @@ Function DrugPlayer(Actor akSpeaker)
 		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( kSlave, VictimRef = kSlave, DoAnimate= false)
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
+			Debug.MessageBox("You try to resist with all your strength, but now your mouth is held open as you are forced to swallow...")
+			If (StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") < 0 )
+				kSlave.AddItem( Skooma, 1, True )
+				kSlave.EquipItem( Skooma, True, True )
+			Else
+				kSlave.AddItem( Ale, 1, True )
+				kSlave.EquipItem( Ale, True, True )
+			EndIf
+		endIf
+		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+		kSlave.DamageActorValue("stamina",AttackerStamina)
 
 	EndIf
 EndFunction

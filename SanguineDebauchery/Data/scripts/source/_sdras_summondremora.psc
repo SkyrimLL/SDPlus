@@ -29,6 +29,9 @@ Event OnUpdate()
 			Game.ForceThirdPerson()
 			; Debug.SendAnimationEvent(Game.getPlayer() as ObjectReference, "bleedOutStart")
 
+			int AttackerStamina = Self.GetActorValue("stamina") as int
+			int VictimStamina = kPlayer.GetActorValue("stamina") as int
+			
 			Int IButton = _SD_rapeMenu.Show()
 
 			If IButton == 0 ; Show the thing.
@@ -39,6 +42,13 @@ Event OnUpdate()
 				StorageUtil.SetIntValue(Game.GetPlayer(), "_SD_iDom", StorageUtil.GetIntValue(Game.GetPlayer(), "_SD_iDom") + 1)
 				SendModEvent("PCSubStripped")
 				SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+				if AttackerStamina > VictimStamina
+					AttackerStamina = VictimStamina
+					Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+					Self.SendModEvent("PCSubSex")
+				endIf
+				Self.DamageActorValue("stamina",AttackerStamina) 
+				kPlayer.DamageActorValue("stamina",AttackerStamina)
 			EndIf
 		EndIf
 	EndIf
