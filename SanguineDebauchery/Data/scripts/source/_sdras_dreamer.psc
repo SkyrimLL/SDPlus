@@ -99,6 +99,16 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		Return
 	Endif
 
+	; Send player to dreamworld only once a day
+ 	daysPassed = Game.QueryStat("Days Passed")
+
+ 	; Initial values
+ 	if (iGameDateLastCheck == -1)
+ 		iGameDateLastCheck = daysPassed
+ 	endIf
+ 
+	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
+
 	StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", _SDGVP_config_chance_dreamworld_on_sleep.GetValue() as Int)
 
 	Debug.Trace("[_sdras_dreamer] Auto start?: " + _SDGVP_config_auto_start.GetValue())
@@ -107,6 +117,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Debug.Trace("[_sdras_dreamer] Max chance on sleep: " + StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" ))
 	Debug.Trace("[_sdras_dreamer] Sanguine Blessing: " + _SDGVP_sanguine_blessing.GetValue())
 	Debug.Trace("[_sdras_dreamer] Number times enslaved: " + _SDGVP_stats_enslaved.GetValueInt())
+	Debug.Trace("[_sdras_dreamer] iDaysSinceLastCheck: " + iDaysSinceLastCheck)
 
 	If (_SDGVP_config_auto_start.GetValue() == 0)
 		Debug.Trace("[_sdras_dreamer]    Dreamworld auto start disabled - skipping" )
@@ -261,21 +272,12 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		; Endif
 	EndIf
 
-	; Send player to dreamworld only once a day
- 	daysPassed = Game.QueryStat("Days Passed")
-
- 	; Initial values
- 	if (iGameDateLastCheck == -1)
- 		iGameDateLastCheck = daysPassed
- 	endIf
- 
-	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
-
 	If (iDaysSinceLastCheck > 0) && (bSendToDreamworld)
-		; New day - allow thw player to go to Dreamworld
+		; New day - allow the player to go to Dreamworld
 
 	elseif (bSendToDreamworld)
 		; Maybe add a small chance of multiple trips to dreamworld in the same day later
+		Debug.Trace("[_sdras_dreamer]       iDaysSinceLastCheck = 0 - Wait another day before trying again " )
 		bSendToDreamworld = False
 	endIf
 
