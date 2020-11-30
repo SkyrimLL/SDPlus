@@ -72,6 +72,7 @@ EndEvent
 
 Function InitAA()
 	; Debug.Trace("[_sdras_load] Init SD+ FNIS aa")
+	kPlayer = Game.getPlayer()
 
 	ModCRC = FNIS_aa.GetInstallationCRC()  
 
@@ -228,6 +229,10 @@ Function CollarEffectFinish(Actor akTarget, Actor akCaster)
 EndFunction
 
 Function CollarUpdate()
+	if (kPlayer == none)
+		kPlayer = Game.getPlayer()
+	endif
+
 	kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
 	bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
@@ -356,6 +361,11 @@ EndFunction
 Function CollarStand()
 	Bool bOk
 	Int zadOverrideIndex
+
+	if (kPlayer == none)
+		kPlayer = Game.getPlayer()
+	endif
+	
 	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
 	bIsYokeEquipped = fctOutfit.isYokeEquipped( kPlayer ) 
 	bIsArmbinderEquipped = fctOutfit.isArmbinderEquipped( kPlayer ) 
@@ -404,6 +414,11 @@ EndFunction
 
 Function UpdateStanceOverrides(Bool bForceRefresh=False)
 	Bool bOk
+
+	if (kPlayer == none)
+		kPlayer = Game.getPlayer()
+	endif
+	
 	bIsWristRestraintEquipped = fctOutfit.isWristRestraintEquipped( kPlayer ) 
 	kMaster = StorageUtil.GetFormValue(kPlayer, "_SD_CurrentOwner") as Actor
 
@@ -486,7 +501,11 @@ EndFunction
 
 Function ResetStanceOverrides()
 	Bool bOk
-
+	
+	if (kPlayer == none)
+		kPlayer = Game.getPlayer()
+	endif
+	
 	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
 	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mt", 0, 0, "sanguinesDebauchery", false)  
 	bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtx", 0, 0, "sanguinesDebauchery", false)  
