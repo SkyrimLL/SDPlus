@@ -272,7 +272,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		; Endif
 	EndIf
 
-	If (iDaysSinceLastCheck > 0) && (bSendToDreamworld)
+	If ((iDaysSinceLastCheck > 0) || (_SDGVP_sanguine_blessing.GetValue()==0) ) && (bSendToDreamworld)
 		; New day - allow the player to go to Dreamworld
 
 	elseif (bSendToDreamworld)
@@ -321,6 +321,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 EndEvent
 
 Event OnSleepStop(bool abInterrupted)
+
 	If abInterrupted
 		If ( Self.GetOwningQuest().GetStage() == 0 && _SDGVP_stats_enslaved.GetValueInt() > 0 && _SDGVP_enslaved.GetValueInt() == 0 && dbe.pSleepyTime != 1 )
 

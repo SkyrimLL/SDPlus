@@ -517,6 +517,7 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
  	Actor kActor = _sender as Actor
 	Actor kNewMaster = StorageUtil.GetFormValue( kPlayer , "_SD_TempAggressor") as Actor
 	ObjectReference kNewMasterRef
+	Bool bAbort = False
 
 	if (kActor != None)
 		; StorageUtil _SD_TempAggressor is deprecated
@@ -526,7 +527,13 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 		
 	Debug.Trace("[_sdras_player] Receiving 'spriggan enslave' event - New master: " + kNewMaster)
 
-	If (kNewMaster != None)  &&  fctFactions.checkIfSpriggan (  kNewMaster )
+	; SexLab Hormones - chance of resistance to infection
+	if (Utility.RandomFloat(1.0,100.0)<(100.0 - StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormoneImmunity")))
+		Debug.Trace("[_sdras_player]     Resisted disease - _SLH_fHormoneImmunity = " + StorageUtil.GetFloatValue(kPlayer, "_SLH_fHormoneImmunity"))
+		bAbort = True
+	endif
+
+	If (kNewMaster != None)  &&  fctFactions.checkIfSpriggan (  kNewMaster ) && (!bAbort)
 		; new master
 
 		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
@@ -565,7 +572,7 @@ Event OnSDSprigganFree(String _eventName, String _args, Float _argc = 1.0, Form 
 	If ( _SD_spriggan.IsRunning() )
 		Debug.Trace("[_sdras_player] Stopping Spriggan quest")
 		_SD_spriggan.setstage(90)
-		endif
+	endif
 
 	Wait( fRFSU * 5.0 )
 EndEvent
