@@ -23,13 +23,13 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 		StorageUtil.SetIntValue(kContainer, "_SD_iHandsFree", 1)
 
 
-		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuff"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
-			fctOutfit.clearDeviceByString ( "ArmCuff" )
+		If fctOutfit.isArmsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "ArmCuffs"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Armbinder"  )
+			fctOutfit.clearDeviceByString ( "ArmCuffs" )
 			fctOutfit.clearDeviceByString ( "Armbinder" )
 		EndIf
 
-		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "LegCuff" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "LegCuff"  )
-			fctOutfit.clearDeviceByString ( "LegCuff" )
+		If fctOutfit.isLegsEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan" , "LegCuffs" ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "LegCuffs"  )
+			fctOutfit.clearDeviceByString ( "LegCuffs" )
 		EndIf
 
 		If fctOutfit.isBlindfoldEquipped( kContainer ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSpriggan", "Blindfold"  ) && !fctOutfit.isDeviceEquippedKeyword( kContainer,  "_SD_DeviousSanguine", "Blindfold" )
