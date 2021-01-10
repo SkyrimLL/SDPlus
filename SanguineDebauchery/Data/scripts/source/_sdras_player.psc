@@ -286,6 +286,7 @@ Function _Maintenance()
 
 	fctConstraints.UpdateStanceOverrides() 
 
+	fctFactions.cleanSlaveryFactions( kPlayer ) 
 
 	; If (kPlayer != Game.GetPlayer())
 		; Debug.MessageBox("[SD] Player ref has changed. ")

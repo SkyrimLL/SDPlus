@@ -7,6 +7,7 @@ _SDQS_functions Property funct  Auto
 zbfSlaveControl Property ZazSlaveControl Auto
 
 Keyword Property _SDKP_actorTypeNPC  Auto
+FormList Property _SDFLP_slavery_factions  Auto
 FormList Property _SDFLP_banned_factions  Auto
 FormList Property _SDFLP_banned_actors  Auto
 
@@ -697,6 +698,32 @@ Bool Function actorInBannedFactions( Actor akActor )
 	Debug.Trace("			_SD::actorInBannedFactions akActor:" + akActor + " found:" + found )
 	Return found
 EndFunction
+
+Function cleanSlaveryFactions( Actor akActor ) 
+	Form nthForm
+	Int index = 0
+	Int size = _SDFLP_slavery_factions.GetSize()
+	Bool ret = False
+
+	Debug.Trace("[SD]  Cleaning up slavery factions for " + akActor)
+
+	if (StorageUtil.GetIntValue(akActor, "_SD_iEnslaved")==0) && (StorageUtil.GetIntValue(akActor, "_SD_iSprigganInfected")==0) 
+
+		While ( index < size )
+			Faction nTHfaction = _SDFLP_slavery_factions.GetAt(index) as Faction
+			nthForm = nTHfaction as Form
+
+			If akActor.IsInFaction( nTHfaction )  
+				Debug.Trace("[SD]    Slave faction cleaned up: " + nthForm + "(" + nthForm.GetName() + ")")
+
+				akActor.RemoveFromFaction( nTHfaction ) 
+			EndIf
+			index += 1
+		EndWhile
+
+	Endif
+EndFunction
+
 
 Bool Function qualifyActor( Actor akActor, Bool abCheckInScene = True )
 	Bool bOutOfScene = ( !abCheckInScene || ( abCheckInScene && akActor.GetCurrentScene() == None ) )
