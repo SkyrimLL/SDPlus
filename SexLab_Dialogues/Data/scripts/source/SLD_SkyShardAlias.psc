@@ -7,8 +7,8 @@ Event OnContainerChanged(ObjectReference akNewContainer, ObjectReference akOldCo
 
 	akActor = akNewContainer as Actor
 
-	Debug.Notification("Sky Shard chages hands..")
-	Debug.Trace("[SD] Sky Shard On Container changed")
+	Debug.Notification("Skyshard changes hands..")
+	Debug.Trace("[SD] Skyshard On Container changed")
 	Debug.Trace("[SD] akNewContainer: " + akNewContainer)
 	Debug.Trace("[SD] Game.GetPlayer(): " + Game.GetPlayer())
 	Debug.Trace("[SD] _SLD_MageQuest.GetStageDone(100): " + _SLD_MageQuest.GetStageDone(100))
