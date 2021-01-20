@@ -24,6 +24,10 @@ Event OnInit()
 	EndIf
 EndEvent
 
+Event OnDying(Actor akKiller)
+	UnregisterForUpdate()
+EndEvent
+
 Event OnUpdate()
 	If ( !bDispel && !Self.IsInCombat() && GetCurrentRealTime() - fSummonTime >= 10.0 )
 		bDispel = True
@@ -47,15 +51,20 @@ Event OnUpdate()
 			If IButton == 0 ; Show the thing.
 				StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", Self)
+				Debug.Notification("You submit to your aggressor...")
+				SendModEvent("PCSubStripped")
+				SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false)
 				Self.SendModEvent("PCSubSex")
 			Else
 				StorageUtil.SetIntValue(kPlayer, "_SD_iDom", StorageUtil.GetIntValue(kPlayer, "_SD_iDom") + 1)
-				SendModEvent("PCSubStripped")
-				SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false)
 				if AttackerStamina > VictimStamina
 					AttackerStamina = VictimStamina
-					Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
+					Debug.Notification("You resist, but are forced to submit...")
+					SendModEvent("PCSubStripped")
+					SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false)
 					Self.SendModEvent("PCSubSex")
+				else
+					Debug.Notification("You manage to break free from your attacker...")
 				endIf
 				Self.DamageActorValue("stamina",AttackerStamina) 
 				kPlayer.DamageActorValue("stamina",AttackerStamina)
