@@ -93,6 +93,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Int iDominance = StorageUtil.GetIntValue( Player , "_SD_iDom") - StorageUtil.GetIntValue( Player , "_SD_iSub")
 
 	_SLD_speakerAlias.ForceRefTo(akSpeakerRef )
+	StorageUtil.SetFormValue( none , "_SD_iLastSpeaker", akSpeakerRef as Form)
 
 	;-------------------------------- Player / NPC relationships
 	; - Extended Relationship level with Player (same as RelationshipRank, from -7 to +7)
@@ -250,8 +251,8 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	If (StorageUtil.HasIntValue( Player, "_SD_iEnslaved"))
 		_SLD_PCSubEnslaved.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iEnslaved") )
 		_SLD_PCSubSlaveryLevel.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iSlaveryLevel") )
-		_SLD_PCSubForcedSlavery.SetValue(  StorageUtil.GetIntValue( akSpeaker  , "_SD_iForcedSlavery") )
-		_SLD_PCSubFollowSlave.SetValue(  StorageUtil.GetIntValue( akSpeaker , "_SD_iFollowSlave") )
+		_SLD_PCSubForcedSlavery.SetValue(  StorageUtil.GetIntValue( Player  , "_SD_iForcedSlavery") )
+		_SLD_PCSubFollowSlave.SetValue(  StorageUtil.GetIntValue( Player , "_SD_iFollowSlave") )
 
 		If (StorageUtil.GetStringValue( Player, "_SD_sDefaultStance") == "Crawling")
 			_SLD_PCSubDefaultStance.SetValue(  2 )

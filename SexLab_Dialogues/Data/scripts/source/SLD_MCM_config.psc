@@ -2,6 +2,8 @@ Scriptname SLD_MCM_config extends ski_configbase
 
 Import sslCreatureAnimationSlots
 
+SexLabFramework Property SexLab  Auto  
+
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
 GlobalVariable Property _SLD_CommentProbability Auto  
 GlobalVariable Property _SLD_AttackProbability Auto  
@@ -209,8 +211,41 @@ event OnPageReset(string a_page)
 		AddToggleOptionST("STATE_ClearGiantRaces","Clear giant races", _ClearGiantRaces	 as Float) 
 
 		AddHeaderOption(" Debug")
-		AddToggleOptionST("STATE_GetDebugSpell","Get debug spell book", _GetDebugSpell	 as Float) 
-	
+		AddToggleOptionST("STATE_GetDebugSpell","Get debug spell book", _GetDebugSpell	 as Float)
+
+		SetCursorPosition(1)
+		AddHeaderOption(" Last speaker info")
+
+		ObjectReference kActorRef = StorageUtil.GetFormValue( none , "_SD_iLastSpeaker")	as ObjectReference
+		Actor kActor = kActorRef	as Actor
+
+		AddTextOption(" Last speaker (actor): " + kActor, "", OPTION_FLAG_DISABLED)
+		AddTextOption(" Last speaker (name): " +  kActor.GetBaseObject().GetName(), "", OPTION_FLAG_DISABLED)
+
+		if (kActorRef != None)
+			AddTextOption(" RelationshipRank: " + kActor.GetRelationshipRank(PlayerActor)		  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" AV Confidence: " + kActor.GetAV("Confidence") as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" AV Morality: " + kActor.GetAV("Morality") as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" AV Assistance: " + kActor.GetAV("Assistance") as Int, "", OPTION_FLAG_DISABLED)
+
+			AddHeaderOption(" Dialogues tracking")
+			AddTextOption(" _SD_iRelationshipType: " + StorageUtil.GetIntValue( kActor, "_SD_iRelationshipType")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iDisposition: " + StorageUtil.GetIntValue( kActor , "_SD_iDisposition")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iTrust: " + StorageUtil.GetIntValue( kActor , "_SD_iTrust")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iSeduction: " + StorageUtil.GetIntValue( kActor , "_SD_iSeduction")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iCorruption: " + StorageUtil.GetIntValue( kActor , "_SD_iCorruption")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iForcedSlavery: " + StorageUtil.GetIntValue( kActor  , "_SD_iForcedSlavery")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iFollowSlave: " + StorageUtil.GetIntValue( kActor , "_SD_iFollowSlave")  as Int, "", OPTION_FLAG_DISABLED)
+
+			AddHeaderOption(" Sex tracking")
+			AddTextOption(" SexLab.PlayerSexCount: " + SexLab.PlayerSexCount( kActor )  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iRapeCountPCDom: " + StorageUtil.GetIntValue( kActor , "_SD_iRapeCountPCDom")  as Int, "", OPTION_FLAG_DISABLED)
+			AddTextOption(" _SD_iRapeCountPCSub: " + StorageUtil.GetIntValue( kActor , "_SD_iRapeCountPCSub")  as Int, "", OPTION_FLAG_DISABLED)
+		else
+			AddTextOption(" Speaker not initialized. " , "", OPTION_FLAG_DISABLED)	 
+			AddTextOption(" Talk to an NPC and select" , "", OPTION_FLAG_DISABLED)		
+			AddTextOption(" [More dialogues] or [Refresh Dialogues]. " , "", OPTION_FLAG_DISABLED)		
+		endif
 	endIf
 endEvent
 
