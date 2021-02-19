@@ -64,7 +64,9 @@ Function _maintenance()
 	Actor PlayerActor = Game.GetPlayer()
 
 	UnregisterForAllModEvents()
-	Debug.Trace("SexLab Dialogues: Reset SexLab events")
+
+	Debug.Trace("[SLD] Reset SexLab events")
+
 	RegisterForModEvent("AnimationStart", "OnSexLabStart")
 	RegisterForModEvent("AnimationEnd",   "OnSexLabEnd")
 	; RegisterForModEvent("OrgasmStart",    "OnSexLabOrgasm")
@@ -262,9 +264,11 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
     Int iSexCount
 
 	if !Self || !SexLab 
-		Debug.Trace("SexLab Dialogues: Critical error on SexLab Start")
+		Debug.Notification("[SLD] Critical error on SexLab Start")
 		Return
 	EndIf
+
+	debug.Trace("[SLD] Sex starts ")
 
 
 	Actor[] actors  = SexLab.HookActors(_args)
@@ -314,6 +318,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 
 		EndIf
 
+		debug.Trace("[SLD] isAnimCorruption: " + isAnimCorruption + "\n isAnimSeduction: " + isAnimSeduction)
 
 		int idx = 0
 		while idx < actors.Length
@@ -321,7 +326,6 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				; Actor is Player
 
 			else
-
 				If !(StorageUtil.HasIntValue( actors[idx] , "_SD_iSeduction"))
 					StorageUtil.SetIntValue( actors[idx] , "_SD_iSeduction", 0 )
 				EndIf
@@ -393,13 +397,15 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 				EndIf
 
 				If (iTrust >= 0 ) && (iDisposition >= 0) && !isPCVictim && !isPCRapist 
+					debug.Trace("[SLD] Checking disposition")
+
 					if isAnimSeduction
 						StorageUtil.SetIntValue( actors[idx] , "_SD_iSeduction", StorageUtil.GetIntValue( actors[idx] , "_SD_iSeduction") + 1 )
 					ElseIf isAnimCorruption
 						StorageUtil.SetIntValue( actors[idx] , "_SD_iCorruption", StorageUtil.GetIntValue( actors[idx] , "_SD_iCorruption") + 1 )
 					EndIf
 
-					If (iSexCount >= 2) ; Friend
+					If (iSexCount <= 2) ; Friend
 						If (actors[idx].GetRelationshipRank(PlayerActor) == 0 )
 							actors[idx].SetRelationshipRank(PlayerActor, 1 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 1 )
@@ -410,7 +416,7 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 						EndIf
 						
 
-					ElseIf (iSexCount >= 4) ; Confident
+					ElseIf (iSexCount <= 4) ; Confident
 						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 1)
 							actors[idx].SetRelationshipRank(PlayerActor, 2 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 2 )
@@ -421,13 +427,20 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 						EndIf
 						
 
-					ElseIf (iSexCount >= 8) ; Ally
+					ElseIf (iSexCount <= 8 ) ; Ally
 						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 2)
 							actors[idx].SetRelationshipRank(PlayerActor, 3 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 3 )
-							actors[idx].AddToFaction(PotentialFollowerFaction)
-							actors[idx].AddToFaction(CurrentFollowerFaction)
-							actors[idx].SetFactionRank( CurrentFollowerFaction, -1)
+
+							if (!actors[idx].IsInFaction(PotentialFollowerFaction)) && (!actors[idx].IsInFaction(CurrentFollowerFaction))
+								actors[idx].AddToFaction(PotentialFollowerFaction)
+							endif
+
+							if (!actors[idx].IsInFaction(CurrentFollowerFaction))
+								actors[idx].AddToFaction(CurrentFollowerFaction)
+								actors[idx].SetFactionRank( CurrentFollowerFaction, -1)
+							endif
+
 							actors[idx].SetAV( "Assistance", 2)
 							actors[idx].SetAV( "Confidence", 3)
 							Debug.Notification(actorName + " smiles and snuggles close to you.")
@@ -437,14 +450,24 @@ Event OnSexLabStart(String _eventName, String _args, Float _argc, Form _sender)
 						EndIf
 						
 
-					ElseIf (iSexCount >= 16) ; Lover
+					Else ; Lover
 						If (actors[idx].GetRelationshipRank(PlayerActor) >= 0 ) && (actors[idx].GetRelationshipRank(PlayerActor) <= 3)
 							actors[idx].SetRelationshipRank(PlayerActor, 4 )
 							StorageUtil.SetIntValue(actors[idx], "_SD_iRelationshipType", 4 )
-							actors[idx].AddToFaction(PotentialFollowerFaction)
-							actors[idx].AddToFaction(CurrentFollowerFaction)
-							actors[idx].SetFactionRank( CurrentFollowerFaction, -1)
-							actors[idx].AddToFaction(PotentialMarriageFaction)
+
+							if (!actors[idx].IsInFaction(PotentialFollowerFaction)) && (!actors[idx].IsInFaction(CurrentFollowerFaction))
+								actors[idx].AddToFaction(PotentialFollowerFaction)
+							endif
+
+							if (!actors[idx].IsInFaction(CurrentFollowerFaction))
+								actors[idx].AddToFaction(CurrentFollowerFaction)
+								actors[idx].SetFactionRank( CurrentFollowerFaction, -1)
+							endif
+
+							if (!actors[idx].IsInFaction(PotentialMarriageFaction))
+								actors[idx].AddToFaction(PotentialMarriageFaction)
+							endif
+
 							actors[idx].SetAV( "Assistance", 2)
 							actors[idx].SetAV( "Confidence", 3)
 							Debug.Notification(actorName + " holds you and looks at you lovingly.")

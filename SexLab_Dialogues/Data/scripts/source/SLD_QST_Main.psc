@@ -91,6 +91,7 @@ Function SetNPCDialogueState ( Actor akSpeaker )
 	Bool isSpeakerBeast = False
 	Bool isSpeakerMasterBeast = False
 	Int iDominance = StorageUtil.GetIntValue( Player , "_SD_iDom") - StorageUtil.GetIntValue( Player , "_SD_iSub")
+	Int iSexCount = SexLab.PlayerSexCount( akSpeaker )  as Int
 
 	_SLD_speakerAlias.ForceRefTo(akSpeakerRef )
 	StorageUtil.SetFormValue( none , "_SD_iLastSpeaker", akSpeakerRef as Form)
