@@ -566,6 +566,26 @@ Event SDSprigganPunish(String _eventName, String _args, Float _argc = 1.0, Form 
 	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 8, aiValue2 = 0 )
 EndEvent
 
+; Helper function to calculate the actor strength
+float Function GetActorStrengthPercentage(Actor akSubject, float Percentage = -1.0)
+	If akSubject == None
+		Return -1.0
+	EndIf
+	
+	If Percentage <= 0
+		Percentage = akSubject.GetActorValuePercentage("stamina")
+	EndIf
+	
+;	float Strength = akSubject.GetMass() * Percentage
+	ActorBase abSubject = akSubject.GetActorBase()
+	float Strength = (akSubject.GetHeight() * akSubject.GetLength() * akSubject.GetWidth()) * (PapyrusUtil.ClampFloat(abSubject.GetWeight(), 1.0, 100.0) * 0.01) * Percentage
+	
+	If Strength < 0
+		Strength = 0
+	EndIf
+	
+	Return Strength
+EndFunction
 
 Event OnSDSprigganFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving 'free spriggan slave' event") 
@@ -598,9 +618,12 @@ Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _
 	Endif
 
 	; New enslavement - changing ownership
+	float AttackerStrengthPercentage = GetActorStrengthPercentage(kTempAggressor)
 	int AttackerStamina = kTempAggressor.GetActorValue("stamina") as int
+	float VictimStrengthPercentage = GetActorStrengthPercentage(kPlayer)
 	int VictimStamina = kPlayer.GetActorValue("stamina") as int
-
+	float AttackerStrength = AttackerStamina * AttackerStrengthPercentage
+	float VictimStrength = VictimStamina * VictimStrengthPercentage
 	Int IButton = _SD_enslaveMenu.Show()
 
 	If IButton == 0 ; Enslaved
@@ -615,12 +638,14 @@ Event OnSDEnslaveMenu(String _eventName, String _args, Float _argc = 1.0, Form _
 	else
 		StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer, "_SD_iDom") + 1)
 		If IButton == 2 ; Resist
-			if AttackerStamina > VictimStamina
-				AttackerStamina = VictimStamina
+			if AttackerStrength > VictimStrength
 				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
 				SDSurrender(kTempAggressor, "" )
 			endIf
 		EndIf
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
+		endIf
 		kTempAggressor.DamageActorValue("stamina",AttackerStamina) 
 		kPlayer.DamageActorValue("stamina",AttackerStamina)
 

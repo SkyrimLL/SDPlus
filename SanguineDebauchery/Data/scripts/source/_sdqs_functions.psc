@@ -348,14 +348,38 @@ Bool Function checkGenderRestriction(Actor akSpeaker, Actor akTarget)
 
 EndFunction
 
+; Helper function to calculate the actor strength
+float Function GetActorStrengthPercentage(Actor akSubject, float Percentage = -1.0)
+	If akSubject == None
+		Return -1.0
+	EndIf
+	
+	If Percentage <= 0
+		Percentage = akSubject.GetActorValuePercentage("stamina")
+	EndIf
+	
+;	float Strength = akSubject.GetMass() * Percentage
+	ActorBase abSubject = akSubject.GetActorBase()
+	float Strength = (akSubject.GetHeight() * akSubject.GetLength() * akSubject.GetWidth()) * (PapyrusUtil.ClampFloat(abSubject.GetWeight(), 1.0, 100.0) * 0.01) * Percentage
+	
+	If Strength < 0
+		Strength = 0
+	EndIf
+	
+	Return Strength
+EndFunction
 
 Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex" )
 	Actor Player = Game.GetPlayer()
 	; Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
 
+	float AttackerStrengthPercentage = GetActorStrengthPercentage(akSpeaker)
 	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	float VictimStrengthPercentage = GetActorStrengthPercentage(akTarget)
 	int VictimStamina = akTarget.GetActorValue("stamina") as int
+	float AttackerStrength = AttackerStamina * AttackerStrengthPercentage
+	float VictimStrength = VictimStamina * VictimStrengthPercentage
 	Int IButton = _SD_rapeMenu.Show()
 
 	If IButton == 0 ; Show the thing.
@@ -376,15 +400,17 @@ Function SanguineRapeMenu ( Actor akSpeaker, Actor akTarget, string tags = "Sex"
 		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)
-		if AttackerStamina > VictimStamina
-			AttackerStamina = VictimStamina
+		if AttackerStrength > VictimStrength
 			Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
 			SanguineRape( akSpeaker, Player , "Sex")
+		endIf
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
 		endIf
 		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
 		akTarget.DamageActorValue("stamina",AttackerStamina)
 
-		If (Utility.RandomInt(0, 100)>40) && (AttackerStamina < VictimStamina)
+		If (Utility.RandomInt(0, 100)>40) && (AttackerStrength < VictimStrength)
 			akSpeaker.SendModEvent("PCSubWhip")
 		EndIf
 	EndIf
@@ -410,8 +436,12 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 		Return
 	Else
 
+		float AttackerStrengthPercentage = GetActorStrengthPercentage(akSpeaker)
 		int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+		float VictimStrengthPercentage = GetActorStrengthPercentage(akTarget)
 		int VictimStamina = akTarget.GetActorValue("stamina") as int
+		float AttackerStrength = AttackerStamina * AttackerStrengthPercentage
+		float VictimStrength = VictimStamina * VictimStrengthPercentage
 		Int IButton = _SD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -428,10 +458,12 @@ Function SanguineRapeCreatureMenu ( Actor akSpeaker, Actor akTarget, string tags
 
 		Else
 			StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
-			if AttackerStamina > VictimStamina
-				AttackerStamina = VictimStamina
+			if AttackerStrength > VictimStrength
 				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
 				SanguineRape( akSpeaker, Player , "Sex")
+			endIf
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
 			endIf
 			akSpeaker.DamageActorValue("stamina",AttackerStamina) 
 			akTarget.DamageActorValue("stamina",AttackerStamina)

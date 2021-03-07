@@ -13,6 +13,26 @@ Function Commented()
 	StorageUtil.SetIntValue( Player , "_SD_iCoveted", 1)
 EndFunction
 
+; Helper function to calculate the actor strength
+float Function GetActorStrengthPercentage(Actor akSubject, float Percentage = -1.0)
+	If akSubject == None
+		Return -1.0
+	EndIf
+	
+	If Percentage <= 0
+		Percentage = akSubject.GetActorValuePercentage("stamina")
+	EndIf
+	
+;	float Strength = akSubject.GetMass() * Percentage
+	ActorBase abSubject = akSubject.GetActorBase()
+	float Strength = (akSubject.GetHeight() * akSubject.GetLength() * akSubject.GetWidth()) * (PapyrusUtil.ClampFloat(abSubject.GetWeight(), 1.0, 100.0) * 0.01) * Percentage
+	
+	If Strength < 0
+		Strength = 0
+	EndIf
+	
+	Return Strength
+EndFunction
 
 Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Aggressive", String SexLabOutTags = "Solo")
 
@@ -30,8 +50,12 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 
 		Game.ForceThirdPerson()
 		; Debug.SendAnimationEvent(akTarget as ObjectReference, "bleedOutStart")
+		float AttackerStrengthPercentage = GetActorStrengthPercentage(akSpeaker)
 		int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+		float VictimStrengthPercentage = GetActorStrengthPercentage(akTarget)
 		int VictimStamina = akTarget.GetActorValue("stamina") as int
+		float AttackerStrength = AttackerStamina * AttackerStrengthPercentage
+		float VictimStrength = VictimStamina * VictimStrengthPercentage
 		Int IButton = _SD_rapeMenu.Show()
 
 		If IButton == 0 ; Show the thing.
@@ -44,11 +68,13 @@ Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags = "Ag
 		Else
 			StorageUtil.SetIntValue(Player, "_SD_iDom", StorageUtil.GetIntValue(Player, "_SD_iDom") + 1)
 			SendModEvent("PCSubStripped")
-			SexLab.ActorLib.StripActor( Player, DoAnimate= false)
-			if AttackerStamina > VictimStamina
-				AttackerStamina = VictimStamina
+			SexLab.ActorLib.StripActor( Player, DoAnimate= false, LeadIn = true)
+			if AttackerStrength > VictimStrength
 				Debug.MessageBox("You try to resist with all your strength, but at the end the aggressor overwhelm you...")
 				funct.SanguineRape(akSpeaker, Player,SexLabInTags,SexLabOutTags )
+			endIf
+			if AttackerStamina > VictimStamina
+				AttackerStamina = VictimStamina
 			endIf
 			akSpeaker.DamageActorValue("stamina",AttackerStamina) 
 			akTarget.DamageActorValue("stamina",AttackerStamina)
@@ -144,9 +170,11 @@ Function RobPlayer ( Actor akSpeaker  )
 		SendModEvent("PCSubStripped")
 		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)			
 		if (AttackerStamina * AttackerPickpocket) as int > VictimStamina
-			AttackerStamina = VictimStamina
 			Debug.MessageBox("You try to resist with all your strength, but at the end the thief manage to get all your money...")
 			Player.RemoveItem(Gold001, Player.GetItemCount(Gold001), true, akSpeaker)
+		endIf
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
 		endIf
 		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
 		Player.DamageActorValue("stamina",AttackerStamina)
@@ -240,8 +268,12 @@ Function DrugPlayer(Actor akSpeaker)
 	Actor kSlave = game.GetPlayer()
 	Game.ForceThirdPerson()
 ;	Debug.SendAnimationEvent(Player as ObjectReference, "bleedOutStart")
+	float AttackerStrengthPercentage = GetActorStrengthPercentage(akSpeaker)
 	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	float VictimStrengthPercentage = GetActorStrengthPercentage(kSlave)
 	int VictimStamina = kSlave.GetActorValue("stamina") as int
+	float AttackerStrength = AttackerStamina * AttackerStrengthPercentage
+	float VictimStrength = VictimStamina * VictimStrengthPercentage
 	Int IButton = _SD_drugMenu.Show()
 
 	If IButton == 0 ; Show the thing.
@@ -292,8 +324,7 @@ Function DrugPlayer(Actor akSpeaker)
 		SendModEvent("PCSubStripped")
 
 		SexLab.ActorLib.StripActor( kSlave, VictimRef = kSlave, DoAnimate= false)
-		if AttackerStamina > VictimStamina
-			AttackerStamina = VictimStamina
+		if AttackerStrength > VictimStrength
 			Debug.MessageBox("You try to resist with all your strength, but now your mouth is held open as you are forced to swallow...")
 			If (StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") < 0 )
 				kSlave.AddItem( Skooma, 1, True )
@@ -302,6 +333,9 @@ Function DrugPlayer(Actor akSpeaker)
 				kSlave.AddItem( Ale, 1, True )
 				kSlave.EquipItem( Ale, True, True )
 			EndIf
+		endIf
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
 		endIf
 		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
 		kSlave.DamageActorValue("stamina",AttackerStamina)

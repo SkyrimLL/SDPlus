@@ -13,6 +13,26 @@ Float fRFSU = 2.0
 Bool bDispel = False
 Actor kPlayer
 
+; Helper function to calculate the actor strength
+float Function GetActorStrengthPercentage(Actor akSubject, float Percentage = -1.0)
+	If akSubject == None
+		Return -1.0
+	EndIf
+	
+	If Percentage <= 0
+		Percentage = akSubject.GetActorValuePercentage("stamina")
+	EndIf
+	
+;	float Strength = akSubject.GetMass() * Percentage
+	ActorBase abSubject = akSubject.GetActorBase()
+	float Strength = (akSubject.GetHeight() * akSubject.GetLength() * akSubject.GetWidth()) * (PapyrusUtil.ClampFloat(abSubject.GetWeight(), 1.0, 100.0) * 0.01) * Percentage
+	
+	If Strength < 0
+		Strength = 0
+	EndIf
+	
+	Return Strength
+EndFunction
 
 Event OnInit()
 	bDispel = False
@@ -43,8 +63,12 @@ Event OnUpdate()
 			Game.ForceThirdPerson()
 			; Debug.SendAnimationEvent(kPlayer as ObjectReference, "bleedOutStart")
 
+			float AttackerStrengthPercentage = GetActorStrengthPercentage(Self)
 			int AttackerStamina = Self.GetActorValue("stamina") as int
+			float VictimStrengthPercentage = GetActorStrengthPercentage(kPlayer)
 			int VictimStamina = kPlayer.GetActorValue("stamina") as int
+			float AttackerStrength = AttackerStamina * AttackerStrengthPercentage
+			float VictimStrength = VictimStamina * VictimStrengthPercentage
 			
 			Int IButton = _SD_rapeMenu.Show()
 
@@ -57,14 +81,18 @@ Event OnUpdate()
 				Self.SendModEvent("PCSubSex")
 			Else
 				StorageUtil.SetIntValue(kPlayer, "_SD_iDom", StorageUtil.GetIntValue(kPlayer, "_SD_iDom") + 1)
-				if AttackerStamina > VictimStamina
-					AttackerStamina = VictimStamina
+				if AttackerStrength > VictimStrength
 					Debug.Notification("You resist, but are forced to submit...")
 					SendModEvent("PCSubStripped")
-					SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false)
+					SexLab.ActorLib.StripActor( kPlayer, VictimRef = kPlayer, DoAnimate= false)
 					Self.SendModEvent("PCSubSex")
 				else
+					SendModEvent("PCSubStripped")
+					SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false, LeadIn = true)
 					Debug.Notification("You manage to break free from your attacker...")
+				endIf
+				if AttackerStamina > VictimStamina
+					AttackerStamina = VictimStamina
 				endIf
 				Self.DamageActorValue("stamina",AttackerStamina) 
 				kPlayer.DamageActorValue("stamina",AttackerStamina)
