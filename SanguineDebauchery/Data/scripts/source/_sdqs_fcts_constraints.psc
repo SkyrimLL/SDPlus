@@ -35,6 +35,7 @@ GlobalVariable Property _SDGVP_demerits  Auto
 GlobalVariable Property _SDGVP_demerits_join  Auto  
 GlobalVariable Property _SDGVP_ArmbinderKnee  Auto  
 GlobalVariable Property _SDGVP_DefaultStance Auto
+GlobalVariable Property _SDGVP_AutoStance  Auto  
 
 Keyword[] Property notKeywords  Auto  
 Idle[] Property _SDIAP_bound  Auto  
@@ -343,17 +344,23 @@ Function CollarUpdate()
 	EndIf
 
 	; Force disabling of auto kneeling code for now - player should be able to cycle through kneeling, standing and cawling manually and suffer consequences if master doesn't allow them to stand 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1)
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")!=1) && (_SDGVP_AutoStance.GetValue()==0)
 		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 1)
+	Else
+		StorageUtil.SetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling", 0)
 	Endif
 
-	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")==1) &&  (!kPlayer.GetCurrentScene()) && (!kPlayer.IsOnMount()) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 ) 
-
-		If (sPlayerLastStance != StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
-			UpdateStanceOverrides()
+	If (StorageUtil.GetIntValue(kPlayer, "_SD_iDisablePlayerAutoKneeling")==1) 
+		if (!kPlayer.GetCurrentScene()) && (!kPlayer.IsOnMount()) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 )
+			If (sPlayerLastStance != StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
+				UpdateStanceOverrides()
+			endif
 		endif
 	Else
-		; Automatic kneeling is disabled as of version 3.6
+		if (!kPlayer.GetCurrentScene()) && (!kPlayer.IsOnMount()) && (StorageUtil.GetIntValue( kPlayer, "_SL_iPlayerSexAnim") == 0 )
+			sPlayerLastStance = StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance")
+			UpdateStanceOverrides()
+		endif
 	EndIf
 
 EndFunction
