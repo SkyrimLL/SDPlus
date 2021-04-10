@@ -86,7 +86,7 @@ Example:
 Event OnSimpleAddTattoo(Form _form, String _section, String _name, int _color, bool _last, bool _silent)
 	float _alpha = 1.0
     if (_form as Actor)
-		debug.Trace("[STEB] OnSimpleAddTattoo")
+		debug.Trace("[STEB] OnSimpleAddTattoo " + _section + " / " + _name)
 
 		;slh temporary hack, all events are being sent as last=false
 		if (_section == "Bimbo")
@@ -203,7 +203,7 @@ Example:
 /;
 Event OnSimpleRemoveTattoo(Form _form, String _section, String _name, bool _last, bool _silent)
 	if (_form as Actor)
-		debug.Trace("[STEB] OnSimpleRemoveTattoo")
+		debug.Trace("[STEB] OnSimpleRemoveTattoo" + _section + " / " + _name)
 		bool removed = SlaveTats.simple_remove_tattoo(_form as Actor, _section, _name, _last, _silent)
 		int STcallback = ModEvent.Create("STSimpleRemoveTattooReturn")
 		if (STcallback)
