@@ -2045,7 +2045,7 @@ State monitor
 		Bool bCheckForSlaver = FALSE
 		 
 		If (akAggressor != None) 
-			IF akActor != PlayerRef && PlayerRef.IsInCombat() && akActor.IsHostileToActor(PlayerRef)
+			IF akActor != PlayerRef && PlayerRef.IsInCombat() && akActor.IsHostileToActor(PlayerRef) && akActor.IsAIEnabled() ; GetEquippedItemType make error Logs if IsAIEnabled == false
 			; The above is really to rule out run of the mill physical traps.
 			 
 				IF ((akActor.GetEquippedItemType(0) == 8) || (akActor.GetEquippedItemType(1) == 8) \

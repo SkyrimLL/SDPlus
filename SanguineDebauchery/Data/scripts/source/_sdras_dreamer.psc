@@ -42,7 +42,7 @@ _SD_ConfigMenu Property kConfig  Auto
 Spell Property _SDSP_freedom  Auto  
 
 int daysPassed
-int iGameDateLastCheck = -1
+int iGameDateLastVisit = -1
 int iDaysSinceLastCheck
 
 ; _SDQS_dream dream
@@ -78,7 +78,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Location kLocation = kPlayer.GetCurrentLocation()
 	Bool bSendToDreamworld = False
 	Int iDreamworldVisitModifier = 0
-	Int iDreamworldVisitModifierMax = StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )
+	Int iDreamworldVisitChancePercent = StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )
 
 	; Disabling for now - removes locked devices instead of cleaning up items in inventory that are not worn
 	; CleanupSlaveDevices(kPlayer)
@@ -103,11 +103,11 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
  	daysPassed = Game.QueryStat("Days Passed")
 
  	; Initial values
- 	if (iGameDateLastCheck == -1)
- 		iGameDateLastCheck = daysPassed
+ 	if (iGameDateLastVisit == -1)
+ 		iGameDateLastVisit = daysPassed
  	endIf
  
-	iDaysSinceLastCheck = (daysPassed - iGameDateLastCheck ) as Int
+	iDaysSinceLastCheck = (daysPassed - iGameDateLastVisit ) as Int
 
 	StorageUtil.SetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep", _SDGVP_config_chance_dreamworld_on_sleep.GetValue() as Int)
 
@@ -120,7 +120,17 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 	Debug.Trace("[_sdras_dreamer] iDaysSinceLastCheck: " + iDaysSinceLastCheck)
 
 	If (_SDGVP_config_auto_start.GetValue() == 0)
-		Debug.Trace("[_sdras_dreamer]    Dreamworld auto start disabled - skipping" )
+		Debug.Trace("[_sdras_dreamer]    Dreamworld auto start disabled - checking Shrine" )
+
+		if (kLocation)
+			If kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
+				Debug.Trace("[_sdras_dreamer]         OnSleep event by location - Sanguine Shrine" )
+				iDreamworldVisitModifier = iDreamworldVisitModifier + 100
+				iDreamworldVisitChancePercent = 100
+				_SD_dreamQuest.SetObjectiveDisplayed(226,false)
+				bSendToDreamworld = True
+			Endif
+		Endif
 	Else
 		Debug.Trace("[_sdras_dreamer]    Dreamworld auto start" )
 
@@ -143,7 +153,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			If kLocation.IsSameLocation(_SDLOC_SanguineShrine) 
 				Debug.Trace("[_sdras_dreamer]         OnSleep event by location - Sanguine Shrine" )
 				iDreamworldVisitModifier = iDreamworldVisitModifier + 100
-				iDreamworldVisitModifierMax = 100
+				iDreamworldVisitChancePercent = 100
 				_SD_dreamQuest.SetObjectiveDisplayed(226,false)
 				bSendToDreamworld = True
 			  	
@@ -200,7 +210,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 			EndIf
 		EndIf
 
-		; Increase chances from praying to the gods
+		; Increase chances from praying to the Sanguine
 		Int iNumberPrayersToGods = StorageUtil.GetIntValue(kPlayer, "_SD_iNumberPrayersToGods" )
 		if ( iNumberPrayersToGods >= 25) ; cap prayers modifier to 25%
 			iNumberPrayersToGods = 25 
@@ -233,7 +243,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 
 		; Force start of Dreamworld if other conditions are met daedric quests completed or daedra killed
 		Int iDragonSouls = Game.QueryStat("Dragon Souls Collected")
-		if ((!bSendToDreamworld) && ((_SDGVP_sanguine_blessing.GetValue() as Int)==0) )
+		if ((bSendToDreamworld) && ((_SDGVP_sanguine_blessing.GetValue() as Int)==0) )
 			if ((Game.QueryStat("Daedric Quests Completed") >= 1) || (Game.QueryStat("Daedra Killed") >= 1))
 				Debug.Trace("[_sdras_dreamer]         OnSleep event - exposure to daedra killed or Daedric quest completed bonus" )
 				iDreamworldVisitModifier = iDreamworldVisitModifier + 10
@@ -254,7 +264,7 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		EndIf
 
 		; Abort dreamworld if player is arrested or sleeping during Dark Brotherhood quest
-		if ((!bSendToDreamworld) &&  ((dbe.pSleepyTime == 1)  || (kPlayer.IsArrested() == True) || (StorageUtil.GetIntValue(kPlayer, "xpoPCinJail")==1) || (_SDGVP_enslaved.GetValueInt() == 1)) )
+		if (bSendToDreamworld &&  ((dbe.pSleepyTime == 1)  || (kPlayer.IsArrested() == True) || (StorageUtil.GetIntValue(kPlayer, "xpoPCinJail")==1) || (_SDGVP_enslaved.GetValueInt() == 1)) )
 			Debug.Trace("[_sdras_dreamer]         OnSleep event aborted (quest blocking, enslaved or arrested)" )
 			bSendToDreamworld = False
 		EndIf
@@ -281,23 +291,21 @@ Event OnSleepStart(float afSleepStartTime, float afDesiredSleepEndTime)
 		bSendToDreamworld = False
 	endIf
 
-	iGameDateLastCheck = daysPassed  
 
 	; Send player to Dreamworld if true
 	If (bSendToDreamworld)
 		StorageUtil.SetIntValue(none, "DN_ONOFF", 1)
 
-		If (iDreamworldVisitModifier > iDreamworldVisitModifierMax)
-			iDreamworldVisitModifier = iDreamworldVisitModifierMax
-		Endif
+		iDreamworldVisitModifier = (iDreamworldVisitModifier * (iDreamworldVisitChancePercent * 0.01)) as int
 
 		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitModifier: " + iDreamworldVisitModifier )
-		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitModifierMax: " + iDreamworldVisitModifierMax )
+		Debug.Trace("[_sdras_dreamer]       iDreamworldVisitChacePercent: " + iDreamworldVisitChancePercent )
 
-		If ( (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )!= 0) && (Utility.RandomInt(0,iDreamworldVisitModifierMax)<  iDreamworldVisitModifier  )  )  
+		If ( (StorageUtil.GetIntValue(kPlayer, "_SD_iChanceDreamworldOnSleep" )!= 0) && (Utility.RandomInt(1,100) < iDreamworldVisitModifier))
 			; 	Debug.Notification("Reality slips away...")
 			; 	Debug.Notification("[dream] Sanguine finds you in your dream")
 	 		;	Game.FadeOutGame(true, true, 5.0, 10.0)
+			iGameDateLastVisit = daysPassed  
 
 			If ((_SDGVP_sanguine_blessing.GetValue() == 0) || ( Self.GetOwningQuest().GetStage() == 0 )) 		
 				startDreamworld()
