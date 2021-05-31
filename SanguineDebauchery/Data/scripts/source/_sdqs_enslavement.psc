@@ -216,7 +216,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	akActorBase = kMaster.GetLeveledActorBase() as ActorBase
 
 	SendModEvent("dhlp-Suspend")
-	SendModEvent("da_PacifyNearbyEnemies","Restore")
+	SendModEvent("da_PacifyNearbyEnemies" )
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",1)
 

@@ -534,21 +534,23 @@ Event OnSDSprigganEnslave(String _eventName, String _args, Float _argc = 1.0, Fo
 		bAbort = True
 	endif
 
-	If (kNewMaster != None)  &&  fctFactions.checkIfSpriggan (  kNewMaster ) && (!bAbort)
+	kPlayer.SendModEvent("SLPInfectSprigganRoot")
+
+	; If (kNewMaster != None)  &&  fctFactions.checkIfSpriggan (  kNewMaster ) && (!bAbort)
 		; new master
 
-		StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
+	;	StorageUtil.SetFormValue(kPlayer, "_SD_TempAggressor", None)
 
-		_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+	;	_SDKP_spriggan.SendStoryEvent(akRef1 = kNewMaster as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
  
-	Elseif  (kNewMaster == None)
-		Debug.Trace("[_sdras_player] Attempted spriggan enslavement to empty master " )
-		_SD_SprigganSwarm.MoveTo( kPlayer  as ObjectReference)
+	;Elseif  (kNewMaster == None)
+	;	Debug.Trace("[_sdras_player] Attempted spriggan enslavement to empty master " )
+	;	_SD_SprigganSwarm.MoveTo( kPlayer  as ObjectReference)
 
 		; Debug.Notification("[SD] Sending spriggan story...")		
-		_SDKP_spriggan.SendStoryEvent(akRef1 = _SD_SprigganSwarm as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
+	;	_SDKP_spriggan.SendStoryEvent(akRef1 = _SD_SprigganSwarm as ObjectReference, akRef2 = kPlayer, aiValue1 = 0, aiValue2 = 0)
 
-	EndIf
+	; EndIf
 EndEvent
 
 Event SDSprigganPunish(String _eventName, String _args, Float _argc = 1.0, Form _sender)
@@ -563,7 +565,7 @@ Event SDSprigganPunish(String _eventName, String _args, Float _argc = 1.0, Form 
 
 	Debug.Trace("[_sdras_player] Receiving spriggan punish event [" + _args  + "] [" + _argc as Int + "]")
 
-	_SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 8, aiValue2 = 0 )
+	; _SDKP_sex.SendStoryEvent(akRef1 = kTempAggressor as ObjectReference, akRef2 = kPlayer as ObjectReference, aiValue1 = 8, aiValue2 = 0 )
 EndEvent
 
 ; Helper function to calculate the actor strength
@@ -590,11 +592,13 @@ EndFunction
 Event OnSDSprigganFree(String _eventName, String _args, Float _argc = 1.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving 'free spriggan slave' event") 
 
-	If ( _SD_spriggan.IsRunning() )
-		Debug.Trace("[_sdras_player] Stopping Spriggan quest")
-		_SD_spriggan.setstage(90)
-	endif
+	; If ( _SD_spriggan.IsRunning() )
+	;	Debug.Trace("[_sdras_player] Stopping Spriggan quest")
+	;	_SD_spriggan.setstage(90)
+	;endif
 
+	kPlayer.SendModEvent("SLPCureSprigganRoot","All")
+	
 	Wait( fRFSU * 5.0 )
 EndEvent
 

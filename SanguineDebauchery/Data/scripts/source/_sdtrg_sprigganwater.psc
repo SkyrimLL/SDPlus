@@ -16,22 +16,29 @@ Event OnActivate(ObjectReference akActivator)
 		fctOutfit.clearDeviceByString( sDeviceString = "ParasiteAnal" )
 		fctOutfit.clearDeviceByString( sDeviceString = "ParasiteVaginal" )
 
-        If (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 0) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
-            Debug.Messagebox("The spring waters wash away the residual roots clinging to your body.")
+        ; If (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 0) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
+        ;     Debug.Messagebox("The spring waters wash away the residual roots clinging to your body.")
 
             fctOutfit.clearNonGenericDeviceByString ( "Gloves", "Spriggan" )
             fctOutfit.clearNonGenericDeviceByString ( "Boots", "Spriggan" )
             fctOutfit.clearNonGenericDeviceByString ( "Harness", "Spriggan" )
             fctOutfit.clearNonGenericDeviceByString ( "Gag", "Spriggan" )
 
-        ElseIf (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 1) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
-            Debug.Messagebox("The spriggan sap flowing in your veins is still too powerful to be washed away so easily. Try dinking at the spring later.")
-            SendModEvent("SDSprigganFree")
+        ; ElseIf (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 1) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
+        ;     Debug.Messagebox("The spriggan sap flowing in your veins is still too powerful to be washed away so easily. Try dinking at the spring later.")
+            ; SendModEvent("SDSprigganFree")
+            if (utility.RandomInt(0,100)>90)
+                Player.SendModEvent("SLPCureSprigganRoot", "All")
+                Debug.Messagebox("The fresh water feels soothing and disolves some of the spriggan husks on your skin.")
+            else
+                Player.SendModEvent("SLPCureSprigganRoot")
+                Debug.Messagebox("The fresh water relieves of your curse.")
+            endif
 
-        Else 
-             Debug.Messagebox("The water feels rejuvinating.")
+        ; Else 
+        ;    Debug.Messagebox("The water feels rejuvinating.")
 
-       Endif
+       ; Endif
 	endif
 EndEvent
 
