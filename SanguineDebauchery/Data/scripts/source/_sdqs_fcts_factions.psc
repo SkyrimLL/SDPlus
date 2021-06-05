@@ -491,9 +491,6 @@ Bool Function checkIfSpriggan ( Actor akActor )
 				index += 1
 			EndWhile
 
-			; Forcing to False - Spriggan enslavement is disabled as of 2021-05-31
-			bIsSpriggan = False
-
 			StorageUtil.SetIntValue( akActor, "_SD_bIsSpriggan", bIsSpriggan as Int) 
 			StorageUtil.SetIntValue( akActor, "_SD_iDateSprigganChecked", Game.QueryStat("Days Passed"))
 		else
