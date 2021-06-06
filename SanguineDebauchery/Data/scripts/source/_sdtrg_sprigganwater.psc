@@ -29,10 +29,10 @@ Event OnActivate(ObjectReference akActivator)
             ; SendModEvent("SDSprigganFree")
             if (utility.RandomInt(0,100)>90)
                 Player.SendModEvent("SLPCureSprigganRoot", "All")
-                Debug.Messagebox("The fresh water feels soothing and disolves some of the spriggan husks on your skin.")
+                Debug.Messagebox("The fresh water clears away of your curse.")
             else
                 Player.SendModEvent("SLPCureSprigganRoot")
-                Debug.Messagebox("The fresh water relieves of your curse.")
+                Debug.Messagebox("The fresh water feels soothing and disolves some of the spriggan husks on your skin.")
             endif
 
         ; Else 
