@@ -32,6 +32,4 @@ For discussions about issues, ideas and a list of work in progress, use the offi
 
 The mods in this repository are designed for Vanilla Skyrim, or Skyrim Legendary Edition (LE).
 
-For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion discussion at Lovers Lab](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/), or follow the links below:
-
-* [list of SE conversions links at the bottom of this page](https://github.com/SkyrimLL/SkLLmods)
+For the Skyrim Special Edition (SSE) versions, head over to my [SSE Conversion discussion at Lovers Lab](https://www.loverslab.com/topic/120107-skyrimlldeepbluefrog-mods-conversion-to-sse/).
