@@ -8,7 +8,7 @@ Function Fragment_32()
 snp._SDUIP_phase = -1
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
 
-Debug.Notification("The worst is over... for now..")
+Debug.Notification("$The worst is over... for now..")
 Actor kPlayer = Game.getPlayer()
 Actor kMaster = StorageUtil.GetFormValue( kPlayer , "_SD_CurrentOwner") as Actor
 Actor male = _SDRAP_male.GetReference() as Actor
@@ -58,7 +58,7 @@ EndFunction
 Function Fragment_93()
 ;BEGIN CODE
 snp._SDUIP_phase = 4
-Debug.Notification("You are left to ponder your fate...")
+Debug.Notification("$You are left to ponder your fate...")
 
 Game.DisablePlayerControls( abMovement = true )
 Game.SetPlayerAIDriven()
@@ -92,7 +92,7 @@ _SDGVP_snp_busy.SetValue(3)
 ; Game.FadeOutGame(True, True, 3.0, 2.0)
 
 ; Debug.Notification("[punishment] phase =" + snp._SDUIP_phase)
-Debug.Notification("You brace for the coming punishment...")
+Debug.Notification("$You brace for the coming punishment...")
 
 Actor female = _SDRAP_female.GetReference() as Actor
 Actor male = _SDRAP_male.GetReference() as Actor

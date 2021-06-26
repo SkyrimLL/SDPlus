@@ -7,7 +7,7 @@ Function Fragment_0(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 ; random hate rape
-Debug.Notification("The creature suddenly humps you")
+Debug.Notification("$The creature suddenly humps you")
 
 naked.Commented()
 naked.SanguineRape( akSpeaker, SexLab.PlayerRef , "Doggystyle")

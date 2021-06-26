@@ -137,7 +137,7 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 
 				Else	
 					If ( ( _SDORP_queue[iIdx] as actor ) == (akWhore as actor)) && (SexLab.ValidateActor( akWhore as actor ) > 0)
-						Debug.Notification("They force you to give them a good show.")
+						Debug.Notification("$They force you to give them a good show.")
 
 						funct.SanguineRape( akWhore as Actor , akWhore as Actor , "Masturbation", "Masturbation")
 
@@ -147,11 +147,11 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 						If (iThreesome==1) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) &&  (SexLab.ValidateActor( _SDORP_queue[iIdx+1] as actor ) > 0)  && (SexLab.ValidateActor( akWhore as actor ) > 0)
 							iRandomNum = Utility.RandomInt(0,100)
 							If (iRandomNum>80)
-								Debug.Notification("They are not finished with you yet.")
+								Debug.Notification("$They are not finished with you yet.")
 							ElseIf (iRandomNum>50)
-								Debug.Notification("They surround you with lust in their eyes.")
+								Debug.Notification("$They surround you with lust in their eyes.")
 							ElseIf (iRandomNum>0)
-								Debug.Notification("You feel helpless as they take turns on you.")
+								Debug.Notification("$You feel helpless as they take turns on you.")
 							EndIf
 
 							AttackerStrengthPercentage = GetActorStrengthPercentage((_SDORP_queue[iIdx]  as actor)) + GetActorStrengthPercentage((_SDORP_queue[iIdx+1]  as actor))
@@ -199,11 +199,11 @@ Bool Function removeFromQueue( ObjectReference akWhore )
 						Elseif (SexLab.ValidateActor( _SDORP_queue[iIdx] as actor ) > 0) && (SexLab.ValidateActor( akWhore as actor ) > 0)
 							iRandomNum = Utility.RandomInt(0,100)
 							If (iRandomNum>80)
-								Debug.Notification("Another one is waiting for you.")
+								Debug.Notification("$Another one is waiting for you.")
 							ElseIf (iRandomNum>50)
-								Debug.Notification("You can't hide from the next aggressor.")
+								Debug.Notification("$You can't hide from the next aggressor.")
 							ElseIf (iRandomNum>0)
-								Debug.Notification("You feel weak as another one grabs you.")
+								Debug.Notification("$You feel weak as another one grabs you.")
 							EndIf
 
 							; actor[] sexActors = new actor[2]

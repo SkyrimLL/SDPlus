@@ -19,7 +19,7 @@ Int randomVar = Utility.RandomInt( 0, 100 )
 enslave.UpdateSlaveState( master, slave )
 
 If (randomVar >= 90  ) ; Change appearance
-	Debug.Notification( "I don't like the way you look..." )
+	Debug.Notification( "$I don't like the way you look..." )
 ;	Self.GetOwningQuest().ModObjectiveGlobal( -1.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 	Utility.Wait(0.5)
 
@@ -32,7 +32,7 @@ If (randomVar >= 90  ) ; Change appearance
 	Utility.Wait(1.0)
 
 ElseIf (randomVar >= 60 ) ; Straining positions
-	Debug.Notification( "Here it comes, Slave!" )
+	Debug.Notification( "$Here it comes, Slave!" )
 
 	If ( Utility.RandomInt( 0, 10) >= 5 )
 		; Punishment
@@ -43,23 +43,23 @@ ElseIf (randomVar >= 60 ) ; Straining positions
 	EndIf
 
 ElseIf ( randomVar >=  40 ) ; Dance
-	Debug.Notification( "You will dance for me, Slave!" )
+	Debug.Notification( "$You will dance for me, Slave!" )
 
 	; Start irresistible dance
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt(1, _SDGVP_dances.GetValueInt()) )
 	
 ElseIf ( randomVar >=  20 ) ; Force feed skooma
-	Debug.Notification( "Let's get some of this inside you..." )
+	Debug.Notification( "$Let's get some of this inside you..." )
 	randomVar = Utility.RandomInt( 0, 10 ) 
 	
 	If (randomVar >= 5  )
-		Debug.Notification( "Umph... Skooma!" )
+		Debug.Notification( "$Umph... Skooma!" )
 		slave.AddItem( Skooma, 1, True )
 	ElseIf (randomVar <= 3  )
-		Debug.Notification( "Uhg... Wine!" )
+		Debug.Notification( "$Uhg... Wine!" )
 		slave.AddItem( FoodSolitudeSpicedWine, 1, True )
 	ElseIf (randomVar == 4 )
-		Debug.Notification( "Ale?" )
+		Debug.Notification( "$Ale?" )
 		slave.AddItem( Ale, 1, True )
 	EndIf 
 	 	SkoomaEffect.Cast(slave, slave)
@@ -67,7 +67,7 @@ ElseIf ( randomVar >=  20 ) ; Force feed skooma
 	While ( Utility.IsInMenuMode() )
 	EndWhile
 	
-	Debug.Notification( "You start dancing for some reason..." )
+	Debug.Notification( "$You start dancing for some reason..." )
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt(1, _SDGVP_dances.GetValueInt()))	
 Else
 	 _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt()))

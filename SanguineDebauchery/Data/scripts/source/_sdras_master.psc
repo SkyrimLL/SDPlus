@@ -145,7 +145,7 @@ Event OnDeath(Actor akKiller)
 				; .. in case Master grabbed quest items
 				kMaster.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
 
-				Debug.Notification( "A new owner grabs you." )
+				Debug.Notification( "$A new owner grabs you." )
 				debugTrace(" Start enslavement with:"  + akKiller)
 				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akKiller)
 
@@ -212,7 +212,7 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-				Debug.Notification( "You will regret attacking me!" )
+				Debug.Notification( "$You will regret attacking me!" )
 			EndIf
 			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 			
@@ -345,7 +345,7 @@ State waiting
 				debugTrace("     kMaster.IsDisabled(): " + kMaster.IsDisabled())
 				debugTrace("     kMaster.IsDead(): " + kMaster.IsDead())
 
-				Debug.Notification( "Your owner is either dead or left you...")
+				Debug.Notification( "$Your owner is either dead or left you...")
 
 				SendModEvent("PCSubFree")
 				; GoToState("doNothing")
@@ -357,7 +357,7 @@ State waiting
 				debugTrace("     kMaster.IsDisabled(): " + kMaster.IsDisabled())
 				debugTrace("     kMaster.IsDead(): " + kMaster.IsDead())
 
-				Debug.Notification( "Your owner is missing...")
+				Debug.Notification( "$Your owner is missing...")
 
 				SendModEvent("PCSubFree")
 				; GoToState("doNothing")
@@ -410,7 +410,7 @@ State monitor
 
 		If ( Self.GetOwningQuest().IsRunning() ) &&  (!kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" monitor - Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
 			; GoToState("doNothing")
@@ -452,7 +452,7 @@ State monitor
 
 		If ( Self.GetOwningQuest().IsRunning() ) &&  (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" monitor 2 - Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
 			; GoToState("doNothing")
@@ -469,7 +469,7 @@ State monitor
 		ElseIf (kSlaveCell == kMasterCell)  &&  (kMasterCell.IsInterior()) && ( ( kMaster.GetSleepState() == 0 )  || (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") > 0) )  
 			; If master and slave are in the same interior cell
 			If (RandomInt( 0, 100 ) > 95 )
-				Debug.Notification( "Your captors are watching...")
+				Debug.Notification( "$Your captors are watching...")
 			EndIf
 			; GoToState("waiting")
 
@@ -500,7 +500,7 @@ State monitor
 
 			If (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableFight"))  
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "Who said you could fight, Slave!")
+					Debug.Notification( "$Who said you could fight, Slave!")
 				endif
 
 				; Drop current weapon 
@@ -532,15 +532,15 @@ State monitor
  
 			ElseIf ((kSlave.GetEquippedItemType(0) == 9)||(kSlave.GetEquippedItemType(1) == 9 ))  && ( (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableSpellEquip")) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableShoutEquip")) )
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "You better unequip that spell before I make you swallow it, Slave!")
+					Debug.Notification( "$You better unequip that spell before I make you swallow it, Slave!")
 				endif
 
 			;ElseIf ((kSlave.GetEquippedItemType(0) == 11)||(kSlave.GetEquippedItemType(1) == 11))
-			;	Debug.Notification( "Hold that torch higher, Slave!" )
+			;	Debug.Notification( "$Hold that torch higher, Slave!" )
 
 			Else
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "Better unequip that before I shove it up your ass, Slave!" )
+					Debug.Notification( "$Better unequip that before I shove it up your ass, Slave!" )
 				endif
 
 			EndIf
@@ -564,9 +564,9 @@ State monitor
 				; kSlave.PlayAnimation("ZazAPC055");Inte
 				; Wait(1.0)
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "You will regret this!" )
+					Debug.Notification( "$You will regret this!" )
 				else
-					Debug.Notification( "Your owner barks at you." )
+					Debug.Notification( "$Your owner barks at you." )
 				endif
 				; Punishment
 				;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
@@ -619,7 +619,7 @@ State monitor
 					Endif
 					
 				ElseIf ( bSlaveDetectedByTarget )
-					Debug.Notification( "Your owner wouldn't like that!" )
+					Debug.Notification( "$Your owner wouldn't like that!" )
 					; Whipping
 					; kSlave.PlayAnimation("ZazAPC055");Inte
 					; Wait(0.5)
@@ -637,12 +637,12 @@ State monitor
 			; Master is looking for slave (if not trusted)
 			; TO DO - Check if this really works with new collar / leash system
 
-			Debug.Notification( "Your owner is looking for you!" )
+			Debug.Notification( "$Your owner is looking for you!" )
 			Wait(5.0)	
 
 			If (bSlaveDetectedByMaster)
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "There you are Slave... get your punishment, over here!" )
+					Debug.Notification( "$There you are Slave... get your punishment, over here!" )
 				endif
 				; 
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
@@ -833,7 +833,7 @@ State search
 		
 		If ( Self.GetOwningQuest().IsRunning() ) &&  (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" search - Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
 			; GoToState("doNothing")
@@ -887,7 +887,7 @@ State combat
 
 		If ( Self.GetOwningQuest().IsRunning() ) && (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" combat - Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
 			; GoToState("doNothing")
@@ -924,7 +924,7 @@ State caged
 
 		If ( Self.GetOwningQuest().IsRunning() ) && (!kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead()) ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" caged - Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			SendModEvent("PCSubFree")
 			; GoToState("doNothing")

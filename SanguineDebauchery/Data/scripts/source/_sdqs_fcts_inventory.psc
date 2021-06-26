@@ -206,16 +206,16 @@ Function ProcessGoldEarned(Actor kMaster, Actor kSlave, Float fGoldAmount )
 
 
 			If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 )
-				Debug.Notification("Good slave... keep it coming.")
+				Debug.Notification("$Good slave... keep it coming.")
 
 
 			Else
-				Debug.Notification("That's right.")
+				Debug.Notification("$That's right.")
 
 			Endif
 
 		ElseIf (fGoldAmount == 0)
-			Debug.Notification("What is this junk!?.")
+			Debug.Notification("$What is this junk!?.")
 
 		Endif
 
@@ -233,7 +233,7 @@ Function ProcessGoldAdded(Actor kMaster, Actor kSlave)
 	Debug.Trace( "[SD] Master receives gold from player" )
 
 	If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-		Debug.Notification( "Good slave." )
+		Debug.Notification( "$Good slave." )
 
 		Float fGoldCoins = kSlave.GetItemCount(Gold) as Float
 		kSlave.RemoveItem(Gold, fGoldCoins as Int)
@@ -241,7 +241,7 @@ Function ProcessGoldAdded(Actor kMaster, Actor kSlave)
 		ProcessGoldEarned( kMaster,  kSlave, fGoldCoins )
 
 	else
-		Debug.Notification( "Your owner is disinterested." )
+		Debug.Notification( "$Your owner is disinterested." )
 	endif
 
 EndFunction
@@ -260,9 +260,9 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 	Debug.Trace( "[SD] Master receives an item from player" )
 
 	If (!bIsMasterCreature)
-		Debug.Notification( "Good slave." )
+		Debug.Notification( "$Good slave." )
 	else
-		Debug.Notification( "Your owner seems pleased." )
+		Debug.Notification( "$Your owner seems pleased." )
 	endif
 
 	If ( akBaseItem.HasKeyword( _SDKP_food ) || akBaseItem.HasKeyword( _SDKP_food_raw ) || (iuType == 46) ) ; food or potion
@@ -272,12 +272,12 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 		fctSlavery.ModSlaveryTask( kSlave, "Bring food", 1)
 
 		If ( StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryLevel") >= 2 ) && (!bIsMasterCreature)
-			Debug.Notification("Mmm.. that should hit the spot.")
+			Debug.Notification("$Mmm.. that should hit the spot.")
 		ElseIf (!bIsMasterCreature)
-				Debug.Notification("Well? What are you waiting for?.")
-				Debug.Notification("Get back to work slave!")
+				Debug.Notification("$Well? What are you waiting for?.")
+				Debug.Notification("$Get back to work slave!")
 		Else
-				Debug.Notification("Your master groans happily.")
+				Debug.Notification("$Your master groans happily.")
 		EndIf
 
 		ProcessGoldEarned( kMaster,  kSlave, fGoldEarned )
@@ -314,7 +314,7 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 			Endif
 		Endif
 			
-		Debug.Notification("(seems pleased)")
+		Debug.Notification("$(seems pleased)")
 
 
 	ElseIf ((!bIsMasterCreature) || (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1) )
@@ -341,7 +341,7 @@ Function ProcessItemAdded(Actor kMaster, Actor kSlave, Form akBaseItem)
 
 	else
 				
-		Debug.Notification("(shrugs)")
+		Debug.Notification("$(shrugs)")
 
 	EndIf
 

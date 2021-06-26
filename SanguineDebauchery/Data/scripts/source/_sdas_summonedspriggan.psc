@@ -75,21 +75,21 @@ Event OnUpdate()
 			If IButton == 0 ; Show the thing.
 				StorageUtil.SetIntValue( kPlayer , "_SD_iSub", StorageUtil.GetIntValue( kPlayer, "_SD_iSub") + 1)
 				; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", Self)
-				Debug.Notification("You submit to your aggressor...")
+				Debug.Notification("$You submit to your aggressor...")
 				SendModEvent("PCSubStripped")
 				SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false)
 				Self.SendModEvent("PCSubSex")
 			Else
 				StorageUtil.SetIntValue(kPlayer, "_SD_iDom", StorageUtil.GetIntValue(kPlayer, "_SD_iDom") + 1)
 				if AttackerStrength > VictimStrength
-					Debug.Notification("You resist, but are forced to submit...")
+					Debug.Notification("$You resist, but are forced to submit...")
 					SendModEvent("PCSubStripped")
 					SexLab.ActorLib.StripActor( kPlayer, VictimRef = kPlayer, DoAnimate= false)
 					Self.SendModEvent("PCSubSex")
 				else
 					SendModEvent("PCSubStripped")
 					SexLab.ActorLib.StripActor( kPlayer, DoAnimate= false, LeadIn = true)
-					Debug.Notification("You manage to break free from your attacker...")
+					Debug.Notification("$You manage to break free from your attacker...")
 				endIf
 				if AttackerStamina > VictimStamina
 					AttackerStamina = VictimStamina

@@ -9,7 +9,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 Actor slave = _SDRAP_slave.GetReference() as Actor
 Int gold = slave.GetItemCount( _SDMOP_gold )
  
-Debug.Notification("You have no use for gold, slave..")
+Debug.Notification("$You have no use for gold, slave..")
 slave.RemoveItem(_SDMOP_gold, gold, False, akSpeaker)
 
 Int newBuyout =  (_SDGVP_buyout.GetValue() as Int) - gold

@@ -438,7 +438,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				; If master is trusting slave, increased chance of hands free after sex
 				If (StorageUtil.GetIntValue(kCurrentMaster, "_SD_iTrust")>0) && (Utility.RandomInt(0,100) > 70) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
-					Debug.Notification("Your hands remain free.. lucky you.")
+					Debug.Notification("$Your hands remain free.. lucky you.")
 					; fctOutfit.clearDeviceByString ( "WristRestraints" )
 
 				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
@@ -456,7 +456,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 
 				If (Utility.RandomInt(0,100) > 90)  
 				; Chance player will keep armbinders after sex
-					Debug.Notification("Your hands remain free.. lucky you.")
+					Debug.Notification("$Your hands remain free.. lucky you.")
 					fctOutfit.clearDeviceByString ( "WristRestraints" )
 
 				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
@@ -700,10 +700,10 @@ Function SDSurrender(Actor kActor, String SurrenderMode)
 			If (!kCurrentMaster.IsDead()) && (kPlayer.GetDistance( kCurrentMaster ) <= ( StorageUtil.GetIntValue(kPlayer, "_SD_iLeashLength") * 2) ) && ( StorageUtil.GetIntValue(kPlayer, "_SD_iSold") != 1 )
 				kCurrentMaster.SetRelationshipRank( kPlayer, StorageUtil.GetIntValue(kCurrentMaster, "_SD_iOriginalRelationshipRank") )
 				If (Utility.RandomInt(0,100) >= 0) || ( StorageUtil.GetIntValue(kCurrentMaster, "_SD_iDisposition") > 0)
-					Debug.Notification("Your previous owner fights back.")
+					Debug.Notification("$Your previous owner fights back.")
 					kCurrentMaster.StartCombat(kNewMaster)
 				Else
-					Debug.Notification("Your former owner leaves, disgusted.")
+					Debug.Notification("$Your former owner leaves, disgusted.")
 				EndIf
 			EndIf
 
@@ -1195,7 +1195,7 @@ Event OnSDHandsBoundSlave(String _eventName, String _args, Float _argc = 1.0, Fo
 		fctOutfit.equipDeviceByString ( "Armbinder" )
 
 		StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 0)
-		Debug.Notification("Your owner binds your hands.")
+		Debug.Notification("$Your owner binds your hands.")
 	endif
 EndEvent
 
@@ -1466,7 +1466,7 @@ Event OnSDMasterFollow(String _eventName, String _args, Float _argc = -1.0, Form
 
 	Debug.Trace("[_sdras_player] Receiving master follow story event [" + _args  + "] [" + _argc as Int + "]")
  
-	Debug.Notification("Your owner starts following you around.")
+	Debug.Notification("$Your owner starts following you around.")
 
 	StorageUtil.SetFormValue( kPlayer, "_SD_LeashCenter", kActor)
 	StorageUtil.SetIntValue( kPlayer, "_SD_iEnableLeash", 0)
@@ -1823,7 +1823,7 @@ State monitor
 
 				Int IButton = _SD_safetyMenu.Show()
 
-				Debug.Notification("You cling to your last breath...")
+				Debug.Notification("$You cling to your last breath...")
 				; Monitor.SetBlackScreenEffect(false)
 				; Monitor.SetPlayerControl(true)
 
@@ -1871,7 +1871,7 @@ State monitor
 							SendModEvent("da_StartSecondaryQuest", "Both")
 							SendModEvent("da_StartRecoverSequence")
 						Else
-							Debug.Notification("Your prayer goes unanswered...")
+							Debug.Notification("$Your prayer goes unanswered...")
 						Endif
 
 					ElseIf (StorageUtil.GetStringValue( kPlayer, "_SD_sDefaultStance") != "Kneeling")
@@ -1899,7 +1899,7 @@ State monitor
 						; Monitor.BufferDamageReceived(9999.0)  	
 
 					Else
-						Debug.Notification("Your prayer goes unanswered...")
+						Debug.Notification("$Your prayer goes unanswered...")
 					EndIf
 				ElseIf IButton == 2
 					; Debug
@@ -1960,7 +1960,7 @@ State monitor
 					; Cancel
 
 				Else
-					Debug.Notification("You still have life in you...")
+					Debug.Notification("$You still have life in you...")
 				EndIf
 
 
@@ -1976,7 +1976,7 @@ State monitor
 				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Kneeling")
 					kPlayer.SendModEvent("SLDRefreshGlobals")
-					Debug.Notification("Kneeling...")
+					Debug.Notification("$Kneeling...")
 				; Else
 				; 	Debug.Notification("You are not allowed to kneel")
 				; Endif
@@ -1985,14 +1985,14 @@ State monitor
 				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableStand") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 					kPlayer.SendModEvent("SLDRefreshGlobals")
-					Debug.Notification("Standing...")
+					Debug.Notification("$Standing...")
 				; Else
 				; 	Debug.Notification("You are not allowed to stand")
 				; Endif
 
 			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")  
 				kPlayer.SendModEvent("SLDRefreshGlobals")
-				Debug.Notification("Already standing...")
+				Debug.Notification("$Already standing...")
 			Else
 			 	debugTrace(" Problem with position: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
 			 	Debug.Notification("[SD] Problem with position: " + StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance"))
@@ -2006,13 +2006,13 @@ State monitor
 		If ( aiKeyCode == keys[3] )
  			If (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Crawling")  
  				kPlayer.SendModEvent("SLDRefreshGlobals")
-				Debug.Notification("Already crawling...")
+				Debug.Notification("$Already crawling...")
 
 			elseIf (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Kneeling")  && (!bIsWristRestraintEquipped) ; && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnableCrawl") == 1 )
 				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableCrawl") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Crawling")
 					kPlayer.SendModEvent("SLDRefreshGlobals")
-					Debug.Notification("Crawling...")
+					Debug.Notification("$Crawling...")
 				; Else
 				; 	Debug.Notification("You are not allowed to crawl")
 				; Endif
@@ -2021,7 +2021,7 @@ State monitor
 				; If (fctSlavery.CheckSlavePrivilege( kPlayer , "_SD_iEnableKneel") && (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 1) ) || (StorageUtil.GetIntValue(kPlayer, "_SD_iEnslaved") == 0)
 					StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Kneeling")
 					kPlayer.SendModEvent("SLDRefreshGlobals")
-					Debug.Notification("Kneeling...")
+					Debug.Notification("$Kneeling...")
 				; Else
 				; 	Debug.Notification("You are not allowed to kneel")
 				; Endif
@@ -2106,7 +2106,7 @@ State surrender
  		kCombatTarget = None
 	  	kSubmitTarget = None
 
- 		Debug.Notification("[SD] Entering surrender state")
+ 		Debug.Notification("$[SD] Entering surrender state")
  		debugTrace(" Entering surrender state")
  		StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 1)
  		StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderCrosshairUpdated", 0)
@@ -2154,7 +2154,7 @@ State surrender
 
 		if (StorageUtil.GetIntValue(kPlayer, "_SD_iSurrenderCrosshairUpdated") == 1)
 			if (kCombatTarget!=none) && (kPlayer.IsInCombat())
-				Debug.Notification("[SD] Surrender to combat target")
+				Debug.Notification("$[SD] Surrender to combat target")
 				debugTrace(" Surrender to combat target")
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 				; kCombatTarget.SendModEvent("PCSubSurrender")
@@ -2164,7 +2164,7 @@ State surrender
 
 			elseif (kSubmitTarget!=none) 
 				debugTrace(" Surrender to crosshair target")
-				Debug.Notification("[SD] Surrender to crosshair target")
+				Debug.Notification("$[SD] Surrender to crosshair target")
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 				; kSubmitTarget.SendModEvent("PCSubSurrender")
 				fctOutfit.initSlaveryGearByActor ( kSubmitTarget )
@@ -2210,7 +2210,7 @@ State surrender
 		EndIf
 
 		If ( aiKeyCode == keys[1] ) 
- 			Debug.Notification("[SD] Aborting surrender")
+ 			Debug.Notification("$[SD] Aborting surrender")
 			StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 			GoToState("monitor")
 		Endif
@@ -2221,7 +2221,7 @@ State surrender
 
 		If (akAggressor != None) 
 			If (!akActor.IsDead())
-				Debug.Notification("[SD] Surrender to aggressor")
+				Debug.Notification("$[SD] Surrender to aggressor")
 				StorageUtil.SetIntValue(kPlayer, "_SD_iSurrenderOn", 0)
 				; akActor.SendModEvent("PCSubSurrender")
 				fctOutfit.initSlaveryGearByActor ( akActor )
@@ -2243,7 +2243,7 @@ Function SetHandsFreeSlave(Actor kActor)
 		fctOutfit.ClearSlavePunishment(kActor , "WristRestraints" , true )
 	Endif
 	StorageUtil.GetIntValue(kActor, "_SD_iHandsFree", 1)
-	Debug.Notification("Your owner releases your hands.")
+	Debug.Notification("$Your owner releases your hands.")
 
 EndFunction
 

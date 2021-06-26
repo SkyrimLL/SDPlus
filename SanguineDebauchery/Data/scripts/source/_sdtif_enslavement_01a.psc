@@ -14,7 +14,7 @@ Int randomVar = Utility.RandomInt( 0, 10 )
 
 If (randomVar >= 5  ) ; Straining positions - used to be 60
 	;Debug.Notification( "You will pay for that!" ) ;Why? I dont get this? 
-	Debug.Notification( "Go on..." )
+	Debug.Notification( "$Go on..." )
 	Utility.Wait(1.0)
 	;Debug.Notification( "You've got " +  _SDGVP_demerits + "points, out of" + _SDGVP_demerits_join + "" )
 	;Debug.Notification("[_sdqs_snp] Receiving scene:" + aiValue1 + " [ " + aiValue2 + " ]")
@@ -25,7 +25,7 @@ If (randomVar >= 5  ) ; Straining positions - used to be 60
 	;_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 
 Else
-	Debug.Notification( "Stop bugging me, Slave!" )
+	Debug.Notification( "$Stop bugging me, Slave!" )
 	; _SDKP_sex.SendStoryEvent( \
 	;	akRef1 = _SDRAP_master.GetReference() as ObjectReference, \
 	;	akRef2 = _SDRAP_slave.GetReference() as ObjectReference, \

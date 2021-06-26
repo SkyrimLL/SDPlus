@@ -5,7 +5,7 @@ Scriptname _SD_snp_10_start Extends Scene Hidden
 ;BEGIN FRAGMENT Fragment_1
 Function Fragment_1()
 ;BEGIN CODE
-Debug.Notification("[SNP] Your owner found you...")
+Debug.Notification("$[SNP] Your owner found you...")
 _SDGVP_snp_busy.SetValue(-1)
 ; Self.GetowningQuest().Stop()
 ;END CODE
@@ -16,7 +16,7 @@ EndFunction
 Function Fragment_0()
 ;BEGIN CODE
 _SDGVP_snp_busy.SetValue(10)
-Debug.Notification("[SNP] Your owner is looking for you...")
+Debug.Notification("$[SNP] Your owner is looking for you...")
 ; Alias_Master.GetReference().MoveTo( Alias_Slave.GetReference() )
 ; Utility.Wait(1.0)
 ; Debug.Notification("Master stopped")

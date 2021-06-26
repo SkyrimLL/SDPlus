@@ -85,8 +85,8 @@ function InitSlaveryState( Actor kSlave )
 	StorageUtil.SetIntValue(kSlave, "_SD_iAPIInit", 1)
 
 	if (!StorageUtil.GetIntValue( none, "_SD_iSanguine")==1)
-	    Debug.Notification("[SD] SD+ IS INSTALLING. ")
-	    Debug.Notification("MAKE SURE TO SAVE AND RELOAD ONCE ALL MESSAGES HAVE STOPPED." )
+	    Debug.Notification("$[SD] SD+ IS INSTALLING. ")
+	    Debug.Notification("$MAKE SURE TO SAVE AND RELOAD ONCE ALL MESSAGES HAVE STOPPED." )
 	EndIf
 
 	; API variables
@@ -1630,7 +1630,7 @@ Function EvaluateSlaveryTask(Actor kSlave, Form fKeyword)
 	if (fKeyword != None)
 		; Debug.MessageBox("Good slave, you COMPLETED your task (" + sTaskName + ")")
 	Else
-		Debug.Notification("[SD] Error - empty task keyword - check logs for details")
+		Debug.Notification("$[SD] Error - empty task keyword - check logs for details")
 		Return
 	Endif
 
@@ -1714,12 +1714,12 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	if (sTaskName != "")
 		Debug.MessageBox("Good slave, you COMPLETED your task (" + sTaskName + ")")
 	Else
-		Debug.Notification("[SD] Error - task name is empty - check logs for details")
+		Debug.Notification("$[SD] Error - task name is empty - check logs for details")
 		Return
 	Endif
 
 	If (fMasterDistance >= 900)
-		Debug.Notification("Your owner is too far to reward you.")
+		Debug.Notification("$Your owner is too far to reward you.")
 		ModMasterTrust(kMaster, -1) ; Master is disappointed
 		Return
 	endif
@@ -1788,12 +1788,12 @@ Function FailSlaveryTask(Actor kSlave, Form fKeyword)
 	if (sTaskName != "")
 		Debug.MessageBox("Bad slave, you FAILED your task (" + sTaskName + ")")
 	Else
-		Debug.Notification("[SD] Error - task name is empty - check logs for details")
+		Debug.Notification("$[SD] Error - task name is empty - check logs for details")
 		Return
 	Endif
 
 	If (fMasterDistance >= 900)
-		Debug.Notification("Your owner is too far to punish you.")
+		Debug.Notification("$Your owner is too far to punish you.")
 		ModMasterTrust(kMaster, -2) ; Master is disappointed
 		Return
 	endif

@@ -121,7 +121,7 @@ ReferenceAlias Property Alias__SDRA_irons Auto
 Function Fragment_0()
 ;BEGIN CODE
 ; Player dreaming
-Debug.Notification("[dream] Sanguine is welcoming you")
+Debug.Notification("$[dream] Sanguine is welcoming you")
 _SDQS_controller.SetObjectiveDisplayed(10)
 _SDGV_Demerits.SetValue( 0 )
 
@@ -234,7 +234,7 @@ EndFunction
 ;BEGIN FRAGMENT Fragment_2
 Function Fragment_2()
 ;BEGIN CODE
-Debug.Notification("[dream] Sanguine is watching")
+Debug.Notification("$[dream] Sanguine is watching")
 ;END CODE
 EndFunction
 ;END FRAGMENT

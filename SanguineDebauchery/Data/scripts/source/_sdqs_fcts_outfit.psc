@@ -849,7 +849,7 @@ Function clearDeviceByString ( String sDeviceString = "", String sOutfitString =
 
 				; if (kForm.HasKeywordString(libs.zad_BlockGeneric) )
 				if ((kForm.HasKeyword(libs.zad_BlockGeneric) ) || (kForm.HasKeyword(libs.zad_QuestItem) ))
-					Debug.Notification("The device remains locked in place (Non generic))")  
+					Debug.Notification("$The device remains locked in place (Non generic)")  
 					debugTrace("    zad_BlockGeneric keyword detected - Can't clear device")  
 				else
 					clearDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword, true)
@@ -943,7 +943,7 @@ Bool Function equipDevice ( Armor ddArmorInventory, Armor ddArmorRendered, Keywo
 			libs.Log("[SD]   	skipped - device already equipped " )
 		EndIf
 	Else
-		Debug.Notification("[SD] equipDevice - bad keyword " )
+		Debug.Notification("$[SD] equipDevice - bad keyword " )
 	endIf
 
 	return bDeviceEquipSuccess
@@ -964,7 +964,7 @@ Bool Function equipDeviceNPC ( Actor akActor, Armor ddArmorInventory, Armor ddAr
 			libs.Log("[SD]   	skipped - device already equipped " )
 		EndIf
 	Else
-		Debug.Notification("[SD] equipDevice - bad keyword " )
+		Debug.Notification("$[SD] equipDevice - bad keyword " )
 	endIf
 
 	return bDeviceEquipSuccess

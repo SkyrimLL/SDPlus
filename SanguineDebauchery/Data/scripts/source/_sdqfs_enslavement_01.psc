@@ -223,7 +223,7 @@ EndIf
 
 ; fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
 ; Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
-Debug.Notification("You are free")
+Debug.Notification("$You are free")
 
 SetObjectiveCompleted( 100 )
 kmyQuest.bQuestActive = False
@@ -316,7 +316,7 @@ EndIf
 
 ; fctFactions.resetAllyToActor( kSlave, _SDFLP_forced_allied )
 ; Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
-Debug.Notification("You are free.")
+Debug.Notification("$You are free")
 
 SetObjectiveCompleted( 100 )
 kmyQuest.bQuestActive = False
@@ -488,7 +488,7 @@ EndIf
 
 ; fctFactions.resetAllyToActor( kSlave , _SDFLP_forced_allied )
 ; Debug.Trace( "Enslaved faction count: " + _SDFLP_forced_allied.GetSize() )
-Debug.Notification( "You are free")
+Debug.Notification( "$You are free")
 
 SetObjectiveCompleted( 100 )
 kmyQuest.bQuestActive = False

@@ -224,7 +224,7 @@ Function CollarEffectFinish(Actor akTarget, Actor akCaster)
 		kPlayer.PlayIdle( _SDIAP_reset )	
 
 		; Debug.Messagebox("The collar releases its grasp around your will, leaving behind a screaming headache and bruises around your neck.")
-		Debug.Notification("The collar releases its grasp around your will...")
+		Debug.Notification("$The collar releases its grasp around your will...")
 	EndIf
 
 EndFunction
@@ -382,39 +382,39 @@ Function CollarStand()
 	bIsStraitJacketEquipped  = fctOutfit.isStraitJacketEquipped( kPlayer ) 
 
 	If bIsArmbinderEquipped  || bIsStraitJacketEquipped
-		Debug.Notification("[SD] Reset stance for Armbinder")
+		Debug.Notification("$[SD] Reset stance for Armbinder")
 		zadOverrideIndex = 0 ;   0 - bound hands in back / 1 - yoke
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsYokeEquipped 
-		Debug.Notification("[SD] Reset stance for Yoke")
+		Debug.Notification("$[SD] Reset stance for Yoke")
 		zadOverrideIndex = 1 ;   
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsArmbinderElbowEquipped 
-		Debug.Notification("[SD] Reset stance for Armbinder Elbow")
+		Debug.Notification("$[SD] Reset stance for Armbinder Elbow")
 		zadOverrideIndex = 3 ;   
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsYokeBBEquipped 
-		Debug.Notification("[SD] Reset stance for YokeBB")
+		Debug.Notification("$[SD] Reset stance for YokeBB")
 		zadOverrideIndex = 4 ;  
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	ElseIf  bIsCuffsFrontEquipped 
-		Debug.Notification("[SD] Reset stance for Cuffs Front")
+		Debug.Notification("$[SD] Reset stance for Cuffs Front")
 		zadOverrideIndex = 5 ;   
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", ABC_mtidle , zadOverrideIndex, "DeviousDevices", false)   
 
 	Elseif  (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") != "Crawling") ; && (iOverride != 6)
-		Debug.Notification("[SD] Reset stance for default standing")
+		Debug.Notification("$[SD] Reset stance for default standing")
 		bOk = FNIS_aa.SetAnimGroup(kPlayer, "_mtidle", 0, 0, "sanguinesDebauchery", false)  
 
 		if (StorageUtil.GetStringValue(kPlayer, "_SD_sDefaultStance") == "Standing")	
 			ResetStanceOverrides()
 		EndIf		
   		; iOverride = 6
-		; Debug.Notification("[SD] Standing hands free override ON")
+		; Debug.Notification("$[SD] Standing hands free override ON")
 	;	PlayIdleWrapper(kPlayer, _SDIAP_reset )
 	Endif
 EndFunction

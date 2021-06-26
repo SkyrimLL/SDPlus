@@ -81,7 +81,7 @@ _SDGVP_snp_busy.SetValue(7)
 ; if (StorageUtil.GetIntValue(female, "_SD_iEnslaved")==1)
 ; 	Debug.Notification("Your owner forces you to dance...")
 ; Else
-	Debug.Notification("You slowly start to dance...")
+	Debug.Notification("$You slowly start to dance...")
 ; EndIf
 
 		Debug.SendAnimationEvent(female, "Unequip")

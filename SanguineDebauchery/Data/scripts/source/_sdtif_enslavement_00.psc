@@ -12,7 +12,7 @@ ObjectReference bindings =_SDRAP_bindings.GetReference() as ObjectReference
 ObjectReference shackles = _SDRAP_shackles.GetReference() as ObjectReference
 
 if Game.GetPlayer().IsInFaction(SexLabAnimatingFaction)
-     Debug.Notification("SexLab cleanup: removing player from animating faction")
+     Debug.Notification("$SexLab cleanup: removing player from animating faction")
     Game.GetPlayer().RemoveFromFaction(SexLabAnimatingFaction)
 endIf
 

@@ -42,7 +42,7 @@ Function removeSDItems()
 	Game.EnablePlayerControls()
 	Game.SetInChargen(false, false, false)
 
-	Debug.Notification("Cleaning up devices")
+	Debug.Notification("$Cleaning up devices")
 
 		If (kActor.WornHasKeyword(Libs.zad_DeviousBlindfold))
 			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousBlindfold, false, false, false)
@@ -63,7 +63,7 @@ Function removeSDItems()
 			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousCollar, false, false, false)
 		EndIf
 
-	Debug.Notification("Done cleaning up devices")
+	Debug.Notification("$Done cleaning up devices")
 
 EndFunction
 

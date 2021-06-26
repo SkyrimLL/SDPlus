@@ -5,7 +5,7 @@ Scriptname _sdpf_master_hunt_01 Extends Package Hidden
 ;BEGIN FRAGMENT Fragment_2
 Function Fragment_2(Actor akActor)
 ;BEGIN CODE
-Debug.notification( "Your former master is looking for you" )
+Debug.notification( "$Your former master is looking for you" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

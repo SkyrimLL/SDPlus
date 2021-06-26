@@ -20,12 +20,12 @@ enslave.UpdateSlaveState( master, slave )
 
 
 If (randomVar >= 80  ) ; Change appearance (why? )
-	Debug.Notification( "It's on now!" )
+	Debug.Notification( "$It's on now!" )
 	;Experimental
 	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 
 ElseIf (randomVar >= 55 ) ; Straining positions
-	Debug.Notification( "That was idiotic,...Slave!" )
+	Debug.Notification( "$That was idiotic,...Slave!" )
 
 	If ( Utility.RandomInt( 0, 10) >= 5 )
 		; Punishment
@@ -36,17 +36,17 @@ ElseIf (randomVar >= 55 ) ; Straining positions
 	EndIf
 
 ElseIf (randomVar >=  40 ) ; Force feed skooma
-	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )  
+	Debug.Notification( "$Your mouth is held open as you are forced to swallow..." )  
 	
 	If (Utility.RandomInt( 0, 10 ) >= 5  )
-		Debug.Notification( "...some Skooma!" )
+		Debug.Notification( "$...some Skooma!" )
 		slave.AddItem( Skooma, 1, True )
 		 SkoomaEffect.Cast(slave, slave)
 		 Utility.Wait(2.0)
-			Debug.Notification( "You start dancing for no reason..." )
+			Debug.Notification( "$You start dancing for no reason..." )
 			_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt(1, _SDGVP_dances.GetValueInt()))		
 	Else 
-		Debug.Notification( "...some dick!" )
+		Debug.Notification( "$...some dick!" )
 		_SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave,	aiValue1 = 0, aiValue2 = 1 )
 	EndIf
 
@@ -54,7 +54,7 @@ ElseIf (randomVar >=  40 ) ; Force feed skooma
 	EndWhile
 
 ElseIf (randomVar >= 30 ) ; Dance
-	Debug.Notification( "Your captor is forcing you to dance..." )
+	Debug.Notification( "$Your captor is forcing you to dance..." )
 	; Start irresistible dance
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt( 1, _SDGVP_dances.GetValueInt() ) )
 Else

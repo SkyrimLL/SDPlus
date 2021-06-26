@@ -21,7 +21,7 @@ _SDGVP_sorry.SetValue(0)
 
 If (randomVar >= 9  ) ; Change appearance
 ;	Self.GetOwningQuest().ModObjectiveGlobal( (1 - Utility.RandomInt(2, 6)), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
-	Debug.Notification( "I don't like the way you look..." )
+	Debug.Notification( "$I don't like the way you look..." )
 	
 	Utility.Wait(0.5)
 	Int IButton = _SD_racemenu.Show()
@@ -31,7 +31,7 @@ If (randomVar >= 9  ) ; Change appearance
 	Utility.Wait(1.0)
 
 ElseIf (randomVar >= 7  ) ; Surprise punishment
-	Debug.Notification( "Did you think I would fall for that?!" )
+	Debug.Notification( "$Did you think I would fall for that?!" )
 ;	Self.GetOwningQuest().ModObjectiveGlobal( 2.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 	If ( Utility.RandomInt( 0, 10) >= 5 )
@@ -44,14 +44,14 @@ ElseIf (randomVar >= 7  ) ; Surprise punishment
 	
 
 ElseIf (randomVar >= 5) ; Dance
-	Debug.Notification( "I want you to dance for me, Slave!" )
+	Debug.Notification( "$I want you to dance for me, Slave!" )
 	
 ;	Self.GetOwningQuest().ModObjectiveGlobal( -7.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
 	;; Start irresistible dance
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = 1 + Utility.RandomInt( 0, _SDGVP_dances.GetValueInt() ) )
 Else ; Just sex
-	Debug.Notification( "Your captor's smile sends shivers down your spine" )
+	Debug.Notification( "$Your captor's smile sends shivers down your spine" )
 ;	Self.GetOwningQuest().ModObjectiveGlobal( (1 - Utility.RandomInt(2, 6)), _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 
     _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt())  )

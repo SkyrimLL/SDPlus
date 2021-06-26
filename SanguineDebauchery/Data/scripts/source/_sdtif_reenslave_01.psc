@@ -8,7 +8,7 @@ Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
 Actor kPlayer = _SDRAP_player.GetReference() as Actor
  
-	Debug.Notification("You are mine now...")
+	Debug.Notification("$You are mine now...")
 
 
 	; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)

@@ -399,7 +399,7 @@ EndIf
 Actor kChrister = Alias__SDRA_mistwatch_christer.GetActorReference()
 kChrister.Enable()
 
-Debug.Notification( "You arrive to your new home.")
+Debug.Notification( "$You arrive to your new home.")
 Utility.Wait(5)
 
 Debug.Trace("[_sd_thugslave] Stage 20 - New master is creature")

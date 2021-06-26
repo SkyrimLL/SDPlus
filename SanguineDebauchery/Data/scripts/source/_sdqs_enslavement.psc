@@ -222,9 +222,9 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 
 	debugTrace(" You submit to a new owner.")
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
-		Debug.Notification("You submit to a new owner.")
+		Debug.Notification("$You submit to a new owner.")
 	Else
-		Debug.Notification("Your new owner defeated you.")
+		Debug.Notification("$Your new owner defeated you.")
 	Endif
 
 	; Drop current weapon - Do this first to prevent camera stuck in combat mode
@@ -251,12 +251,12 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	fctSlavery.StartSlavery( kMaster, kSlave)
 
 	debugTrace(" Your new owner strips you naked.")
-	Debug.Notification("Your new owner strips you naked.")
+	Debug.Notification("$Your new owner strips you naked.")
 
 	SexLab.StripActor( kSlave, DoAnimate= false)
 
 	debugTrace(" Your owner inspects you carefully.")
-	Debug.Notification("Your owner inspects you carefully.")
+	Debug.Notification("$Your owner inspects you carefully.")
 
 	kMaster.AllowPCDialogue( True )
 	kMaster.RestoreAV("health", kMaster.GetBaseAV("health") )
@@ -350,7 +350,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	Utility.Wait(1.0)
 
 	debugTrace(" You are chained and collared.")
-	Debug.Notification("You are chained and collared.")
+	Debug.Notification("$You are chained and collared.")
 
 	StorageUtil.FormListClear( kSlave, "_SD_lActivePunishmentDevices" )
 
@@ -376,7 +376,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 
 	; Test slaver tattoo
 	debugTrace(" You are marked as your owner's property.")
-	Debug.Notification("You are marked as your owner's property.")
+	Debug.Notification("$You are marked as your owner's property.")
 	fctOutfit.sendSlaveTatModEvent(kMaster, "SD+","Slavers Hand (back)" )
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",0)
@@ -539,7 +539,7 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
 		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength")) && (kwDeviceKeyword!=None)
-			; Debug.Notification("[SD] Slave Punishment")
+			; Debug.Notification("$[SD] Slave Punishment")
 
 			if (!fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
 				; AddSlavePunishment( akSlave, sDevice)
@@ -551,7 +551,7 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 			EndIf
 
 		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			Debug.Notification("Your owner is too far to punish you.")
+			Debug.Notification("$Your owner is too far to punish you.")
 		EndIf
 	Else
 		debugTrace(" Punish slave: Target is not the player")
@@ -568,7 +568,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 		float fMasterDistance = (akSlave as ObjectReference).GetDistance(akMaster as ObjectReference)
 
 		If (fMasterDistance <= StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			; Debug.Notification("[SD] Slave Reward")
+			; Debug.Notification("$[SD] Slave Reward")
 
 			if (fctOutfit.isDeviceEquippedString(kSlave,sDevice))  
 				debugTrace(" Reward slave: Trying to remove - " + sDevice)
@@ -583,7 +583,7 @@ Bool Function RewardSlave(Actor akMaster, Actor akSlave, String sDevice)
 			EndIf
 
 		ElseIf (fMasterDistance > StorageUtil.GetIntValue(kSlave, "_SD_iLeashLength"))
-			Debug.Notification("Your owner is too far to remove your punishment.")
+			Debug.Notification("$Your owner is too far to remove your punishment.")
 		EndIf
 	Else
 		debugTrace(" Reward slave: Target is not the player")
@@ -607,7 +607,7 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 		If ( nthActor )
 			; int index = StorageUtil.FormListFind(Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
 			; if (index < 0)
-				; Debug.Notification("Not found!")
+				; Debug.Notification("$Not found!")
 			; 	StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
 			; endif
 

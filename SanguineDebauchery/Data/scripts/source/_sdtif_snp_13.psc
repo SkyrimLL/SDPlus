@@ -19,7 +19,7 @@ Int randomVar = Utility.RandomInt( 0, 100 )
 enslave.UpdateSlaveState( master, slave )
 
 If (randomVar >= 75) ; Straining positions
-	Debug.Notification( "Get over here and get what's comming to you!" )
+	Debug.Notification( "$Get over here and get what's comming to you!" )
 
 	If ( Utility.RandomInt( 0, 10) >= 5 )
 		; Punishment
@@ -29,23 +29,23 @@ If (randomVar >= 75) ; Straining positions
 		_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 	EndIf
 ElseIf (randomVar >=  65) ; Dance
-	Debug.Notification( "Dance for me, Slave!" )
+	Debug.Notification( "$Dance for me, Slave!" )
 
 	; Start irresistible dance
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt( 1, _SDGVP_dances.GetValueInt() ) )
 	
 ElseIf (randomVar >  40) ; Force feed skooma
-	Debug.Notification( "Your mouth is held open as you are forced to swallow..." )
+	Debug.Notification( "$Your mouth is held open as you are forced to swallow..." )
 	randomVar = Utility.RandomInt( 0, 10 ) 
 	 
 	If (randomVar >= 5  )
-		Debug.Notification( "..some Skooma!" )
+		Debug.Notification( "$..some Skooma!" )
 		slave.AddItem( Skooma, 1, True )
 	ElseIf (randomVar <= 3  )
-		Debug.Notification( "..some Spiced Wine!" )
+		Debug.Notification( "$..some Spiced Wine!" )
 		slave.AddItem( FoodSolitudeSpicedWine, 1, True )
 	ElseIf (randomVar == 4 )
-		Debug.Notification( "..some Ale!" )
+		Debug.Notification( "$..some Ale!" )
 		slave.AddItem( Ale, 1, True )
 	EndIf
 		Utility.Wait(3.0)
@@ -53,7 +53,7 @@ ElseIf (randomVar >  40) ; Force feed skooma
 	While ( Utility.IsInMenuMode() )
 	EndWhile
 
-	Debug.Notification( "In a stupor you start dancing for no reason..." )
+	Debug.Notification( "$In a stupor you start dancing for no reason..." )
 	_SDKP_sex.SendStoryEvent(akLoc = kSlave.GetCurrentLocation(), akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 7, aiValue2 = Utility.RandomInt(0, _SDGVP_dances.GetValueInt()))
 Else
 	 _SDKP_sex.SendStoryEvent( akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 0, aiValue2 = Utility.RandomInt( 0, _SDGVP_positions.GetValueInt()) )

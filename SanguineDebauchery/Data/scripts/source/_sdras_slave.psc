@@ -244,7 +244,7 @@ Event OnLocationChange(Location akOldLoc, Location akNewLoc)
 	EndIf
 	If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 		debugTrace(" OnLocationChange safeguard - Master dead or disabled - Stop enslavement")
-		Debug.Notification( "Your owner is either dead or left you...")
+		Debug.Notification( "$Your owner is either dead or left you...")
 
 		SendModEvent("PCSubFree")
 	Endif
@@ -337,7 +337,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 				; TO DO - Add code here for compatibility with SPERG and other mods relying on equiping invisible weapons
 
 				; Debug.Notification( "$SD_MESSAGE_CAUGHT" )
-				Debug.Notification( "You are not allowed to hold a weapon.  Your collar compels you to remove it." )
+				Debug.Notification( "$You are not allowed to hold a weapon.  Your collar compels you to remove it." )
 
 				; kSlave.UnequipItem( akBaseItem, aiItemCount )
 				Weapon krHand = kSlave.GetEquippedWeapon()
@@ -534,7 +534,7 @@ State monitor
 
 		ElseIf !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" monitor: Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			; SendModEvent("PCSubFree")
 			GoToState("doNothing")
@@ -594,7 +594,7 @@ State monitor
 			; GoToState("escape_shock")
 
 			If (Utility.RandomInt(0,100) > 70)
-				Debug.Notification( "Your owner is in combat. Stay close..." )
+				Debug.Notification( "$Your owner is in combat. Stay close..." )
 				If ( kMaster.GetCurrentScene() )
 					kMaster.GetCurrentScene().Stop()
 				EndIf
@@ -640,7 +640,7 @@ State monitor
 			; Display warning when slave is close to escape radius
 
 			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
-				Debug.Notification( "You are too far from your owner..." )
+				Debug.Notification( "$You are too far from your owner..." )
 
 				; Reset blackout effect if needed
 				_SD_CollarStrangleImod.Remove()
@@ -869,7 +869,7 @@ EndState
 State escape_shock
 	Event OnBeginState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
-		Debug.Notification( "Your collar vibrates as you wander off." )
+		Debug.Notification( "$Your collar vibrates as you wander off." )
 		debugTrace(" Escape attempt - shock collar" )
 		debugTrace(" starting timer" )
 		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
@@ -919,13 +919,13 @@ State escape_shock
 	
 	Event OnEndState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
-		Debug.Notification( "Your collar stops vibrating." )
+		Debug.Notification( "$Your collar stops vibrating." )
 		debugTrace(" Escape attempt - end" )
 
 		If (kSlave.GetDistance(kMaster)< (_SDGV_leash_length.GetValue() / 2) ) && (!kMaster.IsDead()) 
 			; Slave is close to master and master is not dead, stop escape state
 
-			Debug.Notification("The collar is sending shocks." )
+			Debug.Notification("$The collar is sending shocks." )
 			if (iPlayerGender==0)
 				_SDSMP_choke_m.Play( Game.GetPlayer() )
 			else
@@ -942,7 +942,7 @@ State escape_shock
 			If (!kMaster.IsInCombat()) && (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
 
 				If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-					Debug.Notification( "Where did you think you were going?" )
+					Debug.Notification( "$Where did you think you were going?" )
 
 					If (kCrimeFaction!=None)
 						Int iGold = kCrimeFaction.GetCrimeGold()
@@ -1002,7 +1002,7 @@ State escape_shock
 
 		ElseIf !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" escape_shock: Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			; SendModEvent("PCSubFree")
 			GoToState("doNothing")
@@ -1060,7 +1060,7 @@ State escape_shock
 
 					If (Utility.RandomInt(0,100)>=90)
 
-						Debug.Notification("The collar is sending shocks." )
+						Debug.Notification("$The collar is sending shocks." )
 						if (iPlayerGender==0)
 							_SDSMP_choke_m.Play( Game.GetPlayer() )
 						else
@@ -1091,7 +1091,7 @@ EndState
 State escape_choke
 	Event OnBeginState()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
-		Debug.Notification( "Your collar tightens as you wander off from the cage." )
+		Debug.Notification( "$Your collar tightens as you wander off from the cage." )
 		debugTrace(" Cage scene - choking collar - start" )
 		debugTrace(" starting timer" )
 		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
@@ -1117,7 +1117,7 @@ State escape_choke
 
 		If (!kMaster.IsDead()) 
 
-			Debug.Notification("The collar is choking you.." )
+			Debug.Notification("$The collar is choking you.." )
 			if (iPlayerGender==0)
 				_SDSMP_choke_m.Play( kSlave )
 			else
@@ -1141,7 +1141,7 @@ State escape_choke
 
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" escape_choke: Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			; SendModEvent("PCSubFree")
 			GoToState("doNothing")
@@ -1236,8 +1236,8 @@ State escape_choke
 						_SD_CollarStrangleImod.Remove()
 						_SD_CollarStrangleImod.Apply(fBlackoutRatio)
 						if (Utility.RandomInt(0,100)>80)
-							Debug.Notification( "You are too far from the cage." )
-							Debug.Notification( "Your collar tightens around your throat..." )
+							Debug.Notification( "$You are too far from the cage." )
+							Debug.Notification( "$Your collar tightens around your throat..." )
 							if (iPlayerGender==0)
 								_SDSMP_choke_m.Play( kSlave )
 							else
@@ -1250,8 +1250,8 @@ State escape_choke
 						;_SD_CollarStrangleImod.Remove()
 						_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
 						if (Utility.RandomInt(0,100)>80)
-							Debug.Notification( "You are still far from the cage." )
-							Debug.Notification( "Your breathing is painful..." )
+							Debug.Notification( "$You are still far from the cage." )
+							Debug.Notification( "$Your breathing is painful..." )
 							if (iPlayerGender==0)
 								_SDSMP_choke_m.Play( kSlave )
 							else
@@ -1264,7 +1264,7 @@ State escape_choke
 						;_SD_CollarStrangleImod.Remove()
 						_SD_CollarStrangleImod.PopTo(_SD_CollarStrangleImod,fBlackoutRatio)
 						if (Utility.RandomInt(0,100)>80)
-							Debug.Notification( "Your collar is choking you..." )
+							Debug.Notification( "$Your collar is choking you..." )
 							if (iPlayerGender==0)
 								_SDSMP_choke_m.Play( kSlave )
 							else
@@ -1346,7 +1346,7 @@ State caged
 
 		If !kMaster || !kSlave || kMaster.IsDisabled() || kMaster.IsDead() ; || ( kMaster.IsEssential() && (kMaster.IsBleedingOut()) || (kMaster.IsUnconscious()) ) )
 			debugTrace(" caged: Master dead or disabled - Stop enslavement")
-			Debug.Notification( "Your owner is either dead or left you...")
+			Debug.Notification( "$Your owner is either dead or left you...")
 
 			; SendModEvent("PCSubFree")
 			GoToState("doNothing")
@@ -1388,7 +1388,7 @@ State doNothing
 
 	Event OnUpdate()
 		debugTrace(" doNothing state - Master dead or disabled - Stop enslavement")
-		Debug.Notification( "Your owner is either dead or left you...")
+		Debug.Notification( "$Your owner is either dead or left you...")
 
 		SendModEvent("PCSubFree")	
 	EndEvent
@@ -1472,12 +1472,12 @@ Function _slaveStatusTicker()
 			; Trigger only after an hour has passed from enslavement
 			If (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
 				If (kSlave.GetDistance( kMaster )<1500)
-					Debug.Notification("Your master is disappointed to find you without a collar.")
+					Debug.Notification("$Your master is disappointed to find you without a collar.")
 					fctOutfit.equipDeviceByString ( "Collar" )
 					fctOutfit.lockDeviceByString( kSlave,  "Collar")
 					fctSlavery.ModMasterTrust(kMaster, -5)
 				Else
-					Debug.Notification("Your master is too far to collar you again.")
+					Debug.Notification("$Your master is too far to collar you again.")
 				Endif
 			EndIf
 		endif
@@ -1771,7 +1771,7 @@ function UpdateSlaveArousal()
 	if (slaUtil != None)
 		; slaUtil.UpdateActorExposureRate(kSlave as Actor, 2.0)
 		slaUtil.SetActorExposure(kSlave as Actor, slaUtil.GetActorExposure(kSlave as Actor) + 5)
-		Debug.Notification("The shocks are making you hornier." )
+		Debug.Notification("$The shocks are making you hornier." )
 	endIf
 
 	; int eid = ModEvent.Create("slaUpdateExposure")

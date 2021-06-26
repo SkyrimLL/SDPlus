@@ -375,9 +375,9 @@ Function initMod( Bool bResetGlobals = False )
 	_SDSP_config_genderRestrictions[3] = "SEXLAB"
 
 	_SDSP_config_genderSanguine = New String[3]
-	_SDSP_config_genderSanguine[0] = "Male"
-	_SDSP_config_genderSanguine[1] = "Female"
-	_SDSP_config_genderSanguine[2] = "Use gender restriction"
+	_SDSP_config_genderSanguine[0] = "$Male"
+	_SDSP_config_genderSanguine[1] = "$Female"
+	_SDSP_config_genderSanguine[2] = "$Use gender restriction"
 
 	; primary
 	_SDOID_quests_p      = New Int[ 5 ]
@@ -476,8 +476,8 @@ event OnPageReset(string a_page)
 		AddHeaderOption("$SD_HEADER_P0_COMBAT") ;0 - 1
 		; _SDOID_config_S1 = AddSliderOption("$SD_OPTION_P0_BUFFER", _SDGVP_config_healthMult.GetValue() as Float, "$SD_HEALTH", OPTION_FLAG_DISABLED) ;2 - 2
 		; _SDOID_config_S2 = AddSliderOption("$SD_OPTION_P0_WEAKENED_AT", _SDGVP_config_healthThreshold.GetValue() as Float, "$SD_PERCENT_HEALTH") ;4 - 3
-		_SDOID_config_S2 = AddSliderOption("Chance of enslavement", _SDGVP_config_healthThreshold.GetValue() as Float, "{1} %")  
-		_SDOID_config_S1 = AddSliderOption("Chance of spriggan infection", _SDGVP_config_healthMult.GetValue() as Float, "{1} %")  
+		_SDOID_config_S2 = AddSliderOption("$Chance of enslavement", _SDGVP_config_healthThreshold.GetValue() as Float, "{1} %")  
+		_SDOID_config_S1 = AddSliderOption("$Chance of spriggan infection", _SDGVP_config_healthMult.GetValue() as Float, "{1} %")  
 
 		; _SDOID_config_B1 = AddToggleOption("$SD_OPTION_P0_ESSENTIAL_WHILE_WEAKENED", _SDGVP_config_essential.GetValue() as Bool, OPTION_FLAG_DISABLED) ;6 - 4
 		AddHeaderOption("$SD_HEADER_P0_ITEMS") ;8 - 5
@@ -491,14 +491,14 @@ event OnPageReset(string a_page)
 		_SDOID_config_B8 = AddToggleOption("$SD_OPTION_P0_ENABLE_TRAIN_RUN", _SDGVP_config_enableTrainRun.GetValue() as Bool) ;22 - 12
 		;# SDpatch #
 		;###############################################################################################
-		AddHeaderOption("Slave Options")
-		_SDOID_config_B10 = AddToggleOption("Enable Armbinder Kneeling", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
-		_SDOID_config_B11 = AddToggleOption("Enable Beast Enslavement", _SDGVP_config_enable_beast_master.GetValue() as Bool) ;
-		_SDOID_config_B12 = AddToggleOption("Enable Cage scenes", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
-		_SDOID_config_B13 = AddToggleOption("Enable Coveted effect", _SDGVP_config_GagType.GetValue() as Bool) ;
-		_SDOID_config_S8 = AddSliderOption("Min slavery level", _SDGVP_config_min_slavery_level.GetValue() as Float)
-		_SDOID_config_S9 = AddSliderOption("Max slavery level", _SDGVP_config_max_slavery_level.GetValue() as Float)
-		_SDOID_config_S10 = AddSliderOption("Slavery exposure cooldown multiplier", _SDGVP_config_slavery_level_mult.GetValue() as Float,"{1}")
+		AddHeaderOption("$Slave Options")
+		_SDOID_config_B10 = AddToggleOption("$Enable Armbinder Kneeling", _SDGVP_config_ArmbinderKnee.GetValue() as Bool) ;
+		_SDOID_config_B11 = AddToggleOption("$Enable Beast Enslavement", _SDGVP_config_enable_beast_master.GetValue() as Bool) ;
+		_SDOID_config_B12 = AddToggleOption("$Enable Cage scenes", _SDGVP_config_RemovePunishment.GetValue() as Bool) ;
+		_SDOID_config_B13 = AddToggleOption("$Enable Coveted effect", _SDGVP_config_GagType.GetValue() as Bool) ;
+		_SDOID_config_S8 = AddSliderOption("$Min slavery level", _SDGVP_config_min_slavery_level.GetValue() as Float)
+		_SDOID_config_S9 = AddSliderOption("$Max slavery level", _SDGVP_config_max_slavery_level.GetValue() as Float)
+		_SDOID_config_S10 = AddSliderOption("$Slavery exposure cooldown multiplier", _SDGVP_config_slavery_level_mult.GetValue() as Float,"{1}")
 		;###############################################################################################
 		SetCursorPosition(1)
 		AddHeaderOption("$SD_HEADER_P0_BODY") ;1 - 1
@@ -509,8 +509,8 @@ event OnPageReset(string a_page)
 		_SDOID_config_S3 = AddSliderOption("$SD_SLIDER_P0_BYOUT_AMOUNT", _SDGVP_config_buyout.GetValue() as Float, "$SD_GOLD") ;11 - 6
 		_SDOID_config_S4 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_RADIUS", _SDGVP_config_escape_radius.GetValue() as Float, "$SD_UNITS") ;13 - 7
 		_SDOID_config_S5 = AddSliderOption("$SD_SLIDER_P0_ESCAPE_TIMER", _SDGVP_config_escape_timer.GetValue() as Float, "$SD_SECONDS") ;15 - 8
-		_SDOID_config_S11 = AddSliderOption("Disposition threshold", _SDGVP_config_disposition_threshold.GetValue() as Float,"{1}")
-		_SDOID_config_S6 = AddSliderOption("Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
+		_SDOID_config_S11 = AddSliderOption("$Disposition threshold", _SDGVP_config_disposition_threshold.GetValue() as Float,"{1}")
+		_SDOID_config_S6 = AddSliderOption("$Min days to join", _SDGVP_config_join_days.GetValue() as Float, "$SD_DAYS") ; 17 - 9
 		_SDOID_config_B9 = AddToggleOption("$SD_OPTION_P0_HARDCORE", _SDGVP_config_hardcore.GetValue() as Bool) ;19 - 10
 		; AddHeaderOption("$SD_HEADER_P0_EFFECTS") ;21 - 11
 
@@ -556,16 +556,16 @@ event OnPageReset(string a_page)
 
 		SetCursorPosition( _SDQP_quests_primary.Length * 2 + 4)
 		;AddHeaderOption( "$SD_CONCAT{" + _SDGVP_state_mcm.GetValueInt() as String + "}STATUS" )
-		AddHeaderOption( "Update Status: " + _SDGVP_state_mcm.GetValueInt() as String + "" )
+		AddHeaderOption( "$Update Status: {" + _SDGVP_state_mcm.GetValueInt() as String + "}" )
 		If ( _SDGVP_state_mcm.GetValueInt() == 0 )
 			_SDOID_config_T1 = AddTextOption(s_config_T1_text[i_T1_action], s_config_T1_value[i_T1_action], i_config_T1_flag[i_T1_action])
 			AddToggleOption("$SD_TOGGLE_P1_IS_PLAYER_ENSLAVED", _SDGVP_enslaved.GetValue() as Bool, OPTION_FLAG_DISABLED)
-			_SDOID_config_S7 = AddSliderOption("Chance of dreamworld visits", _SDGVP_config_blindnessLevel.GetValue() as Float, "{1} %") ; 23 - 12
+			_SDOID_config_S7 = AddSliderOption("$Chance of dreamworld visits", _SDGVP_config_blindnessLevel.GetValue() as Float, "{1} %") ; 23 - 12
 			; _SDOID_config_B2 = AddToggleOption("$SD_TOGGLE_P1_IS_ARTIFACT_ENABLED", _SDGVP_config_lust.GetValue() as Bool, i_config_B2_flag[i_T1_action] )
 			; _SDOID_config_B2 = AddToggleOption("Start after A Night to remember", _SDGVP_config_lust.GetValue() as Bool )
-			_SDOID_config_B14 = AddToggleOption("Immersive starts", _SDGVP_config_auto_start.GetValue() as Bool )
+			_SDOID_config_B14 = AddToggleOption("$Immersive starts", _SDGVP_config_auto_start.GetValue() as Bool )
 			; If (_SDGVP_enslaved.GetValue() as Bool) || (_SDGVP_sprigganenslaved.GetValue() as Bool)
-				_SDOID_config_B21 = AddToggleOption("SAFE WORD", False )
+				_SDOID_config_B21 = AddToggleOption("$SAFE WORD", False )
 			; Else
 			;	AddToggleOption("SAFE WORD", _SDGVP_config_safeword.GetValue() as Bool, OPTION_FLAG_DISABLED )
 			; EndIf
@@ -592,8 +592,8 @@ event OnPageReset(string a_page)
 					if ( (daysJoined > StorageUtil.GetIntValue( kPlayer, "_SD_iDaysMaxJoinedFaction") ) || (!kPlayer.IsInFaction( slaveFaction as Faction )) || (StringUtil.Find(sFactionName, "SexLab")!= -1)  || (StringUtil.Find(sFactionName, "SOS")!= -1)  || (StringUtil.Find(sFactionName, "Schlong")!= -1) || (StringUtil.Find(sFactionName, "Dialogue Disable")!= -1) )
 						kPlayer.RemoveFromFaction( slaveFaction as Faction )
 					else
-						AddTextOption(" Faction[" + i + "] : " + slaveFaction.GetName() , OPTION_FLAG_DISABLED)
-						AddTextOption("     Days Since Joined: " + daysJoined, "", OPTION_FLAG_DISABLED)
+						AddTextOption("$ Faction{" + i + "} : {" + slaveFaction.GetName() +"}" , OPTION_FLAG_DISABLED)
+						AddTextOption("$     Days Since Joined: {" + daysJoined +"}", "", OPTION_FLAG_DISABLED)
 					
 					Endif
 				Endif
@@ -650,7 +650,7 @@ event OnPageReset(string a_page)
 		; AddTextOption("$SD_OPTION_P2_MOVE_DOWN_EXPLAIN", "", OPTION_FLAG_DISABLED)
 		; AddTextOption("$SD_OPTION_P2_MOVE_DOWN_EXPLAIN_SHIFT", "", OPTION_FLAG_DISABLED)
 		; AddTextOption("$SD_OPTION_P2_SURRENDER_EXPLAIN", "", OPTION_FLAG_DISABLED)
-		AddTextOption("The surrender key gives you the option to surrender willingly to your opponent or pray to Sanguine for help. In all cases, pressing this key will apply some safety checks and get you unstuck if you cannot move.", "", OPTION_FLAG_DISABLED)
+		AddTextOption("$SD_KEYMAP_P2_SURRENDER_desc", "", OPTION_FLAG_DISABLED)
 
 	; ADDONS
 	ElseIf ( a_page == Pages[3] )
@@ -723,16 +723,16 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_T2 )
 		SetInfoText("$_SDOID_config_T2")
 	ElseIf ( a_option == _SDOID_config_T3 )
-		SetInfoText("Force gender of Sanguine in Dreamworld (or leave it to chance based on gender preferences)")
+		SetInfoText("$_SDOID_config_T3_desc")
 	ElseIf ( a_option == _SDOID_config_B1 )
 		SetInfoText("$_SDOID_config_B1")
 	; ElseIf ( a_option == _SDOID_config_B2 )
 		; SetInfoText("$_SDOID_config_B2")
 	;	SetInfoText("Check if you want to delay visits to Dreamworld until after 'A Night to Remember' (Level 14).")
 	ElseIf ( a_option == _SDOID_config_B14)
-		SetInfoText("Uncheck if you want to delay visits to Dreamworld indefinitely. You will have to sleep in front of Sanguine's shrine to start the Dreamworld aspect of the mod manually. Look in the Help tab for a list of auto-start conditions.")
+		SetInfoText("$_SDOID_config_B14_desc")
 	ElseIf ( a_option == _SDOID_config_B21 )
-		SetInfoText("Emergency release from your current master - useful in case of friendly fire or static NPC.")
+		SetInfoText("$_SDOID_config_B21_desc")
 	ElseIf ( a_option == _SDOID_config_B3 )
 		SetInfoText("$_SDOID_config_B3")
 	ElseIf ( a_option == _SDOID_config_B4 )
@@ -749,28 +749,28 @@ event OnOptionHighlight(int a_option)
 		SetInfoText("$_SDOID_config_B9")
 	;#################################################################################################
 	ElseIf ( a_option == _SDOID_config_B10 )
-		SetInfoText("Toggle this ON to kneel before your Master while wearing an armbinder. ")
+		SetInfoText("$_SDOID_config_B10_desc")
 	ElseIf ( a_option == _SDOID_config_B11 )
-		SetInfoText("Toggle this ON to enable enslavement attempts from beasts (wolf, trolls, draugr, etc). ")
+		SetInfoText("$_SDOID_config_B11_desc")
 	ElseIf ( a_option == _SDOID_config_B12 )
-		SetInfoText("Toggle this ON to enable cage scenes at night (if a cage is nearby). ")
+		SetInfoText("$_SDOID_config_B12_desc")
 	ElseIf ( a_option == _SDOID_config_B13 )
-		SetInfoText("Toggle this ON to allow increasing random attacks based on number of visits to Sanguine's Dreamworld ")
+		SetInfoText("$_SDOID_config_B13_desc")
 	ElseIf ( a_option == _SDOID_config_S8 )
-		SetInfoText("Minimum value for slavery level (0 = defiant, 6 = total submissive). Should be lower than Max Slavery Level.")
+		SetInfoText("$_SDOID_config_S8_desc")
 	ElseIf ( a_option == _SDOID_config_S9 )
-		SetInfoText("Maximum value for slavery level (0 = defiant, 6 = total submissive). Should be higher than Min Slavery Level.")
+		SetInfoText("$_SDOID_config_S9_desc")
 	ElseIf ( a_option == _SDOID_config_S10 )
-		SetInfoText("Value multiplier to reduce (or increase) slavery exposure after each day of freedom. 0 removes slavery exposure after one night , 1.0 maintains slavery exposure at the same level, 2.0 increases slavery exposure over time (similar to withdrawal)")
+		SetInfoText("$_SDOID_config_S10_desc")
 	ElseIf ( a_option == _SDOID_config_S11 )
-		SetInfoText("Overall disposition to be considered for slave to be released (or disposed of). Use this as an Enslavement Difficulty setting.")
+		SetInfoText("$_SDOID_config_S11_desc")
 	;#################################################################################################			
 	ElseIf ( a_option == _SDOID_config_S1 )
 		; SetInfoText("$_SDOID_config_S1")
-		SetInfoText("Adds a chance of success to the Death Alternative quests defined for Spriggan infection by SD.")
+		SetInfoText("$_SDOID_config_S1_desc")
 	ElseIf ( a_option == _SDOID_config_S2 )
 		; SetInfoText("$_SDOID_config_S2")
-		SetInfoText("Adds a chance of success to the Death Alternative quests defined for enslavement by SD.")
+		SetInfoText("$_SDOID_config_S2_desc")
 	ElseIf ( a_option == _SDOID_config_S3 )
 		SetInfoText("$_SDOID_config_S3")
 	ElseIf ( a_option == _SDOID_config_S4 )
@@ -780,7 +780,7 @@ event OnOptionHighlight(int a_option)
 	ElseIf ( a_option == _SDOID_config_S6 )
 		SetInfoText( decimalDaysToString( _SDGVP_config_join_days.GetValue() as Float ) )
 	ElseIf ( a_option == _SDOID_config_S7 )
-		SetInfoText("Normal chance of visits to Sanguine's Dreamworld on sleep (after initial trigger conditions are met).")
+		SetInfoText("$_SDOID_config_S7_desc")
 	ElseIf ( a_option == _SDOID_config_M1 )
 
 	ElseIf ( _SDOID_quests_o.Find( a_option ) >= 0 )
@@ -1112,10 +1112,10 @@ event OnOptionKeyMapChange(int a_option, int a_keyCode, string a_conflictControl
 		replacements[0] = a_conflictControl
 		If (a_conflictName != "")
 			replacements[1] = a_conflictName
-			msg = sPrintF( "This key is already mapped to '%s' (%s). Are you sure you want to continue?", replacements )
+			msg = sPrintF( "$This key is already mapped to '%s' (%s). Are you sure you want to continue?", replacements )
 			;msg = "$SD_CONCAT_KEYMAP{" + a_conflictControl as String  + "}_CONFLICT{" + a_conflictName as String  + "}_CONTUNUE"
 		Else
-			msg = sPrintF( "This key is already mapped to '%s'. Are you sure you want to continue?", replacements )
+			msg = sPrintF( "$This key is already mapped to '%s'. Are you sure you want to continue?", replacements )
 			;msg = "$SD_CONCAT_KEYMAP{" + a_conflictControl as String + "}_CONTUNUE"
 		EndIf
 

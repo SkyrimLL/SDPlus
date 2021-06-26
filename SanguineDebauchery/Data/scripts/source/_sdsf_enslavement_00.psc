@@ -34,7 +34,7 @@ If (StorageUtil.GetIntValue(  cage_door, "_SD_iCageBroken"  ) != 1)
 	; Game.DisablePlayerControls( abMovement = true )
 	; Game.SetPlayerAIDriven()
 
-	Debug.Notification("Go to your cage.. right now!")
+	Debug.Notification("$Go to your cage.. right now!")
 
 	mark.MoveTo(cage_door, -64.0 * Math.Sin(cage_door.GetAngleZ()), -64.0 * Math.Cos(cage_door.GetAngleZ()), 0.0)
 
@@ -84,7 +84,7 @@ If (_SDRAP_cage_door!=None)
 
 		cage_door.SetLockLevel( kSlave.GetBaseAV("Lockpicking") as Int )
 
-		Debug.Notification("Now stay quiet for the rest of the night.")
+		Debug.Notification("$Now stay quiet for the rest of the night.")
 	else
 		Int randomNum = Utility.RandomInt(0, 100)
 

@@ -6,7 +6,7 @@ Scriptname _sdsf_snp_05 Extends Scene Hidden
 Function Fragment_0()
 ;BEGIN CODE
 snp._SDUIP_phase = -1
-Debug.Notification("The whip leaves your skin on fire.")
+Debug.Notification("$The whip leaves your skin on fire.")
 Actor kPlayer = Game.getPlayer()
 Actor kMaster = StorageUtil.GetFormValue( kPlayer, "_SD_CurrentOwner") as Actor
 Actor female = _SDRAP_female.GetReference() as Actor
@@ -60,7 +60,7 @@ Function Fragment_2()
 snp._SDUIP_phase = 0
 _SDGVP_snp_busy.SetValue(5)
 
-Debug.Notification("You wince as the sight of the whip.")
+Debug.Notification("$You wince as the sight of the whip.")
 
 Actor female = _SDRAP_female.GetReference() as Actor
 ObjectReference marker = _SDRAP_marker.GetReference() as ObjectReference

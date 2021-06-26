@@ -42,7 +42,7 @@ Event OnStoryCrimeGold(ObjectReference akVictim, ObjectReference akCriminal, For
 	kSlave = _SDRAP_slave.GetReference() as Actor
 
   	if (aiCrime == 1) && (akVictim== (kMaster as ObjectReference)) &&   (akCriminal== (kSlave as ObjectReference)); Pick-pocketing
-   	 	Debug.Notification("You think you could get away with that?!")
+   	 	Debug.Notification("$You think you could get away with that?!")
    	 	Debug.Notification("[SD] Slave got " + aiGoldAmount + " crime gold for pickpocketing " + akVictim)
 		kMaster.SendModEvent("PCSubWhip")
 	 
