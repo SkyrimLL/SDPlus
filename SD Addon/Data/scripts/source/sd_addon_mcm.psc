@@ -210,7 +210,6 @@ event OnPageReset(string Page)
 
 		SetCursorPosition(1)
 		AddEmptyOption()
-		AddEmptyOption()
 		AddHeaderOption("Player Gear Preference")
 		ItemListPlayerCollarOID = AddMenuOption("Collar Style", ItemListPlayerCollar[ItemListPlayerCollarIndex])
 		ItemListPlayerArmbinderOID = AddMenuOption("Armbinder Style", ItemListPlayerArmbinder[ItemListPlayerArmbinderIndex])
