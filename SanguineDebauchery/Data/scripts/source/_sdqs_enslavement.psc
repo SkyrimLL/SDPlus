@@ -194,7 +194,7 @@ ObjectReference Function GetMaster()
 	Return kMaster as ObjectReference
 EndFunction
 
-Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False)
+Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = False)
 	ObjectReference kRags = _SDAP_clothing.GetReference() as  ObjectReference 
 	ActorBase akActorBase  
 	Bool bIsCollarded = false
@@ -221,11 +221,11 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",1)
 
 	debugTrace(" You submit to a new owner.")
-	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
-		Debug.Notification("$You submit to a new owner.")
-	Else
-		Debug.Notification("$Your new owner defeated you.")
-	Endif
+	; if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
+	;	Debug.Notification("$You submit to a new owner.")
+	; Else
+	;	Debug.Notification("$Your new owner defeated you.")
+	; Endif
 
 	; Drop current weapon - Do this first to prevent camera stuck in combat mode
 	if(kSlave.IsWeaponDrawn())
@@ -251,36 +251,13 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	fctSlavery.StartSlavery( kMaster, kSlave)
 
 	debugTrace(" Your new owner strips you naked.")
-	Debug.Notification("$Your new owner strips you naked.")
+	; Debug.Notification("$Your new owner strips you naked.")
 
 	SexLab.StripActor( kSlave, DoAnimate= false)
 
-	debugTrace(" Your owner inspects you carefully.")
-	Debug.Notification("$Your owner inspects you carefully.")
-
-	kMaster.AllowPCDialogue( True )
-	kMaster.RestoreAV("health", kMaster.GetBaseAV("health") )
-	kSlave.RestoreAV("health", kSlave.GetBaseAV("health") )
-
-	kMaster.SetAV("Aggression", 1)
-	kMaster.SetAV("Confidence", 3)
-
-	if (kMaster.GetRelationshipRank(kSlave)<0)
-		kMaster.SetRelationshipRank(kSlave, -4 )
-	Else
-		kMaster.SetRelationshipRank(kSlave, 0 )
-	EndIf
-
-	If ( bHardcoreMode )
+	If ( bLimitedRemoval )
 		StorageUtil.GetIntValue(kSlave, "_SD_iEnableClothingEquip", 1)
 	EndIf
-	
-	If ( kCrimeFaction && !kMaster.IsInFaction( _SDFP_bountyhunter ) )
-		iGold = kCrimeFaction.GetCrimeGold()
-		iDemerits += Math.Ceiling( Math.abs(iGold) / 100 )
-		kCrimeFaction.PlayerPayCrimeGold( True, False )
-	EndIf
-
 	; Utility.Wait(2.0)
 
 	; Debug.SendAnimationEvent( kSlave, "IdleForceDefaultState" )
@@ -297,12 +274,6 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	; Game.ForceThirdPerson()
 
 	; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
-
-	; Remove current collar if already equipped
-	if ((fctOutfit.isCollarEquipped(kSlave)) || (fctOutfit.isCuffsEquipped(kSlave))) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
-		fctOutfit.clearDevicesForEnslavement()
-	EndIf
-
 	; fctOutfit.toggleActorClothing (  kSlave,  bStrip = True,  bDrop = False )
 	if (fctOutfit.isCollarEquipped(kSlave))
 		bIsCollarded = true
@@ -316,13 +287,15 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 		bIsLegsBound = true
 	EndIf
 
-	; Transfer of inventory
-	; If ( aiValue2 == 0 )
-	If ( bHardcoreMode )
-		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 1)
-		; fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
-		fctInventory.limitedRemoveAllItems ( kSlave, _SDRAP_playerStorage.GetReference(), True, _SDFLP_ignore_items )
+	; Remove current collar if already equipped
+	if ((bIsCollarded) || (bIsArmBound)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
+		fctOutfit.clearDevicesForEnslavement()
+	EndIf
 
+	; Transfer of inventory
+	fctInventory.TransferInventory( akSlave )
+
+	If ( bLimitedRemoval )
 		If ( kSlave.GetItemCount( kRags ) == 0 )
 			; kSlave.AddItem( kRags, 1, True)
 			kMaster.AddItem( kRags, 1, True)
@@ -330,26 +303,11 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 			kSlave.RemoveItem( kRags, 1, False, kMaster)
 		EndIf
 		kSlave.EquipItem( kRags.GetBaseObject() ) ;Inte
-	Else
-		; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
-		; fctInventory.limitedRemoveAllItems ( kSlave, kMaster, True )
-		; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
-
-		; Disabled for now
-		; Try a different approach to prevent issues with Devious Items being forcibly removed just as they are added
-
-		; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
-
-		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 0)
-		fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
-		kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorage.GetReference(), abKeepOwnership = True)
-
-	EndIf
-	; EndIf
+	endif
 
 	Utility.Wait(1.0)
 
-	debugTrace(" You are chained and collared.")
+	; debugTrace(" You are chained and collared.")
 	Debug.Notification("$You are chained and collared.")
 
 	StorageUtil.FormListClear( kSlave, "_SD_lActivePunishmentDevices" )
@@ -374,9 +332,31 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bHardcoreMode = False
 	;	PunishSlave( kMaster,  kSlave, "Gag")
 	; EndIf
 
+	debugTrace(" Your owner inspects you carefully.")
+	; Debug.Notification("$Your owner inspects you carefully.")
+
+	kMaster.AllowPCDialogue( True )
+	kMaster.RestoreAV("health", kMaster.GetBaseAV("health") )
+	kSlave.RestoreAV("health", kSlave.GetBaseAV("health") )
+
+	kMaster.SetAV("Aggression", 1)
+	kMaster.SetAV("Confidence", 3)
+
+	if (kMaster.GetRelationshipRank(kSlave)<0)
+		kMaster.SetRelationshipRank(kSlave, -4 )
+	Else
+		kMaster.SetRelationshipRank(kSlave, 0 )
+	EndIf
+
+	If ( kCrimeFaction && !kMaster.IsInFaction( _SDFP_bountyhunter ) )
+		iGold = kCrimeFaction.GetCrimeGold()
+		iDemerits += Math.Ceiling( Math.abs(iGold) / 100 )
+		kCrimeFaction.PlayerPayCrimeGold( True, False )
+	EndIf
+
 	; Test slaver tattoo
 	debugTrace(" You are marked as your owner's property.")
-	Debug.Notification("$You are marked as your owner's property.")
+	; Debug.Notification("$You are marked as your owner's property.")
 	fctOutfit.sendSlaveTatModEvent(kMaster, "SD+","Slavers Hand (back)" )
 
 	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",0)

@@ -14,11 +14,48 @@ MiscObject Property Firewood  Auto
 
 Quest Property _SDQP_enslavement Auto
 
+GlobalVariable Property _SDGVP_HardcoreMode  Auto  
 GlobalVariable Property _SDGVP_buyout  Auto  
 GlobalVariable Property _SDGVP_buyoutEarned  Auto  
 
+ObjectReference Property _SDRAP_playerStorageRef  Auto  
+ObjectReference Property _SDRAP_playerStorageKeys  Auto  
+FormList Property _SDFLP_ignore_items  Auto
+
+
 Float fGoldEarned
 Int iuType
+
+Function TransferInventory(Actor kSlave)
+	; Hardcore variable became 'Limited Removal' over time - meaning is INVERTED! False means Hardcore
+	Bool bLimitedRemoval = _SDGVP_HardcoreMode.GetValue() as Bool
+
+	; If ( aiValue2 == 0 )
+	If ( bLimitedRemoval )
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 1)
+		; fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
+		limitedRemoveAllItems ( kSlave, _SDRAP_playerStorageRef, True, _SDFLP_ignore_items )
+
+	Else
+		; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
+		; fctInventory.limitedRemoveAllItems ( kSlave, kMaster, True )
+		; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
+
+		; Disabled for now
+		; Try a different approach to prevent issues with Devious Items being forcibly removed just as they are added
+
+		; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+
+		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 0)
+		limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
+		kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorageRef, abKeepOwnership = True)
+
+	EndIf
+
+	Utility.Wait(1.0)
+
+	; EndIf
+EndFunction
 
 Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference akTransferTo = None, Bool abSilent = True, FormList akIgnored = None )
 	Int iFormIndex = 0

@@ -219,6 +219,7 @@ Function _Maintenance()
 	RegisterForModEvent("SDDreamworldStart",   "OnSDDreamworldStart")
 	RegisterForModEvent("SDDreamworldSuspend",   "OnSDDreamworldSuspend")
 	RegisterForModEvent("SDDreamworldResume",   "OnSDDreamworldResume")
+	RegisterForModEvent("SDDreamworldInventory",   "OnSDDreamworldInventory")
 	RegisterForModEvent("SDEmancipateSlave",   "OnSDEmancipateSlave")
 	RegisterForModEvent("SDPunishSlave",   "OnSDPunishSlave")
 	RegisterForModEvent("SDRewardSlave",   "OnSDRewardSlave")
@@ -846,7 +847,9 @@ Event OnSDDreamworldStart(String _eventName, String _args, Float _argc = 0.0, Fo
 	EndIf
 
 	_SDGVP_sanguine_blessing.SetValue(blessingsStart)
-	StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", _SDGVP_sanguine_blessings.GetValue() as Int )
+	StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", blessingsStart )
+
+	fctInventory.TransferInventory(kPlayer)
 
 	_SD_dreamerScript.startDreamworld()
 
@@ -882,6 +885,13 @@ EndEvent
 Event OnSDDreamworldResume(String _eventName, String _args, Float _argc = 15.0, Form _sender)
 	Debug.Trace("[_sdras_player] Receiving dreamworld resume story event [" + _args  + "] [" + _argc as Int + "]")
 	StorageUtil.SetIntValue(kPlayer, "_SD_iDisableDreamworld", 0)
+EndEvent
+
+Event OnSDDreamworldInventory(String _eventName, String _args, Float _argc = 15.0, Form _sender)
+
+	Debug.Trace("[_sdras_player] Receiving dreamworld inventory story event [" + _args  + "] [" + _argc as Int + "]")
+	
+	fctInventory.TransferInventory(kPlayer)
 EndEvent
 
 Event OnSDModSanguineBlessing(String _eventName, String _args, Float _argc = -1.0, Form _sender)
