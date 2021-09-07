@@ -182,10 +182,8 @@ Function enslaveCompanion( Actor kActor)
 			endif
 			if processFollower
 			;;;End CagedFollowers
-			;else
-				; kActor.SendModEvent("SDEquipDevice","Armbinder:zap")
-				Debug.Notification("$Your follower has been enslaved!")
-				; fctOutfit.equipDeviceNPCByString ( kActor, "WristRestraints", "", false, false, "zap")
+			;else 
+				Debug.Notification("$Your follower has been enslaved!") 
 				int index = StorageUtil.FormListFind(kPlayer, "_SD_lEnslavedFollower", kActor)
 				if (index < 0)
 					; Debug.Notification("Not found!")

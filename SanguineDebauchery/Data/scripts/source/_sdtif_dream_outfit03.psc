@@ -14,11 +14,11 @@ Actor PlayerActor = Game.GetPlayer()
 
 Utility.Wait(2.0)
 
-;	PlayerActor.SendModEvent("SDEquipDevice",   "Collar|restrictive")
-;	PlayerActor.SendModEvent("SDEquipDevice",   "Corset|restrictive")
-;	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves|restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Boots|restrictive")
-;	PlayerActor.SendModEvent("SDEquipDevice",   "Gag|harness,ring")
+;	PlayerActor.SendModEvent("SDEquipDevice",   "Collar|Dremora")
+;	PlayerActor.SendModEvent("SDEquipDevice",   "Corset|Dremora")
+;	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves|Dremora")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Boots|Dremora")
+;	PlayerActor.SendModEvent("SDEquipDevice",   "Gag|Dremora")
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -45,22 +45,22 @@ Function removeSDItems()
 	Debug.Notification("$Cleaning up devices")
 
 		If (kActor.WornHasKeyword(Libs.zad_DeviousBlindfold))
-			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousBlindfold, false, false, false)
+			libs.UnlockDeviceByKeyword(kActor, libs.zad_DeviousBlindfold, true)
 		EndIf
 		
 		Utility.Wait(3.0)
 		If (kActor.WornHasKeyword(Libs.zad_Deviousgag))
-			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_Deviousgag, false, false, false)
+			libs.UnlockDeviceByKeyword(kActor, libs.zad_Deviousgag, true)
 		EndIf
 		
 		Utility.Wait(3.0)
 		If (kActor.WornHasKeyword(libs.zad_DeviousArmbinder))
-			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousArmbinder, false, false, false)
+			libs.UnlockDeviceByKeyword(kActor, libs.zad_DeviousArmbinder,  true)
 		EndIf	
 		
 		Utility.Wait(3.0)
 		If (kActor.WornHasKeyword(libs.zad_DeviousCollar))
-			libs.ManipulateGenericDeviceByKeyword(kActor, libs.zad_DeviousCollar, false, false, false)
+			libs.UnlockDeviceByKeyword(kActor, libs.zad_DeviousCollar,  true)
 		EndIf
 
 	Debug.Notification("$Done cleaning up devices")

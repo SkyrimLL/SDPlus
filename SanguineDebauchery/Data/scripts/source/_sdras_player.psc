@@ -1278,8 +1278,8 @@ Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 	String sTags = ""
 	Int iTagsIndex 
 
-	; Example:  forcing a gag on akSpeaker using additional tags
-	; akSpeaker.SendModEvent("SDEquipDevice", "Gag|harness,panel") 
+	; Example:  forcing a gag on akSpeaker using additional tags for a race override
+	; akSpeaker.SendModEvent("SDEquipDevice", "Gag|Breton") 
 
 	Debug.Trace("[_sdras_player] Receiving device equip story event [" + _args  + "] [" + _argc as Int + "] [" + _argc + "]")
 

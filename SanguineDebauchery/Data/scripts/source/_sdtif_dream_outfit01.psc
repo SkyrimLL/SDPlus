@@ -14,8 +14,8 @@ Actor PlayerActor = Game.GetPlayer()
 
 Utility.Wait(2.0)
 
-	PlayerActor.SendModEvent("SDEquipDevice",   "Collar|restrictive")
-	PlayerActor.SendModEvent("SDEquipDevice",   "Corset|restrictive")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Collar|Dremora")
+	PlayerActor.SendModEvent("SDEquipDevice",   "Corset|Dremora")
 ;	PlayerActor.SendModEvent("SDEquipDevice",   "Gloves|restrictive")
 ;	PlayerActor.SendModEvent("SDEquipDevice",   "Boots|restrictive")
 ;	PlayerActor.SendModEvent("SDEquipDevice",   "Gag|harness,ring")

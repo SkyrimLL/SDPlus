@@ -591,9 +591,7 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 			; 	StorageUtil.FormListAdd( Game.GetPlayer(), "_SD_lEnslavedFollower", nthActor)
 			; endif
 
-			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isWristRestraintEquipped( nthActor)
-				; nthActor.EquipItem(  _SDA_bindings , True, True )
-				; nthActor.SendModEvent("SDEquipDevice","Armbinder:zap")
+			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isWristRestraintEquipped( nthActor) 
 				fctOutfit.equipDeviceNPCByString (nthActor, sDeviceString = "WristRestraint", sDeviceTags = "armbinder,zap" )
 
 			EndIf
