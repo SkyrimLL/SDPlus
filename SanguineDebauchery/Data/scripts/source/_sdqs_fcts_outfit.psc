@@ -89,6 +89,102 @@ Armor Property SDSlaveRags4  Auto
 Armor Property SDSlaveRags5  Auto
 Armor Property SDSlaveRags6  Auto 
 
+
+; I can't believe this bullshit function has to exist.
+; Papyrus has auto-conversion of hardoced special strings and will change "Imperial" to "IMPERIAL" automatically.
+; No... really.
+
+String Function sanitizeStringCode(String sText)
+	String sReturnText = ""
+
+	if (sText == "Argonian") || (sText == "argonian") || (sText == "ARGONIAN")
+		sReturnText += "ARGONIAN"
+	ElseIf (sText == "Bear") || (sText == "bear") || (sText == "BEAR")
+		sReturnText += "BEAR"
+	ElseIf (sText == "Breton")  || (sText == "breton") || (sText == "BRETON")
+		sReturnText += "BRETON"
+	ElseIf (sText == "Cat") || (sText == "cat") || (sText == "CAT") 
+		sReturnText += "CAT"
+	ElseIf (sText == "Chaurus") || (sText == "chaurus") || (sText == "CHAURUS") 
+		sReturnText += "CHAURUS"
+	ElseIf (sText == "Dog") || (sText == "dog") || (sText == "DOG") 
+		sReturnText += "DOG"
+	ElseIf (sText == "Draugr")  || (sText == "draugr") || (sText == "DRAUGR")
+		sReturnText += "DRAUGR"
+	ElseIf (sText == "Dremora") || (sText == "dremora") || (sText == "DREMORA") 
+		sReturnText += "dremora"
+	ElseIf (sText == "Elf")  || (sText == "elf") || (sText == "ELF")
+		sReturnText += "ELF"
+	ElseIf (sText == "Giant")  || (sText == "giant") || (sText == "GIANT")
+		sReturnText += "GIANT"
+	ElseIf (sText == "Hagraven")  || (sText == "hagraven") || (sText == "HAGRAVEN")
+		sReturnText += "HAGRAVEN"
+	ElseIf (sText == "Imperial")  || (sText == "imperial") || (sText == "IMPERIAL")
+		sReturnText += "IMPERIAL"
+	ElseIf (sText == "Khajiit")  || (sText == "khajiit") || (sText == "KHAJIIT")
+		sReturnText += "KHAJIIT"
+	ElseIf (sText == "Orc")  || (sText == "orc") || (sText == "ORC")
+		sReturnText += "ORC"
+	ElseIf (sText == "Redguard")  || (sText == "redguard") || (sText == "REDGUARD")
+		sReturnText += "REDGUARD"
+	ElseIf (sText == "Spider")  || (sText == "spider") || (sText == "SPIDER")
+		sReturnText += "SPIDER"
+	ElseIf (sText == "Troll")  || (sText == "troll") || (sText == "TROLL")
+		sReturnText += "TROLL"
+	ElseIf (sText == "Wolf")  || (sText == "wolf") || (sText == "WOLF")
+		sReturnText += "WOLF"
+	ElseIf (sText == "Falmer")  || (sText == "falmer") || (sText == "FALMER")
+		sReturnText += "FALMER"
+	ElseIf (sText == "Nord")  || (sText == "nord") || (sText == "NORD")
+		sReturnText += "NORD"
+
+	ElseIf (sText == "Collar")  || (sText == "collar") || (sText == "COLLAR")
+		sReturnText += "collar"
+	ElseIf (sText == "Corset")  || (sText == "corset") || (sText == "CORSET")
+		sReturnText += "corset"
+	ElseIf (sText == "Gloves")  || (sText == "gloves") || (sText == "GLOVES")
+		sReturnText += "Gloves"
+	ElseIf (sText == "Boots")  || (sText == "boots") || (sText == "BOOTS")
+		sReturnText += "boots"
+
+	ElseIf (sText == "WristRestraint")  || (sText == "wristrestraint") || (sText == "WRISTRESTRAINT")
+		sReturnText += "WristRestraint"
+	ElseIf (sText == "ArmCuffs")  || (sText == "legcuffs") || (sText == "LEGCUFFS")
+		sReturnText += "ArmCuffs"
+	ElseIf (sText == "LegCuffs")  || (sText == "legcuffs") || (sText == "LEGCUFFS")
+		sReturnText += "LegCuffs"
+	ElseIf (sText == "Belt")  || (sText == "belt") || (sText == "BELT")
+		sReturnText += "belt"
+	ElseIf (sText == "PlugVaginal")  || (sText == "plugvaginal") || (sText == "PLUGVAGINAL")
+		sReturnText += "PlugVaginal"
+	ElseIf (sText == "PlugAnal")  || (sText == "pluganal") || (sText == "PLUGANAL")
+		sReturnText += "PlugAnal"
+	ElseIf (sText == "Blindfold")  || (sText == "blindfold") || (sText == "BLINDFOLD")
+		sReturnText += "Blindfold"
+ 	ElseIf (sText == "Gag")  || (sText == "gag") || (sText == "GAG")
+		sReturnText += "Gag"
+ 
+	Else
+		debug.notification(" No sanitized match found for " + sText)
+		debugTrace(" No match found for " + sText)
+	Endif
+
+	; Deprecated strings
+	; "_SD_DeviousSanguine" )  
+	; "_SD_DeviousEnslaved" ) || (deviousKeyword == "Enslaved") 
+	; "_SD_DeviousEnslavedCommon" ) || (deviousKeyword == "EnslavedCommon") 
+	; "_SD_DeviousEnslavedMagic" ) || (deviousKeyword == "EnslavedMagic") 
+	; "_SD_DeviousEnslavedPrimitive" ) || (deviousKeyword == "EnslavedPrimitive") 
+	; "_SD_DeviousEnslavedWealthy" ) || (deviousKeyword == "EnslavedWealthy") 
+	; "_SD_DeviousParasiteAn" ) || (deviousKeyword == "ParasiteAnal") 
+	; "_SD_DeviousParasiteVag" ) || (deviousKeyword == "ParasiteVaginal") 
+	;"_SD_DeviousSpriggan" ) || (deviousKeyword == "Spriggan") 
+
+	debugTrace("sanitizeStringCode - sText: " + sText + " - sReturnText: " + sReturnText )
+
+	Return sReturnText
+EndFunction
+
 ;  http://wiki.tesnexus.com/index.php/Skyrim_bodyparts_number
 ;
 ;  This is the list of the body parts used by Bethesda and named in the Creation Kit:
@@ -238,7 +334,7 @@ Function initSlaveryGearByActor ( Actor kActor )
 
 	if (bIsNewRace)
 		; Init slavery gear for that race
-		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  )
+		If (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "Beast"  ) || (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "beast"  ) || (StorageUtil.GetStringValue( thisRace, "_SD_sRaceType") == "BEAST"  )
 			registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=0, allowPunishmentDevice=0, allowPunishmentScene=0, allowWhippingScene=0, defaultStance="Crawling", raceSlaveTat="Hagraven Tribal (breast)", raceSlaveTatDuration=8 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=zazSanguineCollar, deviceRendered=zazSanguineCollarRendered ) 
 		Else
@@ -442,14 +538,17 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Dremora Mark (body)", raceSlaveTatDuration=10, raceSlaveTatColor = slaveTatColor, raceSlaveTatGlow = 1 )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=xlibs.collarPostureRDLeather, deviceRendered=xlibs.collarPostureRDLeatherRendered )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="WristRestraint", deviceKeyword=libs.zad_DeviousHeavyBondage, deviceInventory=xlibs.RDLrestrictiveGloves, deviceRendered=xlibs.RDLrestrictiveGlovesRendered  )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs, deviceInventory=xlibs.RDLrestrictiveBoots, deviceRendered=xlibs.RDLrestrictiveBootsRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="ArmCuffs", deviceKeyword=libs.zad_DeviousArmCuffs, deviceInventory=xlibs.cuffsRDLeatherArms, deviceRendered=xlibs.cuffsRDLeatherArmsRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="WristRestraint", deviceKeyword=libs.zad_DeviousArmbinder, deviceInventory=xlibs.rdLeatherArmbinder, deviceRendered=xlibs.rdLeatherArmbinderRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gloves", deviceKeyword=libs.zad_DeviousHeavyBondage, deviceInventory=xlibs.RDLrestrictiveGloves, deviceRendered=xlibs.RDLrestrictiveGlovesRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="LegCuffs", deviceKeyword=libs.zad_DeviousLegCuffs, deviceInventory=xlibs.cuffsRDLeatherLegs, deviceRendered=xlibs.cuffsRDLeatherLegsRendered  )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Boots", deviceKeyword=libs.zad_DeviousBoots, deviceInventory=xlibs.RDLrestrictiveBoots, deviceRendered=xlibs.RDLrestrictiveBootsRendered  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Belt", deviceKeyword=libs.zad_DeviousBelt, deviceInventory=libs.beltPadded, deviceRendered=libs.beltPaddedRendered)
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugVaginal", deviceKeyword=libs.zad_DeviousPlugVaginal, deviceInventory=libs.plugSoulgemVag, deviceRendered=libs.plugSoulgemVagRendered )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="PlugAnal", deviceKeyword=libs.zad_DeviousPlugAnal, deviceInventory=libs.plugSoulgemAn, deviceRendered=libs.plugSoulgemAnRendered  )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Gag", deviceKeyword=libs.zad_DeviousGag, deviceInventory=xlibs.gagRDLeatherRing, deviceRendered=xlibs.gagRDLeatherRingRendered    )
 				registerSlaveryGearDevice( fRace=thisRace, deviceString="Blindfold", deviceKeyword=libs.zad_DeviousBlindfold, deviceInventory=xlibs.RDLblindfoldBlocking, deviceRendered=xlibs.RDLblindfoldBlockingRendered   )
-				registerSlaveryGearDevice( fRace=thisRace, deviceString="Harness", deviceKeyword=libs.zad_DeviousHarness, deviceInventory=xlibs.rdLeatherRegularHarness, deviceRendered=xlibs.rdLeatherRegularHarnessRendered   )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Corset", deviceKeyword=libs.zad_DeviousCorset, deviceInventory=xlibs.RDErestrictiveCorset, deviceRendered=xlibs.RDErestrictiveCorsetRendered   )
 
 			endif
 		endif
@@ -479,7 +578,10 @@ EndFunction
 
 Function registerSlaveryGearDevice( Form fRace, String deviceString, Keyword deviceKeyword, Armor deviceInventory=None, Armor deviceRendered=None )
 ; 		Register devices for slavery gear - collar, armbinders, leg cuffs, belt, vaginal plug, anal plug
+	deviceString = sanitizeStringCode(deviceString)
+
 	Debug.Trace("		Slavery device - " + deviceString + " - keyword: " + deviceKeyword)
+	Debug.Trace("		Slavery device KEY - _SD_" + deviceString + "_keyword")
 
 	StorageUtil.SetFormValue(fRace, "_SD_" + deviceString + "_keyword", deviceKeyword as Form)
 	StorageUtil.SetFormValue(fRace, "_SD_" + deviceString + "_inventory", deviceInventory as Form)
@@ -534,7 +636,7 @@ Form Function getSlaveryGearRaceByString ( String sRace )
 	int i = 0
 	Form thisRace = none
  
- 	debugTrace(" Registering racial slavery gear")
+ 	debugTrace(" getSlaveryGearRaceByString")
 
 	while(i < valueCount)
 		thisRace = StorageUtil.FormListGet(none, "_SD_lRaceMastersList", i)
@@ -586,6 +688,9 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 			fRaceOverride = kForm as Race
 		endif
 	endif
+
+	sDeviceString = sanitizeStringCode(sDeviceString)
+	debugTrace(" equipDeviceNPCByString : " + sDeviceString)  
 
 	; If master Race is set, check if override device is set for this race and use it first
 
@@ -869,7 +974,7 @@ EndFunction
 
 Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	Keyword thisKeyword = None
- 
+
 	if (deviousKeyword == "_SD_DeviousSanguine" ) || (deviousKeyword == "Sanguine") 
 		thisKeyword = _SDKP_DeviousSanguine
 
@@ -903,7 +1008,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_Lockable")
 		thisKeyword = libs.zad_Lockable
 
-	elseif (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar") 
+	elseif (deviousKeyword == "zad_DeviousCollar") || (deviousKeyword == "Collar")  || (deviousKeyword == "collar") 
 		thisKeyword = libs.zad_DeviousCollar
 
 	elseif (deviousKeyword == "zad_DeviousGag") || (deviousKeyword == "Gag") || (deviousKeyword == "TrainingGag") 
@@ -954,13 +1059,13 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousCuffsFront") || (deviousKeyword == "CuffsFront") 
 		thisKeyword = libs.zad_DeviousCuffsFront
 
-	elseif (deviousKeyword == "zad_DeviousCorset") || (deviousKeyword == "Corset") 
+	elseif (deviousKeyword == "zad_DeviousCorset") || (deviousKeyword == "Corset")  || (deviousKeyword == "corset") 
 		thisKeyword = libs.zad_DeviousCorset
 
 	elseif (deviousKeyword == "zad_DeviousStraitJacket") || (deviousKeyword == "StraitJacket") 
 		thisKeyword = libs.zad_DeviousStraitJacket
 
-	elseif (deviousKeyword == "zad_DeviousGloves") || (deviousKeyword == "Gloves") 
+	elseif (deviousKeyword == "zad_DeviousGloves") || (deviousKeyword == "Gloves")  || (deviousKeyword == "gloves") 
 		thisKeyword = libs.zad_DeviousGloves
 
 	elseif (deviousKeyword == "zad_DeviousBondageMittens") || (deviousKeyword == "BondageMittens")  || (deviousKeyword == "Mittens") 
@@ -978,7 +1083,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousHobbleSkirt") || (deviousKeyword == "HobbleSkirt") 
 		thisKeyword = libs.zad_DeviousHobbleSkirt
 
-	elseif (deviousKeyword == "zad_DeviousBoots") || (deviousKeyword == "Boots")  || (deviousKeyword == "TrainingBoots") 
+	elseif (deviousKeyword == "zad_DeviousBoots") || (deviousKeyword == "Boots")  || (deviousKeyword == "TrainingBoots") || (deviousKeyword == "boots")  
 		thisKeyword = libs.zad_DeviousBoots
 
 	elseif (deviousKeyword == "zad_DeviousClamps") || (deviousKeyword == "Clamps") 
