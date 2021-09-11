@@ -852,7 +852,7 @@ Function syncActorFactionsByRace( Actor akMaster, Actor akSlave, FormList alFact
 
 		; Debug.Notification("[SD] Master Default Faction: " + nthForm)
 		Debug.Trace("[SD] Master Default Faction: " + nthForm)
-		if (!akSlave.IsInFaction( slaveFaction ) && (StringUtil.Find(sFactionName, "SexLab")== -1)  && (StringUtil.Find(sFactionName, "SOS")== -1)  && (StringUtil.Find(sFactionName, "Schlong")== -1) && (StringUtil.Find(sFactionName, "Dialogue Disable")== -1) )
+		if (!akSlave.IsInFaction( slaveFaction  ))
 			; Only add slave to faction he/she is not member of yet
 			sFactionName = slaveFaction.GetName()
 

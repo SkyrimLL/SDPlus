@@ -115,11 +115,17 @@ Function playerAutoPilot( Bool abEnable = True )
 	EndIf
 EndFunction
 
-Function actorCombatShutdown( Actor akActor )
+Function actorCombatShutdown( Actor akAttacker, Actor akActor )
 	If ( !akActor )
 		Return
 	EndIf
 
+	; Drop current weapon - Do this first to prevent camera stuck in combat mode
+	if(akActor.IsWeaponDrawn())
+		akActor.SheatheWeapon()
+		Utility.Wait(1.0)
+	endif
+	
 	; Debug.Notification("[_sdqs_functions] Actor ordered to stand down")
 	Debug.SendAnimationEvent(akActor, "Unequip")
 	Debug.SendAnimationEvent(akActor, "UnequipNoAnim")
@@ -129,6 +135,8 @@ Function actorCombatShutdown( Actor akActor )
 	EndIf
 	akActor.StopCombatAlarm()
 	akActor.Stopcombat()
+	akAttacker.StopCombatAlarm()
+	akAttacker.Stopcombat()
 	; Debug.Notification("[_sdqs_functions] Actor should be calm now")
 EndFunction
 

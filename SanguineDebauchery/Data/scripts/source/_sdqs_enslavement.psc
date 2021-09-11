@@ -215,25 +215,20 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 	kCrimeFaction = kMaster.GetCrimeFaction()
 	akActorBase = kMaster.GetLeveledActorBase() as ActorBase
 
+	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",1)
+
 	SendModEvent("dhlp-Suspend")
 	SendModEvent("da_PacifyNearbyEnemies" )
 
-	StorageUtil.SetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn",1)
 
 	debugTrace(" You submit to a new owner.")
-	; if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
-	;	Debug.Notification("$You submit to a new owner.")
-	; Else
-	;	Debug.Notification("$Your new owner defeated you.")
-	; Endif
+	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery")==0)
+		Debug.Notification("You submit to a new owner.")
+	Else
+		Debug.Notification("Your new owner defeated you.")
+	Endif
 
-	; Drop current weapon - Do this first to prevent camera stuck in combat mode
-	if(kSlave.IsWeaponDrawn())
-		kSlave.SheatheWeapon()
-		Utility.Wait(1.0)
-	endif
-
-	fctConstraints.actorCombatShutdown( kSlave )
+	fctConstraints.actorCombatShutdown( kMaster, kSlave )
 	; fctConstraints.togglePlayerControlsOff( )
 
 	; a new slave into a slaver faction
@@ -252,8 +247,6 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 
 	debugTrace(" Your new owner strips you naked.")
 	; Debug.Notification("$Your new owner strips you naked.")
-
-	SexLab.StripActor( kSlave, DoAnimate= false)
 
 	If ( bLimitedRemoval )
 		StorageUtil.GetIntValue(kSlave, "_SD_iEnableClothingEquip", 1)
@@ -275,17 +268,9 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 
 	; Debug.SendAnimationEvent(kSlave, "IdleForceDefaultState")
 	; fctOutfit.toggleActorClothing (  kSlave,  bStrip = True,  bDrop = False )
-	if (fctOutfit.isCollarEquipped(kSlave))
-		bIsCollarded = true
-	endif
-
-	if (fctOutfit.isArmbinderEquipped(kSlave))
-		bIsArmBound = true
-	endif
-
-	if (fctOutfit.isShacklesEquipped(kSlave))
-		bIsLegsBound = true
-	EndIf
+	bIsCollarded = fctOutfit.isCollarEquipped(kSlave)
+	bIsArmBound =  fctOutfit.isArmbinderEquipped(kSlave)
+	bIsLegsBound = fctOutfit.isShacklesEquipped(kSlave) 
 
 	; Remove current collar if already equipped
 	if ((bIsCollarded) || (bIsArmBound)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1)
@@ -293,7 +278,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 	EndIf
 
 	; Transfer of inventory
-	fctInventory.TransferInventory( akSlave )
+	fctInventory.transferInventory( akSlave, bLimitedRemoval )
 
 	If ( bLimitedRemoval )
 		If ( kSlave.GetItemCount( kRags ) == 0 )
@@ -311,6 +296,12 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 	Debug.Notification("$You are chained and collared.")
 
 	StorageUtil.FormListClear( kSlave, "_SD_lActivePunishmentDevices" )
+
+	; Update after items transfered
+	
+	bIsCollarded = fctOutfit.isCollarEquipped(kSlave)
+	bIsArmBound =  fctOutfit.isArmbinderEquipped(kSlave)
+	bIsLegsBound = fctOutfit.isShacklesEquipped(kSlave) 
 
 	if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1) && (!bIsCollarded)
 		fctOutfit.equipDeviceByString ( "Collar" )

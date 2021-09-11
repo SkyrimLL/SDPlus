@@ -14,7 +14,7 @@ MiscObject Property Firewood  Auto
 
 Quest Property _SDQP_enslavement Auto
 
-GlobalVariable Property _SDGVP_HardcoreMode  Auto  
+GlobalVariable Property _SDGVP_HardcoreMode  Auto   
 GlobalVariable Property _SDGVP_buyout  Auto  
 GlobalVariable Property _SDGVP_buyoutEarned  Auto  
 
@@ -26,17 +26,22 @@ FormList Property _SDFLP_ignore_items  Auto
 Float fGoldEarned
 Int iuType
 
-Function TransferInventory(Actor kSlave)
+Function transferInventory(Actor kSlave, Bool bLimitedRemoval = False)
 	; Hardcore variable became 'Limited Removal' over time - meaning is INVERTED! False means Hardcore
-	Bool bLimitedRemoval = _SDGVP_HardcoreMode.GetValue() as Bool
+	; Bool bLimitedRemoval = _SDGVP_LimitedRemoval.GetValue() as Bool
+
+	debug.trace("[_sdqs_fcts_inventory] _SDGVP_HardcoreMode: " + _SDGVP_HardcoreMode.GetValue() as int)
+	debug.trace("[_sdqs_fcts_inventory] bLimitedRemoval: " + bLimitedRemoval as Bool)
 
 	; If ( aiValue2 == 0 )
 	If ( bLimitedRemoval )
+		debug.trace("[_sdqs_fcts_inventory] transferInventory - Simple")
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 1)
 		; fctInventory.limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
 		limitedRemoveAllItems ( kSlave, _SDRAP_playerStorageRef, True, _SDFLP_ignore_items )
 
 	Else
+		debug.trace("[_sdqs_fcts_inventory] transferInventory - Hardcore")
 		; Testing use of limitedRemove for all cases to allow for detection of Devious Devices, SoS underwear and other exceptions
 		; fctInventory.limitedRemoveAllItems ( kSlave, kMaster, True )
 		; kSlave.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
@@ -44,11 +49,17 @@ Function TransferInventory(Actor kSlave)
 		; Disabled for now
 		; Try a different approach to prevent issues with Devious Items being forcibly removed just as they are added
 
-		; SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
+		SexLab.ActorLib.StripActor( SexLab.PlayerRef, DoAnimate= false)
 
 		StorageUtil.SetIntValue(kSlave, "_SD_iSlaveryLimitNudity", 0)
 		limitedRemoveAllKeys ( kSlave, _SDRAP_playerStorageKeys, True, None )
-		kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorageRef, abKeepOwnership = True)
+
+		debug.trace("[_sdqs_fcts_inventory] transferInventory - Player storage: " + _SDRAP_playerStorageRef)
+		kSlave.RemoveAllItems(akTransferTo = _SDRAP_playerStorageRef, abKeepOwnership = True, abRemoveQuestItems = false)
+
+		; Ideas
+		; - Remove only weapons when first enslaved?
+		; - Player as pack-mule for Master
 
 	EndIf
 
@@ -65,7 +76,7 @@ Function limitedRemoveAllItems ( ObjectReference akContainer, ObjectReference ak
 
 	; First - limited removal of equipped items according to SexLab Consensual settings
 
-	form[] slaveEquipment = SexLab.StripActor(kActor)
+	form[] slaveEquipment = SexLab.StripActor(kActor, DoAnimate= false)
 
 	iFormIndex = slaveEquipment.Length
 
