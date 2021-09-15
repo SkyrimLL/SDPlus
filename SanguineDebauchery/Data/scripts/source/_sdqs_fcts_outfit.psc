@@ -477,6 +477,7 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			; Imperial
 			ElseIf (StringUtil.Find(sRaceName, "Imperial")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Imperial Stamp (butt)" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=libs.cuffsLeatherCollar, deviceRendered=libs.cuffsLeatherCollarRendered )
 
 			; Redguard
 			ElseIf (StringUtil.Find(sRaceName, "Redguard")!= -1)
@@ -485,18 +486,22 @@ Function initSlaveryGearForThisRace ( Form thisRace )
 			; Orc
 			ElseIf (StringUtil.Find(sRaceName, "Orc")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Orc Scrawl (head)" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=xlibs.zadx_HR_IronCollarChain01Inventory, deviceRendered=xlibs.zadx_HR_IronCollarChain01Rendered )
 
 			; Elf
 			ElseIf (StringUtil.Find(sRaceName, "Elf")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Elf Slavers Hand (back)" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=libs.cuffsPaddedCollar, deviceRendered=libs.cuffsPaddedCollarRendered )
 
 			; Khajit
 			ElseIf (StringUtil.Find(sRaceName, "Khajiit")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Khajiit Slavers Hand (back)" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=xlibs.zadx_Collar_Rope_1_Inventory, deviceRendered=xlibs.zadx_Collar_Rope_1_Rendered )
 
 			; Argonian
 			ElseIf (StringUtil.Find(sRaceName, "Argonian")!= -1)
 				registerSlaveryOptions( fRace=thisRace, allowCollar=1, allowArmbinders=1, allowPunishmentDevice=1, allowPunishmentScene=1, allowWhippingScene=1, defaultStance="Kneeling", raceSlaveTat="Argonian Slavers Hand (belly)" )
+				registerSlaveryGearDevice( fRace=thisRace, deviceString="Collar", deviceKeyword=libs.zad_DeviousCollar, deviceInventory=xlibs.zadx_Collar_Rope_2_Inventory, deviceRendered=xlibs.zadx_Collar_Rope_2_Rendered )
 
 			; Dremora
 			ElseIf (StringUtil.Find(sRaceName, "Dremora")!= -1)

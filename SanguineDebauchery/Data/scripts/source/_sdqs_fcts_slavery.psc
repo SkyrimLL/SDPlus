@@ -1712,7 +1712,8 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 	debugTrace(" Completing Task : " + StorageUtil.GetIntValue(fKeyword, "_SD_iTaskID") + " [" + fKeyword + "]")
 
 	if (sTaskName != "")
-		Debug.MessageBox("Good slave, you COMPLETED your task (" + sTaskName + ")")
+		Debug.Trace("[SD] Good slave, you COMPLETED your task (" + sTaskName + ")")
+		Debug.Notification("Good slave.")
 	Else
 		Debug.Notification("$[SD] Error - task name is empty - check logs for details")
 		Return

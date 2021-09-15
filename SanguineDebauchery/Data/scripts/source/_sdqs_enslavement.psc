@@ -278,7 +278,7 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 	EndIf
 
 	; Transfer of inventory
-	fctInventory.transferInventory( akSlave, bLimitedRemoval )
+	fctInventory.transferInventory( kMaster, kSlave,  bLimitedRemoval )
 
 	If ( bLimitedRemoval )
 		If ( kSlave.GetItemCount( kRags ) == 0 )
@@ -491,7 +491,10 @@ Function UpdateSlaveState(Actor akMaster, Actor akSlave)
 			StorageUtil.SetIntValue(akSlave, "_SD_iDeviousGagOn", 1)
 		EndIf
 
-		fctSlavery.PickSlaveryTask(kSlave) ; evaluate tasks on enslavements
+		; Add delay after enslavement
+		; if (fctSlavery.GetEnslavementDuration(kSlave)>=1)
+			fctSlavery.PickSlaveryTask(kSlave, "Inspection") ; evaluate tasks on enslavements
+		; endif
 
 	Else
 		If (akSlave != Game.GetPlayer())
