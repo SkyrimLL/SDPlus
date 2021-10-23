@@ -357,23 +357,23 @@ Function positionVictims( Int aiStage )
 	kImperialMan.MoveToMyEditorLocation()
 	kSanguine.MoveToMyEditorLocation()
 
-	if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >10) 
-		kDremoraChallenger.MoveToMyEditorLocation()
-		kDremoraChallenger.enable()
+	; if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >10) 
+	; 	kDremoraChallenger.MoveToMyEditorLocation()
+	; 	kDremoraChallenger.enable()
 
-		if (kDremoraChallenger.IsDead() )
-			kDremoraChallenger.Resurrect()
-		EndIf
-	EndIf
+	; 	if (kDremoraChallenger.IsDead() )
+	; 		kDremoraChallenger.Resurrect()
+	; 	EndIf
+	; EndIf
 
-	if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >5) 
-		kDremoraInvader.MoveToMyEditorLocation()
-		kDremoraInvader.enable()
+	; if (Utility.RandomInt(0,100) > 95) && ( (_SDGVP_sanguine_blessing.GetValue() as Int) >5) 
+	; 	kDremoraInvader.MoveToMyEditorLocation()
+	; 	kDremoraInvader.enable()
 
-		if (kDremoraInvader.IsDead() )
-			kDremoraInvader.Resurrect()
-		EndIf
-	EndIf
+	; 	if (kDremoraInvader.IsDead() )
+	; 		kDremoraInvader.Resurrect()
+	; 	EndIf
+	; EndIf
 
 	If (Self.GetStageDone(256))
 		_SD_SuccubusPlayerMarker.enable()

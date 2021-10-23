@@ -670,8 +670,7 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 	sDeviceString = sanitizeStringCode(sDeviceString)
 	debugTrace(" equipDeviceNPCByString : " + sDeviceString)  
 
-	; If master Race is set, check if override device is set for this race and use it first
-
+	; Actor override - this actor is getting gear preferences from another actor
 	If ( fActorOverride!= none) 
 		if (StorageUtil.GetFormValue(fActorOverride, "_SD_" + sDeviceString + "_keyword")!=none)
 			debugTrace(" 	- Actor override detected for " + sDeviceString)  
@@ -687,6 +686,7 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 		endIf
 	EndIf
 	
+	; Race override - this actor is getting gear preferences from another race
 	If ( fRaceOverride!= none) && (!bDeviceOverride) 
 		if (StorageUtil.GetFormValue(fRaceOverride, "_SD_" + sDeviceString + "_keyword")!=none)
 			debugTrace(" 	- Racial override detected for " + sDeviceString)  
@@ -701,6 +701,23 @@ Function equipDeviceNPCByString ( Actor akActor, String sDeviceString = "", Stri
 			debugTrace(" 	- Racial override not found for " + sDeviceString)  
 		endIf
 	EndIf
+
+	; Player/NPC override - this actor is getting gear preferences from SD Addon
+	String sMaterial = StorageUtil.GetFormValue(akActor, "_SD_" + sDeviceString + "_material")
+
+	if (sMaterial!="")
+		debugTrace(" 	- Actor override detected for " + sDeviceString + " - Material: " + sMaterial)  
+		sGenericDeviceTags = StorageUtil.GetStringValue(akActor, "_SD_" + sDeviceString + "_tags" )
+		if (sGenericDeviceTags == "override")
+			bDeviceOverride = True
+
+			equipNonGenericDeviceNPCByString (akActor,  sDeviceString,  sMaterial)
+
+			kwDeviceKeyword = 	None ; Disable next equip device since we equipped it here
+		endif
+	else
+		debugTrace(" 	- Actor override not found for " + sDeviceString)  
+	endIf
 
 	; If player override is set, intercept selection with player override instead
 	If (!bDeviceOverride) ; generic item
@@ -998,7 +1015,7 @@ Keyword Function getDeviousKeywordByString(String deviousKeyword = ""  )
 	elseif (deviousKeyword == "zad_DeviousBlindfold") || (deviousKeyword == "Blindfold") 
 		thisKeyword = libs.zad_DeviousBlindfold
 
-	elseif (deviousKeyword == "zad_DeviousBelt") || (deviousKeyword == "Belt") 
+	elseif (deviousKeyword == "zad_DeviousBelt") || (deviousKeyword == "Belt")  || (deviousKeyword == "belt") 
 		thisKeyword = libs.zad_DeviousBelt
 
 	elseif (deviousKeyword == "zad_DeviousPlug") || (deviousKeyword == "Plug") 
@@ -1678,179 +1695,18 @@ EndFunction
 
 ; ------------------------ Special functions to equip/remove non generic devices
 
-Function equipNonGenericDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
-	; Test for unique, non generic keyword should be done before calling this function
-
-	Keyword kwDeviceKeyword = none
+Function equipNonGenericDeviceByString ( String sDeviceString = "", String sOutfitString = "")
 	Actor PlayerActor = Game.GetPlayer() as Actor
-	Armor aWornDevice = none
-	Armor aRenderedDevice = none
-	String sGenericDeviceTags = ""
-	Form kForm
-	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
-	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
-	Bool bDeviceOverride = False
-
-	; If master Race is set, check if override device is set for this race and use it first
-
-	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
- 
-	If (kwDeviceKeyword != None)
-
-		if !PlayerActor.WornHasKeyword(kwDeviceKeyword)
-
-			if (sOutfitString!="")
-				debugTrace(" equipNonGenericDeviceByString called with message: " + sOutfitString)  
-			Endif
-
-			debugTrace(" equipping device string: " + sDeviceString)  
-			debugTrace(" equipping device keyword: " + kwDeviceKeyword)  
-
-			if (sOutfitString == "Sanguine")
-				If ( sDeviceString == "Collar" )
-					aRenderedDevice = zazSanguineCollarRendered 
-					aWornDevice = zazSanguineCollar
-
-				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
-					aRenderedDevice = zazSanguineCuffsRendered 
-					aWornDevice = zazSanguineCuffs
-				
-				ElseIf ( sDeviceString == "LegCuffs" )
-					aRenderedDevice = zazSanguineShacklesRendered 
-					aWornDevice = zazSanguineShackles
-				
-				ElseIf ( sDeviceString == "Gag" )
-					aRenderedDevice = zazSanguineWoodenBitRendered
-					aWornDevice = zazSanguineWoodenBit
-				
-				ElseIf ( sDeviceString == "Blindfold" )
-					aRenderedDevice = zazSanguineBlindsRendered
-					aWornDevice = zazSanguineBlinds
-				
-				ElseIf ( sDeviceString == "VaginalPiercing" )
-					aRenderedDevice = zazSanguineArtifactRendered
-					aWornDevice = zazSanguineArtifact
-				EndIf
-
-			elseif (sOutfitString == "Falmer")
-				If ( sDeviceString == "Collar" )
-					aRenderedDevice = zazFalmerCollarRendered 
-					aWornDevice = zazFalmerCollar
-
-				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
-					aRenderedDevice = zazFalmerCuffsRendered 
-					aWornDevice = zazFalmerCuffs
-
-				EndIf
-
-			elseif (sOutfitString == "Web")
-				If( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
-					aRenderedDevice = zazWebCuffsRendered 
-					aWornDevice = zazWebCuffs
-
-				ElseIf ( sDeviceString == "Collar" )  
-					aRenderedDevice = zazWebCollarRendered 
-					aWornDevice = zazWebCollar
-
-				EndIf
-
-
-			elseif (sOutfitString == "Spriggan")
-				If( sDeviceString == "Gloves" )
-					aRenderedDevice = zazSprigganHandsRendered 
-					aWornDevice = zazSprigganHands
-
-				ElseIf ( sDeviceString == "Boots" )
-					aRenderedDevice = zazSprigganFeetRendered 
-					aWornDevice = zazSprigganFeet
-				
-				ElseIf ( sDeviceString == "Gag" )
-					aRenderedDevice = zazSprigganMaskRendered 
-					aWornDevice = zazSprigganMask
-				
-				ElseIf ( sDeviceString == "Harness" )
-					aRenderedDevice = zazSprigganBodyRendered
-					aWornDevice = zazSprigganBody
-				EndIf
-
-			Endif
-
-			if ( (aWornDevice!=none) && (aRenderedDevice!=none))
-				; preferred device
-
-				debugTrace(" 		equipNonGenericDeviceByString - preferred: " + aRenderedDevice + " - Device inventory: "  + aWornDevice  )
-
-				equipDevice(aWornDevice)
-
-			else
-				debugTrace("    equipNonGenericDeviceByString - Can't get worn device")
-			endif
-			
-			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
-
-
-		else
-			debugTrace(" equipNonGenericDeviceByString - player is not wearing: " + sDeviceString)  
-		endIf
-
-	else
-		debugTrace(" equipNonGenericDeviceByString - unknown device to clear " )  
-
-	endif
+	equipNonGenericDeviceNPCByString ( PlayerActor, sDeviceString, sOutfitString)
 EndFunction
 
-Function clearNonGenericDeviceByString ( String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
-	; Test for unique, non generic keyword should be done before calling this function
-
-	Keyword kwDeviceKeyword = none
+Function clearNonGenericDeviceByString ( String sDeviceString = "", String sOutfitString = "")
 	Actor PlayerActor = Game.GetPlayer() as Actor
-	Armor aWornDevice = none
-	Armor aRenderedDevice = none
-	String sGenericDeviceTags = ""
-	Form kForm
-	Form fRaceOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearRace")
-	Form fActorOverride = StorageUtil.GetFormValue(PlayerActor, "_SD_fSlaveryGearActor")
-	Bool bDeviceOverride = False
 
-	; If master Race is set, check if override device is set for this race and use it first
-
-	kwDeviceKeyword = 	getDeviousKeywordByString(sDeviceString)
- 
-	If (kwDeviceKeyword != None)
-
-		if PlayerActor.WornHasKeyword(kwDeviceKeyword)
-
-			if (sOutfitString!="")
-				debugTrace(" clearNonGenericDeviceByString called with message: " + sOutfitString)  
-			Endif
-
-			debugTrace(" clearing device string: " + sDeviceString)  
-			debugTrace(" clearing device keyword: " + kwDeviceKeyword)  
-
-			aWornDevice = libs.GetWornDeviceFuzzyMatch(PlayerActor, kwDeviceKeyword) as Armor
-			if (aWornDevice != None)
-				aRenderedDevice = libs.GetRenderedDevice(aWornDevice) as Armor
-				kForm = aWornDevice as Form
-
-				clearDevice ( aWornDevice,  aRenderedDevice,  kwDeviceKeyword, true)
-			else
-				debugTrace("    clearNonGenericDeviceByString - Can't get worn device")
-			endif
-			
-			; libs.ManipulateGenericDeviceByKeyword(PlayerActor, kwDeviceKeyword, False, skipEvents,  skipMutex)
-
-
-		else
-			debugTrace(" clearNonGenericDeviceByString - player is not wearing: " + sDeviceString)  
-		endIf
-
-	else
-		debugTrace(" clearNonGenericDeviceByString - unknown device to clear " )  
-
-	endif
+	clearNonGenericDeviceNPCByString ( PlayerActor, sDeviceString, sOutfitString)
 EndFunction
 
-Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString = "", String sOutfitString = "")
 	; Test for unique, non generic keyword should be done before calling this function
 
 	Keyword kwDeviceKeyword = none
@@ -1879,7 +1735,7 @@ Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString =
 			debugTrace(" equipping device keyword: " + kwDeviceKeyword)  
 
 			if (sOutfitString == "Sanguine")
-				If ( sDeviceString == "Collar" )
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" ) 
 					aRenderedDevice = zazSanguineCollarRendered 
 					aWornDevice = zazSanguineCollar
 
@@ -1905,7 +1761,7 @@ Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString =
 				EndIf
 
 			elseif (sOutfitString == "Falmer")
-				If ( sDeviceString == "Collar" )
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" ) 
 					aRenderedDevice = zazFalmerCollarRendered 
 					aWornDevice = zazFalmerCollar
 
@@ -1916,17 +1772,157 @@ Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString =
 				EndIf
 
 			elseif (sOutfitString == "Web")
-				If( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
-					aRenderedDevice = zazWebCuffsRendered 
-					aWornDevice = zazWebCuffs
-
-				ElseIf ( sDeviceString == "Collar" )  
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" )   
 					aRenderedDevice = zazWebCollarRendered 
 					aWornDevice = zazWebCollar
 
+				ElseIf( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )
+					aRenderedDevice = zazWebCuffsRendered 
+					aWornDevice = zazWebCuffs
+
 				EndIf
 
+			; Outfits by Material from SD Addon
+			elseif (sOutfitString == "Rusted")  
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" ) 
+					aRenderedDevice = xlibs.zadx_HR_RustyIronCollarChain01Inventory 
+					aWornDevice = xlibs.zadx_HR_RustyIronCollarChain01Rendered
 
+				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )  || ( sDeviceString == "Armbinders" )
+					aRenderedDevice = xlibs.zadx_HR_RustyIronCuffsFrontInventory 
+					aWornDevice = xlibs.zadx_HR_RustyIronCuffsFrontRendered
+				
+				ElseIf ( sDeviceString == "LegCuffs" )
+					aRenderedDevice = xlibs.zadx_HR_RustyChainHarnessBootsInventory 
+					aWornDevice = xlibs.zadx_HR_RustyChainHarnessBootsRendered
+				
+				ElseIf ( sDeviceString == "Gag" )
+					aRenderedDevice = xlibs.zadx_HR_RustyPearGagInventory
+					aWornDevice = xlibs.zadx_HR_RustyPearGagRendered
+				
+				ElseIf ( sDeviceString == "Blindfold" )
+					aRenderedDevice = xlibs.blindfoldBlocking
+					aWornDevice = xlibs.blindfoldBlockingRendered
+
+				ElseIf ( sDeviceString == "Belt" ) || ( sDeviceString == "belt" )
+					aRenderedDevice = libs.beltIron
+					aWornDevice = libs.beltIronRendered
+				
+				ElseIf ( sDeviceString == "PlugAnal" )
+					aRenderedDevice = xlibs.zadx_HR_RustyIronPearAnalInventory
+					aWornDevice = xlibs.zadx_HR_RustyIronPearAnalRendered
+				
+				ElseIf ( sDeviceString == "PlugVaginal" )
+					aRenderedDevice = xlibs.zadx_HR_RustyIronPearVaginalInventory
+					aWornDevice = xlibs.zadx_HR_RustyIronPearVaginalRendered
+				EndIf
+
+			; Outfits by Material from SD Addon
+			elseif (sOutfitString == "Iron") 
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" ) 
+					aRenderedDevice = xlibs.zadx_HR_IronCollarChain01Inventory 
+					aWornDevice = xlibs.zadx_HR_IronCollarChain01Rendered
+
+				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )  || ( sDeviceString == "Armbinders" )
+					aRenderedDevice = xlibs.zadx_HR_IronCuffsFrontInventory 
+					aWornDevice = xlibs.zadx_HR_IronCuffsFrontRendered
+				
+				ElseIf ( sDeviceString == "LegCuffs" )
+					aRenderedDevice = xlibs.zadx_HR_ChainHarnessBootsInventory 
+					aWornDevice = xlibs.zadx_HR_ChainHarnessBootsRendered
+				
+				ElseIf ( sDeviceString == "Gag" )
+					aRenderedDevice = xlibs.zadx_HR_PearGagInventory
+					aWornDevice = xlibs.zadx_HR_PearGagRendered
+				
+				ElseIf ( sDeviceString == "Blindfold" )
+					aRenderedDevice = xlibs.blindfoldBlocking
+					aWornDevice = xlibs.blindfoldBlockingRendered
+
+				ElseIf ( sDeviceString == "Belt" ) || ( sDeviceString == "belt" )
+					aRenderedDevice = libs.beltIron
+					aWornDevice = libs.beltIronRendered
+				
+				ElseIf ( sDeviceString == "PlugAnal" )
+					aRenderedDevice = xlibs.zadx_HR_IronPearAnalBlackInventory
+					aWornDevice = xlibs.zadx_HR_IronPearAnalBlackRendered
+				
+				ElseIf ( sDeviceString == "PlugVaginal" )
+					aRenderedDevice = xlibs.zadx_HR_IronPearVaginalBlackInventory
+					aWornDevice = xlibs.zadx_HR_IronPearVaginalBlackRendered
+				EndIf
+
+			; Outfits by Material from SD Addon
+			elseif (sOutfitString == "Leather")
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" ) 
+					aRenderedDevice = libs.collarPostureLeather 
+					aWornDevice = libs.collarPostureLeatherRendered
+
+				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )  || ( sDeviceString == "Armbinders" )
+					aRenderedDevice = libs.armbinder 
+					aWornDevice = libs.armbinderRendered
+				
+				ElseIf ( sDeviceString == "LegCuffs" )
+					aRenderedDevice = libs.cuffsPaddedLegs 
+					aWornDevice = libs.cuffsPaddedLegsRendered
+				
+				ElseIf ( sDeviceString == "Gag" )
+					aRenderedDevice = libs.gagStrapRing
+					aWornDevice = libs.gagStrapRingRendered
+				
+				ElseIf ( sDeviceString == "Blindfold" )
+					aRenderedDevice = libs.blindfold
+					aWornDevice = libs.blindfoldRendered
+
+				ElseIf ( sDeviceString == "Belt" ) || ( sDeviceString == "belt" )
+					aRenderedDevice = libs.beltPadded
+					aWornDevice = libs.beltPaddedRendered
+				
+				ElseIf ( sDeviceString == "PlugAnal" )
+					aRenderedDevice = libs.plugInflatableVag
+					aWornDevice = libs.plugInflatableVagRendered
+				
+				ElseIf ( sDeviceString == "PlugVaginal" )
+					aRenderedDevice = libs.plugInflatableAn
+					aWornDevice = libs.plugInflatableAnRendered
+				EndIf
+
+			; Outfits by Material from SD Addon
+			elseif (sOutfitString == "Rope") 
+				If ( sDeviceString == "Collar" ) || ( sDeviceString == "collar" ) 
+					aRenderedDevice = xlibs.zadx_Collar_Rope_1_Inventory 
+					aWornDevice = xlibs.zadx_Collar_Rope_1_Rendered
+
+				ElseIf ( sDeviceString == "WristRestraints" ) || ( sDeviceString == "WristRestraint" )  || ( sDeviceString == "Armbinders" )
+					aRenderedDevice = xlibs.zadx_Armbinder_Rope_Inventory 
+					aWornDevice = xlibs.zadx_Armbinder_Rope_Rendered
+				
+				ElseIf ( sDeviceString == "LegCuffs" )
+					aRenderedDevice = xlibs.zadx_ZaZ_IronChainShacklesInventory 
+					aWornDevice = xlibs.zadx_ZaZ_IronChainShacklesRendered
+				
+				ElseIf ( sDeviceString == "Gag" )
+					aRenderedDevice = xlibs.zadx_gag_rope_bit_Inventory
+					aWornDevice = xlibs.zadx_gag_rope_bit_Rendered
+				
+				ElseIf ( sDeviceString == "Blindfold" )
+					aRenderedDevice = xlibs.zadx_blindfold_Rope_Inventory
+					aWornDevice = xlibs.zadx_blindfold_Rope_Rendered
+
+				ElseIf ( sDeviceString == "Belt" ) || ( sDeviceString == "belt" )
+					aRenderedDevice = libs.beltIron
+					aWornDevice = libs.beltIronRendered
+				
+				ElseIf ( sDeviceString == "PlugAnal" )
+					aRenderedDevice = xlibs.zadx_HR_IronPearAnalBlackInventory
+					aWornDevice = xlibs.zadx_HR_IronPearAnalBlackRendered
+				
+				ElseIf ( sDeviceString == "PlugVaginal" )
+					aRenderedDevice = xlibs.zadx_HR_IronPearVaginalBlackInventory
+					aWornDevice = xlibs.zadx_HR_IronPearVaginalBlackRendered
+				EndIf
+
+			; Spriggan outfit - moved to Parasites as of 07/2021
 			elseif (sOutfitString == "Spriggan")
 				If( sDeviceString == "Gloves" )
 					aRenderedDevice = zazSprigganHandsRendered 
@@ -1971,7 +1967,7 @@ Function equipNonGenericDeviceNPCByString ( Actor kActor, String sDeviceString =
 	endif
 EndFunction
 
-Function clearNonGenericDeviceNPCByString ( Actor kActor,  String sDeviceString = "", String sOutfitString = "", bool skipEvents = false, bool skipMutex = false )
+Function clearNonGenericDeviceNPCByString ( Actor kActor,  String sDeviceString = "", String sOutfitString = "")
 	; Test for unique, non generic keyword should be done before calling this function
 
 	Keyword kwDeviceKeyword = none
