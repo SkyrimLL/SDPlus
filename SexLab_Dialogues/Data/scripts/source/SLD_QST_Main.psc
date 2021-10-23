@@ -792,7 +792,7 @@ Function RobPlayer ( Actor akSpeaker  )
 				canSteal = True
 			EndIf
 			
-			if canSteal && _bandit != Player  && (nthItem.HasKeywordString("VendorNoSale") || nthItem.HasKeywordString("MagicDisallowEnchanting"))
+			if canSteal && _bandit != Player  && (nthItem.HasKeywordString("VendorNoSale") || nthItem.HasKeywordString("MagicDisallowEnchanting") || nthItem.HasKeywordString("zad_Lockable") || nthItem.HasKeywordString("SOS_Underwear") || nthItem.HasKeywordString("SOS_Genitals")  )
 				canSteal = False
 				; _notify("Pick: !Q " + nthItem.GetName())
 			endif
