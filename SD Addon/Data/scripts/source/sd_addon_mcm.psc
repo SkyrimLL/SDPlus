@@ -553,121 +553,236 @@ endevent
 
 ;	debug.trace("SD Addons - setting preferred equipment - " + sd_device + " to " + sd_tag)
 ;------------------------------------------------------------------------------------------------------------------------------------------Functions
+; I can't believe this bullshit function has to exist.
+; Papyrus has auto-conversion of hardoced special strings and will change "Imperial" to "IMPERIAL" automatically.
+; No... really.
+
+String Function sanitizeStringCode(String sText)
+	String sReturnText = ""
+
+	if (sText == "Argonian") || (sText == "argonian") || (sText == "ARGONIAN")
+		sReturnText += "ARGONIAN"
+	ElseIf (sText == "Bear") || (sText == "bear") || (sText == "BEAR")
+		sReturnText += "BEAR"
+	ElseIf (sText == "Breton")  || (sText == "breton") || (sText == "BRETON")
+		sReturnText += "BRETON"
+	ElseIf (sText == "Cat") || (sText == "cat") || (sText == "CAT") 
+		sReturnText += "CAT"
+	ElseIf (sText == "Chaurus") || (sText == "chaurus") || (sText == "CHAURUS") 
+		sReturnText += "CHAURUS"
+	ElseIf (sText == "Dog") || (sText == "dog") || (sText == "DOG") 
+		sReturnText += "DOG"
+	ElseIf (sText == "Draugr")  || (sText == "draugr") || (sText == "DRAUGR")
+		sReturnText += "DRAUGR"
+	ElseIf (sText == "Dremora") || (sText == "dremora") || (sText == "DREMORA") 
+		sReturnText += "dremora"
+	ElseIf (sText == "Elf")  || (sText == "elf") || (sText == "ELF")
+		sReturnText += "ELF"
+	ElseIf (sText == "Giant")  || (sText == "giant") || (sText == "GIANT")
+		sReturnText += "GIANT"
+	ElseIf (sText == "Hagraven")  || (sText == "hagraven") || (sText == "HAGRAVEN")
+		sReturnText += "HAGRAVEN"
+	ElseIf (sText == "Imperial")  || (sText == "imperial") || (sText == "IMPERIAL")
+		sReturnText += "IMPERIAL"
+	ElseIf (sText == "Khajiit")  || (sText == "khajiit") || (sText == "KHAJIIT")
+		sReturnText += "KHAJIIT"
+	ElseIf (sText == "Orc")  || (sText == "orc") || (sText == "ORC")
+		sReturnText += "ORC"
+	ElseIf (sText == "Redguard")  || (sText == "redguard") || (sText == "REDGUARD")
+		sReturnText += "REDGUARD"
+	ElseIf (sText == "Spider")  || (sText == "spider") || (sText == "SPIDER")
+		sReturnText += "SPIDER"
+	ElseIf (sText == "Troll")  || (sText == "troll") || (sText == "TROLL")
+		sReturnText += "TROLL"
+	ElseIf (sText == "Wolf")  || (sText == "wolf") || (sText == "WOLF")
+		sReturnText += "WOLF"
+	ElseIf (sText == "Falmer")  || (sText == "falmer") || (sText == "FALMER")
+		sReturnText += "FALMER"
+	ElseIf (sText == "Nord")  || (sText == "nord") || (sText == "NORD")
+		sReturnText += "NORD"
+
+	ElseIf (sText == "Collar")  || (sText == "collar") || (sText == "COLLAR")
+		sReturnText += "collar"
+	ElseIf (sText == "Corset")  || (sText == "corset") || (sText == "CORSET")
+		sReturnText += "corset"
+	ElseIf (sText == "Gloves")  || (sText == "gloves") || (sText == "GLOVES")
+		sReturnText += "Gloves"
+	ElseIf (sText == "Boots")  || (sText == "boots") || (sText == "BOOTS")
+		sReturnText += "boots"
+
+	ElseIf (sText == "WristRestraint")  || (sText == "wristrestraint") || (sText == "WRISTRESTRAINT")
+		sReturnText += "WristRestraint"
+	ElseIf (sText == "ArmCuffs")  || (sText == "legcuffs") || (sText == "LEGCUFFS")
+		sReturnText += "ArmCuffs"
+	ElseIf (sText == "LegCuffs")  || (sText == "legcuffs") || (sText == "LEGCUFFS")
+		sReturnText += "LegCuffs"
+	ElseIf (sText == "Belt")  || (sText == "belt") || (sText == "BELT")
+		sReturnText += "belt"
+	ElseIf (sText == "PlugVaginal")  || (sText == "plugvaginal") || (sText == "PLUGVAGINAL")
+		sReturnText += "PlugVaginal"
+	ElseIf (sText == "PlugAnal")  || (sText == "pluganal") || (sText == "PLUGANAL")
+		sReturnText += "PlugAnal"
+	ElseIf (sText == "Blindfold")  || (sText == "blindfold") || (sText == "BLINDFOLD")
+		sReturnText += "Blindfold"
+ 	ElseIf (sText == "Gag")  || (sText == "gag") || (sText == "GAG")
+		sReturnText += "Gag"
+ 	ElseIf (sText == "Yoke")  || (sText == "yoke") || (sText == "YOKE")
+		sReturnText += "Yoke"
+ 	ElseIf (sText == "VaginalPiercing")  || (sText == "vaginalpiercing") || (sText == "VAGINALPIERCING")
+		sReturnText += "VaginalPiercing"
+ 
+	Else
+		debug.notification(" No sanitized match found for " + sText)
+		; debugTrace(" No match found for " + sText)
+	Endif
+
+	; Deprecated strings
+	; "_SD_DeviousSanguine" )  
+	; "_SD_DeviousEnslaved" ) || (deviousKeyword == "Enslaved") 
+	; "_SD_DeviousEnslavedCommon" ) || (deviousKeyword == "EnslavedCommon") 
+	; "_SD_DeviousEnslavedMagic" ) || (deviousKeyword == "EnslavedMagic") 
+	; "_SD_DeviousEnslavedPrimitive" ) || (deviousKeyword == "EnslavedPrimitive") 
+	; "_SD_DeviousEnslavedWealthy" ) || (deviousKeyword == "EnslavedWealthy") 
+	; "_SD_DeviousParasiteAn" ) || (deviousKeyword == "ParasiteAnal") 
+	; "_SD_DeviousParasiteVag" ) || (deviousKeyword == "ParasiteVaginal") 
+	;"_SD_DeviousSpriggan" ) || (deviousKeyword == "Spriggan") 
+
+	; debugTrace("sanitizeStringCode - sText: " + sText + " - sReturnText: " + sReturnText )
+
+	Return sReturnText
+EndFunction
+
 Event SetEquipment(string sd_device, string sd_tag)
 	if sd_tag != "Default"
 		debug.trace("SD Addons - setting preferred equipment - " + sd_device + " to " + sd_tag + " on master " + (StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as actor))
-		StorageUtil.SetStringValue((StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as actor), "_SD_" + sd_device + "_tags", sd_tag)
+		StorageUtil.SetStringValue((StorageUtil.GetFormValue(Game.GetPlayer(), "_SD_CurrentOwner") as actor), "_SD_" + sanitizeStringCode(sd_device) + "_material", sd_tag)
 	endif
 endevent
 
 Event SetPlayerEquipment(string sd_device, string sd_tag)
 	if sd_tag != "Default"
 		debug.trace("SD Addons - setting preferred equipment - " + sd_device + " to " + sd_tag + " on player.")
-		StorageUtil.SetStringValue(game.getplayer(), "_SD_" + sd_device + "_tags", sd_tag)
+		StorageUtil.SetStringValue(game.getplayer(), "_SD_" + sanitizeStringCode(sd_device) + "_material", sd_tag)
 	endif
 endevent
 
 event AddItemLists()
 	debug.trace("SD Addons - Setting up item type lists")
-	ItemListCollar = new string[4]
+	ItemListCollar = new string[5]
 	ItemListCollar[0] = "Default"
-	ItemListCollar[1] = "Zap"
+	ItemListCollar[1] = "Rusted"
 	ItemListCollar[2] = "Iron"
 	ItemListCollar[3] = "Leather"
+	ItemListCollar[4] = "Rope"
 	
-	ItemListArmbinder = new string[4]
+	ItemListArmbinder = new string[5]
 	ItemListArmbinder[0] = "Default"
-	ItemListArmbinder[1] = "Zap"
+	ItemListArmbinder[1] = "Rusted"
 	ItemListArmbinder[2] = "Iron"
 	ItemListArmbinder[3] = "Leather"
+	ItemListArmbinder[4] = "Rope"
 	
-	ItemListLegs = new string[4]
+	ItemListLegs = new string[5]
 	ItemListLegs[0] = "Default"
-	ItemListLegs[1] = "Zap"
+	ItemListLegs[1] = "Rusted"
 	ItemListLegs[2] = "Iron"
 	ItemListLegs[3] = "Leather"
+	ItemListLegs[4] = "Rope"
 	
-	ItemListGag = new string[4]
+	ItemListGag = new string[5]
 	ItemListGag[0] = "Default"
-	ItemListGag[1] = "Zap"
+	ItemListGag[1] = "Rusted"
 	ItemListGag[2] = "Iron"
 	ItemListGag[3] = "Leather"
+	ItemListGag[4] = "Rope"
 	
-	ItemListBelt = new string[4]
+	ItemListBelt = new string[5]
 	ItemListBelt[0] = "Default"
-	ItemListBelt[1] = "Zap"
+	ItemListBelt[1] = "Rusted"
 	ItemListBelt[2] = "Iron"
 	ItemListBelt[3] = "Leather"
+	ItemListBelt[4] = "Rope"
 	
-	ItemListPlugVaginal = new string[4]
+	ItemListPlugVaginal = new string[5]
 	ItemListPlugVaginal[0] = "Default"
-	ItemListPlugVaginal[1] = "Zap"
+	ItemListPlugVaginal[1] = "Rusted"
 	ItemListPlugVaginal[2] = "Iron"
 	ItemListPlugVaginal[3] = "Leather"
+	ItemListPlugVaginal[4] = "Rope"
 
-	ItemListPlugAnal = new string[4]
+	ItemListPlugAnal = new string[5]
 	ItemListPlugAnal[0] = "Default"
-	ItemListPlugAnal[1] = "Zap"
+	ItemListPlugAnal[1] = "Rusted"
 	ItemListPlugAnal[2] = "Iron"
 	ItemListPlugAnal[3] = "Leather"
+	ItemListPlugAnal[4] = "Rope"
 	
-	ItemListBlindfold = new string[4]
+	ItemListBlindfold = new string[5]
 	ItemListBlindfold[0] = "Default"
-	ItemListBlindfold[1] = "Zap"
+	ItemListBlindfold[1] = "Rusted"
 	ItemListBlindfold[2] = "Iron"
 	ItemListBlindfold[3] = "Leather"
+	ItemListBlindfold[4] = "Rope"
 
 endevent
 
 event AddItemListPlayers()
 	debug.trace("SD Addons - Setting up item type lists")
-	ItemListPlayerCollar = new string[4]
+	ItemListPlayerCollar = new string[5]
 	ItemListPlayerCollar[0] = "Default"
-	ItemListPlayerCollar[1] = "Zap"
+	ItemListPlayerCollar[1] = "Rusted"
 	ItemListPlayerCollar[2] = "Iron"
 	ItemListPlayerCollar[3] = "Leather"
+	ItemListPlayerCollar[4] = "Rope"
 	
-	ItemListPlayerArmbinder = new string[4]
+	ItemListPlayerArmbinder = new string[5]
 	ItemListPlayerArmbinder[0] = "Default"
-	ItemListPlayerArmbinder[1] = "Zap"
+	ItemListPlayerArmbinder[1] = "Rusted"
 	ItemListPlayerArmbinder[2] = "Iron"
 	ItemListPlayerArmbinder[3] = "Leather"
+	ItemListPlayerArmbinder[4] = "Rope"
 	
-	ItemListPlayerLegs = new string[4]
+	ItemListPlayerLegs = new string[5]
 	ItemListPlayerLegs[0] = "Default"
-	ItemListPlayerLegs[1] = "Zap"
+	ItemListPlayerLegs[1] = "Rusted"
 	ItemListPlayerLegs[2] = "Iron"
 	ItemListPlayerLegs[3] = "Leather"
+	ItemListPlayerLegs[4] = "Rope"
 	
-	ItemListPlayerGag = new string[4]
+	ItemListPlayerGag = new string[5]
 	ItemListPlayerGag[0] = "Default"
-	ItemListPlayerGag[1] = "Zap"
+	ItemListPlayerGag[1] = "Rusted"
 	ItemListPlayerGag[2] = "Iron"
 	ItemListPlayerGag[3] = "Leather"
+	ItemListPlayerGag[4] = "Rope"
 	
-	ItemListPlayerBelt = new string[4]
+	ItemListPlayerBelt = new string[5]
 	ItemListPlayerBelt[0] = "Default"
-	ItemListPlayerBelt[1] = "Zap"
+	ItemListPlayerBelt[1] = "Rusted"
 	ItemListPlayerBelt[2] = "Iron"
 	ItemListPlayerBelt[3] = "Leather"
+	ItemListPlayerBelt[4] = "Rope"
 	
-	ItemListPlayerPlugVaginal = new string[4]
+	ItemListPlayerPlugVaginal = new string[5]
 	ItemListPlayerPlugVaginal[0] = "Default"
-	ItemListPlayerPlugVaginal[1] = "Zap"
+	ItemListPlayerPlugVaginal[1] = "Rusted"
 	ItemListPlayerPlugVaginal[2] = "Iron"
 	ItemListPlayerPlugVaginal[3] = "Leather"
+	ItemListPlayerPlugVaginal[4] = "Rope"
 
-	ItemListPlayerPlugAnal = new string[4]
+	ItemListPlayerPlugAnal = new string[5]
 	ItemListPlayerPlugAnal[0] = "Default"
-	ItemListPlayerPlugAnal[1] = "Zap"
+	ItemListPlayerPlugAnal[1] = "Rusted"
 	ItemListPlayerPlugAnal[2] = "Iron"
 	ItemListPlayerPlugAnal[3] = "Leather"
+	ItemListPlayerPlugAnal[4] = "Rope"
 	
-	ItemListPlayerBlindfold = new string[4]
+	ItemListPlayerBlindfold = new string[5]
 	ItemListPlayerBlindfold[0] = "Default"
-	ItemListPlayerBlindfold[1] = "Zap"
+	ItemListPlayerBlindfold[1] = "Rusted"
 	ItemListPlayerBlindfold[2] = "Iron"
 	ItemListPlayerBlindfold[3] = "Leather"
+	ItemListPlayerBlindfold[4] = "Rope"
 
 endevent
 
