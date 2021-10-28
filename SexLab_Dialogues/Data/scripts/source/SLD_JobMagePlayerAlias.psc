@@ -204,6 +204,7 @@ Function _updateMagicka(Int iBonus = 1)
 	Float  fAVMod
 	Float fImod
 	Int iRandom
+	Int iDaedricInfluence = StorageUtil.GetFloatValue(PlayerActor, "_SLH_fHormoneSuccubus" ) as Int
 
 	If (_SLD_jobMageON.GetValue()==0)
 		return
@@ -213,9 +214,16 @@ Function _updateMagicka(Int iBonus = 1)
 		return
 	endif
 
+	; Hormones Compatilibity - Adding Base Magicka with Succubus level
+	if (iDaedricInfluence<10)
+		iDaedricInfluence = 0
+	else
+		iDaedricInfluence = iDaedricInfluence * 5
+	endif
+
 	; Actor values - https://en.uesp.net/wiki/Tes5Mod:Actor_Value_Indices
 
-	iAVMod = iBonus + StorageUtil.GetIntValue( PlayerActor , "_SLD_baseMagicka") + ((10 * fJobMageMastery * (1.0 - fPlayersHealthPercent)) as Int )
+	iAVMod = iBonus + iDaedricInfluence + StorageUtil.GetIntValue( PlayerActor , "_SLD_baseMagicka") + ((10 * fJobMageMastery * (1.0 - fPlayersHealthPercent)) as Int )
 	iAVMax = 200 + ((PlayerActor.GetLevel() as Int) * 20)
 	iAVMin = ((fJobMageMastery as Int) / 10) - 150
 
