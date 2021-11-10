@@ -500,9 +500,8 @@ Function positionVictims( Int aiStage )
 		kDreamer.SendModEvent("SLHRefreshHairColor","Dye")
 
 		
-	elseif (self.GetStageDone(220)==1)
-		StorageUtil.SetFloatValue(kDreamer, "_SLH_fBreast", StorageUtil.GetFloatValue(kDreamer, "_SLH_fBreast" ) + 0.5 ) 
-		; StorageUtil.SetFloatValue(kDreamer, "_SLH_fWeight", StorageUtil.GetFloatValue(kDreamer, "_SLH_fWeight" ) + 20.0 ) 
+	elseif (self.GetStageDone(220)==1) 
+		kDreamer.SendModEvent("SLHSetNiNode","Breast", StorageUtil.GetFloatValue(kDreamer, "_SLH_fBreast" ) + 0.5 )  
 		kDreamer.SendModEvent("SLHRefresh")
 		kDreamer.SendModEvent("SLHRefreshColors")
 	endIf
