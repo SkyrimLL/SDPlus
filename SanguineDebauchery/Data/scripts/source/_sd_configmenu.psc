@@ -294,7 +294,7 @@ EndFunction
 Bool Function requiredParentModInstalled( Int aiIdx )
 	; uglier patch to allow upgrades to Frostfall 3.0 while game is running
 	if (!_SDBP_support_mods_installed[3]) 
-		if (Game.GetModByName("Frostfall.esp") != 255)
+		if (Game.GetModByName("Frostfall.esp") != 255) || (Game.GetModByName("Chesko_Frostfall.esp") != 255)
 			_SDBP_support_mods_installed[3] = true
 		endif
 	endif
@@ -324,8 +324,8 @@ Function initMod( Bool bResetGlobals = False )
 	Debug.Trace("=============== _SD::START IGNORE: Testing loaded addons & mods. ==================")
 	idx = 0
 	While idx < _SDSP_quests_addon_name.Length
-		Debug.Trace("Testing for: " + _SDSP_quests_addon_name[idx])
-		_SDQP_quests_addon[idx] = Game.GetFormFromFile(_SDBP_quests_addon_refid[idx], _SDSP_quests_addon_name[idx]) as Quest
+		Debug.Trace("[SD] Testing for: " + _SDSP_quests_addon_name[idx])
+		_SDQP_quests_addon[idx] = None ; Game.GetFormFromFile(_SDBP_quests_addon_refid[idx], _SDSP_quests_addon_name[idx]) as Quest
 		idx += 1
 	EndWhile
 	idx = 0
@@ -333,11 +333,12 @@ Function initMod( Bool bResetGlobals = False )
 		; Debug.Trace("Testing for: " + _SDSP_support_mods_name[idx])
 		; _SDBP_support_mods_installed[idx] = Game.GetFormFromFile(_SDIP_support_mods_refid[idx], _SDSP_support_mods_name[idx]) as Bool
 		if (idx==3) 
-			Debug.Trace("Testing for: Frostfall.esp" )
+			Debug.Trace("[SD] Testing for: Frostfall.esp" )
 			if (Game.GetModByName("Frostfall.esp") != 255)
 				_SDSP_support_mods_name[3] = "Frostfall.esp"
 				_SDBP_support_mods_installed[3] = true
 			endif
+
 		endif
 		idx += 1
 	EndWhile
