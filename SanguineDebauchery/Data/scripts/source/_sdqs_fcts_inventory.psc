@@ -59,7 +59,11 @@ Function transferInventory(Actor kMaster, Actor kSlave, Bool bLimitedRemoval = F
 		; Treat differently Humanoid vs Beast Master
 		filteredRemoveAllItems(kSlave,  None, "Weapon", True )	; send Weapons to default storage (player chest in Dreamworld)
 		filteredRemoveAllItems(kSlave,  None, "Ammo", False )	
-		filteredRemoveAllItems(kSlave,  kMaster, "Gold", False )  ; send Gold to Master
+
+		if (kMaster != None)
+			filteredRemoveAllItems(kSlave,  kMaster, "Gold", False )  ; send Gold to Master
+		endif
+		
 		filteredRemoveAllItems(kSlave,  None, "Key", False )		; send Keys to default storage (Crassius Curio)
 		filteredRemoveAllItems(kSlave,  None, "Misc", False )		; send Misc to default storage (player chest in Dreamworld) - to catch lockpicks
 

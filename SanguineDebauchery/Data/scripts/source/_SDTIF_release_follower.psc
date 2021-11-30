@@ -6,14 +6,14 @@ Scriptname _SDTIF_release_follower Extends TopicInfo Hidden
 Function Fragment_4(ObjectReference akSpeakerRef)
 Actor akSpeaker = akSpeakerRef as Actor
 ;BEGIN CODE
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "WristRestraint" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "ArmCuffs" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "LegCuffs" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Blindfold" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Hood" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker,  sDeviceString = "Gag" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Yoke" )
-fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Gloves" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "WristRestraint", sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "ArmCuffs", sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "LegCuffs", sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Blindfold" , sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Hood", sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker,  sDeviceString = "Gag", sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Yoke", sOutfitString= "" )
+fctOutfit.clearDeviceNPCByString ( akSpeaker, sDeviceString = "Gloves", sOutfitString= "" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

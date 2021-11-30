@@ -13,7 +13,7 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 ;Game.GetPlayer().RemoveItem(Gold, 200 )
  
-fctOutfit.clearDeviceByString( sDeviceString = "Bra" )
+fctOutfit.clearDeviceByString( sDeviceString = "Bra" , sOutfitString = "" )
 
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Breast")

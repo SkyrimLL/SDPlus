@@ -13,7 +13,7 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 kPlayer.RemoveItem(Gold, 200 )
 
-fctOutfit.clearDeviceByString( sDeviceString = "Belt" )
+fctOutfit.clearDeviceByString( sDeviceString = "Belt" , sOutfitString = "" )
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE

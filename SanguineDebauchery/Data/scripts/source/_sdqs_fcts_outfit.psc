@@ -2157,9 +2157,9 @@ Function addPunishmentDevice(String sDevice)
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
-		equipDeviceByString ( sDeviceString = "PlugAnal")
-		equipDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
+		equipDeviceByString ( sDeviceString = "PlugAnal", sOutfitString = "", sDeviceTags = "")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sDevice == "PlugVaginal") && (playerGender==1) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner smiles wickedly and shoves a cold plug into your abused womb." )
@@ -2168,37 +2168,37 @@ Function addPunishmentDevice(String sDevice)
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
-		equipDeviceByString ( sDeviceString = "PlugVaginal")
-		equipDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
+		equipDeviceByString ( sDeviceString = "PlugVaginal", sOutfitString = "", sDeviceTags = "")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sDevice == "Belt")  ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner locks a chastity belt around your waist, making a point to let the metal pieces bite harshly into your skin." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Belt" )
 			
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Belt")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "")
 	
 	ElseIf (sDevice == "Blindfold")
 		Debug.MessageBox("Your owner sternly glares at you and covers your eyes with a blindfold, leaving you helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Blinds" )
 			
 		; setDeviousOutfitBlindfold ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Blindfold")
+		equipDeviceByString ( sDeviceString = "Blindfold", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner shoves a gag into your mouth to muffle your screams and stop your constant whining." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Gag" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		equipDeviceByString ( sDeviceString = "Gag")
+		equipDeviceByString ( sDeviceString = "Gag", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sDevice == "WristRestraint") || (sDevice == "WristRestraints") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Wrist Restraints" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "WristRestraint")
+		clearDeviceByString(sDeviceString = "WristRestraint", sOutfitString = "")
 		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", sDeviceTags = "")
 		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 
@@ -2207,7 +2207,7 @@ Function addPunishmentDevice(String sDevice)
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Armbinder" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "WristRestraint")
+		clearDeviceByString(sDeviceString = "WristRestraint", sOutfitString = "")
 		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", sDeviceTags = "armbinder")
 		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 
@@ -2216,7 +2216,7 @@ Function addPunishmentDevice(String sDevice)
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: Yoke" )
 
 		; setDeviousOutfitGag ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "WristRestraint")
+		clearDeviceByString(sDeviceString = "WristRestraint", sOutfitString = "")
 		equipDeviceByString ( sDeviceString = "WristRestraint", sOutfitString = "", sDeviceTags = "yoke")
 		StorageUtil.SetStringValue(kPlayer, "_SD_sDefaultStance", "Standing")
 
@@ -2227,7 +2227,7 @@ Function addPunishmentDevice(String sDevice)
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitPlugAnal ( bDevEquip = True, sDevMessage = "")
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
 		equipDeviceByString ( sDeviceString = "PlugAnal", sOutfitString = "", sDeviceTags = "plug,anal,heretic,pear,chain")
 		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "belt,metal,iron")
 
@@ -2238,7 +2238,7 @@ Function addPunishmentDevice(String sDevice)
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitPlugVaginal ( bDevEquip = True, sDevMessage = "")
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
 		equipDeviceByString ( sDeviceString = "PlugVaginal", sOutfitString = "", sDeviceTags = "plug,vaginal,heretic,pear,chain")
 		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "belt,metal,iron")
 
@@ -2260,7 +2260,7 @@ Function addPunishmentDevice(String sDevice)
 		; Debug.MessageBox("Your owner binds your hand rendering you completely helpless." )
 		Debug.Trace("[_sdqs_fcts_outfit] Adding punishment item: " + sDevice )
 
-		equipDeviceByString ( sDeviceString = sDevice)
+		equipDeviceByString ( sDeviceString = sDevice, sOutfitString = "", sDeviceTags = "")
 
 	EndIf
 
@@ -2282,9 +2282,9 @@ Function removePunishmentDevice(String sDevice)
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitPlugAnal ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
-		clearDeviceByString(sDeviceString = "PlugAnal")
-		equipDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
+		clearDeviceByString(sDeviceString = "PlugAnal", sOutfitString = "")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sDevice == "PlugVaginal") && !isDeviceEquippedKeyword( kPlayer, "_SD_DeviousParasiteVag", "PlugVaginal"  ) ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The vaginal plug is drenched as it is removed." )
@@ -2293,36 +2293,36 @@ Function removePunishmentDevice(String sDevice)
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitPlugVaginal ( bDevEquip = False, sDevMessage = "")
 		; setDeviousOutfitBelt ( bDevEquip = True, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
-		clearDeviceByString(sDeviceString = "PlugVaginal")
-		equipDeviceByString ( sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
+		clearDeviceByString(sDeviceString = "PlugVaginal", sOutfitString = "")
+		equipDeviceByString ( sDeviceString = "Belt", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sDevice == "Belt") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The belt finally lets go of its grasp around your hips." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Belt" )
 			
 		; setDeviousOutfitBelt ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Belt")
+		clearDeviceByString(sDeviceString = "Belt", sOutfitString = "")
 	
 	ElseIf (sDevice == "Blindfold")
 		Debug.MessageBox("A flood of painful light makes you squint as the blindfold is removed." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Blinds" )
 			
 		; setDeviousOutfitBlindfold ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Blindfold")
+		clearDeviceByString(sDeviceString = "Blindfold", sOutfitString = "")
 	
 	ElseIf (sDevice == "Gag") ; && (isMasterSpeaking==1)
 		Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: Gag "  )
 
 		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString(sDeviceString = "Gag")
+		clearDeviceByString(sDeviceString = "Gag", sOutfitString = "")
 	Else
 		; Debug.MessageBox("The gag is finally removed, leaving a screaming pain in your jaw." )
 		Debug.Trace("[_sdqs_fcts_outfit] Removing punishment item: " + sDevice )
 
 		; setDeviousOutfitGag ( bDevEquip = False, sDevMessage = "")
-		clearDeviceByString(sDeviceString = sDevice)
+		clearDeviceByString(sDeviceString = sDevice, sOutfitString = "")
 	EndIf
 
 EndFunction

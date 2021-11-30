@@ -13,14 +13,14 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 kPlayer.RemoveItem(Gold, 100 )
 
-fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint" )
-fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
-fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
-fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
-fctOutfit.clearDeviceByString( sDeviceString = "Hood" )
-fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
-fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
-fctOutfit.clearDeviceByString( sDeviceString = "Gloves" )
+fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Blindfold", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Hood" , sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gag", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Yoke", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gloves" , sOutfitString = "" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

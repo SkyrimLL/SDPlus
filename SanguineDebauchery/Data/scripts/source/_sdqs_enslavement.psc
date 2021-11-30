@@ -304,17 +304,17 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 	bIsLegsBound = fctOutfit.isShacklesEquipped(kSlave) 
 
 	if (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1) && (!bIsCollarded)
-		fctOutfit.equipDeviceByString ( "Collar" )
+		fctOutfit.equipDeviceByString ( sDeviceString = "Collar", sOutfitString = "", sDeviceTags = "")
 		fctOutfit.lockDeviceByString( kSlave,  "Collar")
 	EndIf
 
 	if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
 		if (!fctOutfit.isArmbinderEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1) && (!bIsArmBound)
-			; fctOutfit.equipDeviceByString ( "Armbinder" )
+			; fctOutfit.equipDeviceByString ( "Armbinder", "" )
 			PunishSlave(kMaster, kSlave, "WristRestraint")
 		EndIf
 		if (!fctOutfit.isShacklesEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryBindingsOn")==1) && (!bIsLegsBound)
-			; fctOutfit.equipDeviceByString ( "LegCuffs" )
+			; fctOutfit.equipDeviceByString ( "LegCuffs", "" )
 			PunishSlave(kMaster, kSlave, "LegCuffs")
 		EndIf
 	Endif
@@ -586,7 +586,7 @@ Function UpdateSlaveFollowerState(Actor akSlave)
 			; endif
 
 			If (StorageUtil.GetIntValue(nthActor, "_SD_iHandsFreeSex") == 0) && ( nthActor.GetDistance( kMaster ) < kneelingDistance ) &&  !fctOutfit.isWristRestraintEquipped( nthActor) 
-				fctOutfit.equipDeviceNPCByString (nthActor, sDeviceString = "WristRestraint", sDeviceTags = "armbinder,zap" )
+				fctOutfit.equipDeviceNPCByString (nthActor, sDeviceString = "WristRestraint", sOutfitString = "", sDeviceTags = "armbinder,zap" )
 
 			EndIf
 

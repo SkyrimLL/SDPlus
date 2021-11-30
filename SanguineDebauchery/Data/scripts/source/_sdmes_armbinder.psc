@@ -9,10 +9,13 @@ Event OnUpdate()
 	; If !libs.IsAnimating(target)
 	;	libs.UpdateControls() ; TODO: Replace with call to centralized SD function.
 	; EndIf
-	DoRegister()
+	; DoRegister()
 EndEvent
 
 Event OnEffectStart(Actor akTarget, Actor akCaster)
+	return
+
+	;/ DEPRECATED
 	if akTarget != libs.PlayerRef
 		return
 	EndIf
@@ -21,14 +24,14 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	Terminate = False
 	if target == libs.PlayerRef
 		UnregisterForAllKeys()
-		; Intercept [tab] presses.
 		TweenMenuKey = Input.GetMappedKey("Tween Menu")
 		RegisterForKey(TweenMenuKey)
 	EndIf
 	if target == libs.PlayerRef
-		; libs.UpdateControls()
 	Endif
 	DoRegister()
+	/;
+
 EndEvent
 
 
@@ -57,5 +60,5 @@ EndEvent
 
 
 Event OnPlayerLoadGame()
-	OnUpdate()
+	; OnUpdate()
 EndEvent

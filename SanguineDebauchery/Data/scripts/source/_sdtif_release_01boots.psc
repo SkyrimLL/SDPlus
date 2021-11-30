@@ -13,7 +13,7 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 kPlayer.RemoveItem(Gold,50 )
  
-fctOutfit.clearDeviceByString( sDeviceString = "Boots" )
+fctOutfit.clearDeviceByString( sDeviceString = "Boots", sOutfitString = "" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

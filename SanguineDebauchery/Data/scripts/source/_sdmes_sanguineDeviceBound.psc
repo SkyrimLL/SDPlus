@@ -16,10 +16,10 @@ Event OnEffectStart(Actor akTarget, Actor akCaster)
 	StorageUtil.SetFormValue(kPlayer, "_SD_fSlaveryGearActor", none)
 	Debug.Trace("[SD] _sdmes_sanguineDeviceBound: OnEffectStart")
 	
-	fctOutfit.clearDeviceByString ( "Collar" )
+	fctOutfit.clearDeviceByString (  sDeviceString = "Collar", sOutfitString= "" )
 	fctOutfit.equipNonGenericDeviceByString ( "Collar", "Sanguine" )
 
-	fctOutfit.clearDeviceByString ( "WristRestraints" )
+	fctOutfit.clearDeviceByString ( sDeviceString = "WristRestraints"  , sOutfitString= "" )
 	fctOutfit.equipNonGenericDeviceByString ( "WristRestraints", "Sanguine" )
 
 	if (!fctOutfit.isLegsEquipped (  akTarget )) && (Utility.RandomInt(0,100) > 40)

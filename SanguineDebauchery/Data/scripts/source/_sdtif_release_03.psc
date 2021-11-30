@@ -13,14 +13,14 @@ Actor kPlayer = Game.GetPlayer(); _SDRAP_player.GetReference() as Actor
 ;		funct.removeItemsInList( kPlayer, _SDFLP_punish_items )
 		_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint" )
-fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
-fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
-fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
-fctOutfit.clearDeviceByString( sDeviceString = "Hood" )
-fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
-fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
-fctOutfit.clearDeviceByString( sDeviceString = "Gloves" )
+fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" , sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" , sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Hood" , sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gag" , sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Yoke" , sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gloves" , sOutfitString = "" )
 
 		funct.SanguineRape( akSpeaker, kPlayer  , "Dirty")
 ;END CODE

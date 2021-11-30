@@ -13,11 +13,11 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 If   (Utility.RandomInt(0,100)>60)
 	_SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-	fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint" )
-	fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
-	fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
-	fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
-	fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
+	fctOutfit.clearDeviceByString( sDeviceString = "WristRestraint", sOutfitString = "" )
+	fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs", sOutfitString = "" )
+	fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs", sOutfitString = "" )
+	fctOutfit.clearDeviceByString( sDeviceString = "Gag", sOutfitString = "" )
+	fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" , sOutfitString = "" )
 
 	funct.SanguineRape( akSpeaker, kPlayer , "Aggressive")
 Else

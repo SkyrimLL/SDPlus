@@ -13,7 +13,7 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 kPlayer.RemoveItem(Gold, 200 )
  
-fctOutfit.clearDeviceByString( sDeviceString = "Bra" )
+fctOutfit.clearDeviceByString( sDeviceString = "Bra", sOutfitString = "" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

@@ -1758,10 +1758,10 @@ Function CompleteSlaveryTask(Actor kSlave, Form fKeyword)
 		kMaster.SendModEvent("SLDGiftNPC","Hungry")
 
 	ElseIf (sTaskPositiveReward=="NipplePiercing")
-		fctOutfit.equipDeviceByString("NipplePiercing")
+		fctOutfit.equipDeviceByString(sDeviceString="NipplePiercing", sOutfitString = "", sDeviceTags = "")
 
 	ElseIf (sTaskPositiveReward=="VaginalPiercing")
-		fctOutfit.equipDeviceByString("VaginalPiercing")
+		fctOutfit.equipDeviceByString(sDeviceString="VaginalPiercing", sOutfitString = "", sDeviceTags = "")
 	EndIf
 
 	ModMasterTrust(kMaster, StorageUtil.GetIntValue(fKeyword, "_SD_iTaskPositiveMod"))

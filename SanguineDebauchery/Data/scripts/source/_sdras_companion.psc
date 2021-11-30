@@ -203,7 +203,7 @@ Function enslaveCompanion( Actor kActor)
 				EndIf
 
 				If (StorageUtil.GetIntValue(kActor, "_SD_iCanBeStripped") == 1 )
-					; fctOutfit.clearDeviceNPCByString ( kActor, "Gag") 
+					; fctOutfit.clearDeviceNPCByString ( kActor, "Gag", "") 
 					funct.sexlabStripActor( kActor )
 					; kActor.RemoveAllItems(akTransferTo = kMaster, abKeepOwnership = True)
 					fctInventory.safeRemoveAllItems ( kActor, _SDRAP_playerStorage.GetReference() )

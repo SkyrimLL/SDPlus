@@ -14,8 +14,8 @@ Actor kPlayer = _SDRAP_player.GetReference() as Actor
 
 _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
-fctOutfit.clearDeviceByString( sDeviceString = "Collar" )
-fctOutfit.clearDeviceByString( sDeviceString = "Harness" )
+fctOutfit.clearDeviceByString( sDeviceString = "Collar", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Harness", sOutfitString = "" )
 fctOutfit.clearNonGenericDeviceByString ( "Collar", "Sanguine" )
 
 funct.SanguineRape( akSpeaker, kPlayer  , "Sex")

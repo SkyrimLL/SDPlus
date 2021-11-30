@@ -135,8 +135,11 @@ Function actorCombatShutdown( Actor akAttacker, Actor akActor )
 	EndIf
 	akActor.StopCombatAlarm()
 	akActor.Stopcombat()
-	akAttacker.StopCombatAlarm()
-	akAttacker.Stopcombat()
+
+	if (akAttacker != None)
+		akAttacker.StopCombatAlarm()
+		akAttacker.Stopcombat()
+	endif
 	; Debug.Notification("[_sdqs_functions] Actor should be calm now")
 EndFunction
 

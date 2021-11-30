@@ -14,12 +14,12 @@ _SDSP_freedom.RemoteCast( kPlayer, kPlayer, kPlayer )
 
 Game.GetPlayer().RemoveItem(Gold, 100 )
  
-fctOutfit.clearDeviceByString( sDeviceString = "Armbinders" )
-fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs" )
-fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs" )
-fctOutfit.clearDeviceByString( sDeviceString = "Gag" )
-fctOutfit.clearDeviceByString( sDeviceString = "Blindfold" )
-fctOutfit.clearDeviceByString( sDeviceString = "Yoke" )
+fctOutfit.clearDeviceByString( sDeviceString = "Armbinders", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "ArmCuffs", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "LegCuffs", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Gag", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Blindfold", sOutfitString = "" )
+fctOutfit.clearDeviceByString( sDeviceString = "Yoke", sOutfitString = "" )
 ;END CODE
 EndFunction
 ;END FRAGMENT

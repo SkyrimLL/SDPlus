@@ -13,8 +13,8 @@ Event OnActivate(ObjectReference akActivator)
         Player.ResetHealthAndLimbs()
 		UnregisterForAnimationEvent(Player, "IdleFurnitureExit")
 
-		fctOutfit.clearDeviceByString( sDeviceString = "ParasiteAnal" )
-		fctOutfit.clearDeviceByString( sDeviceString = "ParasiteVaginal" )
+		fctOutfit.clearDeviceByString( sDeviceString = "ParasiteAnal" , sOutfitString = "" )
+		fctOutfit.clearDeviceByString( sDeviceString = "ParasiteVaginal" , sOutfitString = "" )
 
         ; If (StorageUtil.GetIntValue(Player, "_SD_iSprigganInfected") == 0) && (fctOutfit.countDeviousSlotsByKeyword (  Player,   "_SD_DeviousSpriggan" ) > 0)
         ;     Debug.Messagebox("The spring waters wash away the residual roots clinging to your body.")

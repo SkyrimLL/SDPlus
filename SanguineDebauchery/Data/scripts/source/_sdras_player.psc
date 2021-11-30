@@ -440,7 +440,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If (StorageUtil.GetIntValue(kCurrentMaster, "_SD_iTrust")>0) && (Utility.RandomInt(0,100) > 70) && (actors.Length > 1) ; Exclude masturbation
 				; Chance player will keep armbinders after sex
 					Debug.Notification("$Your hands remain free.. lucky you.")
-					; fctOutfit.clearDeviceByString ( "WristRestraints" )
+					; fctOutfit.clearDeviceByString ( "WristRestraints", "" )
 
 				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
@@ -458,7 +458,7 @@ Event OnSexLabEnd(String _eventName, String _args, Float _argc, Form _sender)
 				If (Utility.RandomInt(0,100) > 90)  
 				; Chance player will keep armbinders after sex
 					Debug.Notification("$Your hands remain free.. lucky you.")
-					fctOutfit.clearDeviceByString ( "WristRestraints" )
+					fctOutfit.clearDeviceByString ( "WristRestraints", "" )
 
 				ElseIf (!fctOutfit.isWristRestraintEquipped(PlayerActor)) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iHandsFreeSex") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnableAction") == 0) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iEnslaved") == 1) && (StorageUtil.GetIntValue(PlayerActor, "_SD_iSlaveryBindingsOn")==1)
 
@@ -849,7 +849,7 @@ Event OnSDDreamworldStart(String _eventName, String _args, Float _argc = 0.0, Fo
 	_SDGVP_sanguine_blessing.SetValue(blessingsStart)
 	StorageUtil.SetIntValue(kPlayer, "_SD_iSanguineBlessings", blessingsStart )
 
-	fctInventory.TransferInventory(kPlayer)
+	fctInventory.TransferInventory(None, kPlayer, False)
 
 	_SD_dreamerScript.startDreamworld()
 
@@ -891,7 +891,7 @@ Event OnSDDreamworldInventory(String _eventName, String _args, Float _argc = 15.
 
 	Debug.Trace("[_sdras_player] Receiving dreamworld inventory story event [" + _args  + "] [" + _argc as Int + "]")
 	
-	fctInventory.TransferInventory(kPlayer)
+	fctInventory.TransferInventory(None, kPlayer, False)
 EndEvent
 
 Event OnSDModSanguineBlessing(String _eventName, String _args, Float _argc = -1.0, Form _sender)
@@ -1057,7 +1057,7 @@ Event OnSDStorySex(String _eventName, String _args, Float _argc = 0.0, Form _sen
 	fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 
 	if (fctOutfit.isWristRestraintEquipped( kPlayer )) && (Utility.RandomInt(0,100) > 30)
-		fctOutfit.clearDeviceByString ( "WristRestraints" )
+		fctOutfit.clearDeviceByString ( "WristRestraints", "" )
 		StorageUtil.SetIntValue(kPlayer, "_SD_iHandsFreeSex", 1)
 	EndIf
  
@@ -1202,7 +1202,7 @@ Event OnSDHandsBoundSlave(String _eventName, String _args, Float _argc = 1.0, Fo
 			fctOutfit.setMasterGearByRace ( kTempAggressor, kPlayer  )
 		endIf
 
-		fctOutfit.equipDeviceByString ( "Armbinder" )
+		fctOutfit.equipDeviceByString ( sDeviceString="Armbinder" , sOutfitString = "", sDeviceTags = "")
 
 		StorageUtil.GetIntValue(kPlayer, "_SD_iHandsFree", 0)
 		Debug.Notification("$Your owner binds your hands.")
@@ -1235,7 +1235,7 @@ Event OnSDPunishSlave(String _eventName, String _args, Float _argc = 1.0, Form _
 			Return
 		EndIf
 	Elseif (kActor != none)
-		fctOutfit.EquipDeviceNPCByString(kActor,sDevice,sTags )
+		fctOutfit.EquipDeviceNPCByString(kActor, sDeviceString = sDevice, sOutfitString = "", sDeviceTags = sTags )
 	Endif
 
 EndEvent
@@ -1267,7 +1267,7 @@ Event OnSDRewardSlave(String _eventName, String _args, Float _argc = 1.0, Form _
 			Return
 		EndIf
 	Elseif (kActor != none)
-		fctOutfit.ClearDeviceNPCByString(kActor,sDevice,sTags )
+		fctOutfit.ClearDeviceNPCByString(kActor, sDeviceString = sDevice, sOutfitString= "" )
 	EndIf
 EndEvent
 
@@ -1301,13 +1301,13 @@ Event OnSDEquipDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 			fctOutfit.equipNonGenericDeviceByString ( sDeviceString = sDevice, sOutfitString = "Sanguine"  )
 		else
 			fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
-			fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sDeviceTags = sTags )
+			fctOutfit.equipDeviceByString ( sDeviceString = sDevice, sOutfitString= "", sDeviceTags = sTags )
 		endif
 	else
 		if (iOutfitID == 1) ; Sanguine outfit - ignore tags
 			fctOutfit.equipNonGenericDeviceNPCByString ( kActor, sDeviceString = sDevice, sOutfitString = "Sanguine"  )
 		else
-			fctOutfit.equipDeviceNPCByString (kActor, sDeviceString = sDevice, sDeviceTags = sTags )
+			fctOutfit.equipDeviceNPCByString (kActor, sDeviceString = sDevice, sOutfitString = "", sDeviceTags = sTags )
 		endif
 	endIf
 
@@ -1326,13 +1326,13 @@ Event OnSDClearDevice(String _eventName, String _args, Float _argc = -1.0, Form 
 			fctOutfit.clearNonGenericDeviceByString ( sDeviceString = sDevice, sOutfitString = "Sanguine"  )
 		else
 			fctOutfit.setMasterGearByRace ( kActor, kPlayer  )
-			fctOutfit.clearDeviceByString ( sDeviceString = sDevice )
+			fctOutfit.clearDeviceByString ( sDeviceString = sDevice, sOutfitString= "" )
 		endif
 	Else
 		if (iOutfitID == 1) ; Sanguine outfit - ignore tags
 			fctOutfit.clearNonGenericDeviceNPCByString ( kActor, sDeviceString = sDevice, sOutfitString = "Sanguine"  )
 		else
-			fctOutfit.clearDeviceNPCByString (kActor, sDeviceString = sDevice )
+			fctOutfit.clearDeviceNPCByString (kActor, sDeviceString = sDevice, sOutfitString= "" )
 		endif
 	Endif
 
@@ -1919,10 +1919,10 @@ State monitor
 
 					Debug.SetGodMode( False )
 
-					kPlayer.StopCombat()
-					kPlayer.StopCombatAlarm()
+					; kPlayer.StopCombat()
+					; kPlayer.StopCombatAlarm()
 
-					fctConstraints.actorCombatShutdown( kPlayer )
+					fctConstraints.actorCombatShutdown( None, kPlayer )
 
 					fctConstraints.UpdateStanceOverrides(bForceRefresh=True) 
 
@@ -2248,7 +2248,7 @@ EndState
 
 
 Function SetHandsFreeSlave(Actor kActor)
-	; fctOutfit.clearDeviceByString ( "Armbinder" )
+	; fctOutfit.clearDeviceByString ( "Armbinder", sOutfitString= "" )
 	if (fctOutfit.isWristRestraintEquipped( kActor ))  
 		fctOutfit.ClearSlavePunishment(kActor , "WristRestraints" , true )
 	Endif
