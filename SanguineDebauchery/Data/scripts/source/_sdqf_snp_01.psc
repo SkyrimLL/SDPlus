@@ -132,8 +132,7 @@ Function Fragment_5()
 
 Actor male = Alias__SDRA_male.GetReference() as Actor
 Actor female = Alias__SDRA_female.GetReference() as Actor
-fctConstraints.actorCombatShutdown( male )
-fctConstraints.actorCombatShutdown( female )
+fctConstraints.actorCombatShutdown( male, female )
 
 ; male.AllowPCDialogue( False )
 ;END CODE

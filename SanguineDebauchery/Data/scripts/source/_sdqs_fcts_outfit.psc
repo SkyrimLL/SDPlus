@@ -149,7 +149,7 @@ String Function sanitizeStringCode(String sText)
 
 	ElseIf (sText == "WristRestraint")  || (sText == "wristrestraint") || (sText == "WRISTRESTRAINT")
 		sReturnText += "WristRestraint"
-	ElseIf (sText == "ArmCuffs")  || (sText == "legcuffs") || (sText == "LEGCUFFS")
+	ElseIf (sText == "ArmCuffs")  || (sText == "armcuffs") || (sText == "ARMCUFFS")
 		sReturnText += "ArmCuffs"
 	ElseIf (sText == "LegCuffs")  || (sText == "legcuffs") || (sText == "LEGCUFFS")
 		sReturnText += "LegCuffs"

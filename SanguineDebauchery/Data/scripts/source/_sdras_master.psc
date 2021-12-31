@@ -294,27 +294,30 @@ Event OnItemAdded(Form akBaseItem, int aiItemCount, ObjectReference akItemRefere
 	iuType = akBaseItem.GetType()
 	fGoldEarned = 0.0
 
-	If (kMaster.IsDead())
-		Debug.Trace( "[_sdras_master] Item added to a dead master." )
-		Return
-	EndIf
+	if (kMaster!=None)
 
-	if !akSourceContainer
-		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from the world")
-	elseif akSourceContainer == Game.GetPlayer()
-		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from player")
-	else
-		debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from another container")
-	endIf
+		If (kMaster.IsDead())
+			Debug.Trace( "[_sdras_master] Item added to a dead master." )
+			Return
+		EndIf
 
-	If (kSourceContainer == kSlave ) 
-		fctInventory.ProcessItemAdded(kMaster, kSlave, akBaseItem)
+		if !akSourceContainer
+			debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from the world")
+		elseif akSourceContainer == Game.GetPlayer()
+			debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from player")
+		else
+			debugTrace(" Master receives  " + aiItemCount + "x " + akBaseItem + " from another container")
+		endIf
 
-	Else
-		; Debug.Notification( "New item for owner" )
-		Debug.Trace( "[_sdras_master] Master receives an item from " + kSourceContainer + " / " + kSlave )
+		If (kSourceContainer == kSlave ) 
+			fctInventory.ProcessItemAdded(kMaster, kSlave, akBaseItem)
 
-	EndIf
+		Else
+			; Debug.Notification( "New item for owner" )
+			Debug.Trace( "[_sdras_master] Master receives an item from " + kSourceContainer + " / " + kSlave )
+
+		EndIf
+	Endif
 EndEvent
 
 

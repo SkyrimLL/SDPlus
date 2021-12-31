@@ -1899,7 +1899,7 @@ Function ModSlaveryTask(Actor kSlave, String sTaskName, Int iModValue)
 	Int iCompletionPercent = 0
 	String sTaskMessage 
 
-	If (fKeyword != None)
+	If (fKeyword != None) && (kMaster!=None)
 		; only increment active tasks
 		If (StorageUtil.GetFloatValue(fKeyword, "_SD_fTaskStartDate")>0.0)
 			DisplayTaskTimer(fKeyword)
