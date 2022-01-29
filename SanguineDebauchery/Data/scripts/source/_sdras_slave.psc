@@ -160,6 +160,7 @@ ObjectReference kCollar
 ObjectReference kGag
 int iPlayerGender
 Actor kActor
+Actor kPlayer
 
 Float fRFSU = 0.5
 
@@ -614,12 +615,12 @@ State monitor
 			; 	Debug.Notification( "Your collar weighs around your neck..." )
 			; EndIf
  
-			GoToState("escape_shock")	
+			; GoToState("escape_shock")	
 
 		ElseIf  (kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) && ( ( kMaster.GetSleepState() != 0 ) || ( kMaster.HasLOS( kSlave ))) && (kSlaveCell != kMasterCell) && (Utility.RandomInt(0,100) > 70)  && (fctOutfit.isCollarEquipped ( kSlave ))  && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			; Special handling of of escape from master's cell while master is asleep or not paying attention
 
-			GoToState("escape_shock")	
+			; GoToState("escape_shock")	
 
 		ElseIf ( fDistance > _SDGVP_escape_radius.GetValue() )
 			; Distance based leash - decrease field of view for the slave as distance increases until blackout and teleport back to master
@@ -627,12 +628,12 @@ State monitor
 
 			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
 
-				GoToState("escape_shock")
+				; GoToState("escape_shock")
  
 			Else
 				; If distance based leash is Off, switch to time buffer leash instead
 				if (fctOutfit.isCollarEquipped ( kSlave ))  && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
-					GoToState("escape_shock")
+					; GoToState("escape_shock")
 				endif
 			EndIf
 
@@ -868,11 +869,12 @@ EndState
 
 State escape_shock
 	Event OnBeginState()
+		kPlayer = Game.GetPlayer()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
 		Debug.Notification( "$Your collar vibrates as you wander off." )
 		debugTrace(" Escape attempt - shock collar" )
 		debugTrace(" starting timer" )
-		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
+		iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 		
 		UpdateMasterSlave()
 
@@ -903,7 +905,7 @@ State escape_shock
 		; SD 3.3 - testing Master searching for slave during collar events
 		If (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 			enslavement.bSearchForSlave = True
-			fctSlavery.ModMasterTrust( kMaster, -1  ); deduct 1 from trust allowance for the day
+			; fctSlavery.ModMasterTrust( kMaster, -1  ); deduct 1 from trust allowance for the day
 
 			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 				kCrimeFaction = kMaster.GetCrimeFaction()
@@ -918,6 +920,8 @@ State escape_shock
 	EndEvent
 	
 	Event OnEndState()
+		kPlayer = Game.GetPlayer()
+
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
 		Debug.Notification( "$Your collar stops vibrating." )
 		debugTrace(" Escape attempt - end" )
@@ -927,9 +931,9 @@ State escape_shock
 
 			Debug.Notification("$The collar is sending shocks." )
 			if (iPlayerGender==0)
-				_SDSMP_choke_m.Play( Game.GetPlayer() )
+				_SDSMP_choke_m.Play( kPlayer )
 			else
-				_SDSMP_choke.Play( Game.GetPlayer() )
+				_SDSMP_choke.Play( kPlayer )
 			endif
 
 			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
@@ -978,6 +982,8 @@ State escape_shock
 	EndEvent
 
 	Event OnUpdate()
+		kPlayer = Game.GetPlayer()
+
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 		; debugTrace(" Player is Escaping (shocking collar)")
@@ -1062,9 +1068,9 @@ State escape_shock
 
 						Debug.Notification("$The collar is sending shocks." )
 						if (iPlayerGender==0)
-							_SDSMP_choke_m.Play( Game.GetPlayer() )
+							_SDSMP_choke_m.Play( kPlayer )
 						else
-							_SDSMP_choke.Play( Game.GetPlayer() )
+							_SDSMP_choke.Play( kPlayer )
 						endif
 
 						_SDSP_SelfShockEffect.Cast(kSlave as Actor)
@@ -1090,11 +1096,13 @@ EndState
 
 State escape_choke
 	Event OnBeginState()
+		kPlayer = Game.GetPlayer()
+
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_NOW" )
 		Debug.Notification( "$Your collar tightens as you wander off from the cage." )
 		debugTrace(" Cage scene - choking collar - start" )
 		debugTrace(" starting timer" )
-		iPlayerGender = Game.GetPlayer().GetLeveledActorBase().GetSex() as Int
+		iPlayerGender = kPlayer.GetLeveledActorBase().GetSex() as Int
 
 		UpdateMasterSlave()
 
@@ -1109,6 +1117,7 @@ State escape_choke
 	EndEvent
 	
 	Event OnEndState()
+		kPlayer = Game.GetPlayer()
 		; Debug.Notification( "$SD_MESSAGE_ESCAPE_GONE" )
 		; Debug.Notification( "[SD] Cage scene - choking collar - end" )
 		debugTrace(" Cage scene - choking collar - end" )
@@ -1133,6 +1142,7 @@ State escape_choke
 	EndEvent
 
 	Event OnUpdate()
+		kPlayer = Game.GetPlayer()
 		; While ( !Game.GetPlayer().Is3DLoaded() )
 		; EndWhile
 		; debugTrace(" Player is Escaping (choking collar)")
@@ -1511,21 +1521,21 @@ Function _slaveStatusTicker()
 		Endif
 
 		; Cooldown at end of day
-		If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") <= -2 )
-			StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 9 / 10 )
-		EndIf
+		; If ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") <= -2 )
+		;	StorageUtil.SetIntValue(kMaster, "_SD_iDisposition", StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") * 9 / 10 )
+		; EndIf
 
-		If ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") <= -2 )
-			StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kMaster, "_SD_iTrust") * 9 / 10 )
-		EndIf
+		; If ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") >= 2 ) || ( StorageUtil.GetIntValue(kMaster, "_SD_iTrust") <= -2 )
+		;	StorageUtil.SetIntValue(kMaster, "_SD_iTrust", StorageUtil.GetIntValue(kMaster, "_SD_iTrust") * 9 / 10 )
+		; EndIf
 
-		If ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") >= 2 ) || ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") <= -2 )
-			StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 9 / 10 )
-		EndIf
+		; If ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") >= 2 ) || ( StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") <= -2 )
+		;	StorageUtil.SetIntValue(kSlave, "_SD_iTrustPoints", StorageUtil.GetIntValue(kSlave, "_SD_iTrustPoints") * 9 / 10 )
+		; EndIf
 
-		If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
+		; If (StorageUtil.GetIntValue(kMaster, "_SD_iDisposition") < 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust") < 0)
 		;	enslavement.PunishSlave( kMaster,  kSlave, "Gag")
-		EndIf
+		; EndIf
 
 		; Safety - removal of punishments after one day
 		enslavement.UpdateSlaveState( kMaster, kSlave )

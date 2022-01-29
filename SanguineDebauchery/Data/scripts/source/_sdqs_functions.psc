@@ -587,7 +587,6 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 
 		; Masturbation scenes
 		If (SexLabInTags == "Masturbation") && ( SexLab.ValidateActor( akSpeaker ) > 0 )
-			SendModEvent("SLHModHormone", "SexDrive", 1.0)
 
 			If (SexLabInTags == "Masturbation")  
 				If (speakerGender  == 0)
@@ -624,7 +623,6 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 		; Gender restrictions - 2 actors
 		; In general, Target = Player, speaker = Master
 		ElseIf checkGenderRestriction( akSpeaker,  akTarget)
-			SendModEvent("SLHModHormone", "SexDrive", 0.2)
 
 			If ( (genderRestrictions  == 1) && (speakerGender  == targetGender ) ) 
 				If (speakerGender  == 0)
@@ -677,7 +675,7 @@ INT Function SanguineRape(Actor akSpeaker, Actor akTarget, String SexLabInTags =
 				Thread.SetAnimations(SexLab.GetAnimationsByTags(2, SexLabInTags,  SexLabOutTags))
 				iReturn += ((Thread.StartThread() AS BOOL) AS INT)
 			Else
-				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
+				; Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
 				Debug.Trace("[SD] Sex: SexLab Check failed - " + SexLab.ValidateActor( akSpeaker ) + " / " + SexLab.ValidateActor( akTarget ))
 			EndIf
 		Else
