@@ -182,69 +182,71 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 	; most likely to happen on a pickpocket failure.
 	If ( (aeCombatState != 0) && (akTarget == kSlave) && (!kMaster.GetCurrentScene()) && (Self.GetOwningQuest().GetStage() <  90) ) && (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavementInitSequenceOn")==0) && !fctOutfit.isWristRestraintEquipped( kSlave ) 
-		Int iGold = 100
-		Float iDemerits = 10.0
+	; 	Int iGold = 100
+	; 	Float iDemerits = 10.0
 				
 		Debug.Trace( "[_sdras_master] Master attacked by slave - aeCombatState " + aeCombatState )
 
-		StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
-		StorageUtil.SetIntValue(kSlave, "_SD_iEnableAction", 0)
+		kMaster.StartCombat(kSlave)
 
-		fctConstraints.actorCombatShutdown( kMaster )
-		fctConstraints.actorCombatShutdown( kSlave )
+	; 	StorageUtil.SetIntValue(kSlave, "_SD_iEnableArmorEquip", 0)
+	; 	StorageUtil.SetIntValue(kSlave, "_SD_iHandsFree", 0)
+	; 	StorageUtil.SetIntValue(kSlave, "_SD_iEnableAction", 0)
+
+	; 	fctConstraints.actorCombatShutdown( kMaster )
+	; 	fctConstraints.actorCombatShutdown( kSlave )
 		
-		If ( kMaster.GetCrimeFaction() )
-			iGold = kMaster.GetCrimeFaction().GetCrimeGold()
+	; 	If ( kMaster.GetCrimeFaction() )
+	; 		iGold = kMaster.GetCrimeFaction().GetCrimeGold()
 			; iDemerits = Math.Ceiling( iGold / 100 ) as Float
 
 			; _SDDVP_buyoutEarned.Mod( 0 - iGold )
-			If (iGold > _SDDVP_buyoutEarned.GetValue() )
-				_SDDVP_buyoutEarned.SetValue(0)
-			Else
-				_SDDVP_buyoutEarned.Mod( 0 - iGold )
-			EndIf
+	; 		If (iGold > _SDDVP_buyoutEarned.GetValue() )
+	; 			_SDDVP_buyoutEarned.SetValue(0)
+	; 		Else
+	; 			_SDDVP_buyoutEarned.Mod( 0 - iGold )
+	; 		EndIf
 
 			; Debug.Notification( iGold + " deducted from the gold earned for your freedom." )
-			kMaster.GetCrimeFaction().PlayerPayCrimeGold( True, False )
+	; 		kMaster.GetCrimeFaction().PlayerPayCrimeGold( True, False )
 
-		EndIf
+	; 	EndIf
 
-		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
-			If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
-				Debug.Notification( "$You will regret attacking me!" )
-			EndIf
-			_SDSP_SelfShockEffect.Cast(kSlave as Actor)
+	; 	If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+	; 		If (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
+	; 			Debug.Notification( "$You will regret attacking me!" )
+	; 		EndIf
+	; 		_SDSP_SelfShockEffect.Cast(kSlave as Actor)
 			
-			If (fctSlavery.ModMasterTrust( kMaster, -5)<0)
+	; 		If (fctSlavery.ModMasterTrust( kMaster, -5)<0)
 				; Punishment
-				If (RandomInt(0,10)> 5) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+	; 			If (RandomInt(0,10)> 5) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 					; kMaster.SendModEvent("PCSubPunish") 
-					funct.SanguinePunishment( kMaster )
+	; 				funct.SanguinePunishment( kMaster )
 
-				Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
+	; 			Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 					; Whipping
 					; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 					; kMaster.SendModEvent("PCSubWhip") 
-					funct.SanguineWhip( kMaster )
+	; 				funct.SanguineWhip( kMaster )
 
-				Else
-					kMaster.SendModEvent("PCSubSex","Rough") 
-				EndIf
-				Wait(1.0)
-			Else
-				If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-					Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Armbinder" )
-					enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
-				endif
-			EndIf
+	; 			Else
+	; 				kMaster.SendModEvent("PCSubSex","Rough") 
+	; 			EndIf
+	; 			Wait(1.0)
+	; 		Else
+	; 			If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+	; 				Debug.Trace( "[_sdras_master] Punishment for engaging in combat or pickpocket attempt - Armbinder" )
+	; 				enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
+	; 			endif
+	; 		EndIf
 
 			; 
 
-		else
-			kMaster.SendModEvent("PCSubSex","Rough") 
-		endif
+	; 	else
+	; 		kMaster.SendModEvent("PCSubSex","Rough") 
+	; 	endif
 	ElseIf ( aeCombatState == 0 )
 		GoToState("monitor")
 	Else
@@ -573,31 +575,31 @@ State monitor
 				endif
 				; Punishment
 				;	_SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3 )
-				fctConstraints.actorCombatShutdown( kSlave )
-				fctConstraints.actorCombatShutdown( kMaster )
+				; fctConstraints.actorCombatShutdown( kSlave )
+				; fctConstraints.actorCombatShutdown( kMaster )
 				; 
 
 
-				If (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
-					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+				; If (fctSlavery.ModMasterTrust( kMaster, -1)<0) 
+				;	If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 					;	kMaster.SendModEvent("PCSubPunish") 
-					funct.SanguinePunishment( kMaster )
+				;	funct.SanguinePunishment( kMaster )
 
-					else
+				;	else
 						kMaster.SendModEvent("PCSubSex","Rough") 
-					endif
-				Else
-					If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-						Debug.Trace( "[_sdras_master] Punishment for attacking master - Yoke" )
-						enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
-					endif
-				Endif
+				;	endif
+				;Else
+				;	If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+				;		Debug.Trace( "[_sdras_master] Punishment for attacking master - Yoke" )
+				;		enslavement.PunishSlave(kMaster,kSlave, "Armbinder")
+				;	endif
+				;Endif
 
 			ElseIf (Utility.RandomInt(0,100)>90) ; chance of attack failing and slave punished
-				fctConstraints.actorCombatShutdown( kSlave )
-				fctConstraints.actorCombatShutdown( kCombatTarget )
+				; fctConstraints.actorCombatShutdown( kSlave )
+				; fctConstraints.actorCombatShutdown( kCombatTarget )
 
-				If ( bSlaveDetectedByMaster )
+				; If ( bSlaveDetectedByMaster )
 					; Self.GetOwningQuest().ModObjectiveGlobal( 10.0, _SDGVP_demerits, 3, _SDGVP_demerits_join.GetValue() as Float, False, True, _SDGVP_config_verboseMerits.GetValueInt() as Bool )
 					; Wait(0.5)
 					; kSlave.PlayAnimation("ZazAPC055");Inte
@@ -611,28 +613,28 @@ State monitor
 					;	enslavement.PunishSlave(kMaster,kSlave, "Yoke")
 					; EndIf
 
-					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-						If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
-						;	kMaster.SendModEvent("PCSubPunish") 
-						funct.SanguinePunishment( kMaster )
+				;	If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+				;		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+				;		;	kMaster.SendModEvent("PCSubPunish") 
+				;		funct.SanguinePunishment( kMaster )
 
-						else
-							kMaster.SendModEvent("PCSubSex","Rough") 
-						endif
-					Endif
+				;		else
+				;			kMaster.SendModEvent("PCSubSex","Rough") 
+				;		endif
+				;	Endif
 					
-				ElseIf ( bSlaveDetectedByTarget )
-					Debug.Notification( "$Your owner wouldn't like that!" )
+				; ElseIf ( bSlaveDetectedByTarget )
+				;	Debug.Notification( "$Your owner wouldn't like that!" )
 					; Whipping
 					; kSlave.PlayAnimation("ZazAPC055");Inte
 					; Wait(0.5)
 					; _SDKP_sex.SendStoryEvent(akRef1 = kCombatTarget, akRef2 = kSlave, aiValue1 = 5 )
 
-					If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
-						; kMaster.SendModEvent("PCSubWhip") 
-						funct.SanguineWhip( kMaster )
-					Endif
-				EndIf
+				;	If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+				;		; kMaster.SendModEvent("PCSubWhip") 
+				;		funct.SanguineWhip( kMaster )
+				;	Endif
+				; EndIf
 			EndIf
 
 

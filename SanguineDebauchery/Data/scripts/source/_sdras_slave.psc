@@ -262,49 +262,49 @@ Event OnCombatStateChanged(Actor akTarget, int aeCombatState)
 
 	; most likely to happen on a pickpocket failure.
 	If ( (aeCombatState != 0) && (fctFactions.isInSlaveFactions( akTarget ) ) )
-		Debug.Messagebox( "Your collar compels you to drop your weapon when attacking your owner's allies." )
+		; Debug.Messagebox( "Your collar compels you to drop your weapon when attacking your owner's allies." )
 
 		; Drop current weapon 
-		if(kSlave.IsWeaponDrawn())
-			kSlave.SheatheWeapon()
-			Utility.Wait(2.0)
-		endif
+		; if(kSlave.IsWeaponDrawn())
+		; 	kSlave.SheatheWeapon()
+		; 	Utility.Wait(2.0)
+		; endif
 
-		If ( krHand )
+		; If ( krHand )
 		;	kSlave.DropObject( krHand )
-			kSlave.UnequipItem( krHand )
-		EndIf
-		If ( klHand )
+		; 	kSlave.UnequipItem( krHand )
+		; EndIf
+		; If ( klHand )
 		;	kSlave.DropObject( klHand )
-			kSlave.UnequipItem( klHand )
-		EndIf
+		; 	kSlave.UnequipItem( klHand )
+		; EndIf
 
-		If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
-			Debug.Trace( "[_sdras_master] Punishment for hitting master friends - Yoke" )
-			enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
-		endif
+		; If (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentOn")==1)
+		; 	Debug.Trace( "[_sdras_master] Punishment for hitting master friends - Yoke" )
+		; 	enslavement.PunishSlave(kMaster,kSlave,"Armbinder")
+		; endif
 
-		If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
+		; If (fctSlavery.ModMasterTrust( kMaster, -1)<0)
 			; add punishment
-			Int iRandomNum = Utility.RandomInt(0,100)
+		; 	Int iRandomNum = Utility.RandomInt(0,100)
 
-			if (iRandomNum > 70) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
+		; 	if (iRandomNum > 70) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryWhipSceneOn")==1)
 				; Whipping
 			 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 5 )
 			 	; kMaster.SendModEvent("PCSubWhip") 
-				funct.SanguineWhip( kMaster )
+		; 		funct.SanguineWhip( kMaster )
 
-			Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
+		; 	Elseif (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryPunishmentSceneOn")==1)
 				; Punishment
 			 	; _SDKP_sex.SendStoryEvent(akRef1 = kMaster, akRef2 = kSlave, aiValue1 = 3, aiValue2 = RandomInt( 0, _SDGVP_punishments.GetValueInt() ) )
 			 	; kMaster.SendModEvent("PCSubPunish") 
-				funct.SanguinePunishment( kMaster )
+		; 		funct.SanguinePunishment( kMaster )
 
-			Else
-			 	kMaster.SendModEvent("PCSubSex","Rough") 
+		; 	Else
+		; 	 	kMaster.SendModEvent("PCSubSex","Rough") 
 
-			EndIf
-		Endif
+		; 	EndIf
+		; Endif
 	EndIf
 EndEvent
 
@@ -329,35 +329,35 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 
 		Return
 
-	ElseIf (fctOutfit.isCollarEquipped(kSlave))
+	;  ElseIf (fctOutfit.isCollarEquipped(kSlave))
 		; Slave is collared - control item awareness
 
 		; Debug.Notification( "$SD_MESSAGE_MASTER_AWARE" )
 		
-		If ( iuType == 41 ) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") )
+		; If ( iuType == 41 ) && (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableWeaponEquip") )
 				; TO DO - Add code here for compatibility with SPERG and other mods relying on equiping invisible weapons
 
 				; Debug.Notification( "$SD_MESSAGE_CAUGHT" )
-				Debug.Notification( "$You are not allowed to hold a weapon.  Your collar compels you to remove it." )
+				; Debug.Notification( "$You are not allowed to hold a weapon.  Your collar compels you to remove it." )
 
 				; kSlave.UnequipItem( akBaseItem, aiItemCount )
-				Weapon krHand = kSlave.GetEquippedWeapon()
-				Weapon klHand = kSlave.GetEquippedWeapon( True )
+				; Weapon krHand = kSlave.GetEquippedWeapon()
+				; Weapon klHand = kSlave.GetEquippedWeapon( True )
 
 				; Drop current weapon 
-				if(kSlave.IsWeaponDrawn())
-					kSlave.SheatheWeapon()
-					Utility.Wait(2.0)
-				endif
+				; if(kSlave.IsWeaponDrawn())
+				; 	kSlave.SheatheWeapon()
+				; 	Utility.Wait(2.0)
+				; endif
 
-				If ( krHand )
+				; If ( krHand )
 				;	kSlave.DropObject( krHand )
-					kSlave.UnequipItem( krHand )
-				EndIf
-				If ( klHand )
+				; 	kSlave.UnequipItem( krHand )
+				; EndIf
+				; If ( klHand )
 				;	kSlave.DropObject( klHand )
-					kSlave.UnequipItem( klHand )
-				EndIf
+				; 	kSlave.UnequipItem( klHand )
+				; EndIf
 
 		; ElseIf ( iuType == 26 )  &&  (!fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableArmorEquip") && !fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableClothingEquip"))  &&  !akBaseItem.HasKeywordString("SOS_Underwear") &&  !akBaseItem.HasKeywordString("SOS_Genitals")
 			; Armor
@@ -373,7 +373,7 @@ Event OnItemAdded(Form akBaseItem, Int aiItemCount, ObjectReference akItemRefere
 
 			;	kSlave.RemoveItem( akBaseItem, aiItemCount, False, kMaster )
 
-		EndIf
+		; EndIf
 
 
 	EndIf
