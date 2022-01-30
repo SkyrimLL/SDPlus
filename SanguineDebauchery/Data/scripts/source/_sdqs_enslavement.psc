@@ -319,6 +319,8 @@ Function EnslavePlayer(Actor akMaster, Actor akSlave, Bool bLimitedRemoval = Fal
 		EndIf
 	Endif
 
+	kMaster.SendModEvent("SLDForceFeedPlayer","Skooma",0.0)
+
 	; if  (Utility.RandomInt(0,100)>( 100 - 10 * (4 - (kMaster.GetAV("morality") as Int) ) ))
 	;	PunishSlave( kMaster,  kSlave, "Gag")
 	; EndIf
@@ -530,6 +532,18 @@ Bool Function PunishSlave(Actor akMaster, Actor akSlave, String sDevice)
 	Else
 		debugTrace(" Punish slave: Target is not the player")
 	EndIf
+
+	Int iRandomNum = Utility.RandomInt(0,100)
+
+	if (iRandomNum>90)
+		akMaster.SendModEvent("SLDForceFeedPlayer","StrongSkooma",1.0)
+	elseif (iRandomNum>70)
+		akMaster.SendModEvent("SLDForceFeedPlayer","Skooma",1.0)
+	elseif (iRandomNum>50)
+		akMaster.SendModEvent("SLDForceFeedPlayer","StrongWine",1.0)
+	elseif (iRandomNum>30)
+		akMaster.SendModEvent("SLDForceFeedPlayer","Wine",1.0)
+	endif
 
 	Return 	punishmentAdded 
 EndFunction

@@ -1480,7 +1480,7 @@ Function _slaveStatusTicker()
 			Endif
 
 			; Trigger only after an hour has passed from enslavement
-			If (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1)
+			If (!fctOutfit.isCollarEquipped(kSlave)) && (StorageUtil.GetIntValue(kSlave, "_SD_iSlaveryCollarOn") == 1) && (StorageUtil.GetIntValue(kMaster, "_SD_iMasterIsCreature") == 0)
 				If (kSlave.GetDistance( kMaster )<1500)
 					Debug.Notification("$Your master is disappointed to find you without a collar.")
 					fctOutfit.equipDeviceByString ( sDeviceString = "Collar", sOutfitString= "", sDeviceTags = "" )
