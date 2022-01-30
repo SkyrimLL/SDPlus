@@ -12,7 +12,7 @@ FormList Property _SLD_GiftFilterHurt  Auto
 FormList Property _SLD_GiftFilterCold  Auto    
 
 Potion Property Potato Auto  
-Potion Property Meat  Auto  
+Potion Property Meat  Auto   
 MiscObject Property Gold  Auto  
 
 GlobalVariable Property _SLD_CommentProbability Auto  
@@ -74,6 +74,7 @@ Function _maintenance()
 	RegisterForModEvent("SLDRefreshGlobals",   "OnSLDRefreshGlobals")
 
 	RegisterForModEvent("SLDRobPlayer",   "OnSLDRobPlayer")
+	RegisterForModEvent("SLDForceFeedPlayer",   "OnSLDForceFeedPlayer")
 	RegisterForModEvent("SLDGiftPlayer",   "OnSLDGiftPlayer")
 	RegisterForModEvent("SLDGiftNPC",   "OnSLDGiftNPC")
 	RegisterForModEvent("SLDPayPlayer",   "OnSLDPayPlayer")
@@ -222,6 +223,21 @@ Event OnSLDRobPlayer(String _eventName, String _args, Float _argc, Form _sender)
  	Actor kActor = _sender as Actor
 
 	_SLD_Main.RobPlayer(kActor)
+EndEvent
+
+Event OnSLDForceFeedPlayer(String _eventName, String _args, Float _argc, Form _sender)
+ 	Actor kActor = _sender as Actor
+
+ 	; _args = type of force fed item
+ 	; Potato    
+ 	; Meat     
+ 	; Soup     
+ 	; Wine     
+ 	; StrongWine     
+ 	; Skooma     
+ 	; StrongSkooma     
+
+	_SLD_Main.ForceFeedPlayer(kActor, _args, _argc as Int)
 EndEvent
 
 Event OnSLDGiftPlayer(String _eventName, String _args, Float _argc, Form _sender)

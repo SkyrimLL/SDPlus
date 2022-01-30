@@ -40,6 +40,7 @@ Message Property _SLD_rapeMenu  Auto
 Message Property _SLD_rapistMenu  Auto  
 Message Property _SLD_raceMenu  Auto  
 Message Property _SLD_robMenu  Auto  
+Message Property _SLD_forceFeedMenu  Auto  
 Message Property _SLD_claimMenu  Auto  
 Message Property _SLD_claimBeastMenu  Auto  
 
@@ -53,6 +54,14 @@ HeadPart Property _SLD_MaleSlaveHair  Auto
 
 GlobalVariable Property _SLD_PCSubShavedON  Auto  
 MiscObject Property Gold001  Auto  
+
+Potion Property Potato Auto  
+Potion Property Meat  Auto  
+Potion Property Soup  Auto  
+Potion Property Wine  Auto  
+Potion Property StrongWine  Auto  
+Potion Property Skooma  Auto  
+Potion Property StrongSkooma  Auto  
 
 Faction Property InnkeeperFaction  Auto  
 Faction Property TailorFaction  Auto  
@@ -846,3 +855,105 @@ Function RobPlayer ( Actor akSpeaker  )
 	Utility.Wait(1.0)
 EndFunction
 
+
+Function ForceFeedPlayer ( Actor akSpeaker, String sForceFeedItem, Int iUseMenu )
+	Actor Player = Game.GetPlayer()
+	Utility.Wait(0.5)
+
+
+	int AttackerStamina = akSpeaker.GetActorValue("stamina") as int
+	int AttackerPickpocket = (akSpeaker.GetActorValue("Pickpocket") * 0.1) as int
+	int VictimStamina = Player.GetActorValue("stamina") as int
+	Int IButton = 0
+	Actor _bandit = akSpeaker
+	Actor _target = Player
+	Int cnt = utility.RandomInt(1,5)
+
+	if (iUseMenu == 1)
+		IButton = _SLD_forceFeedMenu.Show()
+	endif
+
+	If IButton == 0  ; Show the thing.
+
+		StorageUtil.SetIntValue( Player , "_SD_iSub", StorageUtil.GetIntValue( Player, "_SD_iSub") + 1)
+		SendModEvent("SDModTaskAmount","ForceFeed", 1)
+
+
+		ForceFeedPlayerItem ( _target, sForceFeedItem, 1 )
+
+	Else
+		StorageUtil.SetIntValue( Player , "_SD_iDom", StorageUtil.GetIntValue( Player, "_SD_iDom") + 1)
+		SendModEvent("PCSubStripped")
+		SexLab.ActorLib.StripActor( Player, VictimRef = Player, DoAnimate= false)	
+
+		if (AttackerStamina * AttackerPickpocket) as int > VictimStamina
+			Debug.MessageBox("You try to resist with all your strength, but you are too weak to resist...")
+			ForceFeedPlayerItem ( _target, sForceFeedItem, 1 )
+
+		endIf
+		if AttackerStamina > VictimStamina
+			AttackerStamina = VictimStamina
+		endIf
+		akSpeaker.DamageActorValue("stamina",AttackerStamina) 
+		Player.DamageActorValue("stamina",AttackerStamina)
+	EndIf
+
+	Utility.Wait(1.0)
+
+EndFunction
+
+Function ForceFeedPlayerItem ( Actor _target, String sForceFeedItem, Int iItemCount )
+		ObjectReference _targetRef = _target  as ObjectReference
+
+		if ( sForceFeedItem == "Skooma")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(Skooma, 1, true)
+			_target.EquipItem(Skooma, true, true)
+
+			_target.DamageAV("StaminaRate", 0.5)
+			_target.DamageAV("MagickaRate", 0.5)
+			_target.DamageAV("SpeedMult", 0.5)
+
+		elseif ( sForceFeedItem == "StrongSkooma")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(StrongSkooma, 1, true)
+			_target.EquipItem(StrongSkooma, true, true)
+
+			_target.DamageAV("StaminaRate", 1.0)
+			_target.DamageAV("MagickaRate", 1.0)
+			_target.DamageAV("SpeedMult", 1.0)
+		
+		elseif ( sForceFeedItem == "Wine")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(Wine, 1, true)
+			_target.EquipItem(Wine, true, true)
+
+			_target.DamageAV("StaminaRate", 0.3)
+			_target.DamageAV("MagickaRate", 0.3)
+			_target.DamageAV("SpeedMult", 0.3)
+
+		elseif ( sForceFeedItem == "StrongWine")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(StrongWine, 1, true)
+			_target.EquipItem(StrongWine, true, true)
+
+			_target.DamageAV("StaminaRate", 0.5)
+			_target.DamageAV("MagickaRate", 0.5)
+			_target.DamageAV("SpeedMult", 0.5)
+		
+		elseif ( sForceFeedItem == "Soup")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(Soup, 1, true)
+			_target.EquipItem(Soup, true, true)
+		
+		elseif ( sForceFeedItem == "Meat")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(Skooma, 1, true)
+			_target.EquipItem(Skooma, true, true)
+		
+		elseif ( sForceFeedItem == "Potato")
+			; Debug.Notification("You don't need that much money either.")
+			_targetRef.AddItem(Skooma, 1, true)
+			_target.EquipItem(Skooma, true, true)
+		endif
+EndFunction

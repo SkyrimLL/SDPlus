@@ -17,6 +17,8 @@ Int randomNum = Utility.RandomInt(0, 100)
 StorageUtil.SetIntValue( kPlayer , "_SD_iDom", StorageUtil.GetIntValue( kPlayer , "_SD_iDom") + 1)
 StorageUtil.SetIntValue( akSpeaker, "_SD_iDisposition", StorageUtil.GetIntValue( akSpeaker, "_SD_iDisposition"  ) - 1  )
 
+akSpeaker.SendModEvent("SLDForceFeedPlayer","Skooma",0.0)
+
 If (randomNum > 60)
 	akSpeaker.SendModEvent("PCSubPunish") ; Punishment
 ElseIf (randomNum > 20)
