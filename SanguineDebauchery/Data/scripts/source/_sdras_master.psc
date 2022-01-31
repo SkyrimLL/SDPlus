@@ -672,6 +672,8 @@ State monitor
 						kMaster.SendModEvent("PCSubSex","Rough") 
 					EndIf
 				Endif
+			Else
+				GoToState("search")
 			EndIf
 
 		Else

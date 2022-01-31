@@ -642,9 +642,10 @@ State monitor
 
 			If fctSlavery.CheckSlavePrivilege(kSlave, "_SD_iEnableLeash") && (StorageUtil.GetIntValue(kMaster, "_SD_iFollowSlave") == 0) && (StorageUtil.GetIntValue(kMaster, "_SD_iTrust")<0)
 				Debug.Notification( "$You are too far from your owner..." )
+				fctSlavery.ModMasterTrustTokens(kMaster, -1)
 
 				; Reset blackout effect if needed
-				_SD_CollarStrangleImod.Remove()
+				; _SD_CollarStrangleImod.Remove()
 			EndIf
 
 		Else
@@ -1449,23 +1450,32 @@ Function _slaveStatusTicker()
 
 			; Debug.Notification( "[SD] Hours passed: " + iHoursLastCheck)
 
+			;/ Removed decrease of allowance with every hour... to be replaced by move granular point system based on actions
 			If (_SDGVP_state_caged.GetValue()==1)
-				fctSlavery.ModMasterTrust( kMaster, 1 ); add trust point for being caged
+				fctSlavery.ModMasterTrust( kMaster, 1 )
 			Else
 				If (StorageUtil.GetIntValue(kSlave, "_SD_iEnslavedSleepToken") == 1)
-					; prevent loss of trust if player was sleeping while enslaved
 					StorageUtil.SetIntValue(kSlave, "_SD_iEnslavedSleepToken", 0)
 				elseif  funct.sexlabIsActive( kSlave )
-					; Skip trust allowance update if player is in a sexlab animation
 				Else
 					fctSlavery.ModMasterTrust( kMaster, -1 * iHoursLastCheck ); deduct 1 from trust allowance for the day
 				Endif
 			EndIf
+			/;
+
 
 			HourlyTickerLastCallTime = timePassed
 
 			if (iHoursLastCheck>1)
 				fctSlavery.EvaluateSlaveryTaskList(kSlave) ; evaluate tasks after wait or sleep
+
+				; Count how many actions add to distrust. For every 5 actions, drecrease 1 allowace point
+				If (StorageUtil.GetIntValue(kMaster, "_SD_iEnslavedTrustToken") >=5)
+					Debug.Notification( "[SD] Cash in trust tokens: " + StorageUtil.GetIntValue(kMaster, "_SD_iEnslavedTrustToken"))
+					fctSlavery.ModMasterTrust( kMaster, -1 - (StorageUtil.GetIntValue(kMaster, "_SD_iEnslavedTrustToken") / 5) )
+					StorageUtil.SetIntValue(kMaster, "_SD_iEnslavedTrustToken", 0) ; cash tokens in
+				endif
+
 			endIf
 
 			; Check punishment status every 4 hours
@@ -1511,7 +1521,9 @@ Function _slaveStatusTicker()
 		StorageUtil.SetFloatValue(kMaster, "_SD_iMinJoinDays", _SDGVP_join_days.GetValue() as Int) 
 
 		_SDGVP_config_min_days_before_master_travel.SetValue(StorageUtil.GetIntValue(kSlave, "_SD_iMasterTravelDelay"))
-		_SDGVP_config_cage_enable.SetValue( StorageUtil.GetIntValue(none, "_SD_bEnableCageScene")  ) 
+		; _SDGVP_config_cage_enable.SetValue( StorageUtil.GetIntValue(none, "_SD_bEnableCageScene")  ) 
+		_SDGVP_config_cage_enable.SetValue( 0 ) 
+		StorageUtil.SetIntValue(none, "_SD_bEnableCageScene", 0) 
 
 		if (StorageUtil.GetIntValue(kMaster, "_SD_iForcedSlavery") == 1)
 			If (_SDGVP_config_min_days_before_master_travel.GetValue()>=0) && ( (daysPassed - StorageUtil.GetIntValue(kMaster, "_SD_iDaysPassedOutside")) >= _SDGVP_config_min_days_before_master_travel.GetValue()) && (_SDGVP_isMasterTraveller.GetValue() == 0) && (!kMasterCell.IsInterior()) && (!kSlaveCell.IsInterior()) 

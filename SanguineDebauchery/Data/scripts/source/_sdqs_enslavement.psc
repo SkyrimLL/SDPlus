@@ -396,8 +396,13 @@ Function ResetCage( Actor akSlave)
 	Form fNewCageDoorID = None
 	Bool bCageReset = false
 
+	return
+
+	; Cage scene is disabled in SD+ at this time 
+	; Use Inte's SD patches and SD cages if you want cages
+
+	;/
 	if (_SDRAP_cage != None)
-		; debug.Notification("[SD] Old Cage Door ID: " + fOldCageDoorID.GetFormID() )
 		debugTrace(" Old Cage Door ID: " + cageDoorRef )
 	endif
 
@@ -410,13 +415,14 @@ Function ResetCage( Actor akSlave)
 		_SDRAP_cage_door.ForceRefTo( cageDoorNewRef )
 	 	debugTrace(" Cage alias successfully updated: " + cageDoorNewRef)
 		fNewCageDoorID = cageDoorNewRef as Form
-		; debug.Notification("[_sdqs_enslavement] New Cage ID: " + fNewCageDoorID.GetFormID() )
 	 Else
 	 	Debug.Notification("[_sdqs_enslavement] Cage alias failed to update")
 	 	debugTrace(" Cage alias failed to update")
 	EndIf
 
 	_SD_dream_destinations.Stop()
+
+	/;
 
 
 EndFunction

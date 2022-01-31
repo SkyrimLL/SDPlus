@@ -1168,6 +1168,13 @@ function DisplaySlaveryLevelObjective( Actor kMaster, Actor kSlave, Quest qSlave
 	
 EndFunction
 
+Int Function ModMasterTrustTokens(Actor kMaster, int iModValue)
+	Int iDistrustTokens = StorageUtil.GetIntValue(kMaster, "_SD_iEnslavedTrustToken")
+				
+	StorageUtil.SetIntValue(kMaster, "_SD_iEnslavedTrustToken", iDistrustTokens + iModValue)
+
+EndFunction
+
 Int Function ModMasterTrust(Actor kMaster, int iModValue)
 	Actor kPlayer = Game.GetPlayer()
 	Int iSlaveryLevel = StorageUtil.GetIntValue(kPlayer, "_SD_iSlaveryLevel")
