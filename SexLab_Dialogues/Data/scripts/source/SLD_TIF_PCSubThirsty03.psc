@@ -17,8 +17,7 @@ Actor kSlave = game.GetPlayer()
 	 
 	If (randomVar >= 9  )
 		Debug.Notification( "..some Skooma!" )
-		kSlave.AddItem( Skooma, 1, True )
-		kSlave.EquipItem( Skooma, True, True )
+		akSpeaker.SendModEvent("SLDForceFeedPlayer","Skooma",1.0)
 
 		Utility.Wait(3.0)
 	 	DruggedEffect.Cast( kSlave, kSlave)
@@ -29,10 +28,14 @@ Actor kSlave = game.GetPlayer()
  			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
  		EndIf
 
+	ElseIf (randomVar >= 5  )
+		Debug.Notification( "..some wine!" )
+		akSpeaker.SendModEvent("SLDForceFeedPlayer","Wine",1.0)
+
 	ElseIf (randomVar >= 2  )
 		_SLD_Player.GiftFromNPC(akSpeaker, "Thirsty")
 
-	ElseIf (randomVar >= 2  )
+	Else
 		akSpeaker.SendModEvent("PCSubSex") ; Sex
 
 	EndIf

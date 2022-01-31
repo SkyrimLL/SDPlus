@@ -17,8 +17,7 @@ Actor kSlave = game.GetPlayer()
 	 
 	If (randomVar >=9 ) && (StorageUtil.GetIntValue( akSpeaker , "_SD_iDisposition") < 0 )
 		Debug.Notification( "..some Skooma!" )
-		kSlave.AddItem( Skooma, 1, True )
-		kSlave.EquipItem( Skooma, True, True )
+		akSpeaker.SendModEvent("SLDForceFeedPlayer","Skooma",1.0)
 		SendModEvent("SDModMasterTrust", 2)
 
 		Utility.Wait(3.0)
@@ -29,6 +28,10 @@ Actor kSlave = game.GetPlayer()
 			; StorageUtil.SetFormValue( Game.getPlayer() , "_SD_TempAggressor", akSpeaker)
  			akSpeaker.SendModEvent("PCSubEntertain") ; Dance
  		EndIf
+
+	ElseIf (randomVar >= 5  )
+		Debug.Notification( "..some wine!" )
+		akSpeaker.SendModEvent("SLDForceFeedPlayer","Wine",1.0)
 
 	ElseIf (randomVar >= 2  )
 		_SLD_Player.GiftFromNPC(akSpeaker, "Thirsty")
